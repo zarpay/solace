@@ -1,0 +1,45 @@
+PATH
+  remote: .
+  specs:
+    solana-on-ruby (0.0.1)
+      base58 (~> 0.2)
+      rbnacl (~> 7.0)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    base58 (0.2.3)
+    ffi (1.17.2)
+    ffi (1.17.2-aarch64-linux-gnu)
+    ffi (1.17.2-aarch64-linux-musl)
+    ffi (1.17.2-arm-linux-gnu)
+    ffi (1.17.2-arm-linux-musl)
+    ffi (1.17.2-arm64-darwin)
+    ffi (1.17.2-x86-linux-gnu)
+    ffi (1.17.2-x86-linux-musl)
+    ffi (1.17.2-x86_64-darwin)
+    ffi (1.17.2-x86_64-linux-gnu)
+    ffi (1.17.2-x86_64-linux-musl)
+    minitest (5.25.5)
+    rbnacl (7.1.2)
+      ffi (~> 1)
+
+PLATFORMS
+  aarch64-linux-gnu
+  aarch64-linux-musl
+  arm-linux-gnu
+  arm-linux-musl
+  arm64-darwin
+  ruby
+  x86-linux-gnu
+  x86-linux-musl
+  x86_64-darwin
+  x86_64-linux-gnu
+  x86_64-linux-musl
+
+DEPENDENCIES
+  minitest
+  solana-on-ruby!
+
+BUNDLED WITH
+   2.6.7
