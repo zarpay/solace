@@ -70,7 +70,7 @@ system_program = Base58.base58_to_binary("11111111111111111111111111111111")
 # =============================
 
 # All accounts needed for the transaction
-account_keys = [
+accounts = [
   bob_pubkey,
   anna_pubkey,
   system_program
@@ -132,7 +132,7 @@ versioned_message = [
   VERSION_PREFIX,
   header,
   Codecs.encode_compact_u16(3),     # num account keys
-  account_keys,                       # account keys
+  accounts,                       # account keys
   recent_blockhash,                   # recent blockhash
   Codecs.encode_compact_u16(1),     # number of instructions
   instruction,                        # instruction

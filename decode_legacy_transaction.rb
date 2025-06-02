@@ -37,12 +37,12 @@ puts "  numReadonlySignedAccounts: #{message_header[1]}"
 puts "  numReadonlyUnsignedAccounts: #{message_header[2]}"
 
 # Step 6: Extract the number of account keys
-num_account_keys, _ = Codecs.decode_compact_u16(io)
-puts "Number of account keys: #{num_account_keys}"
+num_accounts, _ = Codecs.decode_compact_u16(io)
+puts "Number of account keys: #{num_accounts}"
 
 # Step 7: Extract the account keys
-account_keys = Array.new(num_account_keys).map { io.read(32) }
-puts "Account keys: #{account_keys}"
+accounts = Array.new(num_accounts).map { io.read(32) }
+puts "Account keys: #{accounts}"
 
 # Step 8: Extract the recent blockhash
 recent_blockhash = Codecs.bytes_to_base58(io.read(32).bytes)

@@ -70,7 +70,7 @@ system_program = Base58.base58_to_binary("11111111111111111111111111111111")
 # =============================
 
 # All accounts needed for the transaction
-account_keys = [
+accounts = [
   bob_pubkey,
   anna_pubkey,
   system_program
@@ -121,7 +121,7 @@ recent_blockhash = Codecs.base58_to_bytes(get_latest_blockhash).pack("C*")
 message = [
   header,
   Codecs.encode_compact_u16(3),     # num account keys
-  account_keys,                       # account keys
+  accounts,                       # account keys
   recent_blockhash,                   # recent blockhash
   Codecs.encode_compact_u16(1),     # number of instructions
   instruction,                        # instruction

@@ -3,6 +3,14 @@
 require 'test_helper'
 
 class TestEncoder < Minitest::Test
+  def test_base64_to_bytestream
+    stream = Solana::Utils::Codecs.base64_to_bytestream(
+      "aXQgd29ya3M=\n" # base64 encoded "it works"
+    )
+    assert_equal "it works", stream.read
+  end
+
+
   # Expected compact u16 values
   EXPECTED_COMPACT_U16_VALUES = {
     0 => "\x00".b,
@@ -15,21 +23,21 @@ class TestEncoder < Minitest::Test
   }
 
   def test_encode_compact_u16
-    EXPECTED_COMPACT_U16_VALUES.each do |n, expected|
+    EXPECTED_COMPACT_U16_VALUES.each do |n, bytes|
       assert_equal(
-        expected, 
+        bytes, 
         Solana::Utils::Codecs.encode_compact_u16(n),
-        "Failed for n = #{n}, expected #{expected} but got #{Solana::Utils::Codecs.encode_compact_u16(n).inspect}"
+        "Failed for n = #{n}, expected #{bytes} but got #{Solana::Utils::Codecs.encode_compact_u16(n).inspect}"
       )
     end
   end
 
   def test_decode_compact_u16
-    EXPECTED_COMPACT_U16_VALUES.each do |n, expected|
+    EXPECTED_COMPACT_U16_VALUES.each do |n, bytes|
       assert_equal(
-        [n, expected.length],
-        Solana::Utils::Codecs.decode_compact_u16(StringIO.new(expected)),
-        "Failed for n = #{n}, expected #{expected} but got #{Solana::Utils::Codecs.decode_compact_u16(StringIO.new(expected)).inspect}"
+        [n, bytes.length],
+        Solana::Utils::Codecs.decode_compact_u16(StringIO.new(bytes)),
+        "Failed for n = #{n}, expected #{bytes} but got #{Solana::Utils::Codecs.decode_compact_u16(StringIO.new(bytes)).inspect}"
       )
     end
   end
@@ -48,11 +56,49 @@ class TestEncoder < Minitest::Test
   }
 
   def test_encode_le_u64
-    EXPECTED_LE_U64_VALUES.each do |n, expected|
+    EXPECTED_LE_U64_VALUES.each do |n, bytes|
       assert_equal(
-        expected, 
+        bytes, 
         Solana::Utils::Codecs.encode_le_u64(n),
-        "Failed for n = #{n}, expected #{expected} but got #{Solana::Utils::Codecs.encode_le_u64(n).inspect}"
+        "Failed for n = #{n}, expected #{bytes} but got #{Solana::Utils::Codecs.encode_le_u64(n).inspect}"
+      )
+    end
+  end
+
+  def test_decode_le_u64
+    EXPECTED_LE_U64_VALUES.each do |n, bytes|
+      assert_equal(
+        n,
+        Solana::Utils::Codecs.decode_le_u64(StringIO.new(bytes)),
+        "Failed for n = #{n}, expected #{bytes} but got #{Solana::Utils::Codecs.decode_le_u64(StringIO.new(bytes)).inspect}"
+      )
+    end
+  end
+
+  # Expected base58 values
+  EXPECTED_BASE58_VALUES = {
+    '4k8k5d' => [146, 117, 191, 192],
+    '11111111111111111111111111111111' => [0] * 32,
+    'JxF12TrwUP45BMd' => [72, 101, 108, 108, 111, 32, 87, 111, 114, 108, 100],
+    '2VFAhjXBhMuEbmcTtjYXAZX4oVPhr3im7yb8RmaBofU6' => [22, 23, 247, 244, 154, 76, 30, 91, 94, 94, 164, 29, 134, 66, 178, 4, 193, 195, 140, 79, 197, 35, 89, 202, 7, 85, 64, 99, 10, 23, 242, 235],
+  }
+
+  def test_encode_base58
+    EXPECTED_BASE58_VALUES.each do |base58, bytes|
+      assert_equal(
+        base58,
+        Solana::Utils::Codecs.bytes_to_base58(bytes),
+        "Failed for base58 = #{base58}, expected #{bytes} but got #{Solana::Utils::Codecs.bytes_to_base58(bytes).inspect}"
+      )
+    end
+  end
+
+  def test_decode_base58
+    EXPECTED_BASE58_VALUES.each do |base58, bytes|
+      assert_equal(
+        bytes,
+        Solana::Utils::Codecs.base58_to_bytes(base58),
+        "Failed for base58 = #{base58}, expected #{bytes} but got #{Solana::Utils::Codecs.base58_to_bytes(base58).inspect}"
       )
     end
   end

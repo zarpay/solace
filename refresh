@@ -1,0 +1,5 @@
+# /bin/bash
+
+gem build ./solana-on-ruby.gemspec
+gem install ./solana-on-ruby-0.0.1.gem
+bundle install
