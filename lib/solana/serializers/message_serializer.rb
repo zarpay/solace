@@ -31,19 +31,6 @@ module Solana
         @msg = message
       end
 
-      # Serializes the message
-      # 
-      # @return [String] The serialized message (base64)
-      def call
-        bin = SERIALIZATION_STEPS
-          .map { send(_1) }
-          .flatten
-          .compact
-          .pack("C*")
-
-        Base64.strict_encode64(bin)
-      end
-
       private
 
       attr_reader :msg
@@ -113,7 +100,7 @@ module Solana
       # @return [Array<Integer>] The bytes of the encoded address lookup table
       def encode_address_lookup_table
         Codecs.encode_compact_u16(msg.address_lookup_tables.size).bytes + 
-        msg.address_lookup_tables.map { _1.serialize } if msg.versioned?
+        msg.address_lookup_tables.map { _1.to_bytes } if msg.versioned?
       end
     end
   end

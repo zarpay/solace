@@ -5,7 +5,8 @@ require 'rbnacl'
 require 'base58'
 require 'stringio'
 
-require_relative 'lib/utils/codecs'
+require_relative 'lib/solana/utils/codecs'
+Codecs = Solana::Utils::Codecs
 
 # =============================
 # 🧩 Versioned Transaction

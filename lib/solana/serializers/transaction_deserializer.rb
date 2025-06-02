@@ -50,9 +50,7 @@ module Solana
       # @return [Array] Array of base58 encoded signatures
       def next_extract_signatures
         count, _ = Codecs.decode_compact_u16(io)
-        tx.signatures = count.times.map do
-          Codecs.bytes_to_base58 io.read(64).bytes 
-        end
+        tx.signatures = count.times.map { io.read(64) }
       end
 
       # Extract the message from the transaction

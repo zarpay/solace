@@ -28,19 +28,6 @@ module Solana
         @ix = instruction
       end
 
-      # Serializes the instruction
-      # 
-      # @return [String] The serialized instruction (binary)
-      def call
-        bin = SERIALIZATION_STEPS
-          .map { send(_1) }
-          .flatten
-          .compact
-          .pack("C*")
-
-        Base64.strict_encode64(bin)
-      end
-
       private
 
       attr_reader :ix
@@ -50,9 +37,9 @@ module Solana
       # The BufferLayout is:
       #   - [Program index (u8)]
       # 
-      # @return [Array<Integer>] The bytes of the encoded program index
+      # @return [Integer] The bytes of the encoded program index
       def encode_program_index
-        [ix.program_index]
+        ix.program_index
       end
 
       # Encodes the accounts of the instruction

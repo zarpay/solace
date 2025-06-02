@@ -5,12 +5,28 @@ module Solana
     class Base
       include Solana::Utils
 
-      def self.call(*args, **kwargs) 
-        new(*args, **kwargs).call
+      class << self
+        # Proxy method to call the serializer and create a new instance
+        # 
+        # @return [String] The serialized transaction (base64)
+        def call(*args, **kwargs) 
+          new(*args, **kwargs).call
+        end
       end
 
+      # Serializes the transaction
+      # 
+      # @return [String] The serialized transaction (base64)
       def call
-        raise NotImplementedError, "Serializers must implement the call method"
+        bin = self.class::SERIALIZATION_STEPS
+          .map { |m| send(m) }
+          .flatten
+          .compact
+          .pack("C*")
+
+        Base64.strict_encode64(bin)
+      rescue NameError => e
+        raise "SERIALIZATION_STEPS must be defined: #{e.message}"
       end
     end
   end

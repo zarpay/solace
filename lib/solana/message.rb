@@ -7,8 +7,6 @@ module Solana
   #
   # Represents the message portion of a Solana transaction (legacy or versioned).
   # Handles serialization and deserialization of message fields.
-  #
-  # @see https://docs.solana.com/developing/programming-model/transactions#messages
   class Message
     include Solana::Concerns::BinarySerializable
 
@@ -26,7 +24,8 @@ module Solana
     attr_accessor :address_lookup_tables
 
     class << self
-    # Deserialize a message from binary
+      # Deserialize a message from binary
+      # 
       # @param io [IO] binary message
       # @return [Solana::Message]
       def self.deserialize(io)
@@ -66,6 +65,7 @@ module Solana
     end
 
     # Serialize the message to binary
+    # 
     # @return [String] serialized message (binary)
     def serialize
       Solana::Serializers::MessageSerializer.call(self)

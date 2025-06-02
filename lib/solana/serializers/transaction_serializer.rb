@@ -27,19 +27,6 @@ module Solana
         @tx = transaction
       end
 
-      # Serializes the transaction
-      # 
-      # @return [String] The serialized transaction (base64)
-      def call
-        bin = SERIALIZATION_STEPS
-          .map { |m| send(m) }
-          .flatten
-          .compact
-          .pack("C*")
-
-        Base64.strict_encode64(bin)
-      end
-
       private
 
       attr_reader :tx
@@ -52,8 +39,8 @@ module Solana
       #
       # @return [Array<Integer>] The bytes of the encoded signatures
       def encode_signatures
-        [Codecs.encode_compact_u16(tx.signatures.size).bytes] + 
-        tx.signatures.map { Codecs.base58_to_bytes(_1) }
+        Codecs.encode_compact_u16(tx.signatures.size).bytes + 
+        tx.signatures.map { _1.bytes }
       end
 
       # Encodes the message from the transaction

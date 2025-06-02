@@ -14,54 +14,31 @@
 #   - [Readonly indexes (variable length)]
 # 
 class Solana::AddressLookupTable
-  include Solana::Utils
+  include Solana::Concerns::BinarySerializable
 
   # The account keys in the address lookup table
-  attr_reader :account_key
+  attr_accessor :account
   
   # The writable indexes in the address lookup table
-  attr_reader :writable_indexes
+  attr_accessor :writable_indexes
   
   # The readonly indexes in the address lookup table
-  attr_reader :readonly_indexes
+  attr_accessor :readonly_indexes
 
-  # Parse address lookup table from io stream
-  # 
-  # @param io [IO or StringIO] The input to read bytes from.
-  # @return [Solana::AddressLookupTable] Parsed address lookup table object
-  def self.unpack(io)
-    alt = new
-
-    alt._next_extract_account_key(io)
-    alt._next_extract_writable_indexes(io)
-    alt._next_extract_readonly_indexes(io)
-
-    alt
+  class << self
+    # Parse address lookup table from io stream
+    # 
+    # @param io [IO or StringIO] The input to read bytes from.
+    # @return [Solana::AddressLookupTable] Parsed address lookup table object
+    def deserialize(io)
+      Solana::Serializers::AddressLookupTableDeserializer.call(io)
+    end
   end
 
-  # Extract the account key from the transaction
+  # Serialize the address lookup table
   # 
-  # @param io [IO or StringIO] The input to read bytes from.
-  # @return [String] The account key
-  def _next_extract_account_key(io)
-    @account_key = Codecs.bytes_to_base58 io.read(32).bytes
-  end
-
-  # Extract the writable indexes from the transaction
-  # 
-  # @param io [IO or StringIO] The input to read bytes from.
-  # @return [Array] The writable indexes
-  def _next_extract_writable_indexes(io)
-    writable_length, _ = Codecs.decode_compact_u16(io)
-    @writable_indexes = io.read(writable_length).unpack("C*")
-  end
-
-  # Extract the readonly indexes from the transaction
-  # 
-  # @param io [IO or StringIO] The input to read bytes from.
-  # @return [Array] The readonly indexes
-  def _next_extract_readonly_indexes(io)
-    readonly_length, _ = Codecs.decode_compact_u16(io)
-    @readonly_indexes = io.read(readonly_length).unpack("C*")
+  # @return [String] The serialized address lookup table (base64)
+  def serialize
+    Solana::Serializers::AddressLookupTableSerializer.call(self)
   end
 end

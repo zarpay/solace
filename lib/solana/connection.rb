@@ -38,6 +38,7 @@ module Solana
         http.request(req)
       end
       raise "RPC error: #{res.body}" unless res.is_a?(Net::HTTPSuccess)
+      puts "RPC response: #{res.body}"
       JSON.parse(res.body)["result"]
     end
 
@@ -54,6 +55,14 @@ module Solana
     # @return [Integer] The balance of the account
     def get_balance(pubkey)
       rpc_request("getBalance", [pubkey])["value"]
+    end
+
+    # Send a transaction to the Solana node
+    # 
+    # @param transaction [Solana::Transaction] The transaction to send
+    # @return [String] The signature of the transaction
+    def send_transaction(transaction, options = {})
+      rpc_request("sendTransaction", [transaction, { encoding: "base64" }.merge(options)])
     end
   end
 end

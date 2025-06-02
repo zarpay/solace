@@ -52,4 +52,17 @@ class Solana::Transaction
   def serialize
     Solana::Serializers::TransactionSerializer.call(self)
   end
+
+  # Signs the transaction
+  #
+  # Updates the signatures array with the signature of the transaction after signing.
+  #
+  # @return [String] The signature of the transaction
+  def sign(keypair)
+    binary_sig = keypair.sign(message.to_binary).tap do |sig|
+      self.signatures << sig
+    end
+    
+    Solana::Utils::Codecs.bytes_to_base58(binary_sig.bytes)
+  end
 end

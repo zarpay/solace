@@ -54,6 +54,10 @@ module Solana
       # Checks for version prefix and extracts version. If the prefix is not found, it
       # assumes a legacy message and sets no version.
       # 
+      # The BufferLayout is:
+      #   - [Version prefix (1 byte)]
+      #   - [Version (variable length)]
+      # 
       # @return [Integer] The version of the message
       def next_extract_version
         next_byte = io.read(1).unpack1("C")
@@ -70,12 +74,19 @@ module Solana
 
       # Extract message header from the message
       # 
+      # The BufferLayout is:
+      #   - [Message header (3 bytes)]
+      # 
       # @return [Array<Integer>] The message header of the message
       def next_extract_message_header
         msg.header = io.read(3).bytes
       end
 
       # Extract account keys from the message
+      # 
+      # The BufferLayout is:
+      #   - [Number of accounts (compact u16)]
+      #   - [Accounts (variable length u8)]
       # 
       # @return [Array<String>] The account keys of the message
       def next_extract_accounts
@@ -87,12 +98,19 @@ module Solana
 
       # Extract recent blockhash from the message
       # 
+      # The BufferLayout is:
+      #   - [Recent blockhash (32 bytes)]
+      # 
       # @return [String] The recent blockhash of the message
       def next_extract_recent_blockhash
         msg.recent_blockhash = Codecs.bytes_to_base58 io.read(32).bytes
       end
 
       # Extract instructions from the message
+      # 
+      # The BufferLayout is:
+      #   - [Number of instructions (compact u16)]
+      #   - [Instructions (variable length)]
       # 
       # @return [Array<Solana::Instruction>] The instructions of the message
       def next_extract_instructions
@@ -104,13 +122,17 @@ module Solana
 
       # Extract address lookup table from the message
       # 
+      # The BufferLayout is:
+      #   - [Number of address lookup tables (compact u16)]
+      #   - [Address lookup tables (variable length)]
+      # 
       # @return [Array<Solana::AddressLookupTable>] The address lookup table of the message
       def next_extract_address_lookup_table
         return unless msg.versioned?
 
         count, _ = Codecs.decode_compact_u16(io)
         msg.address_lookup_tables = count.times.map do
-          Solana::AddressLookupTable.unpack(io)
+          Solana::AddressLookupTable.deserialize(io)
         end
       end
     end
