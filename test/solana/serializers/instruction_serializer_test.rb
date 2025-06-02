@@ -2,14 +2,15 @@
 require_relative '../../test_helper'
 
 describe Solana::Serializers::InstructionSerializer do
-
   # Build a transfer instruction
-  ix = Solana::Instructions::TransferInstruction.build(
-    to_index: 1,
-    from_index: 0,
-    program_index: 2,
-    lamports: 100_000_000,
-  )
+  let(:ix) do
+    Solana::Instructions::TransferInstruction.build(
+      to_index: 1,
+      from_index: 0,
+      program_index: 2,
+      lamports: 100_000_000,
+    )
+  end
 
   describe '#call' do
     before do

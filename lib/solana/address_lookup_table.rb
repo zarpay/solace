@@ -16,13 +16,16 @@
 class Solana::AddressLookupTable
   include Solana::Concerns::BinarySerializable
 
-  # The account keys in the address lookup table
+  # @!attribute [rw] account
+  #   @return [String] The account key of the address lookup table
   attr_accessor :account
   
-  # The writable indexes in the address lookup table
+  # @!attribute [rw] writable_indexes
+  #   @return [Array<Integer>] The writable indexes in the address lookup table
   attr_accessor :writable_indexes
   
-  # The readonly indexes in the address lookup table
+  # @!attribute [rw] readonly_indexes
+  #   @return [Array<Integer>] The readonly indexes in the address lookup table
   attr_accessor :readonly_indexes
 
   class << self

@@ -5,20 +5,18 @@ module Solana
     class Base
       include Solana::Utils
 
-      class << self
-        # Proxy method to call the serializer and create a new instance
-        # 
-        # @return [String] The serialized transaction (base64)
-        def call(*args, **kwargs) 
-          new(*args, **kwargs).call
-        end
+      # Proxy method to call the serializer and create a new instance
+      # 
+      # @return [String] The serialized record (base64)
+      def self.call(*args, **kwargs) 
+        new(*args, **kwargs).call
       end
 
-      # Serializes the transaction
+      # Serializes the record
       # 
-      # @return [String] The serialized transaction (base64)
+      # @return [String] The serialized record (base64)
       def call
-        bin = self.class::SERIALIZATION_STEPS
+        bin = self.class::STEPS
           .map { |m| send(m) }
           .flatten
           .compact
@@ -26,7 +24,7 @@ module Solana
 
         Base64.strict_encode64(bin)
       rescue NameError => e
-        raise "SERIALIZATION_STEPS must be defined: #{e.message}"
+        raise "STEPS must be defined: #{e.message}"
       end
     end
   end

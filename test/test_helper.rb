@@ -9,3 +9,5 @@ Dir[File.join(project_root, 'lib', '**', '*.rb')].sort.each { |file| require fil
 
 require 'minitest/autorun'
 require 'solana'
+
+require_relative './support/factory_bot'

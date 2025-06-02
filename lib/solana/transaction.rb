@@ -15,24 +15,22 @@
 #   - [Instructions (variable length)]
 #   - [Address lookup table (variable length)] (if versioned)
 # 
-class Solana::Transaction
-  include Solana::Concerns::BinarySerializable
+class Solana::Transaction < Solana::SerializableRecord
+  # @!const SERIALIZER
+  #   @return [Solana::Serializers::TransactionSerializer] The serializer for the transaction
+  SERIALIZER = Solana::Serializers::TransactionSerializer
 
-  # Signatures of the transaction (base58 encoded)
+  # @!const DESERIALIZER
+  #   @return [Solana::Serializers::TransactionDeserializer] The deserializer for the transaction
+  DESERIALIZER = Solana::Serializers::TransactionDeserializer
+
+  # @!attribute [rw] signatures 
+  #   @return [Array<String>] Signatures of the transaction (binary)
   attr_accessor :signatures
 
-  # Message of the transaction
+  # @!attribute [rw] message
+  #   @return [Solana::Message] Message of the transaction
   attr_accessor :message
-
-  class << self
-    # Parse transaction from base64 string
-    #
-    # @param transaction_base64 [String] The base64 encoded transaction to deserialize
-    # @return [Solana::Transaction] Parsed transaction object
-    def deserialize(transaction_base64)
-      Solana::Serializers::TransactionDeserializer.call(transaction_base64)
-    end
-  end
 
   # Initialize a new transaction
   # 
@@ -44,13 +42,6 @@ class Solana::Transaction
     # Set defaults
     @signatures = signatures
     @message = message
-  end
-
-  # Serializes the transaction to a binary format
-  #
-  # @return [String] The serialized transaction (binary)
-  def serialize
-    Solana::Serializers::TransactionSerializer.call(self)
   end
 
   # Signs the transaction

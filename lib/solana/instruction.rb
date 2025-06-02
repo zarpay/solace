@@ -13,32 +13,24 @@
 #   - [Data length (compact u16)]
 #   - [Data (variable length)]
 #
-class Solana::Instruction
-  include Solana::Concerns::BinarySerializable
+class Solana::Instruction < Solana::SerializableRecord
+  # @!const SERIALIZER
+  #   @return [Solana::Serializers::InstructionSerializer] The serializer for the instruction
+  SERIALIZER = Solana::Serializers::InstructionSerializer
+
+  # @!const DESERIALIZER
+  #   @return [Solana::Serializers::InstructionDeserializer] The deserializer for the instruction
+  DESERIALIZER = Solana::Serializers::InstructionDeserializer
   
-  # The program index
+  # @!attribute [rw] program_index
+  #   @return [Integer] The program index of the instruction
   attr_accessor :program_index
   
-  # The accounts
+  # @!attribute [rw] accounts
+  #   @return [Array<Integer>] The accounts of the instruction
   attr_accessor :accounts
   
-  # The instruction data
+  # @!attribute [rw] data
+  #   @return [Array<Integer>] The instruction data
   attr_accessor :data
-  
-  class << self
-    # Parse instruction from io stream
-    # 
-    # @param io [IO or StringIO] The input to read bytes from.
-    # @return [Solana::Instruction] Parsed instruction object
-    def deserialize(io)
-      Solana::Serializers::InstructionDeserializer.call(io)
-    end
-  end
-
-  # Serializes the instruction to a binary format
-  # 
-  # @return [String] The serialized instruction (binary)
-  def serialize
-    Solana::Serializers::InstructionSerializer.call(self)
-  end
 end
