@@ -1,0 +1,13 @@
+[package]
+name = "curve25519_dalek"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+curve25519-dalek = "4.1.1"
+
+[dev-dependencies]
+bs58 = "0.4"

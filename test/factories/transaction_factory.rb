@@ -3,7 +3,7 @@
 require 'factory_bot'
 
 FactoryBot.define do
-  factory :transaction, class: 'Solana::Transaction' do
+  factory :transaction, class: 'Solace::Transaction' do
     signatures { [] }
     message { nil }
     

@@ -8,6 +8,6 @@ project_root = File.expand_path('..', __dir__)
 Dir[File.join(project_root, 'lib', '**', '*.rb')].sort.each { |file| require file }
 
 require 'minitest/autorun'
-require 'solana'
+require 'solace'
 
 require_relative './support/factory_bot'

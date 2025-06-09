@@ -3,7 +3,7 @@
 require 'factory_bot'
 
 FactoryBot.define do
-  factory :message, class: 'Solana::Message' do
+  factory :message, class: 'Solace::Message' do
     version { nil }
     header { [0, 0, 0] }
     accounts { [] }
@@ -35,7 +35,7 @@ FactoryBot.define do
       [
         '2VFAhjXBhMuEbmcTtjYXAZX4oVPhr3im7yb8RmaBofU6',
         'cbk37cQDdSqarxFTD9oG9c31YhcGZzd2QJwuGmWZhLL',
-        Solana::Constants::SYSTEM_PROGRAM_ID
+        Solace::Constants::SYSTEM_PROGRAM_ID
       ]
     end
 
@@ -45,7 +45,7 @@ FactoryBot.define do
     # Transfer instruction
     instructions do
       [
-        Solana::Instructions::TransferInstruction.build(
+        Solace::Instructions::TransferInstruction.build(
           to_index: 1,
           from_index: 0,
           program_index: 2,

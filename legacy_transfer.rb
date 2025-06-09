@@ -15,8 +15,8 @@ require 'rbnacl'
 require 'base64'
 require 'net/http'
 
-require_relative 'lib/solana/utils/codecs'
-Codecs = Solana::Utils::Codecs
+require_relative 'lib/solace/utils/codecs'
+Codecs = Solace::Utils::Codecs
 
 # =============================
 # 🧩 Helper: Post Request

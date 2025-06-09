@@ -7,11 +7,11 @@ bob = JSON.load_file('bob.json')
 anna = JSON.load_file('anna.json')
 
 # 1. Generate sender and recipient keypairs
-sender = Solana::Utils::Keypair.from_secret_key(bob)
-recipient = Solana::Utils::Keypair.from_secret_key(anna)
+sender = Solace::Keypair.from_secret_key(bob)
+recipient = Solace::Keypair.from_secret_key(anna)
 
 # 2. Connect to local validator
-conn = Solana::Connection.new
+conn = Solace::Connection.new
 
 # 3. Print initial balances
 sender_balance = conn.get_balance(sender.address)
@@ -21,7 +21,7 @@ puts "Sender balance: #{sender_balance} lamports"
 puts "Recipient balance: #{recipient_balance} lamports"
 
 # 4. Build instruction
-instruction = Solana::Instructions::TransferInstruction.build(
+instruction = Solace::Instructions::TransferInstruction.build(
   to_index: 1,
   from_index: 0,
   program_index: 2,
@@ -29,7 +29,7 @@ instruction = Solana::Instructions::TransferInstruction.build(
 )
 
 # 5. Build message
-message = Solana::Message.new(
+message = Solace::Message.new(
   header: [
     1, # num_required_signatures
     0, # num_readonly_signed
@@ -38,14 +38,14 @@ message = Solana::Message.new(
   accounts: [
     sender.address,
     recipient.address,
-    Solana::Constants::SYSTEM_PROGRAM_ID
+    Solace::Constants::SYSTEM_PROGRAM_ID
   ],
   recent_blockhash: conn.get_latest_blockhash,
   instructions: [instruction]
 )
 
 # 6. Build transaction
-transaction = Solana::Transaction.new(message: message)
+transaction = Solace::Transaction.new(message: message)
 
 # 7. Sign transaction
 transaction.sign(sender)

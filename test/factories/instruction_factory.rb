@@ -3,7 +3,7 @@
 # require 'factory_bot'
 
 FactoryBot.define do
-  factory :instruction, class: 'Solana::Instruction' do
+  factory :instruction, class: 'Solace::Instruction' do
     # Instruction type
     program_index { nil }
     accounts { [] }

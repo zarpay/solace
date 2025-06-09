@@ -1,8 +1,9 @@
 PATH
   remote: .
   specs:
-    solana-on-ruby (0.0.1)
+    solace (0.0.1)
       base58 (~> 0.2)
+      ffi (~> 1.15)
       rbnacl (~> 7.0)
 
 GEM
@@ -68,7 +69,7 @@ PLATFORMS
 DEPENDENCIES
   factory_bot
   minitest
-  solana-on-ruby!
+  solace!
 
 BUNDLED WITH
    2.6.7

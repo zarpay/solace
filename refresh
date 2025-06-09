@@ -1,5 +1,8 @@
 # /bin/bash
 
-gem build ./solana-on-ruby.gemspec
-gem install ./solana-on-ruby-0.0.1.gem
+rake compile
+
+gem build ./solace.gemspec
+gem install ./solace-0.0.1.gem
+
 bundle install
