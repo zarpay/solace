@@ -8,6 +8,7 @@ require_relative 'solana/constants'
 require_relative 'solana/connection'
 require_relative 'solana/utils/codecs'
 require_relative 'solana/utils/keypair'
+require_relative 'solana/utils/public_key'
 require_relative 'solana/concerns/binary_serializable'
 
 # ✨ Serializers
