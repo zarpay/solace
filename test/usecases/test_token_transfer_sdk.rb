@@ -2,7 +2,7 @@
 
 require 'test_helper'
 require 'base58'
-require_relative '../../lib/solace/instructions/token_transfer_checked_instruction'
+require_relative '../../lib/solace/instructions/transfer_checked_instruction'
 
 # TODO: Implement these helpers in your SDK for full SPL token support:
 # - Solace::SPL.create_mint
@@ -32,7 +32,7 @@ puts "Recipient token balance before:"
 puts `spl-token balance --owner ./test/fixtures/anna.json #{mint}`
 
 # 5. Build SPL token transfer instruction
-instruction = Solace::Instructions::TokenTransferCheckedInstruction.build(
+instruction = Solace::Instructions::TransferCheckedInstruction.build(
   amount: 100,
   decimals: 6,
   from_index: 1,      # sender_token_account

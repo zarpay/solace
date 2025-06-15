@@ -3,7 +3,7 @@
 module Solace
   module Instructions
     # Service object for building an SPL Token Program transfer instruction
-    class TokenTransferCheckedInstruction
+    class TransferCheckedInstruction
       # SPL Token Program instruction index for Transfer Checked
       INSTRUCTION_INDEX = [12].freeze
 
