@@ -3,14 +3,22 @@ require 'rake'
 require 'rake/testtask'
 require "fileutils"
 
-Rake::TestTask.new do |t|
+# Run all Minitest tests
+Rake::TestTask.new(:test) do |t|
   t.libs << 'test'
   t.pattern = 'test/**/*_test.rb'
   t.verbose = false
 end
 
-task default: :test
+# Run all usecases
+Rake::TestTask.new(:usecases) do |t|
+  t.libs << 'test'
+  # Get the named usecase from the CLI argument
+  t.pattern = "test/usecases/#{ARGV[1] || '*'}.rb"
+  t.verbose = false
+end
 
+# Compile the Rust library
 task :compile do
   sh "cargo build --manifest-path=ext/curve25519_dalek/Cargo.toml --release"
 

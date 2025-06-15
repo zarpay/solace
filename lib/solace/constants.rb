@@ -28,7 +28,7 @@ module Solace::Constants
   #   The public key of the Associated Token Account Program
   #   This is the same across all Solana clusters
   # @return [String]
-  ASSOCIATED_TOKEN_PROGRAM_ID = "ATokenGPvoter11111111111111111111111111111"
+  ASSOCIATED_TOKEN_PROGRAM_ID = "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
 
   # @!const MEMO_PROGRAM_ID
   #   The public key of the Memo Program

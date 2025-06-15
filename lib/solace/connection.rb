@@ -56,6 +56,14 @@ class Solace::Connection
     rpc_request("getBalance", [pubkey])["value"]
   end
 
+  # Get the transaction by signature
+  # 
+  # @param signature [String] The signature of the transaction
+  # @return [Solace::Transaction] The transaction object
+  def get_transaction(signature)
+    rpc_request("getTransaction", [signature, { encoding: "base64", maxSupportedTransactionVersion: 0 }])
+  end
+
   # Send a transaction to the Solana node
   # 
   # @param transaction [Solace::Transaction] The transaction to send

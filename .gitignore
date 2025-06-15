@@ -1,0 +1,12 @@
+# Test ledger
+test-ledger
+
+# Test fixtures
+test/fixtures
+
+# Test outputs
+test/output
+
+# Test snapshots
+test/snapshot
+

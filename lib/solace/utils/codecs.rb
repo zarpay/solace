@@ -128,6 +128,22 @@ module Solace
       end
 
       # =============================
+      # Helper: Binary to Base58 Encoding
+      # =============================
+      # 
+      # Encodes a sequence of bytes in Base58 format
+      # 
+      # Args:
+      #   bytes (String): The bytes to encode
+      # 
+      # Returns:
+      #   String: The Base58 encoded string
+      # 
+      def self.binary_to_base58(binary)
+        Base58.binary_to_base58(binary, :bitcoin)
+      end
+    
+      # =============================
       # Helper: Base58 Encoding
       # =============================
       # 
@@ -140,7 +156,7 @@ module Solace
       #   String: The Base58 encoded string
       # 
       def self.bytes_to_base58(bytes)
-        Base58.binary_to_base58(bytes.pack('C*'), :bitcoin)
+        binary_to_base58(bytes.pack('C*'))
       end
       
       # =============================
