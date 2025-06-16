@@ -66,7 +66,7 @@ describe Solace::Instructions::SystemProgram::CreateAccountInstruction do
 
     let(:space) { 100 }
     let(:owner) { Solace::Constants::SYSTEM_PROGRAM_ID }
-    let(:lamports) { conn.get_minimum_lamports_for_rent_exemption(space).to_i }
+    let(:lamports) { conn.get_minimum_lamports_for_rent_exemption(space) }
     
    before(:all) do
       # 1. Build instruction

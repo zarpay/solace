@@ -30,5 +30,6 @@ require_relative 'solace/address_lookup_table'
 # 📦 Instructions (Builders)
 require_relative 'solace/instructions/transfer_instruction'
 require_relative 'solace/instructions/transfer_checked_instruction'
+require_relative 'solace/instructions/system_program/create_account_instruction'
 
 
