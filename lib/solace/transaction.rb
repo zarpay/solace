@@ -32,6 +32,16 @@ class Solace::Transaction < Solace::SerializableRecord
   #   @return [Solace::Message] Message of the transaction
   attr_accessor :message
 
+  class << self
+    # Deserialize a base64 encoded transaction into a Solace::Transaction object
+    #
+    # @param io [IO] The IO object containing the binary transaction
+    # @return [Solace::Transaction] The deserialized transaction
+    def from(io)
+      DESERIALIZER.call Solace::Utils::Codecs.base64_to_bytestream(io)
+    end
+  end
+
   # Initialize a new transaction
   # 
   # @return [Solace::Transaction] The new transaction object
@@ -49,11 +59,9 @@ class Solace::Transaction < Solace::SerializableRecord
   # Updates the signatures array with the signature of the transaction after signing.
   #
   # @return [String] The signature of the transaction
-  def sign(keypair)
-    binary_sig = keypair.sign(message.to_binary).tap do |sig|
-      self.signatures << sig
-    end
-    
-    Solace::Utils::Codecs.bytes_to_base58(binary_sig.bytes)
+  def sign(*keypairs)
+    keypairs
+      .map { |keypair| keypair.sign(message.to_binary) }
+      .tap { |signatures| self.signatures += signatures }
   end
 end

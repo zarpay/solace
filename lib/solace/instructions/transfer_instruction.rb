@@ -18,7 +18,12 @@ module Solace
       # @param from_index [Integer] Index of the sender in the transaction's accounts
       # @param program_index [Integer] Index of the program in the transaction's accounts (default: 2)
       # @return [Solace::Instruction]
-      def self.build(lamports:, to_index:, from_index:, program_index: 2)
+      def self.build(
+        lamports:, 
+        to_index:, 
+        from_index:, 
+        program_index: 2
+      )
         Solace::Instruction.new.tap do |ix|
           ix.program_index = program_index
           ix.accounts = [from_index, to_index]
@@ -35,7 +40,8 @@ module Solace
       # @param lamports [Integer] Amount to transfer (in lamports)
       # @return [Array] 4-byte instruction ID + 8-byte amount
       def self.data(lamports)
-        INSTRUCTION_ID + Solace::Utils::Codecs.encode_le_u64(lamports).bytes
+        INSTRUCTION_ID + 
+        Solace::Utils::Codecs.encode_le_u64(lamports).bytes
       end
     end
   end

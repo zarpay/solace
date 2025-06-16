@@ -49,7 +49,9 @@ module Solace
       # @param decimals [Integer] Number of decimals for the token
       # @return [Array] 1-byte instruction index + 8-byte amount + decimals
       def self.data(amount, decimals)
-        INSTRUCTION_INDEX + Solace::Utils::Codecs.encode_le_u64(amount).bytes + [decimals]
+        INSTRUCTION_INDEX + 
+        Solace::Utils::Codecs.encode_le_u64(amount).bytes + 
+        [decimals]
       end
     end
   end

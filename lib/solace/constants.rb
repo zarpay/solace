@@ -12,6 +12,12 @@ module Solace::Constants
   # @return [String]
   SYSTEM_PROGRAM_ID = "11111111111111111111111111111111"
 
+  # @!const SYSVAR_RENT_PROGRAM_ID
+  #   The public key of the Rent Program
+  #   This is the same across all Solana clusters
+  # @return [String]
+  SYSVAR_RENT_PROGRAM_ID = "SysvarRent111111111111111111111111111111111"
+
   # @!const COMPUTE_BUDGET_PROGRAM_ID
   #   The public key of the Compute Budget Program
   #   This is the same across all Solana clusters

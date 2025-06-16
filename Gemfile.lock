@@ -46,6 +46,8 @@ GEM
       concurrent-ruby (~> 1.0)
     logger (1.7.0)
     minitest (5.25.5)
+    minitest-hooks (1.5.2)
+      minitest (> 5.3)
     rbnacl (7.1.2)
       ffi (~> 1)
     securerandom (0.4.1)
@@ -69,6 +71,7 @@ PLATFORMS
 DEPENDENCIES
   factory_bot
   minitest
+  minitest-hooks
   solace!
 
 BUNDLED WITH
