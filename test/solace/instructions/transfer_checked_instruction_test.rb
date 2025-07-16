@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require 'test_helper'
 
 describe Solace::Instructions::TransferCheckedInstruction do
@@ -11,10 +12,10 @@ describe Solace::Instructions::TransferCheckedInstruction do
       Solace::Instructions::TransferCheckedInstruction.build(
         amount: amount,
         decimals: decimals,
-        to_index: 0,        
-        from_index: 1,      
+        to_index: 0,
+        from_index: 1,
         mint_index: 2,
-        authority_index: 4, 
+        authority_index: 4
       )
     end
 
@@ -45,7 +46,7 @@ describe Solace::Instructions::TransferCheckedInstruction do
           from_index: 1,
           mint_index: 2,
           authority_index: 4,
-          program_index: program_index,
+          program_index: program_index
         )
       end
 

@@ -24,7 +24,10 @@ FactoryBot.define do
     trait :as_create_account do
       program_index { 2 }
       accounts { [0, 1] }
-      data { [0, 0, 0, 0] + [1000000000].pack('Q<').bytes + [100].pack('Q<').bytes + [Solace::Constants::SYSTEM_PROGRAM_ID].pack('H*') }
+      data do
+        [0, 0, 0,
+         0] + [1_000_000_000].pack('Q<').bytes + [100].pack('Q<').bytes + [Solace::Constants::SYSTEM_PROGRAM_ID].pack('H*')
+      end
     end
   end
 end

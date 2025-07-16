@@ -11,7 +11,7 @@ module Solace
         INSTRUCTION_INDEX = [0, 0, 0, 0].freeze
 
         # Builds a SystemProgram::CreateAccount instruction
-        # 
+        #
         # @param space [Integer] Number of bytes to allocate for the new account
         # @param lamports [Integer] Amount of lamports to fund the new account
         # @param owner [String] The program_id of the owner of the new account
@@ -21,12 +21,12 @@ module Solace
         # @return [Solace::Instruction]
         def self.build(
           # Data
-          space:, 
-          lamports:, 
+          space:,
+          lamports:,
           owner: Solace::Constants::SYSTEM_PROGRAM_ID,
           # Accounts
-          from_index:, 
-          new_account_index:, 
+          from_index:,
+          new_account_index:,
           system_program_index: 2
         )
           # System program's create account instruction index is 0
@@ -38,22 +38,22 @@ module Solace
         end
 
         # Builds the data for a SystemProgram::CreateAccount instruction
-        # 
+        #
         # The BufferLayout is:
         #   - [Instruction Index (4 bytes)]
         #   - [Lamports (8 bytes)]
         #   - [Space (8 bytes)]
         #   - [Owner (32 bytes)]
-        # 
+        #
         # @param lamports [Integer] Amount of lamports to fund the new account
         # @param space [Integer] Number of bytes to allocate for the new account
         # @param owner [String] The program_id of the owner of the new account
         # @return [Array] 4-byte instruction index + 8-byte lamports + 8-byte space + 32-byte owner
         def self.data(lamports, space, owner)
           INSTRUCTION_INDEX +
-          Solace::Utils::Codecs.encode_le_u64(lamports).bytes +
-          Solace::Utils::Codecs.encode_le_u64(space).bytes +
-          Solace::Utils::Codecs.base58_to_bytes(owner)
+            Solace::Utils::Codecs.encode_le_u64(lamports).bytes +
+            Solace::Utils::Codecs.encode_le_u64(space).bytes +
+            Solace::Utils::Codecs.base58_to_bytes(owner)
         end
       end
     end

@@ -23,12 +23,12 @@ module Solace
       # @param program_index [Integer] Index of the SPL Token Program in the transaction's accounts (default: 3)
       # @return [Solace::Instruction]
       def self.build(
-        amount:, 
-        decimals:, 
+        amount:,
+        decimals:,
         to_index:,
         from_index:,
         mint_index:,
-        authority_index:, 
+        authority_index:,
         program_index: 3
       )
         Solace::Instruction.new.tap do |ix|
@@ -49,9 +49,9 @@ module Solace
       # @param decimals [Integer] Number of decimals for the token
       # @return [Array] 1-byte instruction index + 8-byte amount + decimals
       def self.data(amount, decimals)
-        INSTRUCTION_INDEX + 
-        Solace::Utils::Codecs.encode_le_u64(amount).bytes + 
-        [decimals]
+        INSTRUCTION_INDEX +
+          Solace::Utils::Codecs.encode_le_u64(amount).bytes +
+          [decimals]
       end
     end
   end

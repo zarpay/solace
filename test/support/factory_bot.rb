@@ -1,7 +1,11 @@
+# frozen_string_literal: true
+
 require 'factory_bot'
 
-class Minitest::Test
-  include FactoryBot::Syntax::Methods
+module Minitest
+  class Test
+    include FactoryBot::Syntax::Methods
+  end
 end
 
 FactoryBot.definition_file_paths = [File.expand_path('../factories', __dir__)]

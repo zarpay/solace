@@ -1,6 +1,6 @@
 # frozen_string_literal: true
-require_relative '../../test_helper'
 
+require_relative '../../test_helper'
 
 describe Solace::Serializers::MessageSerializer do
   describe '#call' do
@@ -13,7 +13,7 @@ describe Solace::Serializers::MessageSerializer do
 
       it 'returns a valid binary string' do
         assert @serialized_msg.valid_encoding?
-      end    
+      end
 
       it 'has the correct structure' do
         assert_operator @serialized_msg.bytesize, :>, 0
@@ -37,7 +37,7 @@ describe Solace::Serializers::MessageSerializer do
 
       it 'returns a valid binary string' do
         assert @serialized_msg.valid_encoding?
-      end    
+      end
 
       it 'has the correct structure' do
         assert_operator @serialized_msg.bytesize, :>, 0

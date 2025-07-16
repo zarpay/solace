@@ -10,7 +10,7 @@ FactoryBot.define do
       keypair = Solace::Keypair.generate
 
       conn = Solace::Connection.new
-      
+
       # Request airdrop and wait for confirmation
       conn.wait_for_confirmed_signature do
         conn.request_airdrop(keypair.address, amount)['result']

@@ -20,10 +20,10 @@ describe Solace::Message do
             program_index: 2,
             lamports: 1_000_000
           )
-        ],
+        ]
       )
-    end 
-  
+    end
+
     it 'returns serialized legacy message' do
       assert_kind_of String, @msg.serialize
     end
@@ -31,7 +31,6 @@ describe Solace::Message do
     it 'has the correct structure' do
       assert_operator @msg.serialize.bytesize, :>, 0
     end
-
 
     describe '#versioned?' do
       it 'returns false for legacy message' do

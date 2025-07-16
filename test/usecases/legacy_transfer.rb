@@ -29,25 +29,25 @@ blockhash = connection.get_latest_blockhash
 # =============================
 # 🔐 Key Setup
 # =============================
-bob_path = File.expand_path("../fixtures/bob.json", __dir__)
-anna_path = File.expand_path("../fixtures/anna.json", __dir__)
+bob_path = File.expand_path('../fixtures/bob.json', __dir__)
+anna_path = File.expand_path('../fixtures/anna.json', __dir__)
 
 # Bob (sender)
 bob_sk_bytes = JSON.load_file(bob_path)
-bob_keypair = RbNaCl::Signatures::Ed25519::SigningKey.new(bob_sk_bytes[0, 32].pack("C*"))
+bob_keypair = RbNaCl::Signatures::Ed25519::SigningKey.new(bob_sk_bytes[0, 32].pack('C*'))
 bob_pubkey = bob_keypair.verify_key.to_bytes
 
 # Anna (receiver)
 anna_sk_bytes = JSON.load_file(anna_path)
-anna_pubkey = anna_sk_bytes[32, 32].pack("C*")
+anna_pubkey = anna_sk_bytes[32, 32].pack('C*')
 
 # Program ID: System Program (111111...)
-# 
-# Many base58 decoders mis-handle the deserialization of the 
+#
+# Many base58 decoders mis-handle the deserialization of the
 # base58 string "11111111111111111111111111111111", outputting byte sequence
 # of 32 * 0x00 (32 bytes of 0s) instead of 31 * 0xFF + 0x01 (31 bytes of 0s and 1).
 # If receiving a program not found error, check the system program ID.
-system_program = Base58.base58_to_binary("11111111111111111111111111111111")
+system_program = Base58.base58_to_binary('11111111111111111111111111111111')
 
 # =============================
 # 🧩 Account Setup
@@ -77,14 +77,14 @@ instruction_data =
   Codecs.encode_le_u64(1_000_000).bytes # transferring 0.001 SOL
 
 instruction = [
-  [2].pack("C"),                                          # program ID index
+  [2].pack('C'),                                          # program ID index
   Codecs.encode_compact_u16(2),                           # num accounts
   [
     0,                                                    # bob account index
     1                                                     # anna account index
-  ].pack("C*"),                                           # account indices: bob, anna
+  ].pack('C*'),                                           # account indices: bob, anna
   Codecs.encode_compact_u16(instruction_data.length),     # instruction data length
-  instruction_data.pack("C*")                             # instruction data
+  instruction_data.pack('C*')                             # instruction data
 ].join
 
 # =============================
@@ -95,20 +95,20 @@ header = [
   1, # numRequiredSignatures
   0, # numReadonlySignedAccounts
   1  # numReadonlyUnsignedAccounts (system program)
-].pack("C*")
+].pack('C*')
 
 # =============================
 # 🧩 Get latest blockhash
 # =============================
-recent_blockhash = Codecs.base58_to_bytes(blockhash).pack("C*")
+recent_blockhash = Codecs.base58_to_bytes(blockhash).pack('C*')
 
 message = [
   header,
-  Codecs.encode_compact_u16(3),     # num account keys
-  accounts,                       # account keys
-  recent_blockhash,                   # recent blockhash
-  Codecs.encode_compact_u16(1),     # number of instructions
-  instruction,                        # instruction
+  Codecs.encode_compact_u16(3), # num account keys
+  accounts, # account keys
+  recent_blockhash, # recent blockhash
+  Codecs.encode_compact_u16(1), # number of instructions
+  instruction # instruction
 ].join
 
 # =============================
@@ -120,7 +120,7 @@ signature = bob_keypair.sign(message)
 # 🧾 Final Transaction
 # =============================
 transaction = [
-  Codecs.encode_compact_u16(1),  # number of signatures
+  Codecs.encode_compact_u16(1), # number of signatures
   signature,
   message
 ].join
@@ -134,5 +134,5 @@ puts "Transaction: #{base64_tx}"
 
 result = connection.send_transaction(base64_tx)
 
-puts "Response:"
+puts 'Response:'
 puts result

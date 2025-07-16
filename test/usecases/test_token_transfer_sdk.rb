@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # test_token_transfer_sdk.rb
 
 require 'test_helper'
@@ -9,11 +11,11 @@ require_relative '../../lib/solace/instructions/transfer_checked_instruction'
 # - Solace::SPL.create_associated_token_account
 # - Solace::SPL.mint_to
 
-bob = JSON.load_file(File.expand_path("../fixtures/bob.json", __dir__))
-anna = JSON.load_file(File.expand_path("../fixtures/anna.json", __dir__))
+bob = JSON.load_file(File.expand_path('../fixtures/bob.json', __dir__))
+anna = JSON.load_file(File.expand_path('../fixtures/anna.json', __dir__))
 
 sender = Solace::Keypair.from_secret_key(bob.pack('C*'))
-recipient = Solace::Keypair.from_secret_key(anna.pack('C*'))
+Solace::Keypair.from_secret_key(anna.pack('C*'))
 
 conn = Solace::Connection.new
 
@@ -25,10 +27,10 @@ recipient_token_account = 'D2t6jATJHqpAAH46XAmL7JHThGWqv56Lz8AiPwhT1Mez'
 # Optionally, print these for debugging
 puts "Mint: #{mint}"
 
-puts "Sender token balance before:"
+puts 'Sender token balance before:'
 puts `spl-token balance --owner ./test/fixtures/bob.json #{mint}`
 
-puts "Recipient token balance before:"
+puts 'Recipient token balance before:'
 puts `spl-token balance --owner ./test/fixtures/anna.json #{mint}`
 
 # 5. Build SPL token transfer instruction
@@ -55,7 +57,7 @@ message = Solace::Message.new(
   header: [
     1, # num_required_signatures
     0, # num_readonly_signed
-    2, # num_readonly_unsigned
+    2 # num_readonly_unsigned
   ],
   accounts: accounts,
   recent_blockhash: conn.get_latest_blockhash,
@@ -69,5 +71,3 @@ transaction.sign(sender)
 # 8. Send transaction
 result = conn.send_transaction(transaction.serialize)
 puts "Token transfer transaction sent: #{result}"
-
-

@@ -13,30 +13,30 @@ module Solace
       class << self
         # @!attribute STEPS
         #   An ordered list of methods to deserialize the record
-        # 
+        #
         # @return [Array] The steps to deserialize the record
         attr_accessor :steps
 
         # @!attribute RECORD_CLASS
         #   The class of the record being deserialized
-        # 
+        #
         # @return [Class] The class of the record
         attr_accessor :record_class
       end
 
       # @!attribute io
       #   The input to read bytes from.
-      # 
+      #
       # @return [IO or StringIO] The input to read bytes from.
-      # 
+      #
       # @!attribute record
       #   The record instance being deserialized.
-      # 
+      #
       # @return [Record] The deserialized record.
       attr_reader :io, :record
 
       # Initialize a new deserializer
-      # 
+      #
       # @param io [IO or StringIO] The input to read bytes from.
       # @return [BaseDeserializer] The new deserializer object
       def initialize(io)
@@ -45,11 +45,11 @@ module Solace
       end
 
       # Deserializes the record
-      # 
+      #
       # @return [Record] The deserialized record
       def call
         self.class.steps.each { send(_1) }
-        self.record
+        record
       end
     end
   end

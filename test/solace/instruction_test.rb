@@ -1,12 +1,12 @@
 # frozen_string_literal: true
-require_relative '../test_helper'
 
+require_relative '../test_helper'
 
 describe Solace::Instruction do
   let(:ix) { build(:instruction, :as_transfer) }
 
   describe '#serialize' do
-    it 'returns a serialized instruction' do      
+    it 'returns a serialized instruction' do
       assert_kind_of String, ix.serialize
     end
 

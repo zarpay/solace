@@ -31,5 +31,4 @@ require_relative 'solace/address_lookup_table'
 require_relative 'solace/instructions/transfer_instruction'
 require_relative 'solace/instructions/transfer_checked_instruction'
 require_relative 'solace/instructions/system_program/create_account_instruction'
-
-
+require_relative 'solace/instructions/spl_token/initialize_mint_instruction'

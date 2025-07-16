@@ -16,7 +16,7 @@ describe Solace::PublicKey do
     end
 
     it 'raises on invalid length' do
-      assert_raises(ArgumentError) { Solace::PublicKey.new([1,2,3]) }
+      assert_raises(ArgumentError) { Solace::PublicKey.new([1, 2, 3]) }
     end
   end
 

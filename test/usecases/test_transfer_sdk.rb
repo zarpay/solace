@@ -1,10 +1,12 @@
+# frozen_string_literal: true
+
 # test_transfer.rb
 
 require 'base58'
 require 'test_helper'
 
-bob = JSON.load_file(File.expand_path("../fixtures/bob.json", __dir__))
-anna = JSON.load_file(File.expand_path("../fixtures/anna.json", __dir__))
+bob = JSON.load_file(File.expand_path('../fixtures/bob.json', __dir__))
+anna = JSON.load_file(File.expand_path('../fixtures/anna.json', __dir__))
 
 puts bob
 

@@ -1,10 +1,11 @@
 # frozen_string_literal: true
+
 require 'test_helper'
 require 'base58'
 
 describe Solace::Keypair do
   let(:klass) { Solace::Keypair }
-   
+
   describe '.generate' do
     before do
       @keypair = klass.generate
@@ -32,7 +33,6 @@ describe Solace::Keypair do
     before do
       @keypair = klass.generate
     end
-
 
     it 'creates a keypair from a secret' do
       secret = @keypair.keypair_bytes.pack('C*')

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
 describe Solace::Utils::PDA do
@@ -17,9 +19,9 @@ describe Solace::Utils::PDA do
           # ZAR Escrow PDA devnet
           pda_address: '4wBgoYaMWu9yVAoLp3MqTbjtGLbLrK7HGkUhAfag64xv',
           bump: 255,
-          seeds: [
-            'escrow_deposit',
-            'FRgEYVCueFxFeqq3vP7WrHgvnz8YRoBDz2SshoLz8U7Q'
+          seeds: %w[
+            escrow_deposit
+            FRgEYVCueFxFeqq3vP7WrHgvnz8YRoBDz2SshoLz8U7Q
           ],
           program_id: '5Y3yGEVqbZJDn41YnVETMbTt8yq4HKreVkS6X3cxErvH'
         },
@@ -35,8 +37,8 @@ describe Solace::Utils::PDA do
           program_id: 'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL'
         }
       ]
-    end 
-    
+    end
+
     it 'finds the PDA address and bump' do
       pda_addresses.each do |pda_address|
         address, bump = Solace::Utils::PDA.find_program_address(

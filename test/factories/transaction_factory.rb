@@ -6,7 +6,7 @@ FactoryBot.define do
   factory :transaction, class: 'Solace::Transaction' do
     signatures { [] }
     message { nil }
-    
+
     trait :with_legacy_transfer do
       message { build(:legacy_message, :with_transfer_instruction) }
     end

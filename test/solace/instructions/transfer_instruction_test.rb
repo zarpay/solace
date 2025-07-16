@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require_relative '../../test_helper'
 
 describe Solace::Instructions::TransferInstruction do
@@ -9,7 +10,7 @@ describe Solace::Instructions::TransferInstruction do
         to_index: 1,
         from_index: 0,
         program_index: 2,
-        lamports: 100_000_000,
+        lamports: 100_000_000
       )
     end
 
@@ -35,7 +36,7 @@ describe Solace::Instructions::TransferInstruction do
           to_index: 0,
           from_index: 1,
           program_index: 3,
-          lamports: 100_000,
+          lamports: 100_000
         )
       end
 

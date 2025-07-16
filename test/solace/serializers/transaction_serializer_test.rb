@@ -1,6 +1,6 @@
 # frozen_string_literal: true
-require_relative '../../test_helper'
 
+require_relative '../../test_helper'
 
 describe Solace::Serializers::TransactionSerializer do
   describe '#call' do
@@ -17,7 +17,7 @@ describe Solace::Serializers::TransactionSerializer do
 
       it 'has the correct structure' do
         assert_operator @serialized_tx.bytesize, :>, 0
-      end 
+      end
     end
 
     describe 'versioned transaction' do
@@ -29,7 +29,7 @@ describe Solace::Serializers::TransactionSerializer do
 
       it 'returns a valid binary string' do
         assert @serialized_tx.valid_encoding?
-      end    
+      end
 
       it 'has the correct structure' do
         assert_operator @serialized_tx.bytesize, :>, 0

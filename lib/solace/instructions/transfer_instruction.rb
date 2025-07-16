@@ -19,9 +19,9 @@ module Solace
       # @param program_index [Integer] Index of the program in the transaction's accounts (default: 2)
       # @return [Solace::Instruction]
       def self.build(
-        lamports:, 
-        to_index:, 
-        from_index:, 
+        lamports:,
+        to_index:,
+        from_index:,
         program_index: 2
       )
         Solace::Instruction.new.tap do |ix|
@@ -32,16 +32,16 @@ module Solace
       end
 
       # Instruction data for a transfer instruction
-      # 
+      #
       # The BufferLayout is:
       #   - [Instruction ID (4 bytes)]
       #   - [Amount (8 bytes little-endian u64)]
-      # 
+      #
       # @param lamports [Integer] Amount to transfer (in lamports)
       # @return [Array] 4-byte instruction ID + 8-byte amount
       def self.data(lamports)
-        INSTRUCTION_ID + 
-        Solace::Utils::Codecs.encode_le_u64(lamports).bytes
+        INSTRUCTION_ID +
+          Solace::Utils::Codecs.encode_le_u64(lamports).bytes
       end
     end
   end
