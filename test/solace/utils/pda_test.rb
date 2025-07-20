@@ -12,7 +12,7 @@ describe Solace::Utils::PDA do
           # My Program PDA
           pda_address: 'CZ7UF6XZRvp9EQ7Wo3yxzxJZrJWpUuYrdFgGt7svMBXy',
           bump: 255,
-          seeds: ['MySeed'],
+          seeds: %w[MySeed],
           program_id: 'MyProgram1111111111111111111111111111111111'
         },
         {
@@ -29,12 +29,41 @@ describe Solace::Utils::PDA do
           # Associated Token Account PDA
           pda_address: 'GeQiE41zi17u5ENDEWetKSBkrgVneZYo6qCLbtyDSVbZ',
           bump: 255,
-          seeds: [
-            '7uKbd92U6LgAvXGvFgMAmgmgG1FmqwzBRsBN6KKcE2R4', # owner
-            'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA', # token
-            'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v' # mint
+          seeds: %w[
+            7uKbd92U6LgAvXGvFgMAmgmgG1FmqwzBRsBN6KKcE2R4
+            TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA
+            EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v
           ],
           program_id: 'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL'
+        },
+        {
+          # Off Curve with Bump address
+          pda_address: '3J9UVhG3K8To1CCwFjstWRDyFzhu2ytehrygKgNemwk9',
+          bump: 253,
+          seeds: %w[FindRandomBump_],
+          program_id: '5Y3yGEVqbZJDn41YnVETMbTt8yq4HKreVkS6X3cxErvH'
+        },
+        {
+          # Another Off Curve with Bump address
+          pda_address: 'CWSM8UbEALk2MAxbkg5tNVMXia9F2Lq2fXD6e5iHFn5n',
+          bump: 251,
+          seeds: [
+            'wallet_account',
+            102,
+            'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'
+          ],
+          program_id: '3LkGTjNsF2zWc2ddBPHYyEJJZKqbdHJDgfjztxnjwL5R'
+        },
+        {
+          # Another Off Curve with Bump address
+          pda_address: 'G3Zss7LJgpAFj1wpT9aT4FrkRd47Hso6tUEMJas4USpR',
+          bump: 245,
+          seeds: [
+            '$user_account_id',
+            [374],
+            'Rq7zLIpy0ETAgOMuWEUzD3Ic'
+          ],
+          program_id: '3LkGTjNsF2zWc2ddBPHYyEJJZKqbdHJDgfjztxnjwL5R'
         }
       ]
     end

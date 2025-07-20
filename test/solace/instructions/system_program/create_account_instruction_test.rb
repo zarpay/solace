@@ -102,7 +102,9 @@ describe Solace::Instructions::SystemProgram::CreateAccountInstruction do
 
       # 4. Send transaction
       conn.wait_for_confirmed_signature do
-        conn.send_transaction(transaction.serialize)['result']
+        response = conn.send_transaction(transaction.serialize)
+
+        response['result']
       end
 
       # 5. Get account info

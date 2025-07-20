@@ -14,7 +14,7 @@ pub extern "C" fn is_on_curve(pubkey_ptr: *const u8) -> i32 {
 
     match CompressedEdwardsY::from_slice(pubkey) {
         Ok(compressed) => match compressed.decompress() {
-            Some(point) if point.is_torsion_free() => 1, // on-curve and safe
+            Some(_) => 1, // on-curve and safe
             _ => 0, // decompress failed or invalid point
         },
         Err(_) => 0, // not even a valid 32-byte input
