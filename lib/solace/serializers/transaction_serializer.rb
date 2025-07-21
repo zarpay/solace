@@ -22,7 +22,7 @@ module Solace
       ]
 
       # Encodes the signatures of the transaction
-      # 
+      #
       # Iterates over the number sum number of signatures and either encodes or sets
       # the placeholder for each expected index in the signatures array.
       #
@@ -33,7 +33,7 @@ module Solace
       # @return [Array<Integer>] The bytes of the encoded signatures
       def encode_signatures
         Codecs.encode_compact_u16(record.signatures.size).bytes +
-        index_signatures(record.message.num_required_signatures)
+          index_signatures(record.message.num_required_signatures)
       end
 
       # Encodes the message from the transaction
@@ -46,7 +46,7 @@ module Solace
       private
 
       # Index the signatures
-      # 
+      #
       # Positions the signatures by expected index and set placeholders for any missing signatures.
       #
       # @param num_required_signatures [Integer] The number of required signatures

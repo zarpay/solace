@@ -31,14 +31,23 @@ conn.wait_for_confirmed_signature do
   conn.request_airdrop(bob.address, 10_000_000_000)['result']
 end
 
+balance = conn.get_balance(bob.address)
+puts "Bob's balance: #{balance} Lamports"
+
 # Request airdrops for both keypairs
 conn.wait_for_confirmed_signature do
   puts 'Funding Anna...'
   conn.request_airdrop(alice.address, 10_000_000_000)['result']
 end
 
+balance = conn.get_balance(alice.address)
+puts "Alice's balance: #{balance} Lamports"
+
 # Request airdrops for payer
 conn.wait_for_confirmed_signature do
   puts 'Funding Payer...'
   conn.request_airdrop(payer.address, 100_000_000_000)['result']
 end
+
+balance = conn.get_balance(payer.address)
+puts "Payer's balance: #{balance} Lamports"

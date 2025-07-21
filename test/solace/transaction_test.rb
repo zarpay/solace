@@ -145,7 +145,7 @@ describe Solace::Transaction do
       # Sign the transaction
       @tx.sign(bob)
       @tx.sign(alice)
-      
+
       # In a Solana transaction, the first signature (payer) in the signatures array gets
       # used as the signature of the transaction. If the returned result is equal to the
       # signature of the payer, the transaction was successfully sent.

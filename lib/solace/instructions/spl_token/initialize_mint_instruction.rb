@@ -53,10 +53,10 @@ module Solace
         def self.data(decimals, mint_authority, freeze_authority)
           INSTRUCTION_INDEX +
             [decimals] +
-            mint_authority +
+            Solace::Utils::Codecs.base58_to_bytes(mint_authority) +
             (
               if freeze_authority
-                [1] + freeze_authority
+                [1] + Solace::Utils::Codecs.base58_to_bytes(freeze_authority)
               else
                 [0]
               end

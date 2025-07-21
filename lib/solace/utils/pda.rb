@@ -94,8 +94,8 @@ module Solace
       # @return [Boolean] True if the string looks like a base58 address, false otherwise
       def self.looks_like_base58_address?(string)
         string.length >= 32 &&
-        string.length <= 44 &&
-        Solace::Utils::Codecs.valid_base58?(string)
+          string.length <= 44 &&
+          Solace::Utils::Codecs.valid_base58?(string)
       end
     end
   end
