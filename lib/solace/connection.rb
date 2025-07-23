@@ -93,13 +93,17 @@ module Solace
     # @param pubkey [String] The public key of the account
     # @return [Object] The account information
     def get_account_info(pubkey)
-      rpc_request(
+      response = rpc_request(
         'getAccountInfo',
         [
           pubkey,
           DEFAULT_OPTIONS
         ]
-      )['result']['value']
+      )['result']
+
+      return if response.nil?
+
+      response['value']
     end
 
     # Get the balance of a specific account

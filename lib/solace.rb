@@ -31,10 +31,11 @@ require_relative 'solace/address_lookup_table'
 require_relative 'solace/instructions/transfer_instruction'
 require_relative 'solace/instructions/transfer_checked_instruction'
 require_relative 'solace/instructions/system_program/create_account_instruction'
+require_relative 'solace/instructions/spl_token/mint_to_instruction'
 require_relative 'solace/instructions/spl_token/initialize_mint_instruction'
 require_relative 'solace/instructions/spl_token/initialize_account_instruction'
+require_relative 'solace/instructions/associated_token_account/create_associated_token_account_instruction'
 
 # 📦 Programs
 require_relative 'solace/programs/base'
 require_relative 'solace/programs/spl_token'
-

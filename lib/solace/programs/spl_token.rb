@@ -11,22 +11,24 @@ module Solace
         super(connection: connection, program_id: Solace::Constants::TOKEN_PROGRAM_ID)
       end
 
-      # Creates a new SPL Token mint and sends the transaction.
-      # For a more flexible approach that returns only the instructions,
-      # see #create_mint_instructions.
+      # Creates a new SPL Token mint.
+      #
+      # @param options [Hash] Options for calling the prepare_create_mint method.
+      # @return [String] The signature of the transaction.
+      def create_mint(**options)
+        tx = prepare_create_mint(**options)
+
+        @connection.send_transaction(tx.serialize)
+      end
+
+      # Prepares a new SPL Token mint and returns the signed transaction.
       #
       # @param payer [Solace::Keypair] The keypair that will pay for fees and rent.
       # @param decimals [Integer] The number of decimal places for the token.
       # @param mint_authority [String] The base58 public key for the mint authority.
       # @param freeze_authority [String] (Optional) The base58 public key for the freeze authority.
       # @param mint_keypair [Solace::Keypair] (Optional) The keypair for the new mint.
-      # @return [Hash] A hash containing the signature of the transaction and the address of the new mint.
-      def create_mint(**options)
-        tx = prepare_create_mint(**options)
-
-        @connection.send_transaction(tx.serialize)
-      end
-      
+      # @return [Solace::Transaction] The signed transaction.
       def prepare_create_mint(
         payer:,
         decimals:,
@@ -34,7 +36,7 @@ module Solace
         freeze_authority:,
         mint_keypair: Solace::Keypair.generate
       )
-        #1. Specify accounts
+        # 1. Specify accounts
         accounts = [
           payer.address,
           mint_keypair.address,
@@ -55,12 +57,12 @@ module Solace
           system_program_index: 4, # The System Program is the fourth account
           lamports: rent_lamports,
           space: 82,
-          owner: self.program_id
+          owner: program_id
         )
 
         # 3. Build initialize mint instruction
         freeze_authority_address = freeze_authority.respond_to?(:address) ? freeze_authority.address : nil
-        
+
         initialize_mint_ix = Solace::Instructions::SplToken::InitializeMintInstruction.build(
           mint_account_index: 1,
           rent_sysvar_index: 2,

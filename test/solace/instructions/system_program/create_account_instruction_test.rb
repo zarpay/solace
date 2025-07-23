@@ -61,7 +61,7 @@ describe Solace::Instructions::SystemProgram::CreateAccountInstruction do
   describe 'account creation' do
     let(:conn) { Solace::Connection.new }
 
-    let(:payer) { Fixtures.load_keypair('bob') }
+    let(:payer) { Fixtures.load_keypair('payer') }
     let(:new_account) { Solace::Keypair.generate }  
 
     let(:space) { 100 }

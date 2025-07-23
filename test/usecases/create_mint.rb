@@ -54,7 +54,7 @@ initialize_mint_ix = Solace::Instructions::SplToken::InitializeMintInstruction.b
   decimals: 6,
   mint_authority: payer.address # The payer will also be the mint authority
 )
-puts "✅ Built SPLToken::InitializeMint instruction"
+puts "\xE2\x9C\x85 Built SPLToken::InitializeMint instruction"
 puts "-------------------------------------\n"
 
 # 4. Build and Sign Transaction
@@ -99,6 +99,6 @@ conn.wait_for_confirmed_signature do
   signature = conn.send_transaction(tx.serialize)['result']
 end
 
-puts "✅ Transaction confirmed!"
+puts "\xE2\x9C\x85 Transaction confirmed!"
 puts "View on Solana Explorer: https://explorer.solana.com/tx/#{signature}?cluster=devnet"
 puts "---------------------------------\n"

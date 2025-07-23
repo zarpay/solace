@@ -9,8 +9,10 @@ project_root = File.expand_path('..', __dir__)
 # Autoload all Ruby files in utils and other directories as needed
 Dir[File.join(project_root, 'lib', '**', '*.rb')].sort.each { |file| require file }
 
+require 'minitest/mock'
 require 'minitest/autorun'
 require 'minitest/hooks/default'
+
 require 'solace'
 
 require_relative './support/fixtures'
@@ -21,33 +23,55 @@ require_relative './support/solana_test_validator'
 bob = Fixtures.load_keypair('bob')
 alice = Fixtures.load_keypair('anna')
 payer = Fixtures.load_keypair('payer')
+mint = Fixtures.load_keypair('mint')
+mint_authority = Fixtures.load_keypair('mint-authority')
 
 # Make sure connection is loaded
-conn = Solace::Connection.new
+connection = Solace::Connection.new
 
 # Request airdrops for both keypairs
-conn.wait_for_confirmed_signature do
+connection.wait_for_confirmed_signature do
   puts 'Funding Bob...'
-  conn.request_airdrop(bob.address, 10_000_000_000)['result']
+  connection.request_airdrop(bob.address, 10_000_000_000)['result']
 end
 
-balance = conn.get_balance(bob.address)
+balance = connection.get_balance(bob.address)
 puts "Bob's balance: #{balance} Lamports"
 
 # Request airdrops for both keypairs
-conn.wait_for_confirmed_signature do
+connection.wait_for_confirmed_signature do
   puts 'Funding Anna...'
-  conn.request_airdrop(alice.address, 10_000_000_000)['result']
+  connection.request_airdrop(alice.address, 10_000_000_000)['result']
 end
 
-balance = conn.get_balance(alice.address)
+balance = connection.get_balance(alice.address)
 puts "Alice's balance: #{balance} Lamports"
 
 # Request airdrops for payer
-conn.wait_for_confirmed_signature do
+connection.wait_for_confirmed_signature do
   puts 'Funding Payer...'
-  conn.request_airdrop(payer.address, 100_000_000_000)['result']
+  connection.request_airdrop(payer.address, 100_000_000_000)['result']
 end
 
-balance = conn.get_balance(payer.address)
+balance = connection.get_balance(payer.address)
 puts "Payer's balance: #{balance} Lamports"
+
+# If the mint account doesn't exist, create it
+if connection.get_account_info(mint.address).nil?
+  puts "Creating Mint..."
+  program = Solace::Programs::SplToken.new(connection:)
+
+  connection.wait_for_confirmed_signature do
+    program.create_mint(
+      payer:,
+      decimals: 6,
+      freeze_authority: nil,
+      mint_keypair: mint,
+      mint_authority:,
+    )['result']
+  end
+end
+
+puts "Mint address: #{mint.address}"
+
+

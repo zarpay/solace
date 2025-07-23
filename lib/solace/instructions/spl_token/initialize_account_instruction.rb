@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # lib/solace/instructions/spl_token/initialize_account_instruction.rb
 
 module Solace

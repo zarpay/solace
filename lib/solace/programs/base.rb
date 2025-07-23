@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # lib/solace/programs/base.rb
 
 module Solace
