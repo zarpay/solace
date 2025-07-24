@@ -105,4 +105,125 @@ describe Solace::Programs::SplToken do
       end
     end
   end
+
+  describe 'mint tokens' do
+    let(:amount) { 1_000_000 }
+
+    let(:mint) { Fixtures.load_keypair('mint') }
+    let(:owner) { Fixtures.load_keypair('bob') }
+    let(:payer) { Fixtures.load_keypair('payer') }
+    let(:mint_authority) { Fixtures.load_keypair('mint-authority') }
+
+    let(:destination) do
+      ata_address, _ = Solace::Programs::AssociatedTokenAccount.get_address(owner:, mint:)
+      ata_address
+    end
+    
+    describe '#prepare_mint_to' do
+      let(:tx) do
+        program.prepare_mint_to(
+          payer:,
+          mint:,
+          destination:,
+          amount:,
+          mint_authority:,
+        )
+      end
+
+      it 'should prepare a transaction' do
+        assert_kind_of Solace::Transaction, tx
+      end
+
+      describe 'when the mint authority is not the payer' do
+        it 'should sign the transaction with the payer and mint authority' do
+          assert_equal tx.signatures.length, 2
+          assert_equal tx.message.accounts[0], payer.address
+          assert_equal tx.message.accounts[1], mint_authority.address
+        end
+      end
+
+      describe 'when the mint authority is the payer' do
+        let(:mint_authority) { payer }
+
+        it 'should sign the transaction with the payer' do
+          assert_equal tx.signatures.length, 1
+          assert_equal tx.message.accounts[0], payer.address
+        end
+      end
+    end
+
+    describe '#mint_to' do
+      before(:all) do
+        connection.wait_for_confirmed_signature do
+          @result = program.mint_to(
+            payer:,
+            mint:,
+            destination:,
+            amount:,
+            mint_authority:,
+          )
+
+          @result['result']
+        end
+      end
+
+      it 'should return a valid signature' do
+        assert_equal @result['result'].length, 88
+      end
+    end
+  end
+
+  describe 'transfer tokens' do
+    let(:amount) { 1_000_000 }
+
+    let(:mint) { Fixtures.load_keypair('mint') }
+    let(:source_owner) { Fixtures.load_keypair('bob') }
+    let(:destination_owner) { Fixtures.load_keypair('anna') }
+    let(:payer) { Fixtures.load_keypair('payer') }
+    let(:mint_authority) { Fixtures.load_keypair('mint-authority') }
+
+    let(:source) do
+      ata_address, _ = Solace::Programs::AssociatedTokenAccount.get_address(owner: source_owner, mint:)
+      ata_address
+    end
+
+    let(:destination) do
+      ata_address, _ = Solace::Programs::AssociatedTokenAccount.get_address(owner: destination_owner, mint:)
+      ata_address
+    end
+
+    describe '#prepare_transfer' do
+      let(:tx) do
+        program.prepare_transfer(
+          amount:,
+          payer:,
+          source:,
+          destination:,
+          owner: source_owner,
+        )
+      end
+
+      it 'should prepare a transaction' do
+        assert_kind_of Solace::Transaction, tx
+      end
+    end
+
+    describe '#transfer' do
+      before(:all) do
+        @response = program.transfer(
+          amount:,
+          payer:,
+          source:,
+          destination:,
+          owner: source_owner,
+        )
+
+        connection.wait_for_confirmed_signature { @response['result'] }
+      end
+
+      it 'should return a valid signature' do
+        assert_equal @response['result'].length, 88
+      end
+    end
+  end
 end

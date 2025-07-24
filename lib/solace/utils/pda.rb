@@ -48,7 +48,6 @@ module Solace
       # @return [String] The program address
       # @raise [InvalidPDAError] If the program address is invalid
       def self.create_program_address(seeds, program_id)
-        # Convert all seeds to bytes
         seed_bytes = seeds.map { |seed| seed_to_bytes(seed) }.flatten
 
         program_id_bytes = Solace::Utils::Codecs.base58_to_bytes(program_id)
@@ -78,7 +77,6 @@ module Solace
           if seed.between?(0, 255)
             [seed]
           else
-            # Convert to little-endian bytes
             seed.digits(256)
           end
         when Array

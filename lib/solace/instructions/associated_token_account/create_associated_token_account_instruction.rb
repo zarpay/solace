@@ -49,7 +49,6 @@ module Solace
               system_program_index,
               token_program_index
             ]
-            # This instruction has no instruction data/index byte.
             ix.data = data
           end
         end

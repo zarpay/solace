@@ -36,7 +36,6 @@ module Solace
         freeze_authority:,
         mint_keypair: Solace::Keypair.generate
       )
-        # 1. Specify accounts
         accounts = [
           payer.address,
           mint_keypair.address,
@@ -45,22 +44,17 @@ module Solace
           Solace::Constants::SYSTEM_PROGRAM_ID
         ]
 
-        # 2. Build create account instruction
-
-        # Get rent exemption cost
         rent_lamports = @connection.get_minimum_lamports_for_rent_exemption(82)
 
-        # Create a new account for the mint.
         create_account_ix = Solace::Instructions::SystemProgram::CreateAccountInstruction.build(
-          from_index: 0, # The payer is the first account
-          new_account_index: 1, # The new mint is the second account
-          system_program_index: 4, # The System Program is the fourth account
+          from_index: 0,
+          new_account_index: 1,
+          system_program_index: 4,
           lamports: rent_lamports,
           space: 82,
           owner: program_id
         )
 
-        # 3. Build initialize mint instruction
         freeze_authority_address = freeze_authority.respond_to?(:address) ? freeze_authority.address : nil
 
         initialize_mint_ix = Solace::Instructions::SplToken::InitializeMintInstruction.build(
@@ -72,18 +66,119 @@ module Solace
           freeze_authority: freeze_authority_address
         )
 
-        # 4. Build and transaction
         message = Message.new(
-          header: [2, 0, 3], # payer and mint_keypair are signers
+          header: [2, 0, 3],
           accounts: accounts,
           recent_blockhash: @connection.get_latest_blockhash,
           instructions: [create_account_ix, initialize_mint_ix]
         )
 
         tx = Transaction.new(message: message)
-
-        # 5. Sign and return
         tx.sign(payer, mint_keypair)
+
+        tx
+      end
+
+      # Mint tokens to a token account
+      #
+      # @param options [Hash] Options for calling the prepare_mint_to method.
+      # @return [String] The signature of the transaction.
+      def mint_to(**options)
+        tx = prepare_mint_to(**options)
+
+        @connection.send_transaction(tx.serialize)
+      end
+
+      # Prepares a mint to instruction and returns the signed transaction.
+      #
+      # @param options [Hash] Options for calling the prepare_mint_to method.
+      # @return [Solace::Transaction] The signed transaction.
+      def prepare_mint_to(
+        payer:, 
+        mint:,
+        destination:,
+        amount:,
+        mint_authority:
+      )
+        accounts = [
+          payer.address,
+          mint_authority.address,
+          mint.address,
+          destination,
+          Solace::Constants::TOKEN_PROGRAM_ID,
+        ]
+
+        ix = Solace::Instructions::SplToken::MintToInstruction.build(
+          amount:,
+          mint_authority_index: 1,
+          mint_index: 2,
+          destination_index: 3,
+          program_index: 4
+        )
+
+        message = Solace::Message.new(
+          header: [2, 0, 1],
+          accounts:,
+          instructions: [ix],
+          recent_blockhash: connection.get_latest_blockhash,
+        )
+
+        tx = Solace::Transaction.new(message: message)
+        tx.sign(payer, mint_authority)
+
+        tx
+      end
+
+      # Transfers tokens from one account to another
+      #
+      # @param options [Hash] Options for calling the prepare_transfer method.
+      # @return [String] The signature of the transaction.
+      def transfer(**options)
+        tx = prepare_transfer(**options)
+
+        @connection.send_transaction(tx.serialize)
+      end
+
+      # Prepares a transfer instruction and returns the signed transaction.
+      #
+      # @param payer [Solace::Keypair] The keypair that will pay for fees and rent.
+      # @param source [String] The source token account address.
+      # @param destination [String] The destination token account address.
+      # @param amount [Integer] The number of tokens to transfer.
+      # @param owner [Solace::Keypair] The keypair of the owner of the source account.
+      # @return [Solace::Transaction] The signed transaction.
+      def prepare_transfer(
+        amount:, 
+        payer:, 
+        source:, 
+        destination:, 
+        owner:
+      )
+        accounts = [
+          payer.address,
+          owner.address,
+          source,
+          destination,
+          Solace::Constants::TOKEN_PROGRAM_ID
+        ]
+
+        ix = Solace::Instructions::SplToken::TransferInstruction.build(
+          amount:,
+          owner_index: 1,
+          source_index: 2,
+          destination_index: 3,
+          program_index: 4
+        )
+
+        message = Solace::Message.new(
+          header: [2, 0, 1],
+          accounts:,
+          instructions: [ix],
+          recent_blockhash: connection.get_latest_blockhash
+        )
+
+        tx = Solace::Transaction.new(message:)
+        tx.sign(payer, owner)
 
         tx
       end

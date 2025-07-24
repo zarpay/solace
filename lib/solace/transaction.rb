@@ -55,7 +55,6 @@ module Solace
       signatures: [],
       message: Solace::Message.new
     )
-      # Set defaults
       @signatures = signatures
       @message = message
     end

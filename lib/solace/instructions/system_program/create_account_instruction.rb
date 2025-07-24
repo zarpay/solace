@@ -20,16 +20,13 @@ module Solace
         # @param system_program_index [Integer] Index of the system program in the transaction's accounts (default: 2)
         # @return [Solace::Instruction]
         def self.build(
-          # Data
           space:,
           lamports:,
           owner: Solace::Constants::SYSTEM_PROGRAM_ID,
-          # Accounts
           from_index:,
           new_account_index:,
           system_program_index: 2
         )
-          # System program's create account instruction index is 0
           Solace::Instruction.new.tap do |ix|
             ix.program_index = system_program_index
             ix.accounts = [from_index, new_account_index]

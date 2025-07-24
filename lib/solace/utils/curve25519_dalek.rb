@@ -44,7 +44,7 @@ module Solace
         raise ArgumentError, 'Must be 32 bytes' unless bytes.bytesize == 32
 
         FFI::MemoryPointer.new(:uchar, 32) do |ptr|
-          ptr.put_bytes(0, bytes) # double check this packs to 32 bytes
+          ptr.put_bytes(0, bytes)
           result = Curve25519Dalek.is_on_curve(ptr)
 
           case result

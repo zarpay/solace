@@ -40,11 +40,9 @@ module Solace
       def next_extract_version
         next_byte = io.read(1).unpack1('C')
 
-        # Check version prefix
         if next_byte & 0x80 == 0x80
           record.version = next_byte & 0x7F
         else
-          # Rewind one byte to restore position
           io.seek(-1, IO::SEEK_CUR)
           record.version = nil
         end

@@ -57,21 +57,18 @@ module Solace
         mint:,
         payer:
       )
-        # 1. Derive the Associated Token Account (ATA) address
         ata_address, _ = get_address(owner:, mint:)
 
-        # 2. Define the master list of accounts for the transaction in the correct order.
         accounts = [
-          payer.address,          # 0: Funder (Payer), writable, signer
-          ata_address,            # 1: New ATA, writable
-          owner.address,          # 2: Owner, readonly
-          mint.address,           # 3: Mint, readonly
-          Solace::Constants::SYSTEM_PROGRAM_ID,                      # 4: System Program, readonly
-          Solace::Constants::TOKEN_PROGRAM_ID,                   # 5: SPL Token Program, readonly
-          Solace::Constants::ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID # 6: The program we are calling
+          payer.address,
+          ata_address,
+          owner.address,
+          mint.address,
+          Solace::Constants::SYSTEM_PROGRAM_ID,
+          Solace::Constants::TOKEN_PROGRAM_ID,
+          Solace::Constants::ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID
         ]
 
-        # 3. Build the instruction, providing the index of each required account.
         instruction = Solace::Instructions::AssociatedTokenAccount::CreateAssociatedTokenAccountInstruction.build(
           funder_index: 0,
           associated_token_account_index: 1,
@@ -82,15 +79,13 @@ module Solace
           program_index: 6
         )
 
-        # 4. Build the message
         message = Solace::Message.new(
-          header: [1, 0, 4], # 1 signer (payer), 4 readonly accounts
+          header: [1, 0, 4],
           accounts: accounts,
           recent_blockhash: @connection.get_latest_blockhash,
           instructions: [instruction]
         )
 
-        # 5. Build and sign the transaction
         tx = Solace::Transaction.new(message: message)
         tx.sign(payer)
 
