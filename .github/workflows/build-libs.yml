@@ -3,6 +3,13 @@ name: Build Rust Shared Libraries
 on:
   push:
     branches: [main]
+    paths:
+      - 'ext/**'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'ext/**'
+  workflow_dispatch:  # Allow manual runs
 
 jobs:
   build-linux:
