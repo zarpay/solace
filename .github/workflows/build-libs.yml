@@ -45,7 +45,7 @@ jobs:
       - name: Build Windows shared lib
         run: |
           cargo build --manifest-path=ext/curve25519_dalek/Cargo.toml --release --target=x86_64-pc-windows-msvc
-          mkdir -p lib/solace/utils/windows
+          mkdir lib\solace\utils\windows
           copy ext\curve25519_dalek\target\x86_64-pc-windows-msvc\release\curve25519_dalek.dll lib\solace\utils\windows\
 
       - uses: actions/upload-artifact@v4
