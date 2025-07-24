@@ -1,0 +1,78 @@
+name: Build Rust Shared Libraries
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build-linux:
+    name: Build on Linux
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          target: x86_64-unknown-linux-gnu
+
+      - name: Build Linux shared lib
+        run: |
+          cd ext/curve25519_dalek
+          cargo build --release --target=x86_64-unknown-linux-gnu
+          cp target/x86_64-unknown-linux-gnu/release/libcurve25519_dalek.so ../../../lib/solace/utils/linux/
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: libcurve25519_dalek-linux
+          path: lib/solace/utils/linux/libcurve25519_dalek.so
+
+  build-windows:
+    name: Build on Windows
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          target: x86_64-pc-windows-msvc
+
+      - name: Build Windows shared lib
+        run: |
+          cd ext/curve25519_dalek
+          cargo build --release --target=x86_64-pc-windows-msvc
+          copy target\x86_64-pc-windows-msvc\release\curve25519_dalek.dll ..\..\..\lib\solace\utils\windows\
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: libcurve25519_dalek-windows
+          path: lib/solace/utils/windows/curve25519_dalek.dll
+
+  build-macos:
+    name: Build on macOS
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          target: x86_64-apple-darwin
+
+      - name: Build macOS shared lib
+        run: |
+          cd ext/curve25519_dalek
+          cargo build --release --target=x86_64-apple-darwin
+          cp target/x86_64-apple-darwin/release/libcurve25519_dalek.dylib ../../../lib/solace/utils/macos/
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: libcurve25519_dalek-macos
+          path: lib/solace/utils/macos/libcurve25519_dalek.dylib
