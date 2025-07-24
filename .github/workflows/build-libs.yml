@@ -96,8 +96,15 @@ jobs:
 
           git add lib/solace/utils/
 
-          # Set remote to use GH_PAT instead of default GITHUB_TOKEN
-          git remote set-url origin https://x-access-token:${GH_PAT}@github.com/${{ github.repository }}
-          git push origin HEAD:${GITHUB_REF##*/}
+          # Only commit if there are changes
+          if ! git diff --cached --quiet; then
+            git commit -m "CI: Add built native binaries"
+            
+            # Set remote to use GH_PAT instead of default GITHUB_TOKEN
+            git remote set-url origin https://x-access-token:${GH_PAT}@github.com/${{ github.repository }}
+            git push origin HEAD:${GITHUB_REF##*/}
+          else
+            echo "No changes to commit"
+          fi
         env:
           GH_PAT: ${{ secrets.GH_PAT }}
