@@ -28,14 +28,12 @@ require_relative 'solace/instruction'
 require_relative 'solace/address_lookup_table'
 
 # 📦 Instructions (Builders)
-require_relative 'solace/instructions/transfer_instruction'
-require_relative 'solace/instructions/transfer_checked_instruction'
-require_relative 'solace/instructions/system_program/create_account_instruction'
-require_relative 'solace/instructions/spl_token/mint_to_instruction'
-require_relative 'solace/instructions/spl_token/initialize_mint_instruction'
-require_relative 'solace/instructions/spl_token/initialize_account_instruction'
-require_relative 'solace/instructions/associated_token_account/create_associated_token_account_instruction'
+# 
+# Glob require all instructions
+Dir[File.join(__dir__, 'solace/instructions', '**', '*.rb')].sort.each { |file| require file }
 
 # 📦 Programs
 require_relative 'solace/programs/base'
 require_relative 'solace/programs/spl_token'
+require_relative 'solace/programs/associated_token_account'
+
