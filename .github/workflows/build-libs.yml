@@ -21,7 +21,7 @@ jobs:
       - name: Build Linux shared lib
         run: |
           cargo build --manifest-path=ext/curve25519_dalek/Cargo.toml --release --target=x86_64-unknown-linux-gnu
-          cp target/x86_64-unknown-linux-gnu/release/libcurve25519_dalek.so lib/solace/utils/linux/
+          cp ext/curve25519_dalek/target/x86_64-unknown-linux-gnu/release/libcurve25519_dalek.so lib/solace/utils/linux/
 
       - uses: actions/upload-artifact@v4
         with:
@@ -44,7 +44,7 @@ jobs:
       - name: Build Windows shared lib
         run: |
           cargo build --manifest-path=ext/curve25519_dalek/Cargo.toml --release --target=x86_64-pc-windows-msvc
-          copy target\x86_64-pc-windows-msvc\release\curve25519_dalek.dll lib\solace\utils\windows\
+          copy ext\curve25519_dalek\target\x86_64-pc-windows-msvc\release\curve25519_dalek.dll lib\solace\utils\windows\
 
       - uses: actions/upload-artifact@v4
         with:
@@ -67,7 +67,7 @@ jobs:
       - name: Build macOS shared lib
         run: |
           cargo build --manifest-path=ext/curve25519_dalek/Cargo.toml --release --target=x86_64-apple-darwin
-          cp target/x86_64-apple-darwin/release/libcurve25519_dalek.dylib lib/solace/utils/macos/
+          cp ext/curve25519_dalek/target/x86_64-apple-darwin/release/libcurve25519_dalek.dylib lib/solace/utils/macos/
 
       - uses: actions/upload-artifact@v4
         with:
