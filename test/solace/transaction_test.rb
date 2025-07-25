@@ -66,14 +66,14 @@ describe Solace::Transaction do
 
       @msg.instructions = [
         # Send money from account 1 to account 2
-        Solace::Instructions::TransferInstruction.build(
+        Solace::Instructions::SystemProgram::TransferInstruction.build(
           to_index: 2,
           from_index: 1,
           program_index: 4,
           lamports: 10_000_000 # 0.01 SOL
         ),
         # Send money from account 2 to account 3
-        Solace::Instructions::TransferInstruction.build(
+        Solace::Instructions::SystemProgram::TransferInstruction.build(
           to_index: 3,
           from_index: 2,
           program_index: 4,

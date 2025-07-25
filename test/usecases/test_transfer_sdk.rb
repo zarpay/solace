@@ -25,7 +25,7 @@ puts "Sender balance: #{sender_balance} lamports"
 puts "Recipient balance: #{recipient_balance} lamports"
 
 # 4. Build instruction
-instruction = Solace::Instructions::TransferInstruction.build(
+instruction = Solace::Instructions::SystemProgram::TransferInstruction.build(
   to_index: 1,
   from_index: 0,
   program_index: 2,

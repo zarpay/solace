@@ -5,7 +5,7 @@ require_relative '../../test_helper'
 describe Solace::Serializers::InstructionDeserializer do
   # Build a transfer instruction
   let(:ix) do
-    Solace::Instructions::TransferInstruction.build(
+    Solace::Instructions::SystemProgram::TransferInstruction.build(
       to_index: 1,
       from_index: 0,
       program_index: 2,
@@ -31,7 +31,7 @@ describe Solace::Serializers::InstructionDeserializer do
     end
 
     it 'has the correct data' do
-      assert_equal @deserialized_ix.data, Solace::Instructions::TransferInstruction.data(100_000_000)
+      assert_equal @deserialized_ix.data, Solace::Instructions::SystemProgram::TransferInstruction.data(100_000_000)
     end
   end
 end

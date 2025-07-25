@@ -120,6 +120,20 @@ module Solace
       )['result']['value']
     end
 
+    # Get the balance of a token account
+    #
+    # @param token_account [String] The public key of the token account
+    # @return [Hash] Token account balance information with amount and decimals
+    def get_token_account_balance(token_account)
+      rpc_request(
+        'getTokenAccountBalance',
+        [
+          token_account,
+          DEFAULT_OPTIONS
+        ]
+      )['result']['value']
+    end
+
     # Get the transaction by signature
     #
     # @param signature [String] The signature of the transaction

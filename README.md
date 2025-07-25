@@ -174,7 +174,7 @@ Instruction builders are service objects that create specific instruction types.
 
 ```ruby
 # Build a SOL transfer instruction
-transfer_ix = Solace::Instructions::TransferInstruction.build(
+transfer_ix = Solace::Instructions::SystemProgram::TransferInstruction.build(
   lamports: 1_000_000,  # 0.001 SOL
   from_index: 0,        # Sender account index
   to_index: 1,          # Recipient account index
@@ -433,7 +433,7 @@ recipient = Solace::Keypair.generate
 connection.request_airdrop(payer.address, 1_000_000_000)
 
 # Build transfer instruction
-transfer_ix = Solace::Instructions::TransferInstruction.build(
+transfer_ix = Solace::Instructions::SystemProgram::TransferInstruction.build(
   lamports: 100_000_000,  # 0.1 SOL
   from_index: 0,
   to_index: 1,

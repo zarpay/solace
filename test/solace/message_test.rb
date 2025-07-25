@@ -14,7 +14,7 @@ describe Solace::Message do
         ],
         recent_blockhash: '9s5BVd3xd3MinQcJbCCTBwXn6WRukcdEwgC2ZjktjKqu',
         instructions: [
-          Solace::Instructions::TransferInstruction.build(
+          Solace::Instructions::SystemProgram::TransferInstruction.build(
             to_index: 1,
             from_index: 0,
             program_index: 2,

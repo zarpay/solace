@@ -5,7 +5,7 @@ require_relative '../../test_helper'
 describe Solace::Serializers::InstructionSerializer do
   # Build a transfer instruction
   let(:ix) do
-    Solace::Instructions::TransferInstruction.build(
+    Solace::Instructions::SystemProgram::TransferInstruction.build(
       to_index: 1,
       from_index: 0,
       program_index: 2,

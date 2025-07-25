@@ -45,7 +45,7 @@ FactoryBot.define do
     # Transfer instruction
     instructions do
       [
-        Solace::Instructions::TransferInstruction.build(
+        Solace::Instructions::SystemProgram::TransferInstruction.build(
           to_index: 1,
           from_index: 0,
           program_index: 2,
