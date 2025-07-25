@@ -2,6 +2,7 @@ require 'test_helper'
 
 # 1. Setup
 puts '--- Step 1: Setup ---'
+
 # The payer is the account that will pay for the transaction fees and rent.
 # It's loaded from fixtures in test_helper.rb
 payer = Fixtures.load_keypair('payer')
@@ -23,10 +24,12 @@ source_owner = Fixtures.load_keypair('bob')
 destination_owner = Fixtures.load_keypair('anna')
 fee_collector = Fixtures.load_keypair('fee-collector')
 
+# Get or create associated token accounts
 source_ata, _ = ata_program.get_or_create_address(owner: source_owner, mint:, payer:)
 destination_ata, _ = ata_program.get_or_create_address(owner: destination_owner, mint:, payer:)
 fee_collector_ata, _ = ata_program.get_or_create_address(owner: fee_collector, mint:, payer:)
 
+# Get token account balances
 source_ata_start_balance = conn.get_token_account_balance(source_ata)
 destination_ata_start_balance = conn.get_token_account_balance(destination_ata)
 fee_collector_ata_start_balance = conn.get_token_account_balance(fee_collector_ata)

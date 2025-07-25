@@ -27,12 +27,14 @@ bob = Fixtures.load_keypair('bob')
 alice = Fixtures.load_keypair('anna')
 payer = Fixtures.load_keypair('payer')
 mint = Fixtures.load_keypair('mint')
+fee_collector = Fixtures.load_keypair('fee-collector')
 mint_authority = Fixtures.load_keypair('mint-authority')
 
 # Make sure connection is loaded
 connection = Solace::Connection.new
 
-# Request airdrops for both keypairs
+ata_program = Solace::Programs::AssociatedTokenAccount.new(connection:)
+
 connection.wait_for_confirmed_signature do
   puts 'Funding Bob...'
   connection.request_airdrop(bob.address, 10_000_000_000)['result']
@@ -41,7 +43,6 @@ end
 balance = connection.get_balance(bob.address)
 puts "Bob's balance: #{balance} Lamports"
 
-# Request airdrops for both keypairs
 connection.wait_for_confirmed_signature do
   puts 'Funding Anna...'
   connection.request_airdrop(alice.address, 10_000_000_000)['result']
@@ -50,7 +51,6 @@ end
 balance = connection.get_balance(alice.address)
 puts "Alice's balance: #{balance} Lamports"
 
-# Request airdrops for payer
 connection.wait_for_confirmed_signature do
   puts 'Funding Payer...'
   connection.request_airdrop(payer.address, 100_000_000_000)['result']
@@ -58,6 +58,19 @@ end
 
 balance = connection.get_balance(payer.address)
 puts "Payer's balance: #{balance} Lamports"
+
+# Create ata for all accounts
+payer_ata, _ = ata_program.get_or_create_address(owner: payer, mint:, payer:)
+puts "Payer's ATA: #{payer_ata}"
+
+bob_ata, _ = ata_program.get_or_create_address(owner: bob, mint:, payer:)
+puts "Bob's ATA: #{bob_ata}"
+
+alice_ata, _ = ata_program.get_or_create_address(owner: alice, mint:, payer:)
+puts "Alice's ATA: #{alice_ata}"
+
+fee_collector_ata, _ = ata_program.get_or_create_address(owner: fee_collector, mint:, payer:)
+puts "Fee Collector's ATA: #{fee_collector_ata}"
 
 # If the mint account doesn't exist, create it
 if connection.get_account_info(mint.address).nil?

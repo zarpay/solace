@@ -56,8 +56,7 @@ module Solace
         
         return ata_address if account_info
 
-        response = create_associated_token_account(payer:, owner:, mint:)
-        @connection.wait_for_confirmed_signature { response }
+        create_associated_token_account(payer:, owner:, mint:)
         
         ata_address
       end
