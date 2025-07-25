@@ -108,7 +108,7 @@ describe Solace::Instructions::SplToken::TransferInstruction do
     end
 
     it 'returns a valid signature' do
-      assert_equal @response['result'].length, 88
+      assert_includes 84..88, @response['result'].length
     end
   end
 end

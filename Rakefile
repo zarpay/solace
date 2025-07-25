@@ -5,6 +5,10 @@ require 'rake'
 require 'rake/testtask'
 require 'fileutils'
 
+# Constants
+GEM_NAME = 'solace'
+BUILDS_DIR = 'builds'
+
 # Run all Minitest tests
 Rake::TestTask.new(:test) do |t|
   t.libs << 'test'
@@ -18,6 +22,34 @@ Rake::TestTask.new(:usecases) do |t|
   # Get the named usecase from the CLI argument
   t.pattern = "test/usecases/#{ARGV[1] || '*'}.rb"
   t.verbose = false
+end
+
+# Build gem
+task :build do
+  FileUtils.mkdir_p(BUILDS_DIR)
+  
+  # Build gem in current directory
+  sh "gem build #{GEM_NAME}.gemspec"
+  
+  # Move to builds directory
+  gem_file = Dir["#{GEM_NAME}-*.gem"].first
+  if gem_file
+    FileUtils.mv(gem_file, BUILDS_DIR)
+    puts "Moved #{gem_file} to #{BUILDS_DIR}/"
+  end
+end
+
+# Install gem locally
+task :install => :build do
+  gem_file = Dir["#{BUILDS_DIR}/#{GEM_NAME}-*.gem"].max_by { |f| File.mtime(f) }
+  sh "gem install #{gem_file}"
+end
+
+# Publish gem to RubyGems.org
+task :publish => :build do
+  gem_file = Dir["#{BUILDS_DIR}/#{GEM_NAME}-*.gem"].max_by { |f| File.mtime(f) }
+  puts "Publishing #{gem_file} to RubyGems.org..."
+  sh "gem push #{gem_file}"
 end
 
 # Compile the Rust library

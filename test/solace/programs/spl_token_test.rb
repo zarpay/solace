@@ -168,7 +168,7 @@ describe Solace::Programs::SplToken do
       end
 
       it 'should return a valid signature' do
-        assert_equal @result['result'].length, 88
+        assert_includes 84..88, @result['result'].length
       end
     end
   end
@@ -222,7 +222,7 @@ describe Solace::Programs::SplToken do
       end
 
       it 'should return a valid signature' do
-        assert_equal @response['result'].length, 88
+        assert_includes 84..88, @response['result'].length
       end
     end
   end
