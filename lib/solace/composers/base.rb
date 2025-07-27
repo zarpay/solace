@@ -1,7 +1,17 @@
 module Solace
   module Composers
     class Base
-      attr_reader :params, :account_context
+      # @!attribute params
+      #   The params for the composer
+      # 
+      # @return [Hash] The parameters passed to the composer
+      attr_reader :params
+      
+      # @!attribute account_context
+      #   The account_context for the composer
+      #
+      # @return [Utils::AccountContext] The AccountContext instance for the composer
+      attr_reader :account_context
       
       # Initialize the composer
       #
@@ -9,23 +19,21 @@ module Solace
       def initialize(**params)
         @params = params
         @account_context = Utils::AccountContext.new
+        setup_accounts
       end
-      
-      # Define accounts required for instruction
+
+      # Setup accounts required for this instruction
       #
-      # @param **params [Hash] Parameters to pass to the accounts method
-      # @return [Hash] Account context information
-      def accounts(**params)
-        raise NotImplementedError, "Subclasses must implement accounts method"
+      # @return [void]
+      def setup_accounts
+        raise NotImplementedError, "Subclasses must implement setup_accounts method"
       end
       
       # Build instruction with resolved account indices
       #
-      # @param indices [Hash] Account name to index mapping
-      # @param **params [Hash] Parameters to pass to the instruction method
-      # @return [Solace::Instruction]
-      def instruction(indices:, **params)
-        raise NotImplementedError, "Subclasses must implement instruction method"
+      # @return [void]
+      def build_instruction(indices)
+        raise NotImplementedError, "Subclasses must implement build_instruction method"
       end
     end
   end

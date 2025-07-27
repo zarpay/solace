@@ -8,9 +8,7 @@ require_relative 'solace/constants'
 require_relative 'solace/connection'
 require_relative 'solace/utils/codecs'
 require_relative 'solace/utils/pda'
-require_relative 'solace/utils/call_stack_utils'
 require_relative 'solace/utils/curve25519_dalek'
-require_relative 'solace/concerns/composable'
 require_relative 'solace/concerns/binary_serializable'
 
 # ✨ Serializers

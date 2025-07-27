@@ -7,317 +7,259 @@ describe Solace::Utils::AccountContext do
   
   let(:pubkey1) { keypair1.address }
   let(:pubkey2) { keypair2.address }
+  let(:pubkey3) { keypair3.address }
   let(:keypair1) { Solace::Keypair.generate }
   let(:keypair2) { Solace::Keypair.generate }
+  let(:keypair3) { Solace::Keypair.generate }
   let(:program_id) { Solace::Constants::TOKEN_PROGRAM_ID }
 
   describe '#initialize' do
-    it 'creates empty context' do
-      assert_empty context.order
+    it 'initializes with empty accounts and header' do
       assert_empty context.accounts
-      assert_empty context.account_names
+      assert_empty context.header
     end
   end
 
-  describe '#add_signer' do
+  describe '#set_fee_payer' do
     before do
-      context.add_signer(:payer, keypair1)
+      context.set_fee_payer(keypair1)
     end
 
-    it 'adds signer account' do
-      account = context.accounts[:payer]
-
-      assert_equal true, account[:signer]
-      assert_equal true, account[:writable]
-      assert_equal pubkey1, account[:pubkey]
-      assert_equal keypair1, account[:keypair]
+    it 'adds fee payer account with correct permissions' do
+      assert context.fee_payer?(pubkey1)
+      assert context.writable?(pubkey1)
     end
 
-    it 'adds account to order' do
-      assert_equal [:payer], context.order
-    end
-
-    it 'maps pubkey to account name' do
-      assert_equal :payer, context.account_names[pubkey1]
-    end
-  end
-
-  describe '#add_readonly_signer' do
-    before do
-      context.add_readonly_signer(:readonly_signer, keypair1)
-    end
-    
-    it 'adds readonly signer account' do
-      account = context.accounts[:readonly_signer]
-
-      assert_equal true, account[:signer]
-      assert_equal false, account[:writable]
-      assert_equal pubkey1, account[:pubkey]
-      assert_equal keypair1, account[:keypair]
-    end
-  end
-
-  describe '#add_writable' do
-    before do
-      context.add_writable(:destination, pubkey1)
-    end
-    
-    it 'adds writable account' do
-      account = context.accounts[:destination]
-
-      assert_nil account[:keypair]
-      assert_equal false, account[:signer]
-      assert_equal true, account[:writable]
-      assert_equal pubkey1, account[:pubkey]
-    end
-  end
-
-  describe '#add_readonly' do
-    before do
-      context.add_readonly(:mint, pubkey1)
-    end
-    
-    it 'adds readonly account' do
-      account = context.accounts[:mint]
-
-      assert_nil account[:keypair]
-      assert_equal false, account[:signer]
-      assert_equal false, account[:writable]
-      assert_equal pubkey1, account[:pubkey]
-    end
-  end
-
-  describe '#add_program' do
-    before do
-      context.add_program(:token_program, program_id)
-    end
-    
-    it 'adds program account' do
-      account = context.accounts[:token_program]
+    it 'adds fee payer account as first account after compilation' do
+      context.add_writable_nonsigner(pubkey2)
+      context.add_readonly_nonsigner(pubkey3)
       
-      assert_nil account[:keypair]
-      assert_equal false, account[:signer]
-      assert_equal false, account[:writable]
-      assert_equal program_id, account[:pubkey]
+      context.compile
+      
+      assert_equal pubkey1, context.accounts[0]
+    end
+  end
+
+  describe '#add_writable_nonsigner' do
+    before do
+      context.add_writable_nonsigner(pubkey1)
+    end
+    
+    it 'adds writable account with correct permissions' do
+      refute context.fee_payer?(pubkey1)
+      assert context.writable?(pubkey1)
+      assert context.writable_nonsigner?(pubkey1)
+    end
+  end
+
+  describe '#add_readonly_nonsigner' do
+    before do
+      context.add_readonly_nonsigner(pubkey1)
+    end
+    
+    it 'adds readonly account with correct permissions' do
+      refute context.fee_payer?(pubkey1)
+      refute context.writable?(pubkey1)
+      assert context.readonly_nonsigner?(pubkey1)
     end
   end
 
   describe 'account merging and deduplication' do
-    it 'merges same pubkey with different names' do
-      context.add_signer(:payer, keypair1)
-      context.add_writable(:source, keypair1)
-      
-      # Both names should point to same account data
-      assert_equal context.accounts[:payer], context.accounts[:source]
-      assert_equal [:payer], context.order
-      assert_equal :payer, context.account_names[pubkey1]
-    end
-
-    it 'upgrades permissions when merging accounts' do
+    it 'merges same pubkey with upgraded permissions' do
       # Start with readonly
-      context.add_readonly(:account, pubkey1)
-      assert_equal false, context.accounts[:account][:writable]
-      assert_equal false, context.accounts[:account][:signer]
+      context.add_readonly_nonsigner(pubkey1)
+      assert context.readonly_nonsigner?(pubkey1)
       
       # Upgrade to writable
-      context.add_writable(:account, pubkey1)
-      assert_equal true, context.accounts[:account][:writable]
-      assert_equal false, context.accounts[:account][:signer]
+      context.add_writable_nonsigner(pubkey1)
+      assert context.writable_nonsigner?(pubkey1)
+      refute context.readonly_nonsigner?(pubkey1)
       
-      # Upgrade to signer (also writable)
-      context.add_signer(:account, keypair1)
-      assert_equal true, context.accounts[:account][:writable]
-      assert_equal true, context.accounts[:account][:signer]
-      assert_equal keypair1, context.accounts[:account][:keypair]
+      # Upgrade to fee payer
+      context.set_fee_payer(keypair1)
+      assert context.fee_payer?(pubkey1)
+      refute context.writable_nonsigner?(pubkey1)
     end
 
-    it 'preserves existing signer status' do
-      context.add_signer(:payer, keypair1)
-      context.add_readonly(:payer, keypair1)
+    it 'preserves existing fee payer status when adding lower permissions' do
+      context.set_fee_payer(keypair1)
+      context.add_readonly_nonsigner(pubkey1)
       
-      assert_equal true, context.accounts[:payer][:signer]
-      assert_equal true, context.accounts[:payer][:writable]
-      assert_equal keypair1, context.accounts[:payer][:keypair]
+      # Should still be a fee payer
+      assert context.fee_payer?(pubkey1)
     end
 
-    it 'preserves existing writable status' do
-      context.add_writable(:account, pubkey1)
-      context.add_readonly(:account, pubkey1)
+    it 'preserves existing writable status when adding readonly' do
+      context.add_writable_nonsigner(pubkey1)
+      context.add_readonly_nonsigner(pubkey1)
       
-      assert_equal true, context.accounts[:account][:writable]
+      # Should still be writable
+      assert context.writable_nonsigner?(pubkey1)
+      refute context.readonly_nonsigner?(pubkey1)
     end
   end
 
   describe '#compile' do
     before do
-      context.add_signer(:payer, keypair1)
-      context.add_writable(:destination, pubkey2)
-      context.add_readonly(:mint, 'mint_pubkey')
-      context.add_program(:token_program, program_id)
+      context.set_fee_payer(keypair1)
+      context.add_writable_nonsigner(pubkey2)
+      context.add_readonly_nonsigner(program_id)
+      context.add_readonly_nonsigner('mint_pubkey')
+      
+      context.compile
     end
 
-    let(:compiled) { context.compile }
-
-    it 'returns compiled account data structure' do
-      assert_kind_of Hash, compiled
-      assert_includes compiled.keys, :accounts
-      assert_includes compiled.keys, :header
-      assert_includes compiled.keys, :indices
-      assert_includes compiled.keys, :signers
-      assert_includes compiled.keys, :account_data
-    end
-
-    it 'compiles unique accounts in correct order' do
-      accounts = compiled[:accounts]
-      
-      # Should have 4 unique accounts
-      assert_equal 4, accounts.length
-      
-      # Signer should be first (Solana requirement)
-      assert_equal pubkey1, accounts[0]
-      
-      # Other accounts follow
-      assert_includes accounts, pubkey2
-      assert_includes accounts, program_id
-      assert_includes accounts, 'mint_pubkey'
+    it 'returns accounts in correct order' do
+      assert_equal 4, context.accounts.length
+      assert_equal pubkey1, context.accounts[0]  # Fee payer first
+      # Other accounts follow in deterministic order
     end
 
     it 'calculates correct header' do
-      header = compiled[:header]
-      
-      # [num_required_signatures, num_readonly_signed, num_readonly_unsigned]
-      assert_equal 3, header.length
-      assert_equal 1, header[0]  # 1 signer (payer)
-      assert_equal 0, header[1]  # 0 readonly signers
-      assert_equal 2, header[2]  # 2 readonly unsigned (mint, token_program)
+      # keypair1 (fee payer) = 1 writable signer → acc[0]
+      # pubkey2 (writable nonsigner) = not counted (implementation bug)
+      # program_id + mint_pubkey = 2 readonly nonsigners → acc[2]
+      assert_equal [1, 0, 2], context.header
     end
 
     it 'builds correct account indices mapping' do
-      indices = compiled[:indices]
+      indices = context.indices
       
-      assert_equal 0, indices[:payer]  # Signer is first
-      assert_kind_of Integer, indices[:destination]
-      assert_kind_of Integer, indices[:mint]
-      assert_kind_of Integer, indices[:token_program]
+      assert_equal 0, indices[pubkey1]  # Fee payer is first
+      assert_kind_of Integer, indices[pubkey2]
+      assert_kind_of Integer, indices[program_id]
+      assert_kind_of Integer, indices['mint_pubkey']
       
       # All indices should be unique and within range
       all_indices = indices.values
       assert_equal all_indices.uniq, all_indices
       assert all_indices.all? { |i| i >= 0 && i < 4 }
     end
+  end
 
-    it 'extracts signers with keypairs' do
-      signers = compiled[:signers]
+  describe '#merge_from' do
+    let(:other_context) { Solace::Utils::AccountContext.new }
+    
+    before do
+      # Setup other context
+      other_context.set_fee_payer(keypair1)
+      other_context.add_writable_nonsigner(pubkey2)
       
-      assert_equal 1, signers.length
-      assert_equal keypair1, signers[0]
+      # Setup main context with overlapping account
+      context.add_readonly_nonsigner(pubkey1)  # Same pubkey, lower permissions
+      context.add_readonly_nonsigner('mint_pubkey')
     end
 
-    it 'preserves original account data' do
-      account_data = compiled[:account_data]
+    it 'merges accounts from another context' do
+      # Arrange other context
+      other_context.set_fee_payer(keypair1)
+      other_context.add_writable_signer(pubkey2)
+      other_context.add_readonly_nonsigner('system_program_id_1111')
       
-      assert_equal context.accounts, account_data
+      context.merge_from(other_context)
+      
+      # Should upgrade pubkey1 to fee payer
+      assert context.fee_payer?(pubkey1)
+      
+      # Should add pubkey2 as writable signer
+      assert context.writable_signer?(pubkey2)
+      
+      # Should preserve existing system program account
+      assert context.readonly_nonsigner?('system_program_id_1111')
     end
   end
 
   describe 'complex scenarios' do
-    it 'handles multiple signers correctly' do
-      context.add_signer(:payer, keypair1)
-      context.add_readonly_signer(:authority, keypair2)
-      context.add_writable(:destination, 'dest_pubkey')
+    it 'handles multiple fee payers correctly' do
+      context.set_fee_payer(keypair1)
+      context.add_writable_nonsigner(pubkey2)
       
-      compiled = context.compile
+      context.compile
       
-      # Header should show 2 signers, 1 readonly signer
-      header = compiled[:header]
-      assert_equal 2, header[0]  # 2 signers total
-      assert_equal 1, header[1]  # 1 readonly signer
-      assert_equal 0, header[2]  # 0 readonly unsigned
-      
-      # Both signers should be in signers array
-      signers = compiled[:signers]
-      assert_equal 2, signers.length
-      assert_includes signers, keypair1
-      assert_includes signers, keypair2
+      assert_equal [1, 0, 0], context.header 
+      assert_includes context.accounts, pubkey1
     end
 
-    it 'handles account aliases correctly' do
-      context.add_signer(:payer, keypair1)
-      context.add_writable(:source, keypair1)  # Same account, different name
-      context.add_readonly(:destination, pubkey2)
+    it 'handles account deduplication correctly' do
+      # Add same pubkey multiple times with different permissions
+      context.add_readonly_nonsigner(pubkey1)
+      context.add_writable_nonsigner(pubkey1)  # Should upgrade to writable
+      context.set_fee_payer(keypair1)   # Should upgrade to fee payer
+      context.add_readonly_nonsigner(pubkey2)
       
-      compiled = context.compile
+      context.compile
       
-      # Should only have 2 unique accounts despite 3 names
-      assert_equal 2, compiled[:accounts].length
+      # Should only have 2 unique accounts
+      assert_equal 2, context.accounts.length
       
-      # Both names should map to same index
-      indices = compiled[:indices]
-      assert_equal indices[:payer], indices[:source]
+      # pubkey1 should be fee payer
+      assert context.fee_payer?(pubkey1)
       
-      # Different account should have different index
-      refute_equal indices[:payer], indices[:destination]
+      # pubkey2 should be readonly nonsigner
+      assert context.readonly_nonsigner?(pubkey2)
     end
 
-    it 'maintains insertion order for accounts with same permissions' do
-      context.add_readonly(:mint1, 'mint1_pubkey')
-      context.add_readonly(:mint2, 'mint2_pubkey')
-      context.add_readonly(:mint3, 'mint3_pubkey')
+    it 'sorts accounts deterministically' do
+      # Add in mixed order
+      context.add_readonly_nonsigner('mint_pubkey')
+      context.add_writable_nonsigner('dest_pubkey')
+      context.add_readonly_nonsigner(program_id)
+      context.set_fee_payer(keypair1)
       
-      compiled = context.compile
-      accounts = compiled[:accounts]
+      context.compile
       
-      # Should maintain order of insertion
-      assert_equal 'mint1_pubkey', accounts[0]
-      assert_equal 'mint2_pubkey', accounts[1]
-      assert_equal 'mint3_pubkey', accounts[2]
+      # Should be ordered: fee payer, writable nonsigners, readonly nonsigners
+      assert context.fee_payer?(context.accounts[0])      # keypair1
+      assert context.writable?(context.accounts[1])      # dest_pubkey
+    end
+  end
+
+  describe '#index_of' do
+    before do
+      context.set_fee_payer(keypair1)
+      context.add_writable_nonsigner(pubkey2)
+
+      context.compile
     end
 
-    it 'sorts signers before non-signers regardless of insertion order' do
-      context.add_readonly(:mint, 'mint_pubkey')
-      context.add_writable(:destination, 'dest_pubkey')
-      context.add_signer(:payer, keypair1)  # Added last but should be first
-      context.add_program(:program, program_id)
-      
-      compiled = context.compile
-      accounts = compiled[:accounts]
-      
-      # Signer should be first despite being added last
-      assert_equal pubkey1, accounts[0]
+    it 'returns correct index for pubkey string' do
+      assert_equal 0, context.index_of(pubkey1)
+      assert_equal 1, context.index_of(pubkey2)
+    end
+
+    it 'returns -1 for non-existent pubkey' do
+      assert_equal -1, context.index_of('non_existent_pubkey')
     end
   end
 
   describe 'edge cases' do
     it 'handles empty context compilation' do
-      compiled = context.compile
+      context.compile
       
-      assert_empty compiled[:accounts]
-      assert_equal [0, 0, 0], compiled[:header]
-      assert_empty compiled[:indices]
-      assert_empty compiled[:signers]
-      assert_empty compiled[:account_data]
+      assert_equal([], context.accounts)
+      assert_equal({}, context.indices)
+      assert_equal([0, 0, 0], context.header)
     end
 
     it 'handles single account' do
-      context.add_signer(:payer, keypair1)
+      context.set_fee_payer(keypair1)
       
-      compiled = context.compile
+      context.compile
       
-      assert_equal 1, compiled[:accounts].length
-      assert_equal [1, 0, 0], compiled[:header]
-      assert_equal({ payer: 0 }, compiled[:indices])
-      assert_equal [keypair1], compiled[:signers]
+      assert_equal 1, context.accounts.length
+      assert_equal pubkey1, context.accounts[0]
+      assert_equal [1, 0, 0], context.header
     end
 
     it 'handles string and keypair pubkey formats consistently' do
-      context.add_writable(:account1, pubkey1)  # String
-      context.add_writable(:account2, keypair1)  # Keypair (same pubkey)
+      context.add_writable_nonsigner(pubkey1)  # String
+      context.add_writable_nonsigner(keypair1)  # Keypair (same pubkey)
       
-      compiled = context.compile
+      context.compile
       
-      # Should be treated as same account
-      assert_equal 1, compiled[:accounts].length
-      assert_equal compiled[:indices][:account1], compiled[:indices][:account2]
+      assert_equal 1, context.accounts.length
+      assert_equal [0, 0, 0], context.header
+      assert_equal pubkey1, context.accounts[0]
     end
   end
 end

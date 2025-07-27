@@ -2,41 +2,55 @@
 
 module Solace
   module Composers
-    # Composer for System Program transfer instructions
     class SystemProgramTransferComposer < Base
-      # Define accounts required for transfer instruction
+      # Extracts the to address from the params
       #
-      # @param from [Solace::Keypair] The sender keypair
-      # @param to [String|Solace::Keypair] The recipient address or keypair
-      # @param lamports [Integer] Amount to transfer (in lamports)
-      # @return [Hash] Account context information
-      def accounts(from:, to:, lamports:)
-        context = Utils::AccountContext.new
-        
-        # From account is signer and writable (pays lamports)
-        context.signer(:from, from)
-        
-        # To account is writable (receives lamports)
-        to_pubkey = to.is_a?(String) ? to : to.address
-        context.writable(:to, to_pubkey)
-        
-        # System program
-        context.program(:system_program, Solace::Constants::SYSTEM_PROGRAM_ID)
-        
-        context.compile
+      # @return [String] The to address
+      def to
+        params[:to].is_a?(String) ? params[:to] : params[:to].address
+      end
+
+      # Extracts the from address from the params
+      #
+      # @return [String] The from address
+      def from
+        params[:from].is_a?(String) ? params[:from] : params[:from].address
+      end
+
+      # Returns the system program id
+      #
+      # @return [String] The system program id
+      def system_program
+        Solace::Constants::SYSTEM_PROGRAM_ID
+      end
+
+      # Returns the lamports to transfer
+      #
+      # @return [Integer] The lamports to transfer
+      def lamports
+        params[:lamports]
+      end
+      
+      # Setup accounts required for transfer instruction
+      # Called automatically during initialization
+      #
+      # @return [void]
+      def setup_accounts
+        account_context.add_writable_signer(from)
+        account_context.add_writable_nonsigner(to)
+        account_context.add_readonly_nonsigner(system_program)
       end
 
       # Build instruction with resolved account indices
       #
-      # @param indices [Hash] Account name to index mapping
-      # @param lamports [Integer] Amount to transfer (in lamports)
+      # @param account_context [Utils::AccountContext] The account context
       # @return [Solace::Instruction]
-      def instruction(indices:, lamports:, from: nil, to: nil)
+      def build_instruction(account_context)
         Instructions::SystemProgram::TransferInstruction.build(
-          lamports: lamports,
-          to_index: indices[:to],
-          from_index: indices[:from],
-          program_index: indices[:system_program]
+          lamports:,
+          to_index: account_context.index_of(to),
+          from_index: account_context.index_of(from),
+          program_index: account_context.index_of(system_program)
         )
       end
     end
