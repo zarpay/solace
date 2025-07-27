@@ -8,7 +8,9 @@ require_relative 'solace/constants'
 require_relative 'solace/connection'
 require_relative 'solace/utils/codecs'
 require_relative 'solace/utils/pda'
+require_relative 'solace/utils/call_stack_utils'
 require_relative 'solace/utils/curve25519_dalek'
+require_relative 'solace/concerns/composable'
 require_relative 'solace/concerns/binary_serializable'
 
 # ✨ Serializers
@@ -26,6 +28,11 @@ require_relative 'solace/transaction'
 require_relative 'solace/message'
 require_relative 'solace/instruction'
 require_relative 'solace/address_lookup_table'
+
+# 📦 Composers (Builders)
+# 
+# Glob require all instructions
+Dir[File.join(__dir__, 'solace/composers', '**', '*.rb')].sort.each { |file| require file }
 
 # 📦 Instructions (Builders)
 # 

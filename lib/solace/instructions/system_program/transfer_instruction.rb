@@ -4,9 +4,15 @@ module Solace
   module Instructions
     module SystemProgram
       # Service object for building a System Program transfer instruction
-      class TransferInstruction
+      class TransferInstruction < Base
         # Instruction ID for System Transfer
         INSTRUCTION_ID = [2, 0, 0, 0].freeze
+        
+        # @!attribute composer
+        #   The composer class for this instruction
+        #
+        # @return [Object] The composer class or nil if none is registered
+        self.composer = Composers::SystemProgramTransferComposer
 
         # Builds a Solace::Instruction for transferring SOL
         #
@@ -25,7 +31,7 @@ module Solace
           from_index:,
           program_index: 2
         )
-          Solace::Instruction.new.tap do |ix|
+          Instruction.new.tap do |ix|
             ix.program_index = program_index
             ix.accounts = [from_index, to_index]
             ix.data = data(lamports)
@@ -42,7 +48,7 @@ module Solace
         # @return [Array] 4-byte instruction ID + 8-byte amount
         def self.data(lamports)
           INSTRUCTION_ID +
-            Solace::Utils::Codecs.encode_le_u64(lamports).bytes
+            Utils::Codecs.encode_le_u64(lamports).bytes
         end
       end
     end
