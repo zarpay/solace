@@ -8,10 +8,10 @@ module Solace
     # @return [Solace::Connection] The connection to the Solana cluster
     attr_reader :connection
 
-    # @!attribute transaction_context
+    # @!attribute context
     #
     # @return [Utils::AccountContext] The account registry
-    attr_reader :transaction_context
+    attr_reader :context
 
     # @!attribute instruction_composers
     #
@@ -24,7 +24,7 @@ module Solace
     def initialize(connection:)
       @connection = connection
       @instruction_composers = []
-      @transaction_context = Utils::AccountContext.new
+      @context = Utils::AccountContext.new
     end
     
     # Add an instruction composer to the transaction
@@ -32,12 +32,8 @@ module Solace
     # @param composer [Composers::Base] The instruction composer
     # @return [TransactionComposer] Self for chaining
     def add_instruction(composer)
-      # Merge accounts from this instruction into the transaction registry
       merge_accounts(composer.account_context)
-      
-      # Store composer for later instruction building
       instruction_composers << composer
-      
       self
     end
     
@@ -46,8 +42,7 @@ module Solace
     # @param pubkey [String | Solace::PublicKey | Solace::Keypair] The fee payer pubkey
     # @return [TransactionComposer] Self for chaining
     def set_fee_payer(pubkey)
-      transaction_context.set_fee_payer(pubkey)
-
+      context.set_fee_payer(pubkey)
       self
     end
 
@@ -55,33 +50,32 @@ module Solace
     #
     # @return [Solace::Transaction] The composed transaction (unsigned)
     def compose_transaction
-      # Compile the transaction context
-      transaction_context.compile
-     
-      # Build all instructions with resolved indices
-      instructions = instruction_composers.map do |composer|
-        composer.build_instruction(transaction_context)
-      end
-      
-      # Create message
+      context.compile
+
       message = Solace::Message.new(
-        instructions: instructions,
-        header: transaction_context.header,
-        accounts: transaction_context.accounts,
-        recent_blockhash: connection.get_latest_blockhash
+        instructions: build_instructions,
+        header: context.header,
+        accounts: context.accounts,
+        recent_blockhash: connection.get_latest_blockhash,
       )
       
-      # Create transaction with signers attached for easy signing
       Solace::Transaction.new(message: message)
     end    
 
     private
 
+    # Build all instructions with resolved indices
+    #
+    # @return [Array<Solace::Instruction>] The built instructions
+    def build_instructions
+      instruction_composers.map { _1.build_instruction(context) }
+    end
+
     # Merge all accounts from another AccountContext into this one
     #
     # @param account_context [AccountContext] The other context to merge from
     def merge_accounts(account_context)
-      transaction_context.merge_from(account_context)
+      context.merge_from(account_context)
     end
   end
 end

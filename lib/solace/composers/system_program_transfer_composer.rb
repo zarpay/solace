@@ -30,7 +30,7 @@ module Solace
       def lamports
         params[:lamports]
       end
-      
+
       # Setup accounts required for transfer instruction
       # Called automatically during initialization
       #
@@ -47,7 +47,7 @@ module Solace
       # @return [Solace::Instruction]
       def build_instruction(account_context)
         Instructions::SystemProgram::TransferInstruction.build(
-          lamports:,
+          lamports: lamports,
           to_index: account_context.index_of(to),
           from_index: account_context.index_of(from),
           program_index: account_context.index_of(system_program)
@@ -56,3 +56,4 @@ module Solace
     end
   end
 end
+

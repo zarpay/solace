@@ -52,7 +52,7 @@ describe Solace::TransactionComposer do
     end
     
     it 'has a transaction context (account context)' do
-      assert_instance_of Solace::Utils::AccountContext, composer.transaction_context
+      assert_instance_of Solace::Utils::AccountContext, composer.context
     end
   end
 
@@ -68,7 +68,7 @@ describe Solace::TransactionComposer do
     it 'merges accounts from instruction composer into transaction context' do
       composer.add_instruction(transfer_composer_1)
 
-      tx_context = composer.transaction_context
+      tx_context = composer.context
       
       # Verify accounts are present using predicate methods
       assert tx_context.signer?(anna_keypair.address)
@@ -89,7 +89,7 @@ describe Solace::TransactionComposer do
       
       assert_equal 2, composer.instruction_composers.length
       
-      tx_context = composer.transaction_context
+      tx_context = composer.context
       
       # Anna should be a signer (from transfer_composer_1)
       assert tx_context.writable_signer?(anna_keypair.address)
@@ -110,7 +110,7 @@ describe Solace::TransactionComposer do
       result = composer.set_fee_payer(payer_keypair)
       
       assert_equal composer, result
-      assert composer.transaction_context.fee_payer?(payer_keypair.address)
+      assert composer.context.fee_payer?(payer_keypair.address)
     end
   end
 

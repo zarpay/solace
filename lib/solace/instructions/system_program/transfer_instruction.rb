@@ -7,9 +7,6 @@ module Solace
       class TransferInstruction < Base
         # Instruction ID for System Transfer
         INSTRUCTION_ID = [2, 0, 0, 0].freeze
-        
-        # Register the composer for this instruction
-        has_composer Composers::SystemProgramTransferComposer
 
         # Builds a Solace::Instruction for transferring SOL
         #

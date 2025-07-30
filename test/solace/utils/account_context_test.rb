@@ -228,7 +228,7 @@ describe Solace::Utils::AccountContext do
     end
 
     it 'returns -1 for non-existent pubkey' do
-      assert_equal -1, context.index_of('non_existent_pubkey')
+      assert_equal(-1, context.index_of('non_existent_pubkey'))
     end
   end
 
