@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>
+  File: README
+  
+    &mdash; Solace Ruby SDK Documentation
+  
+</title>
+
+  <link rel="stylesheet" href="css/style.css" type="text/css" />
+
+  <link rel="stylesheet" href="css/common.css" type="text/css" />
+
+<script type="text/javascript">
+  pathId = "README";
+  relpath = '';
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div class="nav_wrap">
+      <iframe id="nav" src="class_list.html?1"></iframe>
+      <div id="resizer"></div>
+    </div>
+
+    <div id="main" tabindex="-1">
+      <div id="header">
+        <div id="menu">
+  
+    <a href="_index.html">Index</a> &raquo; 
+    <span class="title">File: README</span>
+  
+</div>
+
+        <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="class_list.html">
+
+        <svg width="24" height="24">
+          <rect x="0" y="4" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="12" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
+        </svg>
+    </a>
+  
+</div>
+        <div class="clear"></div>
+      </div>
+
+      <div id="content"><div id='filecontents'><h1 id="solace-ruby-sdk-documentation">Solace Ruby SDK Documentation</h1>
+
+<h2 id="overview">Overview</h2>
+
+<p><strong>Solace</strong> is a comprehensive Ruby SDK for interacting with the Solana blockchain. It provides both low-level building blocks and high-level abstractions for creating, signing, and sending Solana transactions. The library follows Ruby conventions while maintaining compatibility with Solana&#39;s binary protocols.</p>
+
+<h2 id="architecture">Architecture</h2>
+
+<p>The Solace SDK is organized into several key layers:</p>
+
+<h3 id="1-core-primitives-low-level">1. <strong>Core Primitives</strong> (Low-Level)</h3>
+
+<ul>
+<li><strong>Keypair/PublicKey</strong>: Ed25519 cryptographic operations</li>
+<li><strong>Connection</strong>: RPC client for Solana nodes</li>
+<li><strong>Transaction/Message/Instruction</strong>: Transaction building blocks</li>
+<li><strong>Serializers</strong>: Binary serialization/deserialization system</li>
+</ul>
+
+<h3 id="2-instruction-builders-low-level">2. <strong>Instruction Builders</strong> (Low-Level)</h3>
+
+<ul>
+<li>Service objects that build specific instruction types</li>
+<li>Handle binary data encoding and account indexing</li>
+<li>Located in <code>lib/solace/instructions/</code></li>
+</ul>
+
+<h3 id="3-program-clients-high-level">3. <strong>Program Clients</strong> (High-Level)</h3>
+
+<ul>
+<li>Convenient interfaces for interacting with on-chain programs</li>
+<li>Handle transaction assembly, signing, and submission</li>
+<li>Located in <code>lib/solace/programs/</code></li>
+</ul>
+
+<h3 id="4-utilities-supporting">4. <strong>Utilities</strong> (Supporting)</h3>
+
+<ul>
+<li><strong>Codecs</strong>: Base58/Base64 encoding, compact integers, little-endian encoding</li>
+<li><strong>PDA</strong>: Program Derived Address generation</li>
+<li><strong>Curve25519</strong>: Native curve operations via FFI</li>
+</ul>
+
+<h2 id="core-components">Core Components</h2>
+
+<h3 id="keypair">Keypair</h3>
+
+<p>The <code>Solace::Keypair</code> class represents Ed25519 keypairs for signing transactions.</p>
+
+<pre class="code ruby"><code class="ruby"><span class='comment'># Generate a new random keypair
+</span><span class='id identifier rubyid_keypair'>keypair</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Keypair.html" title="Solace::Keypair (class)">Keypair</a></span></span><span class='period'>.</span><span class='id identifier rubyid_generate'><span class='object_link'><a href="Solace/Keypair.html#generate-class_method" title="Solace::Keypair.generate (method)">generate</a></span></span>
+
+<span class='comment'># Create from seed (32 bytes)
+</span><span class='id identifier rubyid_seed'>seed</span> <span class='op'>=</span> <span class='const'>SecureRandom</span><span class='period'>.</span><span class='id identifier rubyid_random_bytes'>random_bytes</span><span class='lparen'>(</span><span class='int'>32</span><span class='rparen'>)</span>
+<span class='id identifier rubyid_keypair'>keypair</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Keypair.html" title="Solace::Keypair (class)">Keypair</a></span></span><span class='period'>.</span><span class='id identifier rubyid_from_seed'><span class='object_link'><a href="Solace/Keypair.html#from_seed-class_method" title="Solace::Keypair.from_seed (method)">from_seed</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_seed'>seed</span><span class='rparen'>)</span>
+
+<span class='comment'># Create from secret key (64 bytes)
+</span><span class='id identifier rubyid_keypair'>keypair</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Keypair.html" title="Solace::Keypair (class)">Keypair</a></span></span><span class='period'>.</span><span class='id identifier rubyid_from_secret_key'><span class='object_link'><a href="Solace/Keypair.html#from_secret_key-class_method" title="Solace::Keypair.from_secret_key (method)">from_secret_key</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_secret_key_bytes'>secret_key_bytes</span><span class='rparen'>)</span>
+
+<span class='comment'># Usage
+</span><span class='id identifier rubyid_puts'>puts</span> <span class='id identifier rubyid_keypair'>keypair</span><span class='period'>.</span><span class='id identifier rubyid_address'>address</span>          <span class='comment'># Base58 public key
+</span><span class='id identifier rubyid_signature'>signature</span> <span class='op'>=</span> <span class='id identifier rubyid_keypair'>keypair</span><span class='period'>.</span><span class='id identifier rubyid_sign'>sign</span><span class='lparen'>(</span><span class='id identifier rubyid_message'>message</span><span class='rparen'>)</span>  <span class='comment'># Sign binary data
+</span></code></pre>
+
+<p><strong>Key Features:</strong></p>
+
+<ul>
+<li>Ed25519 signature support via RbNaCl</li>
+<li>Base58 address encoding</li>
+<li>Secure random generation</li>
+<li>Compatible with Solana&#39;s key format</li>
+</ul>
+
+<h3 id="publickey">PublicKey</h3>
+
+<p>The <code>Solace::PublicKey</code> class represents Solana public keys with utility methods.</p>
+
+<pre class="code ruby"><code class="ruby"># Create from bytes
+pubkey = Solace::PublicKey.new(32_byte_array)
+
+# Usage
+puts pubkey.to_base58    # Base58 representation
+puts pubkey.to_s         # Same as to_base58
+bytes = pubkey.to_bytes  # Get raw bytes
+</code></pre>
+
+<p><strong>Key Features:</strong></p>
+
+<ul>
+<li>32-byte Ed25519 public keys</li>
+<li>Base58 encoding/decoding</li>
+<li>PDA (Program Derived Address) support via mixin</li>
+<li>Equality comparison</li>
+</ul>
+
+<h3 id="connection">Connection</h3>
+
+<p>The <code>Solace::Connection</code> class provides RPC communication with Solana nodes.</p>
+
+<pre class="code ruby"><code class="ruby"><span class='comment'># Connect to local validator (default = http://localhost:8899)
+</span><span class='id identifier rubyid_connection'>connection</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Connection.html" title="Solace::Connection (class)">Connection</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Solace/Connection.html#initialize-instance_method" title="Solace::Connection#initialize (method)">new</a></span></span>
+
+<span class='comment'># Connect to devnet or other RPC nodes
+</span><span class='id identifier rubyid_connection'>connection</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Connection.html" title="Solace::Connection (class)">Connection</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Solace/Connection.html#initialize-instance_method" title="Solace::Connection#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>https://api.devnet.solana.com</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+
+<span class='comment'># RPC methods
+</span><span class='id identifier rubyid_balance'>balance</span> <span class='op'>=</span> <span class='id identifier rubyid_connection'>connection</span><span class='period'>.</span><span class='id identifier rubyid_get_balance'>get_balance</span><span class='lparen'>(</span><span class='id identifier rubyid_pubkey'>pubkey</span><span class='rparen'>)</span>
+<span class='id identifier rubyid_blockhash'>blockhash</span> <span class='op'>=</span> <span class='id identifier rubyid_connection'>connection</span><span class='period'>.</span><span class='id identifier rubyid_get_latest_blockhash'>get_latest_blockhash</span>
+<span class='id identifier rubyid_account_info'>account_info</span> <span class='op'>=</span> <span class='id identifier rubyid_connection'>connection</span><span class='period'>.</span><span class='id identifier rubyid_get_account_info'>get_account_info</span><span class='lparen'>(</span><span class='id identifier rubyid_pubkey'>pubkey</span><span class='rparen'>)</span>
+<span class='id identifier rubyid_signature'>signature</span> <span class='op'>=</span> <span class='id identifier rubyid_connection'>connection</span><span class='period'>.</span><span class='id identifier rubyid_send_transaction'>send_transaction</span><span class='lparen'>(</span><span class='id identifier rubyid_transaction'>transaction</span><span class='rparen'>)</span>
+
+<span class='comment'># Airdrop (devnet/testnet only)
+</span><span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='id identifier rubyid_connection'>connection</span><span class='period'>.</span><span class='id identifier rubyid_request_airdrop'>request_airdrop</span><span class='lparen'>(</span><span class='id identifier rubyid_pubkey'>pubkey</span><span class='comma'>,</span> <span class='int'>1_000_000_000</span><span class='rparen'>)</span> <span class='comment'># 1 SOL
+</span><span class='id identifier rubyid_connection'>connection</span><span class='period'>.</span><span class='id identifier rubyid_wait_for_confirmed_signature'>wait_for_confirmed_signature</span> <span class='lbrace'>{</span> <span class='id identifier rubyid_response'>response</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>result</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span> <span class='rbrace'>}</span>
+</code></pre>
+
+<p><strong>Key Features:</strong></p>
+
+<ul>
+<li>JSON-RPC 2.0 client</li>
+<li>Automatic request ID generation</li>
+<li>Built-in error handling</li>
+<li>Support for all major RPC methods</li>
+<li>Transaction confirmation waiting</li>
+</ul>
+
+<h3 id="transaction-message">Transaction &amp; Message</h3>
+
+<p>Transactions contain a message and signatures. Messages contain instructions and metadata.</p>
+
+<pre class="code ruby"><code class="ruby"><span class='comment'># Create a message
+</span><span class='id identifier rubyid_message'>message</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Message.html" title="Solace::Message (class)">Message</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Solace/Message.html#initialize-instance_method" title="Solace::Message#initialize (method)">new</a></span></span><span class='lparen'>(</span>
+    <span class='label'>header:</span> <span class='lbracket'>[</span>
+        <span class='int'>1</span><span class='comma'>,</span> <span class='comment'># required_signatures
+</span>        <span class='int'>0</span><span class='comma'>,</span> <span class='comment'># readonly_signed
+</span>        <span class='int'>1</span>  <span class='comment'># readonly_unsigned
+</span>    <span class='rbracket'>]</span><span class='comma'>,</span>
+    <span class='label'>accounts:</span> <span class='lbracket'>[</span>
+        <span class='id identifier rubyid_payer'>payer</span><span class='period'>.</span><span class='id identifier rubyid_address'>address</span><span class='comma'>,</span>
+        <span class='id identifier rubyid_recipient'>recipient</span><span class='period'>.</span><span class='id identifier rubyid_address'>address</span><span class='comma'>,</span>
+        <span class='id identifier rubyid_system_program_id'>system_program_id</span>
+    <span class='rbracket'>]</span><span class='comma'>,</span>
+    <span class='label'>instructions:</span> <span class='lbracket'>[</span><span class='id identifier rubyid_transfer_instruction'>transfer_instruction</span><span class='rbracket'>]</span><span class='comma'>,</span>
+    <span class='label'>recent_blockhash:</span> <span class='id identifier rubyid_connection'>connection</span><span class='period'>.</span><span class='id identifier rubyid_get_latest_blockhash'>get_latest_blockhash</span><span class='comma'>,</span>
+<span class='rparen'>)</span>
+
+<span class='comment'># Create and sign transaction
+</span><span class='id identifier rubyid_transaction'>transaction</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Transaction.html" title="Solace::Transaction (class)">Transaction</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Solace/Transaction.html#initialize-instance_method" title="Solace::Transaction#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='label'>message:</span> <span class='id identifier rubyid_message'>message</span><span class='rparen'>)</span>
+<span class='id identifier rubyid_transaction'>transaction</span><span class='period'>.</span><span class='id identifier rubyid_sign'>sign</span><span class='lparen'>(</span><span class='id identifier rubyid_payer_keypair'>payer_keypair</span><span class='rparen'>)</span>
+
+<span class='comment'># Send transaction
+</span><span class='id identifier rubyid_signature'>signature</span> <span class='op'>=</span> <span class='id identifier rubyid_connection'>connection</span><span class='period'>.</span><span class='id identifier rubyid_send_transaction'>send_transaction</span><span class='lparen'>(</span><span class='id identifier rubyid_transaction'>transaction</span><span class='period'>.</span><span class='id identifier rubyid_serialize'>serialize</span><span class='rparen'>)</span>
+</code></pre>
+
+<p><strong>Key Features:</strong></p>
+
+<ul>
+<li>Legacy and versioned transaction support</li>
+<li>Automatic signature management</li>
+<li>Binary serialization/deserialization</li>
+<li>Address lookup table support (versioned)</li>
+</ul>
+
+<h3 id="instruction">Instruction</h3>
+
+<p>Instructions represent individual operations within a transaction.</p>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_instruction'>instruction</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Instruction.html" title="Solace::Instruction (class)">Instruction</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span>
+    <span class='label'>program_index:</span> <span class='int'>2</span><span class='comma'>,</span>  <span class='comment'># Index in accounts array
+</span>    <span class='label'>accounts:</span> <span class='lbracket'>[</span><span class='int'>0</span><span class='comma'>,</span> <span class='int'>1</span><span class='rbracket'>]</span><span class='comma'>,</span>  <span class='comment'># Account indices
+</span>    <span class='label'>data:</span> <span class='lbracket'>[</span><span class='int'>2</span><span class='comma'>,</span> <span class='int'>0</span><span class='comma'>,</span> <span class='int'>0</span><span class='comma'>,</span> <span class='int'>0</span><span class='rbracket'>]</span> <span class='op'>+</span> <span class='id identifier rubyid_amount_bytes'>amount_bytes</span>  <span class='comment'># Instruction data
+</span><span class='rparen'>)</span>
+
+<span class='comment'># All instructions have accessor methods for program_index, accounts, and data
+</span><span class='id identifier rubyid_instruction'>instruction</span><span class='period'>.</span><span class='id identifier rubyid_program_index'>program_index</span> <span class='comment'># =&gt; 2
+</span><span class='id identifier rubyid_instruction'>instruction</span><span class='period'>.</span><span class='id identifier rubyid_accounts'>accounts</span> <span class='comment'># =&gt; [0, 1]
+</span><span class='id identifier rubyid_instruction'>instruction</span><span class='period'>.</span><span class='id identifier rubyid_data'>data</span> <span class='comment'># =&gt; [2, 0, 0, 0] + amount_bytes
+</span></code></pre>
+
+<p><strong>Key Features:</strong></p>
+
+<ul>
+<li>Program index referencing</li>
+<li>Account index arrays</li>
+<li>Binary data payload</li>
+<li>Serializable format</li>
+</ul>
+
+<h2 id="low-level-instruction-builders">Low-Level Instruction Builders</h2>
+
+<p>Instruction builders are service objects that create specific instruction types. They handle the binary encoding required by Solana programs.</p>
+
+<h3 id="system-program-instructions">System Program Instructions</h3>
+
+<h4 id="transfer-instruction">Transfer Instruction</h4>
+
+<pre class="code ruby"><code class="ruby"><span class='comment'># Build a SOL transfer instruction
+</span><span class='id identifier rubyid_transfer_ix'>transfer_ix</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Instructions.html" title="Solace::Instructions (module)">Instructions</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Instructions/SystemProgram.html" title="Solace::Instructions::SystemProgram (module)">SystemProgram</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Instructions/SystemProgram/TransferInstruction.html" title="Solace::Instructions::SystemProgram::TransferInstruction (class)">TransferInstruction</a></span></span><span class='period'>.</span><span class='id identifier rubyid_build'><span class='object_link'><a href="Solace/Instructions/SystemProgram/TransferInstruction.html#build-class_method" title="Solace::Instructions::SystemProgram::TransferInstruction.build (method)">build</a></span></span><span class='lparen'>(</span>
+  <span class='label'>lamports:</span> <span class='int'>1_000_000</span><span class='comma'>,</span>  <span class='comment'># 0.001 SOL
+</span>  <span class='label'>from_index:</span> <span class='int'>0</span><span class='comma'>,</span>        <span class='comment'># Sender account index
+</span>  <span class='label'>to_index:</span> <span class='int'>1</span><span class='comma'>,</span>          <span class='comment'># Recipient account index
+</span>  <span class='label'>program_index:</span> <span class='int'>2</span>      <span class='comment'># System program index
+</span><span class='rparen'>)</span>
+</code></pre>
+
+<h4 id="create-account-instruction">Create Account Instruction</h4>
+
+<pre class="code ruby"><code class="ruby"><span class='comment'># Build account creation instruction
+</span><span class='id identifier rubyid_create_ix'>create_ix</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Instructions.html" title="Solace::Instructions (module)">Instructions</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Instructions/SystemProgram.html" title="Solace::Instructions::SystemProgram (module)">SystemProgram</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Instructions/SystemProgram/CreateAccountInstruction.html" title="Solace::Instructions::SystemProgram::CreateAccountInstruction (class)">CreateAccountInstruction</a></span></span><span class='period'>.</span><span class='id identifier rubyid_build'><span class='object_link'><a href="Solace/Instructions/SystemProgram/CreateAccountInstruction.html#build-class_method" title="Solace::Instructions::SystemProgram::CreateAccountInstruction.build (method)">build</a></span></span><span class='lparen'>(</span>
+  <span class='label'>from_index:</span> <span class='int'>0</span><span class='comma'>,</span>              <span class='comment'># Payer account index
+</span>  <span class='label'>new_account_index:</span> <span class='int'>1</span><span class='comma'>,</span>       <span class='comment'># New account index
+</span>  <span class='label'>system_program_index:</span> <span class='int'>2</span><span class='comma'>,</span>    <span class='comment'># System program index
+</span>  <span class='label'>lamports:</span> <span class='id identifier rubyid_rent_lamports'>rent_lamports</span><span class='comma'>,</span>    <span class='comment'># Rent-exempt amount
+</span>  <span class='label'>space:</span> <span class='int'>165</span><span class='comma'>,</span>                 <span class='comment'># Account data size
+</span>  <span class='label'>owner:</span> <span class='id identifier rubyid_token_program_id'>token_program_id</span>     <span class='comment'># Owning program
+</span><span class='rparen'>)</span>
+</code></pre>
+
+<h3 id="spl-token-instructions">SPL Token Instructions</h3>
+
+<h4 id="initialize-mint-instruction">Initialize Mint Instruction</h4>
+
+<pre class="code ruby"><code class="ruby"><span class='comment'># Initialize a new token mint
+</span><span class='id identifier rubyid_init_mint_ix'>init_mint_ix</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Instructions.html" title="Solace::Instructions (module)">Instructions</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Instructions/SplToken.html" title="Solace::Instructions::SplToken (module)">SplToken</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Instructions/SplToken/InitializeMintInstruction.html" title="Solace::Instructions::SplToken::InitializeMintInstruction (class)">InitializeMintInstruction</a></span></span><span class='period'>.</span><span class='id identifier rubyid_build'><span class='object_link'><a href="Solace/Instructions/SplToken/InitializeMintInstruction.html#build-class_method" title="Solace::Instructions::SplToken::InitializeMintInstruction.build (method)">build</a></span></span><span class='lparen'>(</span>
+  <span class='label'>mint_account_index:</span> <span class='int'>1</span><span class='comma'>,</span>      <span class='comment'># Mint account index
+</span>  <span class='label'>rent_sysvar_index:</span> <span class='int'>2</span><span class='comma'>,</span>       <span class='comment'># Rent sysvar index
+</span>  <span class='label'>program_index:</span> <span class='int'>3</span><span class='comma'>,</span>           <span class='comment'># Token program index
+</span>  <span class='label'>decimals:</span> <span class='int'>6</span><span class='comma'>,</span>                <span class='comment'># Token decimals
+</span>  <span class='label'>mint_authority:</span> <span class='id identifier rubyid_authority_pubkey'>authority_pubkey</span><span class='comma'>,</span>
+  <span class='label'>freeze_authority:</span> <span class='id identifier rubyid_freeze_pubkey'>freeze_pubkey</span>  <span class='comment'># Optional
+</span><span class='rparen'>)</span>
+</code></pre>
+
+<h4 id="mint-to-instruction">Mint To Instruction</h4>
+
+<pre class="code ruby"><code class="ruby"><span class='comment'># Mint tokens to an account
+</span><span class='id identifier rubyid_mint_to_ix'>mint_to_ix</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Instructions.html" title="Solace::Instructions (module)">Instructions</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Instructions/SplToken.html" title="Solace::Instructions::SplToken (module)">SplToken</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Instructions/SplToken/MintToInstruction.html" title="Solace::Instructions::SplToken::MintToInstruction (class)">MintToInstruction</a></span></span><span class='period'>.</span><span class='id identifier rubyid_build'><span class='object_link'><a href="Solace/Instructions/SplToken/MintToInstruction.html#build-class_method" title="Solace::Instructions::SplToken::MintToInstruction.build (method)">build</a></span></span><span class='lparen'>(</span>
+  <span class='label'>amount:</span> <span class='int'>1_000_000</span><span class='comma'>,</span>          <span class='comment'># Amount to mint
+</span>  <span class='label'>mint_index:</span> <span class='int'>0</span><span class='comma'>,</span>              <span class='comment'># Mint account index
+</span>  <span class='label'>destination_index:</span> <span class='int'>1</span><span class='comma'>,</span>       <span class='comment'># Destination token account
+</span>  <span class='label'>mint_authority_index:</span> <span class='int'>2</span><span class='comma'>,</span>    <span class='comment'># Mint authority index
+</span>  <span class='label'>program_index:</span> <span class='int'>3</span>            <span class='comment'># Token program index
+</span><span class='rparen'>)</span>
+</code></pre>
+
+<h4 id="transfer-instruction">Transfer Instruction</h4>
+
+<pre class="code ruby"><code class="ruby"><span class='comment'># Transfer tokens between accounts
+</span><span class='id identifier rubyid_transfer_ix'>transfer_ix</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Instructions.html" title="Solace::Instructions (module)">Instructions</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Instructions/SplToken.html" title="Solace::Instructions::SplToken (module)">SplToken</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Instructions/SplToken/TransferInstruction.html" title="Solace::Instructions::SplToken::TransferInstruction (class)">TransferInstruction</a></span></span><span class='period'>.</span><span class='id identifier rubyid_build'><span class='object_link'><a href="Solace/Instructions/SplToken/TransferInstruction.html#build-class_method" title="Solace::Instructions::SplToken::TransferInstruction.build (method)">build</a></span></span><span class='lparen'>(</span>
+  <span class='label'>amount:</span> <span class='int'>500_000</span><span class='comma'>,</span>            <span class='comment'># Amount to transfer
+</span>  <span class='label'>source_index:</span> <span class='int'>0</span><span class='comma'>,</span>            <span class='comment'># Source token account
+</span>  <span class='label'>destination_index:</span> <span class='int'>1</span><span class='comma'>,</span>       <span class='comment'># Destination token account
+</span>  <span class='label'>owner_index:</span> <span class='int'>2</span><span class='comma'>,</span>             <span class='comment'># Owner/authority index
+</span>  <span class='label'>program_index:</span> <span class='int'>3</span>            <span class='comment'># Token program index
+</span><span class='rparen'>)</span>
+</code></pre>
+
+<p><strong>Common Patterns:</strong></p>
+
+<ul>
+<li>All builders use <code>.build()</code> class method</li>
+<li>Account indices reference the transaction&#39;s accounts array</li>
+<li>Binary data encoding handled automatically</li>
+<li>Instruction-specific data layouts documented in comments</li>
+</ul>
+
+<h2 id="high-level-program-methods">High-Level Program Methods</h2>
+
+<p>Program clients provide convenient interfaces for common operations, handling transaction assembly, signing, and submission.</p>
+
+<h3 id="spl-token-program">SPL Token Program</h3>
+
+<pre class="code ruby"><code class="ruby"><span class='comment'># Initialize program client
+</span><span class='id identifier rubyid_spl_token'>spl_token</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Programs.html" title="Solace::Programs (module)">Programs</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Programs/SplToken.html" title="Solace::Programs::SplToken (class)">SplToken</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Solace/Programs/SplToken.html#initialize-instance_method" title="Solace::Programs::SplToken#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='label'>connection:</span> <span class='id identifier rubyid_connection'>connection</span><span class='rparen'>)</span>
+
+<span class='comment'># Create a new token mint
+</span><span class='id identifier rubyid_signature'>signature</span> <span class='op'>=</span> <span class='id identifier rubyid_spl_token'>spl_token</span><span class='period'>.</span><span class='id identifier rubyid_create_mint'>create_mint</span><span class='lparen'>(</span>
+  <span class='label'>payer:</span> <span class='id identifier rubyid_payer_keypair'>payer_keypair</span><span class='comma'>,</span>
+  <span class='label'>decimals:</span> <span class='int'>6</span><span class='comma'>,</span>
+  <span class='label'>mint_authority:</span> <span class='id identifier rubyid_authority_keypair'>authority_keypair</span><span class='comma'>,</span>
+  <span class='label'>freeze_authority:</span> <span class='id identifier rubyid_freeze_keypair'>freeze_keypair</span><span class='comma'>,</span>  <span class='comment'># Optional
+</span>  <span class='label'>mint_keypair:</span> <span class='id identifier rubyid_mint_keypair'>mint_keypair</span>         <span class='comment'># Optional, generates if not provided
+</span><span class='rparen'>)</span>
+
+<span class='comment'># Mint tokens to an account
+</span><span class='id identifier rubyid_signature'>signature</span> <span class='op'>=</span> <span class='id identifier rubyid_spl_token'>spl_token</span><span class='period'>.</span><span class='id identifier rubyid_mint_to'>mint_to</span><span class='lparen'>(</span>
+  <span class='label'>payer:</span> <span class='id identifier rubyid_payer_keypair'>payer_keypair</span><span class='comma'>,</span>
+  <span class='label'>mint:</span> <span class='id identifier rubyid_mint_keypair'>mint_keypair</span><span class='comma'>,</span>
+  <span class='label'>destination:</span> <span class='id identifier rubyid_token_account_address'>token_account_address</span><span class='comma'>,</span>
+  <span class='label'>amount:</span> <span class='int'>1_000_000</span><span class='comma'>,</span>
+  <span class='label'>mint_authority:</span> <span class='id identifier rubyid_authority_keypair'>authority_keypair</span>
+<span class='rparen'>)</span>
+
+<span class='comment'># Transfer tokens
+</span><span class='id identifier rubyid_signature'>signature</span> <span class='op'>=</span> <span class='id identifier rubyid_spl_token'>spl_token</span><span class='period'>.</span><span class='id identifier rubyid_transfer'>transfer</span><span class='lparen'>(</span>
+  <span class='label'>payer:</span> <span class='id identifier rubyid_payer_keypair'>payer_keypair</span><span class='comma'>,</span>
+  <span class='label'>source:</span> <span class='id identifier rubyid_source_token_account'>source_token_account</span><span class='comma'>,</span>
+  <span class='label'>destination:</span> <span class='id identifier rubyid_dest_token_account'>dest_token_account</span><span class='comma'>,</span>
+  <span class='label'>amount:</span> <span class='int'>500_000</span><span class='comma'>,</span>
+  <span class='label'>owner:</span> <span class='id identifier rubyid_owner_keypair'>owner_keypair</span>
+<span class='rparen'>)</span>
+</code></pre>
+
+<p><strong>Key Features:</strong></p>
+
+<ul>
+<li>Automatic transaction assembly</li>
+<li>Built-in signing and submission</li>
+<li>Error handling and validation</li>
+<li>Sensible defaults for common operations</li>
+<li>Returns transaction signatures</li>
+</ul>
+
+<h3 id="prepare-methods">Prepare Methods</h3>
+
+<p>For more control, use &quot;prepare&quot; methods that return signed transactions without sending:</p>
+
+<pre class="code ruby"><code class="ruby"><span class='comment'># Prepare transaction without sending
+</span><span class='id identifier rubyid_transaction'>transaction</span> <span class='op'>=</span> <span class='id identifier rubyid_spl_token'>spl_token</span><span class='period'>.</span><span class='id identifier rubyid_prepare_create_mint'>prepare_create_mint</span><span class='lparen'>(</span>
+  <span class='label'>payer:</span> <span class='id identifier rubyid_payer_keypair'>payer_keypair</span><span class='comma'>,</span>
+  <span class='label'>decimals:</span> <span class='int'>6</span><span class='comma'>,</span>
+  <span class='label'>mint_authority:</span> <span class='id identifier rubyid_authority_keypair'>authority_keypair</span><span class='comma'>,</span>
+  <span class='label'>freeze_authority:</span> <span class='kw'>nil</span><span class='comma'>,</span>
+  <span class='label'>mint_keypair:</span> <span class='id identifier rubyid_mint_keypair'>mint_keypair</span>
+<span class='rparen'>)</span>
+
+<span class='comment'># Inspect or modify transaction before sending
+</span><span class='id identifier rubyid_puts'>puts</span> <span class='id identifier rubyid_transaction'>transaction</span><span class='period'>.</span><span class='id identifier rubyid_serialize'>serialize</span>  <span class='comment'># Base64 transaction
+</span><span class='id identifier rubyid_signature'>signature</span> <span class='op'>=</span> <span class='id identifier rubyid_connection'>connection</span><span class='period'>.</span><span class='id identifier rubyid_send_transaction'>send_transaction</span><span class='lparen'>(</span><span class='id identifier rubyid_transaction'>transaction</span><span class='period'>.</span><span class='id identifier rubyid_serialize'>serialize</span><span class='rparen'>)</span>
+</code></pre>
+
+<h2 id="serialization-system">Serialization System</h2>
+
+<p>Solace uses a serialization system for converting Ruby objects to/from Solana&#39;s binary format.</p>
+
+<h3 id="serializablerecord-base-class">SerializableRecord Base Class</h3>
+
+<pre class="code ruby"><code class="ruby"><span class='kw'>class</span> <span class='const'>Transaction</span> <span class='op'>&lt;</span> <span class='const'><span class='object_link'><a href="Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'>SerializableRecord</span>
+  <span class='const'>SERIALIZER</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Serializers.html" title="Solace::Serializers (module)">Serializers</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Serializers/TransactionSerializer.html" title="Solace::Serializers::TransactionSerializer (class)">TransactionSerializer</a></span></span>
+  <span class='const'>DESERIALIZER</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Serializers.html" title="Solace::Serializers (module)">Serializers</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Serializers/TransactionDeserializer.html" title="Solace::Serializers::TransactionDeserializer (class)">TransactionDeserializer</a></span></span>
+
+  <span class='comment'># Automatic serialization
+</span>  <span class='kw'>def</span> <span class='id identifier rubyid_serialize'>serialize</span>
+    <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='op'>::</span><span class='const'>SERIALIZER</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='kw'>self</span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># Automatic deserialization
+</span>  <span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_deserialize'>deserialize</span><span class='lparen'>(</span><span class='id identifier rubyid_io'>io</span><span class='rparen'>)</span>
+    <span class='kw'>self</span><span class='op'>::</span><span class='const'>DESERIALIZER</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='id identifier rubyid_io'>io</span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span>
+</code></pre>
+
+<h3 id="serializer-pattern">Serializer Pattern</h3>
+
+<pre class="code ruby"><code class="ruby"><span class='kw'>class</span> <span class='const'>TransactionSerializer</span> <span class='op'>&lt;</span> <span class='const'><span class='object_link'><a href="Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Serializers.html" title="Solace::Serializers (module)">Serializers</a></span></span><span class='op'>::</span><span class='const'>Base</span>
+  <span class='const'>STEPS</span> <span class='op'>=</span> <span class='qsymbols_beg'>%i[</span><span class='words_sep'>
+</span><span class='words_sep'>    </span><span class='tstring_content'>serialize_signatures</span><span class='words_sep'>
+</span><span class='words_sep'>    </span><span class='tstring_content'>serialize_message</span><span class='words_sep'>
+</span><span class='words_sep'>  </span><span class='tstring_end'>]</span></span><span class='period'>.</span><span class='id identifier rubyid_freeze'>freeze</span>
+
+  <span class='kw'>def</span> <span class='id identifier rubyid_serialize_signatures'>serialize_signatures</span>
+    <span class='comment'># Convert signatures to binary format
+</span>  <span class='kw'>end</span>
+
+  <span class='kw'>def</span> <span class='id identifier rubyid_serialize_message'>serialize_message</span>
+    <span class='comment'># Serialize message component
+</span>  <span class='kw'>end</span>
+<span class='kw'>end</span>
+</code></pre>
+
+<p><strong>Key Features:</strong></p>
+
+<ul>
+<li>Step-based serialization process</li>
+<li>Automatic Base64 encoding</li>
+<li>Consistent error handling</li>
+<li>Reversible serialization/deserialization</li>
+</ul>
+
+<h2 id="utility-modules">Utility Modules</h2>
+
+<h3 id="codecs">Codecs</h3>
+
+<p>The <code>Solace::Utils::Codecs</code> module provides encoding/decoding utilities for Solana data types.</p>
+
+<pre class="code ruby"><code class="ruby"><span class='comment'># Base58 operations
+</span><span class='id identifier rubyid_base58_string'>base58_string</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Utils.html" title="Solace::Utils (module)">Utils</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Utils/Codecs.html" title="Solace::Utils::Codecs (module)">Codecs</a></span></span><span class='period'>.</span><span class='id identifier rubyid_bytes_to_base58'><span class='object_link'><a href="Solace/Utils/Codecs.html#bytes_to_base58-class_method" title="Solace::Utils::Codecs.bytes_to_base58 (method)">bytes_to_base58</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_bytes'>bytes</span><span class='rparen'>)</span>
+<span class='id identifier rubyid_bytes'>bytes</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Utils.html" title="Solace::Utils (module)">Utils</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Utils/Codecs.html" title="Solace::Utils::Codecs (module)">Codecs</a></span></span><span class='period'>.</span><span class='id identifier rubyid_base58_to_bytes'><span class='object_link'><a href="Solace/Utils/Codecs.html#base58_to_bytes-class_method" title="Solace::Utils::Codecs.base58_to_bytes (method)">base58_to_bytes</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_base58_string'>base58_string</span><span class='rparen'>)</span>
+
+<span class='comment'># Compact u16 encoding (ShortVec)
+</span><span class='id identifier rubyid_encoded'>encoded</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Utils.html" title="Solace::Utils (module)">Utils</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Utils/Codecs.html" title="Solace::Utils::Codecs (module)">Codecs</a></span></span><span class='period'>.</span><span class='id identifier rubyid_encode_compact_u16'><span class='object_link'><a href="Solace/Utils/Codecs.html#encode_compact_u16-class_method" title="Solace::Utils::Codecs.encode_compact_u16 (method)">encode_compact_u16</a></span></span><span class='lparen'>(</span><span class='int'>1234</span><span class='rparen'>)</span>
+<span class='id identifier rubyid_value'>value</span><span class='comma'>,</span> <span class='id identifier rubyid_bytes_read'>bytes_read</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Utils.html" title="Solace::Utils (module)">Utils</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Utils/Codecs.html" title="Solace::Utils::Codecs (module)">Codecs</a></span></span><span class='period'>.</span><span class='id identifier rubyid_decode_compact_u16'><span class='object_link'><a href="Solace/Utils/Codecs.html#decode_compact_u16-class_method" title="Solace::Utils::Codecs.decode_compact_u16 (method)">decode_compact_u16</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_io'>io</span><span class='rparen'>)</span>
+
+<span class='comment'># Little-endian u64
+</span><span class='id identifier rubyid_encoded'>encoded</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Utils.html" title="Solace::Utils (module)">Utils</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Utils/Codecs.html" title="Solace::Utils::Codecs (module)">Codecs</a></span></span><span class='period'>.</span><span class='id identifier rubyid_encode_le_u64'><span class='object_link'><a href="Solace/Utils/Codecs.html#encode_le_u64-class_method" title="Solace::Utils::Codecs.encode_le_u64 (method)">encode_le_u64</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_amount'>amount</span><span class='rparen'>)</span>
+<span class='id identifier rubyid_value'>value</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Utils.html" title="Solace::Utils (module)">Utils</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Utils/Codecs.html" title="Solace::Utils::Codecs (module)">Codecs</a></span></span><span class='period'>.</span><span class='id identifier rubyid_decode_le_u64'><span class='object_link'><a href="Solace/Utils/Codecs.html#decode_le_u64-class_method" title="Solace::Utils::Codecs.decode_le_u64 (method)">decode_le_u64</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_io'>io</span><span class='rparen'>)</span>
+
+<span class='comment'># Base64 to IO stream
+</span><span class='id identifier rubyid_io'>io</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Utils.html" title="Solace::Utils (module)">Utils</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Utils/Codecs.html" title="Solace::Utils::Codecs (module)">Codecs</a></span></span><span class='period'>.</span><span class='id identifier rubyid_base64_to_bytestream'><span class='object_link'><a href="Solace/Utils/Codecs.html#base64_to_bytestream-class_method" title="Solace::Utils::Codecs.base64_to_bytestream (method)">base64_to_bytestream</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_base64_string'>base64_string</span><span class='rparen'>)</span>
+</code></pre>
+
+<h3 id="program-derived-addresses-pda">Program Derived Addresses (PDA)</h3>
+
+<pre class="code ruby"><code class="ruby"><span class='comment'># Find PDA with bump seed
+</span><span class='id identifier rubyid_seeds'>seeds</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>metadata</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_mint_address'>mint_address</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>edition</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span>
+<span class='id identifier rubyid_program_id'>program_id</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s</span><span class='tstring_end'>&#39;</span></span>
+
+<span class='id identifier rubyid_address'>address</span><span class='comma'>,</span> <span class='id identifier rubyid_bump'>bump</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Utils.html" title="Solace::Utils (module)">Utils</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Utils/PDA.html" title="Solace::Utils::PDA (module)">PDA</a></span></span><span class='period'>.</span><span class='id identifier rubyid_find_program_address'><span class='object_link'><a href="Solace/Utils/PDA.html#find_program_address-class_method" title="Solace::Utils::PDA.find_program_address (method)">find_program_address</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_seeds'>seeds</span><span class='comma'>,</span> <span class='id identifier rubyid_program_id'>program_id</span><span class='rparen'>)</span>
+
+<span class='comment'># Create PDA directly
+</span><span class='id identifier rubyid_address'>address</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Utils.html" title="Solace::Utils (module)">Utils</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Utils/PDA.html" title="Solace::Utils::PDA (module)">PDA</a></span></span><span class='period'>.</span><span class='id identifier rubyid_create_program_address'><span class='object_link'><a href="Solace/Utils/PDA.html#create_program_address-class_method" title="Solace::Utils::PDA.create_program_address (method)">create_program_address</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_seeds'>seeds</span> <span class='op'>+</span> <span class='lbracket'>[</span><span class='id identifier rubyid_bump'>bump</span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='id identifier rubyid_program_id'>program_id</span><span class='rparen'>)</span>
+</code></pre>
+
+<p><strong>Key Features:</strong></p>
+
+<ul>
+<li>Automatic bump seed finding</li>
+<li>Multiple seed type support (String, Integer, Array)</li>
+<li>Base58 address detection</li>
+<li>SHA256 hashing with curve validation</li>
+</ul>
+
+<h3 id="curve25519-operations">Curve25519 Operations</h3>
+
+<pre class="code ruby"><code class="ruby"># Check if point is on curve (used in PDA validation)
+on_curve = Solace::Utils::Curve25519Dalek.on_curve?(32_byte_point)
+</code></pre>
+
+<h2 id="constants">Constants</h2>
+
+<p>Common Solana program IDs are defined in <code>Solace::Constants</code>:</p>
+
+<pre class="code ruby"><code class="ruby"><span class='const'><span class='object_link'><a href="Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Constants.html" title="Solace::Constants (module)">Constants</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Constants.html#SYSTEM_PROGRAM_ID-constant" title="Solace::Constants::SYSTEM_PROGRAM_ID (constant)">SYSTEM_PROGRAM_ID</a></span></span>                    <span class='comment'># &#39;11111111111111111111111111111111&#39;
+</span><span class='const'><span class='object_link'><a href="Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Constants.html" title="Solace::Constants (module)">Constants</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Constants.html#TOKEN_PROGRAM_ID-constant" title="Solace::Constants::TOKEN_PROGRAM_ID (constant)">TOKEN_PROGRAM_ID</a></span></span>                     <span class='comment'># &#39;TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA&#39;
+</span><span class='const'><span class='object_link'><a href="Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Constants.html" title="Solace::Constants (module)">Constants</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Constants.html#ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID-constant" title="Solace::Constants::ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID (constant)">ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID</a></span></span>  <span class='comment'># &#39;ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL&#39;
+</span><span class='const'><span class='object_link'><a href="Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Constants.html" title="Solace::Constants (module)">Constants</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Constants.html#SYSVAR_RENT_PROGRAM_ID-constant" title="Solace::Constants::SYSVAR_RENT_PROGRAM_ID (constant)">SYSVAR_RENT_PROGRAM_ID</a></span></span>               <span class='comment'># &#39;SysvarRent111111111111111111111111111111111&#39;
+</span><span class='const'><span class='object_link'><a href="Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Constants.html" title="Solace::Constants (module)">Constants</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Constants.html#MEMO_PROGRAM_ID-constant" title="Solace::Constants::MEMO_PROGRAM_ID (constant)">MEMO_PROGRAM_ID</a></span></span>                      <span class='comment'># &#39;MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr&#39;
+</span></code></pre>
+
+<h2 id="practical-examples">Practical Examples</h2>
+
+<h3 id="complete-sol-transfer">Complete SOL Transfer</h3>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_require'>require</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>solace</span><span class='tstring_end'>&#39;</span></span>
+
+<span class='comment'># Setup
+</span><span class='id identifier rubyid_connection'>connection</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Connection.html" title="Solace::Connection (class)">Connection</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Solace/Connection.html#initialize-instance_method" title="Solace::Connection#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>https://api.devnet.solana.com</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+<span class='id identifier rubyid_payer'>payer</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Keypair.html" title="Solace::Keypair (class)">Keypair</a></span></span><span class='period'>.</span><span class='id identifier rubyid_generate'><span class='object_link'><a href="Solace/Keypair.html#generate-class_method" title="Solace::Keypair.generate (method)">generate</a></span></span>
+<span class='id identifier rubyid_recipient'>recipient</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Keypair.html" title="Solace::Keypair (class)">Keypair</a></span></span><span class='period'>.</span><span class='id identifier rubyid_generate'><span class='object_link'><a href="Solace/Keypair.html#generate-class_method" title="Solace::Keypair.generate (method)">generate</a></span></span>
+
+<span class='comment'># Fund payer (devnet only)
+</span><span class='id identifier rubyid_connection'>connection</span><span class='period'>.</span><span class='id identifier rubyid_request_airdrop'>request_airdrop</span><span class='lparen'>(</span><span class='id identifier rubyid_payer'>payer</span><span class='period'>.</span><span class='id identifier rubyid_address'>address</span><span class='comma'>,</span> <span class='int'>1_000_000_000</span><span class='rparen'>)</span>
+
+<span class='comment'># Build transfer instruction
+</span><span class='id identifier rubyid_transfer_ix'>transfer_ix</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Instructions.html" title="Solace::Instructions (module)">Instructions</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Instructions/SystemProgram.html" title="Solace::Instructions::SystemProgram (module)">SystemProgram</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Instructions/SystemProgram/TransferInstruction.html" title="Solace::Instructions::SystemProgram::TransferInstruction (class)">TransferInstruction</a></span></span><span class='period'>.</span><span class='id identifier rubyid_build'><span class='object_link'><a href="Solace/Instructions/SystemProgram/TransferInstruction.html#build-class_method" title="Solace::Instructions::SystemProgram::TransferInstruction.build (method)">build</a></span></span><span class='lparen'>(</span>
+  <span class='label'>lamports:</span> <span class='int'>100_000_000</span><span class='comma'>,</span>  <span class='comment'># 0.1 SOL
+</span>  <span class='label'>from_index:</span> <span class='int'>0</span><span class='comma'>,</span>
+  <span class='label'>to_index:</span> <span class='int'>1</span><span class='comma'>,</span>
+  <span class='label'>program_index:</span> <span class='int'>2</span>
+<span class='rparen'>)</span>
+
+<span class='comment'># Create message
+</span><span class='id identifier rubyid_message'>message</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Message.html" title="Solace::Message (class)">Message</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Solace/Message.html#initialize-instance_method" title="Solace::Message#initialize (method)">new</a></span></span><span class='lparen'>(</span>
+  <span class='label'>accounts:</span> <span class='lbracket'>[</span>
+    <span class='id identifier rubyid_payer'>payer</span><span class='period'>.</span><span class='id identifier rubyid_address'>address</span><span class='comma'>,</span>
+    <span class='id identifier rubyid_recipient'>recipient</span><span class='period'>.</span><span class='id identifier rubyid_address'>address</span><span class='comma'>,</span>
+    <span class='const'><span class='object_link'><a href="Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Constants.html" title="Solace::Constants (module)">Constants</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Constants.html#SYSTEM_PROGRAM_ID-constant" title="Solace::Constants::SYSTEM_PROGRAM_ID (constant)">SYSTEM_PROGRAM_ID</a></span></span>
+  <span class='rbracket'>]</span><span class='comma'>,</span>
+  <span class='label'>instructions:</span> <span class='lbracket'>[</span><span class='id identifier rubyid_transfer_ix'>transfer_ix</span><span class='rbracket'>]</span><span class='comma'>,</span>
+  <span class='label'>recent_blockhash:</span> <span class='id identifier rubyid_connection'>connection</span><span class='period'>.</span><span class='id identifier rubyid_get_latest_blockhash'>get_latest_blockhash</span><span class='comma'>,</span>
+  <span class='label'>header:</span> <span class='lbracket'>[</span><span class='int'>1</span><span class='comma'>,</span> <span class='int'>0</span><span class='comma'>,</span> <span class='int'>1</span><span class='rbracket'>]</span>
+<span class='rparen'>)</span>
+
+<span class='comment'># Sign and send
+</span><span class='id identifier rubyid_transaction'>transaction</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Transaction.html" title="Solace::Transaction (class)">Transaction</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Solace/Transaction.html#initialize-instance_method" title="Solace::Transaction#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='label'>message:</span> <span class='id identifier rubyid_message'>message</span><span class='rparen'>)</span>
+<span class='id identifier rubyid_transaction'>transaction</span><span class='period'>.</span><span class='id identifier rubyid_sign'>sign</span><span class='lparen'>(</span><span class='id identifier rubyid_payer'>payer</span><span class='rparen'>)</span>
+<span class='id identifier rubyid_signature'>signature</span> <span class='op'>=</span> <span class='id identifier rubyid_connection'>connection</span><span class='period'>.</span><span class='id identifier rubyid_send_transaction'>send_transaction</span><span class='lparen'>(</span><span class='id identifier rubyid_transaction'>transaction</span><span class='period'>.</span><span class='id identifier rubyid_serialize'>serialize</span><span class='rparen'>)</span>
+
+<span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Transaction: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_signature'>signature</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
+</code></pre>
+
+<h3 id="complete-token-mint-creation">Complete Token Mint Creation</h3>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_require'>require</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>solace</span><span class='tstring_end'>&#39;</span></span>
+
+<span class='comment'># Setup
+</span><span class='id identifier rubyid_connection'>connection</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Connection.html" title="Solace::Connection (class)">Connection</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Solace/Connection.html#initialize-instance_method" title="Solace::Connection#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>https://api.devnet.solana.com</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+<span class='id identifier rubyid_payer'>payer</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Keypair.html" title="Solace::Keypair (class)">Keypair</a></span></span><span class='period'>.</span><span class='id identifier rubyid_generate'><span class='object_link'><a href="Solace/Keypair.html#generate-class_method" title="Solace::Keypair.generate (method)">generate</a></span></span>
+<span class='id identifier rubyid_mint_keypair'>mint_keypair</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Keypair.html" title="Solace::Keypair (class)">Keypair</a></span></span><span class='period'>.</span><span class='id identifier rubyid_generate'><span class='object_link'><a href="Solace/Keypair.html#generate-class_method" title="Solace::Keypair.generate (method)">generate</a></span></span>
+
+<span class='comment'># Fund payer
+</span><span class='id identifier rubyid_connection'>connection</span><span class='period'>.</span><span class='id identifier rubyid_request_airdrop'>request_airdrop</span><span class='lparen'>(</span><span class='id identifier rubyid_payer'>payer</span><span class='period'>.</span><span class='id identifier rubyid_address'>address</span><span class='comma'>,</span> <span class='int'>1_000_000_000</span><span class='rparen'>)</span>
+
+<span class='comment'># High-level approach
+</span><span class='id identifier rubyid_spl_token'>spl_token</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Programs.html" title="Solace::Programs (module)">Programs</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Programs/SplToken.html" title="Solace::Programs::SplToken (class)">SplToken</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Solace/Programs/SplToken.html#initialize-instance_method" title="Solace::Programs::SplToken#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='label'>connection:</span> <span class='id identifier rubyid_connection'>connection</span><span class='rparen'>)</span>
+<span class='id identifier rubyid_signature'>signature</span> <span class='op'>=</span> <span class='id identifier rubyid_spl_token'>spl_token</span><span class='period'>.</span><span class='id identifier rubyid_create_mint'>create_mint</span><span class='lparen'>(</span>
+  <span class='label'>payer:</span> <span class='id identifier rubyid_payer'>payer</span><span class='comma'>,</span>
+  <span class='label'>decimals:</span> <span class='int'>6</span><span class='comma'>,</span>
+  <span class='label'>mint_authority:</span> <span class='id identifier rubyid_payer'>payer</span><span class='comma'>,</span>
+  <span class='label'>freeze_authority:</span> <span class='kw'>nil</span><span class='comma'>,</span>
+  <span class='label'>mint_keypair:</span> <span class='id identifier rubyid_mint_keypair'>mint_keypair</span>
+<span class='rparen'>)</span>
+
+<span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Mint created: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_mint_keypair'>mint_keypair</span><span class='period'>.</span><span class='id identifier rubyid_address'>address</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
+<span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Transaction: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_signature'>signature</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
+</code></pre>
+
+<h3 id="manual-transaction-building">Manual Transaction Building</h3>
+
+<pre class="code ruby"><code class="ruby"><span class='comment'># Low-level approach for maximum control
+</span><span class='id identifier rubyid_rent_lamports'>rent_lamports</span> <span class='op'>=</span> <span class='id identifier rubyid_connection'>connection</span><span class='period'>.</span><span class='id identifier rubyid_get_minimum_lamports_for_rent_exemption'>get_minimum_lamports_for_rent_exemption</span><span class='lparen'>(</span><span class='int'>82</span><span class='rparen'>)</span>
+
+<span class='comment'># Build instructions
+</span><span class='id identifier rubyid_create_account_ix'>create_account_ix</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Instructions.html" title="Solace::Instructions (module)">Instructions</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Instructions/SystemProgram.html" title="Solace::Instructions::SystemProgram (module)">SystemProgram</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Instructions/SystemProgram/CreateAccountInstruction.html" title="Solace::Instructions::SystemProgram::CreateAccountInstruction (class)">CreateAccountInstruction</a></span></span><span class='period'>.</span><span class='id identifier rubyid_build'><span class='object_link'><a href="Solace/Instructions/SystemProgram/CreateAccountInstruction.html#build-class_method" title="Solace::Instructions::SystemProgram::CreateAccountInstruction.build (method)">build</a></span></span><span class='lparen'>(</span>
+  <span class='label'>from_index:</span> <span class='int'>0</span><span class='comma'>,</span>
+  <span class='label'>new_account_index:</span> <span class='int'>1</span><span class='comma'>,</span>
+  <span class='label'>system_program_index:</span> <span class='int'>4</span><span class='comma'>,</span>
+  <span class='label'>lamports:</span> <span class='id identifier rubyid_rent_lamports'>rent_lamports</span><span class='comma'>,</span>
+  <span class='label'>space:</span> <span class='int'>82</span><span class='comma'>,</span>
+  <span class='label'>owner:</span> <span class='const'><span class='object_link'><a href="Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Constants.html" title="Solace::Constants (module)">Constants</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Constants.html#TOKEN_PROGRAM_ID-constant" title="Solace::Constants::TOKEN_PROGRAM_ID (constant)">TOKEN_PROGRAM_ID</a></span></span>
+<span class='rparen'>)</span>
+
+<span class='id identifier rubyid_initialize_mint_ix'>initialize_mint_ix</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Instructions.html" title="Solace::Instructions (module)">Instructions</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Instructions/SplToken.html" title="Solace::Instructions::SplToken (module)">SplToken</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Instructions/SplToken/InitializeMintInstruction.html" title="Solace::Instructions::SplToken::InitializeMintInstruction (class)">InitializeMintInstruction</a></span></span><span class='period'>.</span><span class='id identifier rubyid_build'><span class='object_link'><a href="Solace/Instructions/SplToken/InitializeMintInstruction.html#build-class_method" title="Solace::Instructions::SplToken::InitializeMintInstruction.build (method)">build</a></span></span><span class='lparen'>(</span>
+  <span class='label'>mint_account_index:</span> <span class='int'>1</span><span class='comma'>,</span>
+  <span class='label'>rent_sysvar_index:</span> <span class='int'>2</span><span class='comma'>,</span>
+  <span class='label'>program_index:</span> <span class='int'>3</span><span class='comma'>,</span>
+  <span class='label'>decimals:</span> <span class='int'>6</span><span class='comma'>,</span>
+  <span class='label'>mint_authority:</span> <span class='id identifier rubyid_payer'>payer</span><span class='period'>.</span><span class='id identifier rubyid_address'>address</span>
+<span class='rparen'>)</span>
+
+<span class='comment'># Assemble transaction
+</span><span class='id identifier rubyid_message'>message</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Message.html" title="Solace::Message (class)">Message</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Solace/Message.html#initialize-instance_method" title="Solace::Message#initialize (method)">new</a></span></span><span class='lparen'>(</span>
+  <span class='label'>accounts:</span> <span class='lbracket'>[</span>
+    <span class='id identifier rubyid_payer'>payer</span><span class='period'>.</span><span class='id identifier rubyid_address'>address</span><span class='comma'>,</span>
+    <span class='id identifier rubyid_mint_keypair'>mint_keypair</span><span class='period'>.</span><span class='id identifier rubyid_address'>address</span><span class='comma'>,</span>
+    <span class='const'><span class='object_link'><a href="Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Constants.html" title="Solace::Constants (module)">Constants</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Constants.html#SYSVAR_RENT_PROGRAM_ID-constant" title="Solace::Constants::SYSVAR_RENT_PROGRAM_ID (constant)">SYSVAR_RENT_PROGRAM_ID</a></span></span><span class='comma'>,</span>
+    <span class='const'><span class='object_link'><a href="Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Constants.html" title="Solace::Constants (module)">Constants</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Constants.html#TOKEN_PROGRAM_ID-constant" title="Solace::Constants::TOKEN_PROGRAM_ID (constant)">TOKEN_PROGRAM_ID</a></span></span><span class='comma'>,</span>
+    <span class='const'><span class='object_link'><a href="Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Constants.html" title="Solace::Constants (module)">Constants</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Constants.html#SYSTEM_PROGRAM_ID-constant" title="Solace::Constants::SYSTEM_PROGRAM_ID (constant)">SYSTEM_PROGRAM_ID</a></span></span>
+  <span class='rbracket'>]</span><span class='comma'>,</span>
+  <span class='label'>instructions:</span> <span class='lbracket'>[</span><span class='id identifier rubyid_create_account_ix'>create_account_ix</span><span class='comma'>,</span> <span class='id identifier rubyid_initialize_mint_ix'>initialize_mint_ix</span><span class='rbracket'>]</span><span class='comma'>,</span>
+  <span class='label'>recent_blockhash:</span> <span class='id identifier rubyid_connection'>connection</span><span class='period'>.</span><span class='id identifier rubyid_get_latest_blockhash'>get_latest_blockhash</span><span class='comma'>,</span>
+  <span class='label'>header:</span> <span class='lbracket'>[</span><span class='int'>2</span><span class='comma'>,</span> <span class='int'>0</span><span class='comma'>,</span> <span class='int'>3</span><span class='rbracket'>]</span>  <span class='comment'># 2 signers, 0 readonly signed, 3 readonly unsigned
+</span><span class='rparen'>)</span>
+
+<span class='id identifier rubyid_transaction'>transaction</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Transaction.html" title="Solace::Transaction (class)">Transaction</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Solace/Transaction.html#initialize-instance_method" title="Solace::Transaction#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='label'>message:</span> <span class='id identifier rubyid_message'>message</span><span class='rparen'>)</span>
+<span class='id identifier rubyid_transaction'>transaction</span><span class='period'>.</span><span class='id identifier rubyid_sign'>sign</span><span class='lparen'>(</span><span class='id identifier rubyid_payer'>payer</span><span class='comma'>,</span> <span class='id identifier rubyid_mint_keypair'>mint_keypair</span><span class='rparen'>)</span>
+<span class='id identifier rubyid_signature'>signature</span> <span class='op'>=</span> <span class='id identifier rubyid_connection'>connection</span><span class='period'>.</span><span class='id identifier rubyid_send_transaction'>send_transaction</span><span class='lparen'>(</span><span class='id identifier rubyid_transaction'>transaction</span><span class='period'>.</span><span class='id identifier rubyid_serialize'>serialize</span><span class='rparen'>)</span>
+</code></pre>
+
+<h2 id="design-patterns">Design Patterns</h2>
+
+<h3 id="service-objects">Service Objects</h3>
+
+<p>Instruction builders follow the service object pattern:</p>
+
+<ul>
+<li>Single responsibility (build one instruction type)</li>
+<li>Class methods for stateless operations</li>
+<li>Consistent <code>.build()</code> interface</li>
+<li>Separate <code>.data()</code> methods for instruction data</li>
+</ul>
+
+<h3 id="serializable-records">Serializable Records</h3>
+
+<p>Core data structures inherit from <code>SerializableRecord</code>:</p>
+
+<ul>
+<li>Automatic serialization/deserialization</li>
+<li>Consistent binary format handling</li>
+<li>SERIALIZER/DESERIALIZER constants pattern</li>
+</ul>
+
+<h3 id="mixin-modules">Mixin Modules</h3>
+
+<p>Shared functionality via mixins:</p>
+
+<ul>
+<li><code>BinarySerializable</code> for serialization support</li>
+<li><code>PDA</code> for Program Derived Address operations</li>
+<li><code>Utils</code> modules for common operations</li>
+</ul>
+
+<h3 id="builder-pattern">Builder Pattern</h3>
+
+<p>High-level program methods use builder pattern:</p>
+
+<ul>
+<li>Fluent interfaces with keyword arguments</li>
+<li>Sensible defaults for optional parameters</li>
+<li>Automatic transaction assembly and signing</li>
+</ul>
+
+<h2 id="error-handling">Error Handling</h2>
+
+<p>The SDK provides comprehensive error handling:</p>
+
+<pre class="code ruby"><code class="ruby"><span class='kw'>begin</span>
+  <span class='id identifier rubyid_signature'>signature</span> <span class='op'>=</span> <span class='id identifier rubyid_connection'>connection</span><span class='period'>.</span><span class='id identifier rubyid_send_transaction'>send_transaction</span><span class='lparen'>(</span><span class='id identifier rubyid_transaction'>transaction</span><span class='period'>.</span><span class='id identifier rubyid_serialize'>serialize</span><span class='rparen'>)</span>
+<span class='kw'>rescue</span> <span class='const'>StandardError</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+  <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Transaction failed: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_message'>message</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
+<span class='kw'>end</span>
+
+<span class='comment'># PDA validation
+</span><span class='kw'>begin</span>
+  <span class='id identifier rubyid_address'>address</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Utils.html" title="Solace::Utils (module)">Utils</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Utils/PDA.html" title="Solace::Utils::PDA (module)">PDA</a></span></span><span class='period'>.</span><span class='id identifier rubyid_create_program_address'><span class='object_link'><a href="Solace/Utils/PDA.html#create_program_address-class_method" title="Solace::Utils::PDA.create_program_address (method)">create_program_address</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_seeds'>seeds</span><span class='comma'>,</span> <span class='id identifier rubyid_program_id'>program_id</span><span class='rparen'>)</span>
+<span class='kw'>rescue</span> <span class='const'><span class='object_link'><a href="Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Utils.html" title="Solace::Utils (module)">Utils</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Utils/PDA.html" title="Solace::Utils::PDA (module)">PDA</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Utils/PDA/InvalidPDAError.html" title="Solace::Utils::PDA::InvalidPDAError (class)">InvalidPDAError</a></span></span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+  <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Invalid PDA: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_message'>message</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
+<span class='kw'>end</span>
+</code></pre>
+
+<h2 id="testing-support">Testing Support</h2>
+
+<p>The SDK includes comprehensive test utilities:</p>
+
+<pre class="code ruby"><code class="ruby"><span class='comment'># Test fixtures for keypairs
+</span><span class='id identifier rubyid_bob'>bob</span> <span class='op'>=</span> <span class='const'>Fixtures</span><span class='period'>.</span><span class='id identifier rubyid_load_keypair'>load_keypair</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>bob</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+<span class='id identifier rubyid_alice'>alice</span> <span class='op'>=</span> <span class='const'>Fixtures</span><span class='period'>.</span><span class='id identifier rubyid_load_keypair'>load_keypair</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>anna</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+
+<span class='comment'># Automatic funding in test environment
+</span><span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='id identifier rubyid_connection'>connection</span><span class='period'>.</span><span class='id identifier rubyid_request_airdrop'>request_airdrop</span><span class='lparen'>(</span><span class='id identifier rubyid_keypair'>keypair</span><span class='period'>.</span><span class='id identifier rubyid_address'>address</span><span class='comma'>,</span> <span class='int'>10_000_000_000</span><span class='rparen'>)</span>
+<span class='id identifier rubyid_connection'>connection</span><span class='period'>.</span><span class='id identifier rubyid_wait_for_confirmed_signature'>wait_for_confirmed_signature</span> <span class='lbrace'>{</span> <span class='id identifier rubyid_response'>response</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>result</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span> <span class='rbrace'>}</span>
+
+<span class='comment'># Transaction confirmation helpers
+</span><span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='id identifier rubyid_connection'>connection</span><span class='period'>.</span><span class='id identifier rubyid_send_transaction'>send_transaction</span><span class='lparen'>(</span><span class='id identifier rubyid_transaction'>transaction</span><span class='period'>.</span><span class='id identifier rubyid_serialize'>serialize</span><span class='rparen'>)</span>
+<span class='id identifier rubyid_connection'>connection</span><span class='period'>.</span><span class='id identifier rubyid_wait_for_confirmed_signature'>wait_for_confirmed_signature</span> <span class='lbrace'>{</span> <span class='id identifier rubyid_response'>response</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>result</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span> <span class='rbrace'>}</span>
+</code></pre>
+
+<h2 id="dependencies">Dependencies</h2>
+
+<ul>
+<li><strong>base58</strong>: Base58 encoding/decoding</li>
+<li><strong>rbnacl</strong>: Ed25519 cryptography</li>
+<li><strong>ffi</strong>: Foreign Function Interface for native libraries</li>
+<li><strong>json</strong>: JSON parsing for RPC</li>
+<li><strong>net/http</strong>: HTTP client for RPC calls</li>
+</ul>
+
+<h2 id="current-limitations">Current Limitations</h2>
+
+<h3 id="high-impact-foundational-next-steps">High-Impact/Foundational Next Steps</h3>
+
+<ol>
+<li><p><strong>Associated Token Account Program</strong></p>
+
+<ul>
+<li>Implement: close_associated_token_account, and helpers for derivation.</li>
+<li>Rationale: Required for user wallets and token UX. <strong>Most SPL Token operations depend on ATAs to be useful in real-world workflows.</strong></li>
+</ul></li>
+<li><p><strong>Full SPL Token Program Coverage</strong> <em>(depends on ATA support)</em></p>
+
+<ul>
+<li>Implement: mint_to, burn, close_account, set_authority, freeze/thaw, approve/revoke, etc.</li>
+<li>Rationale: Most dApps and DeFi protocols rely on SPL tokens. <strong>For practical use, SPL Token instructions should leverage ATA helpers.</strong></li>
+</ul></li>
+<li><p><strong>Account Data Parsing</strong></p>
+
+<ul>
+<li>Implement: Decoders for token accounts, mint accounts, stake accounts, etc.</li>
+<li>Rationale: Needed to read on-chain state.</li>
+</ul></li>
+<li><p><strong>Transaction Simulation</strong></p>
+
+<ul>
+<li>Implement: <code>simulateTransaction</code> RPC endpoint.</li>
+<li>Rationale: Allows dry-run and error debugging.</li>
+</ul></li>
+<li><p><strong>Error Decoding</strong></p>
+
+<ul>
+<li>Implement: Map program error codes to readable errors.</li>
+<li>Rationale: Improves DX and debugging.</li>
+</ul></li>
+</ol>
+
+<hr>
+
+<h3 id="medium-impact">Medium-Impact</h3>
+
+<ol>
+<li><p><strong>Address Lookup Table Support</strong></p>
+
+<ul>
+<li>Implement: Create, extend, use ALT in transactions.</li>
+<li>Rationale: Needed for scalable DeFi/protocols.</li>
+</ul></li>
+<li><p><strong>Stake Program</strong></p>
+
+<ul>
+<li>Implement: delegate, deactivate, withdraw, split, merge.</li>
+<li>Rationale: For validators, staking dApps.</li>
+</ul></li>
+<li><p><strong>Websocket/Event Subscription</strong></p>
+
+<ul>
+<li>Implement: Account/slot/transaction subscriptions.</li>
+<li>Rationale: For real-time apps and bots.</li>
+</ul></li>
+<li><p><strong>Utility Functions</strong></p>
+
+<ul>
+<li>base58/base64 encode/decode, lamports/SOL conversions, etc.</li>
+</ul></li>
+<li><p><strong>Advanced Transaction Features</strong></p>
+
+<ul>
+<li>Durable nonce, versioned transactions, partial signing.</li>
+</ul></li>
+</ol>
+
+<hr>
+
+<h3 id="low-impact-advanced">Low-Impact/Advanced</h3>
+
+<ul>
+<li>Governance program</li>
+<li>Anchor IDL/Anchor-style program support</li>
+<li>Program deployment (BPF loader)</li>
+</ul>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Solace provides a comprehensive, Ruby-idiomatic interface to the Solana blockchain. Its layered architecture allows developers to choose the appropriate level of abstraction for their needs, from low-level instruction building to high-level program interactions. The consistent patterns and thorough documentation make it accessible to Ruby developers while maintaining the power and flexibility needed for complex Solana applications.</p>
+</div></div>
+
+      <div id="footer">
+  Generated on Wed Jul 30 16:07:07 2025 by
+  <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.9.37 (ruby-3.4.4).
+</div>
+
+    </div>
+  </body>
+</html>

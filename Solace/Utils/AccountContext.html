@@ -1,0 +1,2340 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>
+  Class: Solace::Utils::AccountContext
+  
+    &mdash; Solace Ruby SDK Documentation
+  
+</title>
+
+  <link rel="stylesheet" href="../../css/style.css" type="text/css" />
+
+  <link rel="stylesheet" href="../../css/common.css" type="text/css" />
+
+<script type="text/javascript">
+  pathId = "Solace::Utils::AccountContext";
+  relpath = '../../';
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="../../js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="../../js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div class="nav_wrap">
+      <iframe id="nav" src="../../class_list.html?1"></iframe>
+      <div id="resizer"></div>
+    </div>
+
+    <div id="main" tabindex="-1">
+      <div id="header">
+        <div id="menu">
+  
+    <a href="../../_index.html">Index (A)</a> &raquo;
+    <span class='title'><span class='object_link'><a href="../../Solace.html" title="Solace (module)">Solace</a></span></span> &raquo; <span class='title'><span class='object_link'><a href="../Utils.html" title="Solace::Utils (module)">Utils</a></span></span>
+     &raquo; 
+    <span class="title">AccountContext</span>
+  
+</div>
+
+        <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="../../class_list.html">
+
+        <svg width="24" height="24">
+          <rect x="0" y="4" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="12" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
+        </svg>
+    </a>
+  
+</div>
+        <div class="clear"></div>
+      </div>
+
+      <div id="content"><h1>Class: Solace::Utils::AccountContext
+  
+  
+  
+</h1>
+<div class="box_info">
+  
+  <dl>
+    <dt>Inherits:</dt>
+    <dd>
+      <span class="inheritName">Object</span>
+      
+        <ul class="fullTree">
+          <li>Object</li>
+          
+            <li class="next">Solace::Utils::AccountContext</li>
+          
+        </ul>
+        <a href="#" class="inheritanceTree">show all</a>
+      
+    </dd>
+  </dl>
+  
+
+  
+  
+  
+  
+  
+
+  
+
+  
+  <dl>
+    <dt>Defined in:</dt>
+    <dd>lib/solace/utils/account_context.rb</dd>
+  </dl>
+  
+</div>
+
+<h2>Overview</h2><div class="docstring">
+  <div class="discussion">
+    <p>Utility for managing account context for composers</p>
+
+<p>This utility is used to manage the accounts in a transaction composer and instructions composer. It
+provides methods for managing the accounts and their permissions, as well as compiling the accounts
+into the final format required by the instruction builders. Concerns like deduplication and ordering
+are handled by this utility.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+  <div class="examples">
+    <h4 class="tag_title">Examples:</h4>
+    
+      
+        <h5 class="example_title"><div class='inline'><p>Usage</p>
+</div></h5>
+      
+      <pre class="example code"><code><span class='comment'># Create a new account context
+</span><span class='id identifier rubyid_context'>context</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Utils.html" title="Solace::Utils (module)">Utils</a></span></span><span class='op'>::</span><span class='const'>AccountContext</span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="#initialize-instance_method" title="Solace::Utils::AccountContext#initialize (method)">new</a></span></span>
+
+<span class='comment'># Add accounts
+</span><span class='id identifier rubyid_context'>context</span><span class='period'>.</span><span class='id identifier rubyid_add_writable_signer'>add_writable_signer</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>pubkey1</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+<span class='id identifier rubyid_context'>context</span><span class='period'>.</span><span class='id identifier rubyid_add_readonly_nonsigner'>add_readonly_nonsigner</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>pubkey2</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+
+<span class='comment'># Merge accounts from another context
+</span><span class='id identifier rubyid_context'>context</span> <span class='op'>=</span> <span class='id identifier rubyid_context'>context</span><span class='period'>.</span><span class='id identifier rubyid_merge_from'>merge_from</span><span class='lparen'>(</span><span class='id identifier rubyid_other_context'>other_context</span><span class='rparen'>)</span>
+
+<span class='comment'># Set fee payer
+</span><span class='id identifier rubyid_context'>context</span><span class='period'>.</span><span class='id identifier rubyid_set_fee_payer'>set_fee_payer</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>pubkey3</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+
+<span class='comment'># Compile the accounts
+</span><span class='id identifier rubyid_context'>context</span><span class='period'>.</span><span class='id identifier rubyid_compile'>compile</span></code></pre>
+    
+  </div>
+
+
+  <p class="tag_title">See Also:</p>
+  <ul class="see">
+    
+      <li><span class='object_link'><a href="../TransactionComposer.html" title="Solace::TransactionComposer (class)">TransactionComposer</a></span></li>
+    
+      <li><span class='object_link'><a href="../Composers/Base.html" title="Solace::Composers::Base (class)">Composers::Base</a></span></li>
+    
+  </ul>
+<p class="tag_title">Since:</p>
+<ul class="since">
+  
+    <li>
+      
+      
+      
+      
+        
+        <div class='inline'><p>0.0.3</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div>
+  
+    <h2>
+      Constant Summary
+      <small><a href="#" class="constants_summary_toggle">collapse</a></small>
+    </h2>
+
+    <dl class="constants">
+      
+        <dt id="DEFAULT_ACCOUNT-constant" class="">DEFAULT_ACCOUNT =
+          <div class="docstring">
+  <div class="discussion">
+    <p>Returns The default account data with lowest level of permissions.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Hash</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>The default account data with lowest level of permissions</p>
+</div>
+      
+    </li>
+  
+</ul>
+<p class="tag_title">Since:</p>
+<ul class="since">
+  
+    <li>
+      
+      
+      
+      
+        
+        <div class='inline'><p>0.0.3</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div>
+        </dt>
+        <dd><pre class="code"><span class='lbrace'>{</span>
+  <span class='label'>signer:</span> <span class='kw'>false</span><span class='comma'>,</span>
+  <span class='label'>writable:</span> <span class='kw'>false</span><span class='comma'>,</span>
+  <span class='label'>fee_payer:</span> <span class='kw'>false</span>
+<span class='rbrace'>}</span><span class='period'>.</span><span class='id identifier rubyid_freeze'>freeze</span></pre></dd>
+      
+    </dl>
+  
+
+
+
+
+  <h2>Instance Attribute Summary <small><a href="#" class="summary_toggle">collapse</a></small></h2>
+  <ul class="summary">
+    
+      <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#accounts-instance_method" title="#accounts (instance method)">#<strong>accounts</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+    
+    
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>The accounts in the transaction.</p>
+</div></span>
+  
+</li>
+
+    
+      <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#DEFAULT_ACCOUNT-instance_method" title="#DEFAULT_ACCOUNT (instance method)">#<strong>DEFAULT_ACCOUNT</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+    
+    
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>The default account data.</p>
+</div></span>
+  
+</li>
+
+    
+      <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#header-instance_method" title="#header (instance method)">#<strong>header</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+    
+    
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>The header for the transaction.</p>
+</div></span>
+  
+</li>
+
+    
+      <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#pubkey_account_map-instance_method" title="#pubkey_account_map (instance method)">#<strong>pubkey_account_map</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+    
+    
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>The map of accounts.</p>
+</div></span>
+  
+</li>
+
+    
+  </ul>
+
+
+
+
+  
+    <h2>
+      Instance Method Summary
+      <small><a href="#" class="summary_toggle">collapse</a></small>
+    </h2>
+
+    <ul class="summary">
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#add_readonly_nonsigner-instance_method" title="#add_readonly_nonsigner (instance method)">#<strong>add_readonly_nonsigner</strong>(pubkey)  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Add a readonly account.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#add_readonly_signer-instance_method" title="#add_readonly_signer (instance method)">#<strong>add_readonly_signer</strong>(pubkey)  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Add a readonly signer account.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#add_writable_nonsigner-instance_method" title="#add_writable_nonsigner (instance method)">#<strong>add_writable_nonsigner</strong>(pubkey)  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Add a writable account.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#add_writable_signer-instance_method" title="#add_writable_signer (instance method)">#<strong>add_writable_signer</strong>(pubkey)  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Add a signer account.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#compile-instance_method" title="#compile (instance method)">#<strong>compile</strong>  &#x21d2; Hash </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Compile accounts into final format.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#fee_payer%3F-instance_method" title="#fee_payer? (instance method)">#<strong>fee_payer?</strong>(pubkey)  &#x21d2; Boolean </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Predicate to check if an account is a fee payer.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#index_of-instance_method" title="#index_of (instance method)">#<strong>index_of</strong>(pubkey_str)  &#x21d2; Integer </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Index of a pubkey in the accounts array.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#indices-instance_method" title="#indices (instance method)">#<strong>indices</strong>  &#x21d2; Hash{String =&gt; Integer} </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Get map of indicies for pubkeys in accounts array.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#initialize-instance_method" title="#initialize (instance method)">#<strong>initialize</strong>  &#x21d2; AccountContext </a>
+    
+
+    
+  </span>
+  
+  
+    <span class="note title constructor">constructor</span>
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Initialize the account context.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#merge_from-instance_method" title="#merge_from (instance method)">#<strong>merge_from</strong>(other_context)  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Merge all accounts from another AccountContext into this one.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#readonly_nonsigner%3F-instance_method" title="#readonly_nonsigner? (instance method)">#<strong>readonly_nonsigner?</strong>(pubkey)  &#x21d2; Boolean </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Predicate to check if an account is readonly and not a signer.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#readonly_signer%3F-instance_method" title="#readonly_signer? (instance method)">#<strong>readonly_signer?</strong>(pubkey)  &#x21d2; Boolean </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Predicate to check if an account is a readonly signer.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#set_fee_payer-instance_method" title="#set_fee_payer (instance method)">#<strong>set_fee_payer</strong>(pubkey)  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Set the fee payer account.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#signer%3F-instance_method" title="#signer? (instance method)">#<strong>signer?</strong>(pubkey)  &#x21d2; Boolean </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Predicate to check if an account is a signer.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#writable%3F-instance_method" title="#writable? (instance method)">#<strong>writable?</strong>(pubkey)  &#x21d2; Boolean </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Predicate to check if an account is writable.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#writable_nonsigner%3F-instance_method" title="#writable_nonsigner? (instance method)">#<strong>writable_nonsigner?</strong>(pubkey)  &#x21d2; Boolean </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Predicate to check if an account is writable and not a signer.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#writable_signer%3F-instance_method" title="#writable_signer? (instance method)">#<strong>writable_signer?</strong>(pubkey)  &#x21d2; Boolean </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Predicate to check if an account is a writable signer.</p>
+</div></span>
+  
+</li>
+
+      
+    </ul>
+  
+
+<div id="constructor_details" class="method_details_list">
+  <h2>Constructor Details</h2>
+  
+    <div class="method_details first">
+  <h3 class="signature first" id="initialize-instance_method">
+  
+    #<strong>initialize</strong>  &#x21d2; <tt><span class='object_link'><a href="" title="Solace::Utils::AccountContext (class)">AccountContext</a></span></tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Initialize the account context</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Since:</p>
+<ul class="since">
+  
+    <li>
+      
+      
+      
+      
+        
+        <div class='inline'><p>0.0.3</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+62
+63
+64
+65
+66</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/solace/utils/account_context.rb', line 62</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span>
+  <span class='ivar'>@header</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
+  <span class='ivar'>@accounts</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
+  <span class='ivar'>@pubkey_account_map</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+  
+</div>
+
+  <div id="instance_attr_details" class="attr_details">
+    <h2>Instance Attribute Details</h2>
+    
+      
+      <span id="accounts=-instance_method"></span>
+      <div class="method_details first">
+  <h3 class="signature first" id="accounts-instance_method">
+  
+    #<strong>accounts</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>The accounts in the transaction</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+53
+54
+55</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/solace/utils/account_context.rb', line 53</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_accounts'>accounts</span>
+  <span class='ivar'>@accounts</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      
+      <span id="DEFAULT_ACCOUNT=-instance_method"></span>
+      <div class="method_details ">
+  <h3 class="signature " id="DEFAULT_ACCOUNT-instance_method">
+  
+    #<strong>DEFAULT_ACCOUNT</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>The default account data</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+37
+38
+39
+40
+41</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/solace/utils/account_context.rb', line 37</span>
+
+<span class='const'><span class='object_link'><a href="#DEFAULT_ACCOUNT-constant" title="Solace::Utils::AccountContext::DEFAULT_ACCOUNT (constant)">DEFAULT_ACCOUNT</a></span></span> <span class='op'>=</span> <span class='lbrace'>{</span>
+  <span class='label'>signer:</span> <span class='kw'>false</span><span class='comma'>,</span>
+  <span class='label'>writable:</span> <span class='kw'>false</span><span class='comma'>,</span>
+  <span class='label'>fee_payer:</span> <span class='kw'>false</span>
+<span class='rbrace'>}</span><span class='period'>.</span><span class='id identifier rubyid_freeze'>freeze</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      
+      <span id="header=-instance_method"></span>
+      <div class="method_details ">
+  <h3 class="signature " id="header-instance_method">
+  
+    #<strong>header</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>The header for the transaction</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+47
+48
+49</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/solace/utils/account_context.rb', line 47</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_header'>header</span>
+  <span class='ivar'>@header</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      
+      <span id="pubkey_account_map=-instance_method"></span>
+      <div class="method_details ">
+  <h3 class="signature " id="pubkey_account_map-instance_method">
+  
+    #<strong>pubkey_account_map</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>The map of accounts</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+59
+60
+61</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/solace/utils/account_context.rb', line 59</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_pubkey_account_map'>pubkey_account_map</span>
+  <span class='ivar'>@pubkey_account_map</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+
+  <div id="instance_method_details" class="method_details_list">
+    <h2>Instance Method Details</h2>
+
+    
+      <div class="method_details first">
+  <h3 class="signature first" id="add_readonly_nonsigner-instance_method">
+  
+    #<strong>add_readonly_nonsigner</strong>(pubkey)  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Add a readonly account</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>pubkey</span>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="../Keypair.html" title="Solace::Keypair (class)">Solace::Keypair</a></span></tt>, <tt><span class='object_link'><a href="../PublicKey.html" title="Solace::PublicKey (class)">Solace::PublicKey</a></span></tt>, <tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>The pubkey of the readonly account</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Since:</p>
+<ul class="since">
+  
+    <li>
+      
+      
+      
+      
+        
+        <div class='inline'><p>0.0.3</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+99
+100
+101</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/solace/utils/account_context.rb', line 99</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_add_readonly_nonsigner'>add_readonly_nonsigner</span><span class='lparen'>(</span><span class='id identifier rubyid_pubkey'>pubkey</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_merge_account'>merge_account</span><span class='lparen'>(</span><span class='id identifier rubyid_pubkey'>pubkey</span><span class='comma'>,</span> <span class='label'>signer:</span> <span class='kw'>false</span><span class='comma'>,</span> <span class='label'>writable:</span> <span class='kw'>false</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="add_readonly_signer-instance_method">
+  
+    #<strong>add_readonly_signer</strong>(pubkey)  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Add a readonly signer account</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>pubkey</span>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="../Keypair.html" title="Solace::Keypair (class)">Solace::Keypair</a></span></tt>, <tt><span class='object_link'><a href="../PublicKey.html" title="Solace::PublicKey (class)">Solace::PublicKey</a></span></tt>, <tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>The pubkey of the readonly signer account</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Since:</p>
+<ul class="since">
+  
+    <li>
+      
+      
+      
+      
+        
+        <div class='inline'><p>0.0.3</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+92
+93
+94</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/solace/utils/account_context.rb', line 92</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_add_readonly_signer'>add_readonly_signer</span><span class='lparen'>(</span><span class='id identifier rubyid_pubkey'>pubkey</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_merge_account'>merge_account</span><span class='lparen'>(</span><span class='id identifier rubyid_pubkey'>pubkey</span><span class='comma'>,</span> <span class='label'>signer:</span> <span class='kw'>true</span><span class='comma'>,</span> <span class='label'>writable:</span> <span class='kw'>false</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="add_writable_nonsigner-instance_method">
+  
+    #<strong>add_writable_nonsigner</strong>(pubkey)  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Add a writable account</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>pubkey</span>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="../Keypair.html" title="Solace::Keypair (class)">Solace::Keypair</a></span></tt>, <tt><span class='object_link'><a href="../PublicKey.html" title="Solace::PublicKey (class)">Solace::PublicKey</a></span></tt>, <tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>The pubkey of the writable account</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Since:</p>
+<ul class="since">
+  
+    <li>
+      
+      
+      
+      
+        
+        <div class='inline'><p>0.0.3</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+85
+86
+87</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/solace/utils/account_context.rb', line 85</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_add_writable_nonsigner'>add_writable_nonsigner</span><span class='lparen'>(</span><span class='id identifier rubyid_pubkey'>pubkey</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_merge_account'>merge_account</span><span class='lparen'>(</span><span class='id identifier rubyid_pubkey'>pubkey</span><span class='comma'>,</span> <span class='label'>signer:</span> <span class='kw'>false</span><span class='comma'>,</span> <span class='label'>writable:</span> <span class='kw'>true</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="add_writable_signer-instance_method">
+  
+    #<strong>add_writable_signer</strong>(pubkey)  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Add a signer account</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>pubkey</span>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="../Keypair.html" title="Solace::Keypair (class)">Solace::Keypair</a></span></tt>, <tt><span class='object_link'><a href="../PublicKey.html" title="Solace::PublicKey (class)">Solace::PublicKey</a></span></tt>, <tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>The pubkey of the signer account</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Since:</p>
+<ul class="since">
+  
+    <li>
+      
+      
+      
+      
+        
+        <div class='inline'><p>0.0.3</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+78
+79
+80</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/solace/utils/account_context.rb', line 78</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_add_writable_signer'>add_writable_signer</span><span class='lparen'>(</span><span class='id identifier rubyid_pubkey'>pubkey</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_merge_account'>merge_account</span><span class='lparen'>(</span><span class='id identifier rubyid_pubkey'>pubkey</span><span class='comma'>,</span> <span class='label'>signer:</span> <span class='kw'>true</span><span class='comma'>,</span> <span class='label'>writable:</span> <span class='kw'>true</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="compile-instance_method">
+  
+    #<strong>compile</strong>  &#x21d2; <tt>Hash</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Compile accounts into final format</p>
+
+<p>Gets unique accounts and sorts them in the following order:</p>
+
+<ul>
+<li>Signers first (Solana requirement)</li>
+<li>Then writable accounts</li>
+<li>Then readonly accounts</li>
+</ul>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Hash</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>The compiled accounts and header</p>
+</div>
+      
+    </li>
+  
+</ul>
+<p class="tag_title">Since:</p>
+<ul class="since">
+  
+    <li>
+      
+      
+      
+      
+        
+        <div class='inline'><p>0.0.3</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+177
+178
+179
+180
+181</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/solace/utils/account_context.rb', line 177</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_compile'>compile</span>
+  <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_header'>header</span> <span class='op'>=</span> <span class='id identifier rubyid_calculate_header'>calculate_header</span>
+  <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_accounts'>accounts</span> <span class='op'>=</span> <span class='id identifier rubyid_order_accounts'>order_accounts</span>
+  <span class='kw'>self</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="fee_payer?-instance_method">
+  
+    #<strong>fee_payer?</strong>(pubkey)  &#x21d2; <tt>Boolean</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Predicate to check if an account is a fee payer</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>pubkey</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>The pubkey of the account</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>Whether the account is a fee payer</p>
+</div>
+      
+    </li>
+  
+</ul>
+<p class="tag_title">Since:</p>
+<ul class="since">
+  
+    <li>
+      
+      
+      
+      
+        
+        <div class='inline'><p>0.0.3</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+107
+108
+109</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/solace/utils/account_context.rb', line 107</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_fee_payer?'>fee_payer?</span><span class='lparen'>(</span><span class='id identifier rubyid_pubkey'>pubkey</span><span class='rparen'>)</span>
+  <span class='ivar'>@pubkey_account_map</span><span class='lbracket'>[</span><span class='id identifier rubyid_pubkey'>pubkey</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_try'>try</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_acc'>acc</span><span class='op'>|</span> <span class='id identifier rubyid_acc'>acc</span><span class='lbracket'>[</span><span class='symbol'>:fee_payer</span><span class='rbracket'>]</span> <span class='rbrace'>}</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="index_of-instance_method">
+  
+    #<strong>index_of</strong>(pubkey_str)  &#x21d2; <tt>Integer</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Index of a pubkey in the accounts array</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>pubkey_str</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>The public key of the account</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Integer</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>The index of the pubkey in the accounts array or -1 if not found</p>
+</div>
+      
+    </li>
+  
+</ul>
+<p class="tag_title">Since:</p>
+<ul class="since">
+  
+    <li>
+      
+      
+      
+      
+        
+        <div class='inline'><p>0.0.3</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+187
+188
+189</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/solace/utils/account_context.rb', line 187</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_index_of'>index_of</span><span class='lparen'>(</span><span class='id identifier rubyid_pubkey_str'>pubkey_str</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_indices'>indices</span><span class='lbracket'>[</span><span class='id identifier rubyid_pubkey_str'>pubkey_str</span><span class='rbracket'>]</span> <span class='op'>||</span> <span class='op'>-</span><span class='int'>1</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="indices-instance_method">
+  
+    #<strong>indices</strong>  &#x21d2; <tt>Hash{String =&gt; Integer}</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Get map of indicies for pubkeys in accounts array</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Hash{String =&gt; Integer}</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>The indices of the pubkeys in the accounts array</p>
+</div>
+      
+    </li>
+  
+</ul>
+<p class="tag_title">Since:</p>
+<ul class="since">
+  
+    <li>
+      
+      
+      
+      
+        
+        <div class='inline'><p>0.0.3</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+194
+195
+196</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/solace/utils/account_context.rb', line 194</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_indices'>indices</span>
+  <span class='id identifier rubyid_accounts'>accounts</span><span class='period'>.</span><span class='id identifier rubyid_each_with_index'>each_with_index</span><span class='period'>.</span><span class='id identifier rubyid_to_h'>to_h</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="merge_from-instance_method">
+  
+    #<strong>merge_from</strong>(other_context)  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Merge all accounts from another AccountContext into this one</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>other_context</span>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="" title="Solace::Utils::AccountContext (class)">AccountContext</a></span></tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>The other context to merge from</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Since:</p>
+<ul class="since">
+  
+    <li>
+      
+      
+      
+      
+        
+        <div class='inline'><p>0.0.3</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+162
+163
+164
+165
+166
+167</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/solace/utils/account_context.rb', line 162</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_merge_from'>merge_from</span><span class='lparen'>(</span><span class='id identifier rubyid_other_context'>other_context</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_other_context'>other_context</span><span class='period'>.</span><span class='id identifier rubyid_pubkey_account_map'>pubkey_account_map</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_pubkey'>pubkey</span><span class='comma'>,</span> <span class='id identifier rubyid_data'>data</span><span class='op'>|</span>
+    <span class='id identifier rubyid_signer'>signer</span><span class='comma'>,</span> <span class='id identifier rubyid_writable'>writable</span><span class='comma'>,</span> <span class='id identifier rubyid_fee_payer'>fee_payer</span> <span class='op'>=</span> <span class='id identifier rubyid_data'>data</span><span class='period'>.</span><span class='id identifier rubyid_values_at'>values_at</span><span class='lparen'>(</span><span class='symbol'>:signer</span><span class='comma'>,</span> <span class='symbol'>:writable</span><span class='comma'>,</span> <span class='symbol'>:fee_payer</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_merge_account'>merge_account</span><span class='lparen'>(</span><span class='id identifier rubyid_pubkey'>pubkey</span><span class='comma'>,</span> <span class='label'>signer:</span> <span class='id identifier rubyid_signer'>signer</span><span class='comma'>,</span> <span class='label'>writable:</span> <span class='id identifier rubyid_writable'>writable</span><span class='comma'>,</span> <span class='label'>fee_payer:</span> <span class='id identifier rubyid_fee_payer'>fee_payer</span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="readonly_nonsigner?-instance_method">
+  
+    #<strong>readonly_nonsigner?</strong>(pubkey)  &#x21d2; <tt>Boolean</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Predicate to check if an account is readonly and not a signer</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>pubkey</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>The pubkey of the account</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>Whether the account is readonly and not a signer</p>
+</div>
+      
+    </li>
+  
+</ul>
+<p class="tag_title">Since:</p>
+<ul class="since">
+  
+    <li>
+      
+      
+      
+      
+        
+        <div class='inline'><p>0.0.3</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+155
+156
+157</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/solace/utils/account_context.rb', line 155</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_readonly_nonsigner?'>readonly_nonsigner?</span><span class='lparen'>(</span><span class='id identifier rubyid_pubkey'>pubkey</span><span class='rparen'>)</span>
+  <span class='ivar'>@pubkey_account_map</span><span class='lbracket'>[</span><span class='id identifier rubyid_pubkey'>pubkey</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_try'>try</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_acc'>acc</span><span class='op'>|</span> <span class='op'>!</span><span class='id identifier rubyid_acc'>acc</span><span class='lbracket'>[</span><span class='symbol'>:signer</span><span class='rbracket'>]</span> <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='id identifier rubyid_acc'>acc</span><span class='lbracket'>[</span><span class='symbol'>:writable</span><span class='rbracket'>]</span> <span class='rbrace'>}</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="readonly_signer?-instance_method">
+  
+    #<strong>readonly_signer?</strong>(pubkey)  &#x21d2; <tt>Boolean</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Predicate to check if an account is a readonly signer</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>pubkey</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>The pubkey of the account</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>Whether the account is a readonly signer</p>
+</div>
+      
+    </li>
+  
+</ul>
+<p class="tag_title">Since:</p>
+<ul class="since">
+  
+    <li>
+      
+      
+      
+      
+        
+        <div class='inline'><p>0.0.3</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+147
+148
+149</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/solace/utils/account_context.rb', line 147</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_readonly_signer?'>readonly_signer?</span><span class='lparen'>(</span><span class='id identifier rubyid_pubkey'>pubkey</span><span class='rparen'>)</span>
+  <span class='ivar'>@pubkey_account_map</span><span class='lbracket'>[</span><span class='id identifier rubyid_pubkey'>pubkey</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_try'>try</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_acc'>acc</span><span class='op'>|</span> <span class='id identifier rubyid_acc'>acc</span><span class='lbracket'>[</span><span class='symbol'>:signer</span><span class='rbracket'>]</span> <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='id identifier rubyid_acc'>acc</span><span class='lbracket'>[</span><span class='symbol'>:writable</span><span class='rbracket'>]</span> <span class='rbrace'>}</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="set_fee_payer-instance_method">
+  
+    #<strong>set_fee_payer</strong>(pubkey)  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Set the fee payer account</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>pubkey</span>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="../Keypair.html" title="Solace::Keypair (class)">Solace::Keypair</a></span></tt>, <tt><span class='object_link'><a href="../PublicKey.html" title="Solace::PublicKey (class)">Solace::PublicKey</a></span></tt>, <tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>The pubkey of the fee payer account</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Since:</p>
+<ul class="since">
+  
+    <li>
+      
+      
+      
+      
+        
+        <div class='inline'><p>0.0.3</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+71
+72
+73</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/solace/utils/account_context.rb', line 71</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_set_fee_payer'>set_fee_payer</span><span class='lparen'>(</span><span class='id identifier rubyid_pubkey'>pubkey</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_merge_account'>merge_account</span><span class='lparen'>(</span><span class='id identifier rubyid_pubkey'>pubkey</span><span class='comma'>,</span> <span class='label'>signer:</span> <span class='kw'>true</span><span class='comma'>,</span> <span class='label'>writable:</span> <span class='kw'>true</span><span class='comma'>,</span> <span class='label'>fee_payer:</span> <span class='kw'>true</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="signer?-instance_method">
+  
+    #<strong>signer?</strong>(pubkey)  &#x21d2; <tt>Boolean</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Predicate to check if an account is a signer</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>pubkey</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>The pubkey of the account</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>Whether the account is a signer</p>
+</div>
+      
+    </li>
+  
+</ul>
+<p class="tag_title">Since:</p>
+<ul class="since">
+  
+    <li>
+      
+      
+      
+      
+        
+        <div class='inline'><p>0.0.3</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+115
+116
+117</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/solace/utils/account_context.rb', line 115</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_signer?'>signer?</span><span class='lparen'>(</span><span class='id identifier rubyid_pubkey'>pubkey</span><span class='rparen'>)</span>
+  <span class='ivar'>@pubkey_account_map</span><span class='lbracket'>[</span><span class='id identifier rubyid_pubkey'>pubkey</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_try'>try</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_acc'>acc</span><span class='op'>|</span> <span class='id identifier rubyid_acc'>acc</span><span class='lbracket'>[</span><span class='symbol'>:signer</span><span class='rbracket'>]</span> <span class='rbrace'>}</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="writable?-instance_method">
+  
+    #<strong>writable?</strong>(pubkey)  &#x21d2; <tt>Boolean</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Predicate to check if an account is writable</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>pubkey</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>The pubkey of the account</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>Whether the account is writable</p>
+</div>
+      
+    </li>
+  
+</ul>
+<p class="tag_title">Since:</p>
+<ul class="since">
+  
+    <li>
+      
+      
+      
+      
+        
+        <div class='inline'><p>0.0.3</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+123
+124
+125</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/solace/utils/account_context.rb', line 123</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_writable?'>writable?</span><span class='lparen'>(</span><span class='id identifier rubyid_pubkey'>pubkey</span><span class='rparen'>)</span>
+  <span class='ivar'>@pubkey_account_map</span><span class='lbracket'>[</span><span class='id identifier rubyid_pubkey'>pubkey</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_try'>try</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_acc'>acc</span><span class='op'>|</span> <span class='id identifier rubyid_acc'>acc</span><span class='lbracket'>[</span><span class='symbol'>:writable</span><span class='rbracket'>]</span> <span class='rbrace'>}</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="writable_nonsigner?-instance_method">
+  
+    #<strong>writable_nonsigner?</strong>(pubkey)  &#x21d2; <tt>Boolean</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Predicate to check if an account is writable and not a signer</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>pubkey</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>The pubkey of the account</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>Whether the account is writable and not a signer</p>
+</div>
+      
+    </li>
+  
+</ul>
+<p class="tag_title">Since:</p>
+<ul class="since">
+  
+    <li>
+      
+      
+      
+      
+        
+        <div class='inline'><p>0.0.3</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+139
+140
+141</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/solace/utils/account_context.rb', line 139</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_writable_nonsigner?'>writable_nonsigner?</span><span class='lparen'>(</span><span class='id identifier rubyid_pubkey'>pubkey</span><span class='rparen'>)</span>
+  <span class='ivar'>@pubkey_account_map</span><span class='lbracket'>[</span><span class='id identifier rubyid_pubkey'>pubkey</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_try'>try</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_acc'>acc</span><span class='op'>|</span> <span class='op'>!</span><span class='id identifier rubyid_acc'>acc</span><span class='lbracket'>[</span><span class='symbol'>:signer</span><span class='rbracket'>]</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_acc'>acc</span><span class='lbracket'>[</span><span class='symbol'>:writable</span><span class='rbracket'>]</span> <span class='rbrace'>}</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="writable_signer?-instance_method">
+  
+    #<strong>writable_signer?</strong>(pubkey)  &#x21d2; <tt>Boolean</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Predicate to check if an account is a writable signer</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>pubkey</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>The pubkey of the account</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>Whether the account is a writable signer</p>
+</div>
+      
+    </li>
+  
+</ul>
+<p class="tag_title">Since:</p>
+<ul class="since">
+  
+    <li>
+      
+      
+      
+      
+        
+        <div class='inline'><p>0.0.3</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+131
+132
+133</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/solace/utils/account_context.rb', line 131</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_writable_signer?'>writable_signer?</span><span class='lparen'>(</span><span class='id identifier rubyid_pubkey'>pubkey</span><span class='rparen'>)</span>
+  <span class='ivar'>@pubkey_account_map</span><span class='lbracket'>[</span><span class='id identifier rubyid_pubkey'>pubkey</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_try'>try</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_acc'>acc</span><span class='op'>|</span> <span class='id identifier rubyid_acc'>acc</span><span class='lbracket'>[</span><span class='symbol'>:signer</span><span class='rbracket'>]</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_acc'>acc</span><span class='lbracket'>[</span><span class='symbol'>:writable</span><span class='rbracket'>]</span> <span class='rbrace'>}</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+</div>
+
+      <div id="footer">
+  Generated on Wed Jul 30 16:07:08 2025 by
+  <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.9.37 (ruby-3.4.4).
+</div>
+
+    </div>
+  </body>
+</html>
