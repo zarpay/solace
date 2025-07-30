@@ -15,7 +15,7 @@ describe Solace::Serializers::InstructionDeserializer do
 
   describe '#call' do
     before do
-      @deserialized_ix = Solace::Serializers::InstructionDeserializer.call(ix.to_io)
+      @deserialized_ix = Solace::Serializers::InstructionDeserializer.new(ix.to_io).call
     end
 
     it 'returns a deserialized instruction' do

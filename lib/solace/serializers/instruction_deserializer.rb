@@ -1,23 +1,18 @@
 # frozen_string_literal: true
 
-# =============================
-# Instruction Deserializer
-# =============================
-#
-# Deserializes a binary instruction into a Solace::Instruction object.
 module Solace
   module Serializers
-    # !@class InstructionDeserializer
+    # Deserializes a binary instruction into a Solace::Instruction object.
     #
-    # @return [Class]
+    # @since 0.0.1
     class InstructionDeserializer < Solace::Serializers::BaseDeserializer
-      # @!attribute record_class
+      # @!attribute  record_class
       #   The class of the record being deserialized
       #
       # @return [Class] The class of the record
       self.record_class = Solace::Instruction
 
-      # @!attribute steps
+      # @!attribute  steps
       #   An ordered list of methods to deserialize the instruction
       #
       # @return [Array] The steps to deserialize the instruction

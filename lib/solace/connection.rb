@@ -5,31 +5,41 @@ require 'json'
 require 'uri'
 
 module Solace
-  # !@class Connection
+  # Connection to a Solana RPC node
   #
-  # A class representing a connection to a Solana RPC node. Handles sending JSON-RPC requests and parsing responses.
+  # This class provides methods for sending JSON-RPC requests to a Solana RPC node and parsing responses.
+  # It includes methods for sending transactions, getting account information, and getting blockhashes.
   #
-  # @return [Class]
+  # @example
+  #   # Initialize the connection
+  #   connection = Solace::Connection.new
+  #
+  #   # Get account information
+  #   connection.get_account_info(account.address)
+  #
+  #   # Request an airdrop
+  #   result = connection.request_airdrop(account.address, 1000000)
+  #
+  #   # Wait for the transaction to be confirmed
+  #   connection.wait_for_confirmed_signature('confirmed') { result['result'] }
+  #
+  # @since 0.0.1
   #
   # rubocop:disable Metrics/ClassLength
   class Connection
     # @!attribute [r] rpc_url
     #   The URL of the Solana RPC node
-    #
-    # @return [String] The URL of the Solana RPC node
     attr_reader :rpc_url
 
     # @!attribute [r] default_options
     #   The default options for RPC requests
-    #
-    # @return [Hash] The default options for RPC requests
     attr_reader :default_options
 
     # Initialize the connection with a default or custom RPC URL
     #
     # @param rpc_url [String] The URL of the Solana RPC node
+    # @param commitment [String] The commitment level for RPC requests
     # @return [Solace::Connection] The connection object
-    # @param [String] commitment
     def initialize(rpc_url = 'http://localhost:8899', commitment: 'confirmed')
       @request_id = nil
       @rpc_url = rpc_url
@@ -57,8 +67,8 @@ module Solace
     #
     # @param pubkey [String] The public key of the account to receive the airdrop
     # @param lamports [Integer] Amount of lamports to airdrop
+    # @param [Hash{Symbol => Object}] options The options for the request
     # @return [String] The transaction signature of the airdrop
-    # @param [Hash{Symbol => Object}] options
     def request_airdrop(pubkey, lamports, options = {})
       rpc_request(
         'requestAirdrop',

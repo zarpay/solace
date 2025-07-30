@@ -1,9 +1,7 @@
 # frozen_string_literal: true
 
 module Solace
-  # !@module Serializers
-  #
-  # @return [Module]
+  # Serializers module
   module Serializers
     # Autoload serializers
     autoload :TransactionSerializer, 'solace/serializers/transaction_serializer'
@@ -11,15 +9,14 @@ module Solace
     autoload :InstructionSerializer, 'solace/serializers/instruction_serializer'
     autoload :AddressLookupTableSerializer, 'solace/serializers/address_lookup_table_serializer'
 
-    # Base serializer class
-    class BaseSerializer < Serializers::Base
-      class << self
-        # @!attribute STEPS
-        #   An ordered list of methods to deserialize the record
-        #
-        # @return [Array] The steps to deserialize the record
-        attr_accessor :steps
-      end
+    # The base serializer class
+    #
+    # This class provides a consistent interface for serializing records.
+    #
+    # @abstract
+    # @since 0.0.1
+    class BaseSerializer
+      include Solace::Utils
 
       # @!attribute record
       #   The record instance being serialized.
@@ -50,6 +47,14 @@ module Solace
         Base64.strict_encode64(bin)
       rescue NameError => e
         raise "STEPS must be defined: #{e.message}"
+      end
+
+      class << self
+        # @!attribute steps
+        #   An ordered list of methods to serialize the record
+        #
+        # @return [Array] The steps to serialize the record
+        attr_accessor :steps
       end
     end
   end

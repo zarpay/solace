@@ -2,19 +2,17 @@
 
 module Solace
   module Composers
-    # !@class Base
+    # A Base class for all composers
     #
-    # A base class for composers.
-    #
-    # @return [Class]
+    # @since 0.0.3
     class Base
-      # @!attribute params
+      # @!attribute  params
       #   The params for the composer
       #
       # @return [Hash] The parameters passed to the composer
       attr_reader :params
 
-      # @!attribute account_context
+      # @!attribute  account_context
       #   The account_context for the composer
       #
       # @return [Utils::AccountContext] The AccountContext instance for the composer

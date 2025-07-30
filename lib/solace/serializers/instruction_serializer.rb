@@ -1,17 +1,12 @@
 # frozen_string_literal: true
 
-# =============================
-# Instruction Serializer
-# =============================
-#
-# Serializes a Solana instruction to a binary format.
 module Solace
   module Serializers
-    # !@class InstructionSerializer
+    # Serializes a Solana instruction to a binary format.
     #
-    # @return [Class]
+    # @since 0.0.1
     class InstructionSerializer < Solace::Serializers::BaseSerializer
-      # @!attribute steps
+      # @!attribute  steps
       #   An ordered list of methods to serialize the instruction
       #
       # @return [Array] The steps to serialize the instruction

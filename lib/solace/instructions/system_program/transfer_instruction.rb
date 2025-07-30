@@ -3,16 +3,24 @@
 module Solace
   module Instructions
     module SystemProgram
-      # Service object for building a System Program transfer instruction
-      class TransferInstruction < Base
+      # Instruction for transferring SOL.
+      #
+      # This instruction is used to transfer SOL from one account to another.
+      #
+      # @example Build a Transfer instruction
+      #   instruction = Solace::Instructions::SystemProgram::TransferInstruction.build(
+      #     lamports: 100,
+      #     to_index: 1,
+      #     from_index: 2,
+      #     program_index: 3
+      #   )
+      #
+      # @since 0.0.2
+      class TransferInstruction
         # Instruction ID for System Transfer
         INSTRUCTION_ID = [2, 0, 0, 0].freeze
 
         # Builds a Solace::Instruction for transferring SOL
-        #
-        # System Program transfer instruction layout:
-        #   - 4 bytes: instruction index (0 for transfer)
-        #   - 8 bytes: amount (u64, little-endian)
         #
         # @param lamports [Integer] Amount to transfer (in lamports)
         # @param to_index [Integer] Index of the recipient in the transaction's accounts

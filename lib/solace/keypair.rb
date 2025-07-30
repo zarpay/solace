@@ -4,32 +4,31 @@ require 'rbnacl'
 require 'base58'
 
 module Solace
-  # !@class Keypair
+  # Class representing a Solana Ed25519 Keypair
   #
-  # A class representing a Solana Ed25519 Keypair with utility methods for encoding, decoding, signing, and validation
+  # This class provides utility methods for encoding, decoding, signing, and validating keypairs.
   #
-  # @return [Class]
+  # @example
+  #   keypair = Solace::Keypair.generate
+  #   keypair.address
+  #   keypair.sign("<any-message>")
+  #
+  # @since 0.0.1
   class Keypair
     # !@const SECRET_LENGTH
     #   The length of a Solana secret key in bytes
-    #
-    # @return [Integer] The length of a secret key
     SECRET_LENGTH = 64
 
     # !@const SEED_LENGTH
-    #   The length of a Solana seed in bytes (borrowed from RbNaCl)
-    #
-    # @return [Integer] The length of a seed
+    #   The length of a Solana seed in bytes (borrowed from RbNaCl = 32)
     SEED_LENGTH = RbNaCl::Signatures::Ed25519::SEEDBYTES
 
     # !@const SigningKey
-    #   The RbNaCl signing key
-    #
-    # @return [RbNaCl::Signatures::Ed25519::SigningKey]
+    #   The RbNaCl signing key class
     SigningKey = RbNaCl::Signatures::Ed25519::SigningKey
 
     # !@attribute [r] keypair_bytes
-    #   @return [Array<Integer>] The keypair bytes
+    #   The keypair bytes
     attr_reader :keypair_bytes
 
     class << self

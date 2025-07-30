@@ -1,15 +1,10 @@
 # frozen_string_literal: true
 
-# =============================
-# Message Serializer
-# =============================
-#
-# Serializes a Solana message to a binary format.
 module Solace
   module Serializers
-    # !@class MessageSerializer
+    # Serializes a Solana message to a binary format.
     #
-    # @return [Class]
+    # @since 0.0.1
     class MessageSerializer < Solace::Serializers::BaseSerializer
       # @!attribute steps
       #   An ordered list of methods to serialize the message

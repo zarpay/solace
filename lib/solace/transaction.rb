@@ -1,43 +1,54 @@
 # encoding: ASCII-8BIT
 # frozen_string_literal: true
 
-# =============================
-# Transaction
-# =============================
-#
-# Class representing a Solana transaction.
-#
-# The BufferLayout is:
-#   - [Signatures (variable length)]
-#   - [Version (1 byte)] (if versioned)
-#   - [Message header (3 bytes)]
-#   - [Account keys (variable length)]
-#   - [Recent blockhash (32 bytes)]
-#   - [Instructions (variable length)]
-#   - [Address lookup table (variable length)] (if versioned)
-#
 module Solace
-  # !@class Transaction
+  # Class representing a Solana transaction
   #
-  # @return [Class]
-  class Transaction < Solace::SerializableRecord
-    # @!const SERIALIZER
+  # Transactions are the basic building blocks of Solana. They contain a message and an array of signatures. The
+  # message contains the instructions to be executed and the accounts that are used by the instructions. The signatures
+  # are the signatures of the accounts that are used by the instructions. This class provides methods for signing,
+  # serializing, and deserializing transactions.
+  #
+  # The BufferLayout is:
+  #   - [Signatures (variable length)]
+  #   - [Version (1 byte)] (if versioned)
+  #   - [Message header (3 bytes)]
+  #   - [Account keys (variable length)]
+  #   - [Recent blockhash (32 bytes)]
+  #   - [Instructions (variable length)]
+  #   - [Address lookup table (variable length)] (if versioned)
+  #
+  # @example
+  #   # Create a new transaction
+  #   tx = Solace::Transaction.new
+  #
+  #   # Add a message to the transaction
+  #   tx.message = Solace::Message.new(**message_params)
+  #
+  #   # Sign the transaction
+  #   tx.sign(payer_keypair)
+  #
+  # @since 0.0.1
+  class Transaction
+    include Solace::Concerns::BinarySerializable
+
+    # @!attribute SERIALIZER
     #   @return [Solace::Serializers::TransactionSerializer] The serializer for the transaction
     SERIALIZER = Solace::Serializers::TransactionSerializer
 
-    # @!const DESERIALIZER
+    # @!attribute DESERIALIZER
     #   @return [Solace::Serializers::TransactionDeserializer] The deserializer for the transaction
     DESERIALIZER = Solace::Serializers::TransactionDeserializer
 
-    # @!const SIGNATURE_PLACEHOLDER
+    # @!attribute SIGNATURE_PLACEHOLDER
     #   @return [String] Placeholder for a signature in the transaction
     SIGNATURE_PLACEHOLDER = Solace::Utils::Codecs.base58_to_binary('1' * 64)
 
-    # @!attribute [rw] signatures
+    # @!attribute  [rw] signatures
     #   @return [Array<String>] Signatures of the transaction (binary)
     attr_accessor :signatures
 
-    # @!attribute [rw] message
+    # @!attribute  [rw] message
     #   @return [Solace::Message] Message of the transaction
     attr_accessor :message
 
@@ -47,7 +58,7 @@ module Solace
       # @param base64_tx [String] The base64 encoded transaction
       # @return [Solace::Transaction] The deserialized transaction
       def from(base64_tx)
-        DESERIALIZER.call Solace::Utils::Codecs.base64_to_bytestream(base64_tx)
+        Solace::Utils::Codecs.base64_to_bytestream(base64_tx).try { DESERIALIZER.new(_1).call }
       end
     end
 

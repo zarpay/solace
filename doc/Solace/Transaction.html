@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>
+  Class: Solace::Transaction
+  
+    &mdash; Solace Ruby SDK Documentation
+  
+</title>
+
+  <link rel="stylesheet" href="../css/style.css" type="text/css" />
+
+  <link rel="stylesheet" href="../css/common.css" type="text/css" />
+
+<script type="text/javascript">
+  pathId = "Solace::Transaction";
+  relpath = '../';
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="../js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="../js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div class="nav_wrap">
+      <iframe id="nav" src="../class_list.html?1"></iframe>
+      <div id="resizer"></div>
+    </div>
+
+    <div id="main" tabindex="-1">
+      <div id="header">
+        <div id="menu">
+  
+    <a href="../_index.html">Index (T)</a> &raquo;
+    <span class='title'><span class='object_link'><a href="../Solace.html" title="Solace (module)">Solace</a></span></span>
+     &raquo; 
+    <span class="title">Transaction</span>
+  
+</div>
+
+        <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="../class_list.html">
+
+        <svg width="24" height="24">
+          <rect x="0" y="4" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="12" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
+        </svg>
+    </a>
+  
+</div>
+        <div class="clear"></div>
+      </div>
+
+      <div id="content"><h1>Class: Solace::Transaction
+  
+  
+  
+</h1>
+<div class="box_info">
+  
+  <dl>
+    <dt>Inherits:</dt>
+    <dd>
+      <span class="inheritName">Object</span>
+      
+        <ul class="fullTree">
+          <li>Object</li>
+          
+            <li class="next">Solace::Transaction</li>
+          
+        </ul>
+        <a href="#" class="inheritanceTree">show all</a>
+      
+    </dd>
+  </dl>
+  
+
+  
+  
+  
+  
+  <dl>
+      <dt>Includes:</dt>
+      <dd><span class='object_link'><a href="Concerns/BinarySerializable.html" title="Solace::Concerns::BinarySerializable (module)">Concerns::BinarySerializable</a></span></dd>
+  </dl>
+  
+  
+
+  
+
+  
+  <dl>
+    <dt>Defined in:</dt>
+    <dd>lib/solace/transaction.rb</dd>
+  </dl>
+  
+</div>
+
+<h2>Overview</h2><div class="docstring">
+  <div class="discussion">
+    <p>Class representing a Solana transaction</p>
+
+<p>Transactions are the basic building blocks of Solana. They contain a message and an array of signatures. The
+message contains the instructions to be executed and the accounts that are used by the instructions. The signatures
+are the signatures of the accounts that are used by the instructions. This class provides methods for signing,
+serializing, and deserializing transactions.</p>
+
+<p>The BufferLayout is:</p>
+
+<ul>
+<li>[Signatures (variable length)]</li>
+<li><a href="if%20versioned">Version (1 byte)</a></li>
+<li>[Message header (3 bytes)]</li>
+<li>[Account keys (variable length)]</li>
+<li>[Recent blockhash (32 bytes)]</li>
+<li>[Instructions (variable length)]</li>
+<li><a href="if%20versioned">Address lookup table (variable length)</a></li>
+</ul>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+  <div class="examples">
+    <h4 class="tag_title">Examples:</h4>
+    
+      
+      <pre class="example code"><code><span class='comment'># Create a new transaction
+</span><span class='id identifier rubyid_tx'>tx</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'>Transaction</span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="#initialize-instance_method" title="Solace::Transaction#initialize (method)">new</a></span></span>
+
+<span class='comment'># Add a message to the transaction
+</span><span class='id identifier rubyid_tx'>tx</span><span class='period'>.</span><span class='id identifier rubyid_message'>message</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Message.html" title="Solace::Message (class)">Message</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Message.html#initialize-instance_method" title="Solace::Message#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='op'>**</span><span class='id identifier rubyid_message_params'>message_params</span><span class='rparen'>)</span>
+
+<span class='comment'># Sign the transaction
+</span><span class='id identifier rubyid_tx'>tx</span><span class='period'>.</span><span class='id identifier rubyid_sign'>sign</span><span class='lparen'>(</span><span class='id identifier rubyid_payer_keypair'>payer_keypair</span><span class='rparen'>)</span></code></pre>
+    
+  </div>
+
+<p class="tag_title">Since:</p>
+<ul class="since">
+  
+    <li>
+      
+      
+      
+      
+        
+        <div class='inline'><p>0.0.1</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div>
+  
+    <h2>
+      Constant Summary
+      <small><a href="#" class="constants_summary_toggle">collapse</a></small>
+    </h2>
+
+    <dl class="constants">
+      
+        <dt id="SERIALIZER-constant" class="">SERIALIZER =
+          <div class="docstring">
+  <div class="discussion">
+    
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Since:</p>
+<ul class="since">
+  
+    <li>
+      
+      
+      
+      
+        
+        <div class='inline'><p>0.0.1</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div>
+        </dt>
+        <dd><pre class="code"><span class='const'><span class='object_link'><a href="../Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Serializers.html" title="Solace::Serializers (module)">Serializers</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Serializers/TransactionSerializer.html" title="Solace::Serializers::TransactionSerializer (class)">TransactionSerializer</a></span></span></pre></dd>
+      
+        <dt id="DESERIALIZER-constant" class="">DESERIALIZER =
+          <div class="docstring">
+  <div class="discussion">
+    
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Since:</p>
+<ul class="since">
+  
+    <li>
+      
+      
+      
+      
+        
+        <div class='inline'><p>0.0.1</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div>
+        </dt>
+        <dd><pre class="code"><span class='const'><span class='object_link'><a href="../Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Serializers.html" title="Solace::Serializers (module)">Serializers</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Serializers/TransactionDeserializer.html" title="Solace::Serializers::TransactionDeserializer (class)">TransactionDeserializer</a></span></span></pre></dd>
+      
+        <dt id="SIGNATURE_PLACEHOLDER-constant" class="">SIGNATURE_PLACEHOLDER =
+          <div class="docstring">
+  <div class="discussion">
+    
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Since:</p>
+<ul class="since">
+  
+    <li>
+      
+      
+      
+      
+        
+        <div class='inline'><p>0.0.1</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div>
+        </dt>
+        <dd><pre class="code"><span class='const'><span class='object_link'><a href="../Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Utils.html" title="Solace::Utils (module)">Utils</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Utils/Codecs.html" title="Solace::Utils::Codecs (module)">Codecs</a></span></span><span class='period'>.</span><span class='id identifier rubyid_base58_to_binary'><span class='object_link'><a href="Utils/Codecs.html#base58_to_binary-class_method" title="Solace::Utils::Codecs.base58_to_binary (method)">base58_to_binary</a></span></span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>1</span><span class='tstring_end'>&#39;</span></span> <span class='op'>*</span> <span class='int'>64</span><span class='rparen'>)</span></pre></dd>
+      
+    </dl>
+  
+
+
+
+
+  <h2>Instance Attribute Summary <small><a href="#" class="summary_toggle">collapse</a></small></h2>
+  <ul class="summary">
+    
+      <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#DESERIALIZER-instance_method" title="#DESERIALIZER (instance method)">#<strong>DESERIALIZER</strong>  &#x21d2; Solace::Serializers::TransactionDeserializer </a>
+    
+
+    
+  </span>
+  
+  
+  
+    
+    
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>The deserializer for the transaction.</p>
+</div></span>
+  
+</li>
+
+    
+      <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#message-instance_method" title="#message (instance method)">#<strong>message</strong>  &#x21d2; Solace::Message </a>
+    
+
+    
+  </span>
+  
+  
+  
+    
+    
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Message of the transaction.</p>
+</div></span>
+  
+</li>
+
+    
+      <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#SERIALIZER-instance_method" title="#SERIALIZER (instance method)">#<strong>SERIALIZER</strong>  &#x21d2; Solace::Serializers::TransactionSerializer </a>
+    
+
+    
+  </span>
+  
+  
+  
+    
+    
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>The serializer for the transaction.</p>
+</div></span>
+  
+</li>
+
+    
+      <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#SIGNATURE_PLACEHOLDER-instance_method" title="#SIGNATURE_PLACEHOLDER (instance method)">#<strong>SIGNATURE_PLACEHOLDER</strong>  &#x21d2; String </a>
+    
+
+    
+  </span>
+  
+  
+  
+    
+    
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Placeholder for a signature in the transaction.</p>
+</div></span>
+  
+</li>
+
+    
+      <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#signatures-instance_method" title="#signatures (instance method)">#<strong>signatures</strong>  &#x21d2; Array&lt;String&gt; </a>
+    
+
+    
+  </span>
+  
+  
+  
+    
+    
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Signatures of the transaction (binary).</p>
+</div></span>
+  
+</li>
+
+    
+  </ul>
+
+
+
+
+  
+    <h2>
+      Class Method Summary
+      <small><a href="#" class="summary_toggle">collapse</a></small>
+    </h2>
+
+    <ul class="summary">
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#from-class_method" title="from (class method)">.<strong>from</strong>(base64_tx)  &#x21d2; Solace::Transaction </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Deserialize a base64 encoded transaction into a Solace::Transaction object.</p>
+</div></span>
+  
+</li>
+
+      
+    </ul>
+  
+    <h2>
+      Instance Method Summary
+      <small><a href="#" class="summary_toggle">collapse</a></small>
+    </h2>
+
+    <ul class="summary">
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#initialize-instance_method" title="#initialize (instance method)">#<strong>initialize</strong>(signatures: [], message: Solace::Message.new)  &#x21d2; Solace::Transaction </a>
+    
+
+    
+  </span>
+  
+  
+    <span class="note title constructor">constructor</span>
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Initialize a new transaction.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#sign-instance_method" title="#sign (instance method)">#<strong>sign</strong>(*keypairs)  &#x21d2; Array&lt;String&gt; </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Sign the transaction.</p>
+</div></span>
+  
+</li>
+
+      
+    </ul>
+  
+
+
+  
+  
+  
+  
+  
+  
+  
+  
+  <h3 class="inherited">Methods included from <span class='object_link'><a href="Concerns/BinarySerializable.html" title="Solace::Concerns::BinarySerializable (module)">Concerns::BinarySerializable</a></span></h3>
+  <p class="inherited"><span class='object_link'><a href="Concerns/BinarySerializable.html#included-class_method" title="Solace::Concerns::BinarySerializable.included (method)">included</a></span>, <span class='object_link'><a href="Concerns/BinarySerializable.html#serialize-instance_method" title="Solace::Concerns::BinarySerializable#serialize (method)">#serialize</a></span>, <span class='object_link'><a href="Concerns/BinarySerializable.html#to_binary-instance_method" title="Solace::Concerns::BinarySerializable#to_binary (method)">#to_binary</a></span>, <span class='object_link'><a href="Concerns/BinarySerializable.html#to_bytes-instance_method" title="Solace::Concerns::BinarySerializable#to_bytes (method)">#to_bytes</a></span>, <span class='object_link'><a href="Concerns/BinarySerializable.html#to_io-instance_method" title="Solace::Concerns::BinarySerializable#to_io (method)">#to_io</a></span></p>
+<div id="constructor_details" class="method_details_list">
+  <h2>Constructor Details</h2>
+  
+    <div class="method_details first">
+  <h3 class="signature first" id="initialize-instance_method">
+  
+    #<strong>initialize</strong>(signatures: [], message: Solace::Message.new)  &#x21d2; <tt><span class='object_link'><a href="" title="Solace::Transaction (class)">Solace::Transaction</a></span></tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Initialize a new transaction</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Since:</p>
+<ul class="since">
+  
+    <li>
+      
+      
+      
+      
+        
+        <div class='inline'><p>0.0.1</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+68
+69
+70
+71
+72
+73
+74
+75</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/solace/transaction.rb', line 68</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span>
+  <span class='label'>signatures:</span> <span class='lbracket'>[</span><span class='rbracket'>]</span><span class='comma'>,</span>
+  <span class='label'>message:</span> <span class='const'><span class='object_link'><a href="../Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Message.html" title="Solace::Message (class)">Message</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Message.html#initialize-instance_method" title="Solace::Message#initialize (method)">new</a></span></span>
+<span class='rparen'>)</span>
+  <span class='kw'>super</span><span class='lparen'>(</span><span class='rparen'>)</span>
+  <span class='ivar'>@signatures</span> <span class='op'>=</span> <span class='id identifier rubyid_signatures'>signatures</span>
+  <span class='ivar'>@message</span> <span class='op'>=</span> <span class='id identifier rubyid_message'>message</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+  
+</div>
+
+  <div id="instance_attr_details" class="attr_details">
+    <h2>Instance Attribute Details</h2>
+    
+      
+      <span id="DESERIALIZER=-instance_method"></span>
+      <div class="method_details first">
+  <h3 class="signature first" id="DESERIALIZER-instance_method">
+  
+    #<strong>DESERIALIZER</strong>  &#x21d2; <tt><span class='object_link'><a href="Serializers/TransactionDeserializer.html" title="Solace::Serializers::TransactionDeserializer (class)">Solace::Serializers::TransactionDeserializer</a></span></tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Returns The deserializer for the transaction.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="Serializers/TransactionDeserializer.html" title="Solace::Serializers::TransactionDeserializer (class)">Solace::Serializers::TransactionDeserializer</a></span></tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>The deserializer for the transaction</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+41</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/solace/transaction.rb', line 41</span>
+
+<span class='const'><span class='object_link'><a href="#DESERIALIZER-constant" title="Solace::Transaction::DESERIALIZER (constant)">DESERIALIZER</a></span></span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Serializers.html" title="Solace::Serializers (module)">Serializers</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Serializers/TransactionDeserializer.html" title="Solace::Serializers::TransactionDeserializer (class)">TransactionDeserializer</a></span></span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      
+      <span id="message=-instance_method"></span>
+      <div class="method_details ">
+  <h3 class="signature " id="message-instance_method">
+  
+    #<strong>message</strong>  &#x21d2; <tt><span class='object_link'><a href="Message.html" title="Solace::Message (class)">Solace::Message</a></span></tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Returns Message of the transaction.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="Message.html" title="Solace::Message (class)">Solace::Message</a></span></tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>Message of the transaction</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+53
+54
+55</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/solace/transaction.rb', line 53</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_message'>message</span>
+  <span class='ivar'>@message</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      
+      <span id="SERIALIZER=-instance_method"></span>
+      <div class="method_details ">
+  <h3 class="signature " id="SERIALIZER-instance_method">
+  
+    #<strong>SERIALIZER</strong>  &#x21d2; <tt><span class='object_link'><a href="Serializers/TransactionSerializer.html" title="Solace::Serializers::TransactionSerializer (class)">Solace::Serializers::TransactionSerializer</a></span></tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Returns The serializer for the transaction.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="Serializers/TransactionSerializer.html" title="Solace::Serializers::TransactionSerializer (class)">Solace::Serializers::TransactionSerializer</a></span></tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>The serializer for the transaction</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+37</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/solace/transaction.rb', line 37</span>
+
+<span class='const'><span class='object_link'><a href="#SERIALIZER-constant" title="Solace::Transaction::SERIALIZER (constant)">SERIALIZER</a></span></span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Serializers.html" title="Solace::Serializers (module)">Serializers</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Serializers/TransactionSerializer.html" title="Solace::Serializers::TransactionSerializer (class)">TransactionSerializer</a></span></span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      
+      <span id="SIGNATURE_PLACEHOLDER=-instance_method"></span>
+      <div class="method_details ">
+  <h3 class="signature " id="SIGNATURE_PLACEHOLDER-instance_method">
+  
+    #<strong>SIGNATURE_PLACEHOLDER</strong>  &#x21d2; <tt>String</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Returns Placeholder for a signature in the transaction.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>Placeholder for a signature in the transaction</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+45</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/solace/transaction.rb', line 45</span>
+
+<span class='const'><span class='object_link'><a href="#SIGNATURE_PLACEHOLDER-constant" title="Solace::Transaction::SIGNATURE_PLACEHOLDER (constant)">SIGNATURE_PLACEHOLDER</a></span></span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Utils.html" title="Solace::Utils (module)">Utils</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Utils/Codecs.html" title="Solace::Utils::Codecs (module)">Codecs</a></span></span><span class='period'>.</span><span class='id identifier rubyid_base58_to_binary'><span class='object_link'><a href="Utils/Codecs.html#base58_to_binary-class_method" title="Solace::Utils::Codecs.base58_to_binary (method)">base58_to_binary</a></span></span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>1</span><span class='tstring_end'>&#39;</span></span> <span class='op'>*</span> <span class='int'>64</span><span class='rparen'>)</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      
+      <span id="signatures=-instance_method"></span>
+      <div class="method_details ">
+  <h3 class="signature " id="signatures-instance_method">
+  
+    #<strong>signatures</strong>  &#x21d2; <tt>Array&lt;String&gt;</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Returns Signatures of the transaction (binary).</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Array&lt;String&gt;</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>Signatures of the transaction (binary)</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+49
+50
+51</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/solace/transaction.rb', line 49</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_signatures'>signatures</span>
+  <span class='ivar'>@signatures</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+
+  <div id="class_method_details" class="method_details_list">
+    <h2>Class Method Details</h2>
+
+    
+      <div class="method_details first">
+  <h3 class="signature first" id="from-class_method">
+  
+    .<strong>from</strong>(base64_tx)  &#x21d2; <tt><span class='object_link'><a href="" title="Solace::Transaction (class)">Solace::Transaction</a></span></tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Deserialize a base64 encoded transaction into a Solace::Transaction object</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>base64_tx</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>The base64 encoded transaction</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="" title="Solace::Transaction (class)">Solace::Transaction</a></span></tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>The deserialized transaction</p>
+</div>
+      
+    </li>
+  
+</ul>
+<p class="tag_title">Since:</p>
+<ul class="since">
+  
+    <li>
+      
+      
+      
+      
+        
+        <div class='inline'><p>0.0.1</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+60
+61
+62</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/solace/transaction.rb', line 60</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_from'>from</span><span class='lparen'>(</span><span class='id identifier rubyid_base64_tx'>base64_tx</span><span class='rparen'>)</span>
+  <span class='const'><span class='object_link'><a href="../Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Utils.html" title="Solace::Utils (module)">Utils</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Utils/Codecs.html" title="Solace::Utils::Codecs (module)">Codecs</a></span></span><span class='period'>.</span><span class='id identifier rubyid_base64_to_bytestream'><span class='object_link'><a href="Utils/Codecs.html#base64_to_bytestream-class_method" title="Solace::Utils::Codecs.base64_to_bytestream (method)">base64_to_bytestream</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_base64_tx'>base64_tx</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_try'>try</span> <span class='lbrace'>{</span> <span class='const'><span class='object_link'><a href="#DESERIALIZER-constant" title="Solace::Transaction::DESERIALIZER (constant)">DESERIALIZER</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="#initialize-instance_method" title="Solace::Transaction#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid__1'>_1</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span> <span class='rbrace'>}</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+  <div id="instance_method_details" class="method_details_list">
+    <h2>Instance Method Details</h2>
+
+    
+      <div class="method_details first">
+  <h3 class="signature first" id="sign-instance_method">
+  
+    #<strong>sign</strong>(*keypairs)  &#x21d2; <tt>Array&lt;String&gt;</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Sign the transaction</p>
+
+<p>Calls sign_and_update_signatures for each keypair passed in.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>keypairs</span>
+      
+      
+        <span class='type'>(<tt>Array&lt;<span class='object_link'><a href="Keypair.html" title="Solace::Keypair (class)">Solace::Keypair</a></span>&gt;</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>The keypairs to sign the transaction with</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Array&lt;String&gt;</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>The signatures of the transaction</p>
+</div>
+      
+    </li>
+  
+</ul>
+<p class="tag_title">Since:</p>
+<ul class="since">
+  
+    <li>
+      
+      
+      
+      
+        
+        <div class='inline'><p>0.0.1</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+83
+84
+85</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/solace/transaction.rb', line 83</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_sign'>sign</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_keypairs'>keypairs</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_keypairs'>keypairs</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_keypair'>keypair</span><span class='op'>|</span> <span class='id identifier rubyid_sign_and_update_signatures'>sign_and_update_signatures</span><span class='lparen'>(</span><span class='id identifier rubyid_keypair'>keypair</span><span class='rparen'>)</span> <span class='rbrace'>}</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+</div>
+
+      <div id="footer">
+  Generated on Wed Jul 30 22:56:07 2025 by
+  <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.9.37 (ruby-3.4.4).
+</div>
+
+    </div>
+  </body>
+</html>

@@ -3,8 +3,23 @@
 module Solace
   module Instructions
     module AssociatedTokenAccount
-      # A class to build the CreateAssociatedTokenAccount instruction for the Associated Token Account Program.
-      # This is a special "all-in-one" instruction that creates and initializes the account.
+      # Instruction for creating an Associated Token Account.
+      #
+      # This is a special "all-in-one" instruction that creates and initializes the account. It
+      # is used to create an Associated Token Account (ATA) for a given mint and owner.
+      #
+      # @example Build a CreateAssociatedTokenAccount instruction
+      #   instruction = Solace::Instructions::AssociatedTokenAccount::CreateAssociatedTokenAccountInstruction.build(
+      #     funder_index: 0,
+      #     associated_token_account_index: 1,
+      #     owner_index: 2,
+      #     mint_index: 3,
+      #     system_program_index: 4,
+      #     token_program_index: 5,
+      #     program_index: 6
+      #   )
+      #
+      # @since 0.0.2
       class CreateAssociatedTokenAccountInstruction
         # !@const INSTRUCTION_INDEX
         #   Instruction index for CreateAssociatedTokenAccount

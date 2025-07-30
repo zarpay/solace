@@ -5,7 +5,13 @@
 module Solace
   module Programs
     # Base class for program-specific clients.
+    #
     # Provides a consistent interface for interacting with on-chain programs.
+    #
+    # @abstract
+    # @see Solace::Programs::SplToken
+    # @see Solace::Programs::AssociatedTokenAccount
+    # @since 0.0.2
     class Base
       attr_reader :connection, :program_id
 

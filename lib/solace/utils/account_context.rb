@@ -2,13 +2,35 @@
 
 module Solace
   module Utils
-    # !@class AccountContext
-    #   Internal utility for managing account context in transaction building
-    #   with automatic deduplication and sorting
+    # Utility for managing account context for composers
     #
-    # @return [Class]
+    # This utility is used to manage the accounts in a transaction composer and instructions composer. It
+    # provides methods for managing the accounts and their permissions, as well as compiling the accounts
+    # into the final format required by the instruction builders. Concerns like deduplication and ordering
+    # are handled by this utility.
+    #
+    # @example Usage
+    #   # Create a new account context
+    #   context = Solace::Utils::AccountContext.new
+    #
+    #   # Add accounts
+    #   context.add_writable_signer('pubkey1')
+    #   context.add_readonly_nonsigner('pubkey2')
+    #
+    #   # Merge accounts from another context
+    #   context = context.merge_from(other_context)
+    #
+    #   # Set fee payer
+    #   context.set_fee_payer('pubkey3')
+    #
+    #   # Compile the accounts
+    #   context.compile
+    #
+    # @see Solace::TransactionComposer
+    # @see Solace::Composers::Base
+    # @since 0.0.3
     class AccountContext
-      # @!attribute DEFAULT_ACCOUNT
+      # @!attribute  DEFAULT_ACCOUNT
       #   The default account data
       #
       # @return [Hash] The default account data with lowest level of permissions
@@ -18,19 +40,19 @@ module Solace
         fee_payer: false
       }.freeze
 
-      # @!attribute header
+      # @!attribute  header
       #   The header for the transaction
       #
       # @return [Array<Integer>] The header for the transaction
       attr_accessor :header
 
-      # @!attribute accounts
+      # @!attribute  accounts
       #   The accounts in the transaction
       #
       # @return [Array<String>] The accounts
       attr_accessor :accounts
 
-      # @!attribute pubkey_account_map
+      # @!attribute  pubkey_account_map
       #   The map of accounts
       #
       # @return [Hash] The map of accounts

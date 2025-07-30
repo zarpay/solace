@@ -13,12 +13,8 @@ require_relative 'solace/utils/curve25519_dalek'
 require_relative 'solace/concerns/binary_serializable'
 
 # ✨ Serializers
-require_relative 'solace/serializers/base'
 require_relative 'solace/serializers/base_serializer'
 require_relative 'solace/serializers/base_deserializer'
-
-# Base classes
-require_relative 'solace/serializable_record'
 
 # 🧬 Primitives
 require_relative 'solace/keypair'

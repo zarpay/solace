@@ -1,18 +1,28 @@
 # frozen_string_literal: true
 
 module Solace
-  # @!class Message
+  # Solace::Message represents the message portion of a Solana transaction (legacy or versioned). It handles
+  # serialization and deserialization of message fields.
   #
-  # A class representing the message portion of a Solana transaction (legacy or versioned). Handles serialization
-  # and deserialization of message fields.
+  # @example
+  #   message = Solace::Message.new(
+  #     version: 0,
+  #     header: [0, 0, 0],
+  #     accounts: ['11111111111111111111111111111111'],
+  #     recent_blockhash: '11111111111111111111111111111111',
+  #     instructions: [],
+  #     address_lookup_tables: []
+  #   )
   #
-  # @return [Class]
-  class Message < Solace::SerializableRecord
-    # @!const SERIALIZER
+  # @since 0.0.1
+  class Message
+    include Solace::Concerns::BinarySerializable
+
+    # @!attribute SERIALIZER
     #   @return [Solace::Serializers::MessageSerializer] The serializer for the message
     SERIALIZER = Solace::Serializers::MessageSerializer
 
-    # @!const DESERIALIZER
+    # @!attribute DESERIALIZER
     #   @return [Solace::Serializers::MessageDeserializer] The deserializer for the message
     DESERIALIZER = Solace::Serializers::MessageDeserializer
 
@@ -48,7 +58,6 @@ module Solace
     # @param recent_blockhash [String] Recent blockhash (base58)
     # @param header [Array<Integer>] Message header
     # @param address_lookup_tables [Array<Solace::AddressLookupTable>]
-    #
     def initialize(
       version: nil,
       accounts: [],
@@ -66,7 +75,6 @@ module Solace
       @instructions = instructions
       @address_lookup_tables = address_lookup_tables
     end
-    # rubocop:enable Metrics/ParameterLists
 
     # Check if the message is versioned
     #

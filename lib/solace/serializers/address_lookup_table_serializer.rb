@@ -1,15 +1,10 @@
 # frozen_string_literal: true
 
-# =============================
-# Address Lookup Table Serializer
-# =============================
-#
-# Serializes a Solana address lookup table to a binary format.
 module Solace
   module Serializers
-    # !@class AddressLookupTableSerializer
+    # Serializes a Solana address lookup table to a binary format.
     #
-    # @return [Class]
+    # @since 0.0.2
     class AddressLookupTableSerializer < Solace::Serializers::BaseSerializer
       # @!attribute steps
       #   An ordered list of methods to serialize the address lookup table
@@ -39,7 +34,8 @@ module Solace
       #
       # @return [Array<Integer>] The bytes of the encoded writable indexes
       def encode_writable_indexes
-        Codecs.encode_compact_u16(record.writable_indexes.size).bytes + record.writable_indexes
+        Codecs.encode_compact_u16(record.writable_indexes.size).bytes +
+          record.writable_indexes
       end
 
       # Encodes the readonly indexes of the address lookup table
@@ -50,7 +46,8 @@ module Solace
       #
       # @return [Array<Integer>] The bytes of the encoded readonly indexes
       def encode_readonly_indexes
-        Codecs.encode_compact_u16(record.readonly_indexes.size).bytes + record.readonly_indexes
+        Codecs.encode_compact_u16(record.readonly_indexes.size).bytes +
+          record.readonly_indexes
       end
     end
   end

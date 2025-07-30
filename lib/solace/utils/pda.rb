@@ -5,27 +5,24 @@ require 'digest'
 
 module Solace
   module Utils
-    # !@module PDA
-    #   A module for generating program addresses
+    # Module for generating program addresses
     #
-    # @return [Module]
+    # This module provides methods for generating program addresses from seeds and program IDs. It interfaces
+    # with the Curve25519 Dalek library to check if a point is on the curve. It also provides a method for
+    # converting seeds to bytes and a method for checking if a string looks like a base58 address.
+    #
+    # @see Solace::Utils::Curve25519Dalek
+    # @since 0.0.1
     module PDA
-      # !@class InvalidPDAError
-      #   An error raised when an invalid PDA is generated
-      #
-      # @return [StandardError]
+      # InvalidPDAError is an error raised when an invalid PDA is generated
       class InvalidPDAError < StandardError; end
 
-      # !@const PDA_MARKER
-      #   The marker used in PDA calculations
-      #
-      # @return [String]
+      # !@attribute PDA_MARKER
+      # PDA_MARKER is the marker used in PDA calculations
       PDA_MARKER = 'ProgramDerivedAddress'
 
-      # !@const MAX_BUMP_SEED
-      #   The maximum seed value for PDA calculations
-      #
-      # @return [Integer]
+      # !@attribute MAX_BUMP_SEED
+      # The maximum seed value for PDA calculations
       MAX_BUMP_SEED = 255
 
       # Finds a valid program address by trying different seeds

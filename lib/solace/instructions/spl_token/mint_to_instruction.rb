@@ -3,9 +3,22 @@
 module Solace
   module Instructions
     module SplToken
-      # A class to build the MintTo instruction for the SPL Token Program.
+      # Instruction for minting tokens to a token account.
+      #
+      # This instruction is used to mint tokens to a token account for a given mint and owner.
+      #
+      # @example Build a MintTo instruction
+      #   instruction = Solace::Instructions::SplToken::MintToInstruction.build(
+      #     amount: 100,
+      #     mint_index: 1,
+      #     mint_authority_index: 2,
+      #     destination_index: 3,
+      #     program_index: 4
+      #   )
+      #
+      # @since 0.0.2
       class MintToInstruction
-        # @!const [Array<Integer>] INSTRUCTION_INDEX
+        # @!attribute [Array<Integer>] INSTRUCTION_INDEX
         #   Instruction index for SPL Token Program's MintTo instruction.
         INSTRUCTION_INDEX = [7].freeze
 

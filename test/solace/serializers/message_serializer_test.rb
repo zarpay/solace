@@ -8,7 +8,7 @@ describe Solace::Serializers::MessageSerializer do
       let(:msg) { build(:legacy_message, :with_transfer_instruction) }
 
       before do
-        @serialized_msg = Solace::Serializers::MessageSerializer.call(msg)
+        @serialized_msg = Solace::Serializers::MessageSerializer.new(msg).call
       end
 
       it 'returns a valid binary string' do
@@ -23,7 +23,7 @@ describe Solace::Serializers::MessageSerializer do
         msg = build(:legacy_message, :with_transfer_instruction, recent_blockhash: nil)
 
         assert_raises(RuntimeError) do
-          Solace::Serializers::MessageSerializer.call(msg)
+          Solace::Serializers::MessageSerializer.new(msg).call
         end
       end
     end
@@ -32,7 +32,7 @@ describe Solace::Serializers::MessageSerializer do
       let(:msg) { build(:versioned_message, :with_transfer_instruction) }
 
       before do
-        @serialized_msg = Solace::Serializers::MessageSerializer.call(msg)
+        @serialized_msg = Solace::Serializers::MessageSerializer.new(msg).call
       end
 
       it 'returns a valid binary string' do

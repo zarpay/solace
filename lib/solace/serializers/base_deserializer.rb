@@ -1,9 +1,7 @@
 # frozen_string_literal: true
 
 module Solace
-  # !@module Serializers
-  #
-  # @return [Module]
+  # Serializers module
   module Serializers
     # Autoload deserializers
     autoload :TransactionDeserializer, 'solace/serializers/transaction_deserializer'
@@ -11,32 +9,26 @@ module Solace
     autoload :InstructionDeserializer, 'solace/serializers/instruction_deserializer'
     autoload :AddressLookupTableDeserializer, 'solace/serializers/address_lookup_table_deserializer'
 
-    # Base deserializer class
-    class BaseDeserializer < Serializers::Base
-      class << self
-        # @!attribute STEPS
-        #   An ordered list of methods to deserialize the record
-        #
-        # @return [Array] The steps to deserialize the record
-        attr_accessor :steps
-
-        # @!attribute RECORD_CLASS
-        #   The class of the record being deserialized
-        #
-        # @return [Class] The class of the record
-        attr_accessor :record_class
-      end
+    # The base deserializer class
+    #
+    # This class provides a consistent interface for deserializing records.
+    #
+    # @abstract
+    # @since 0.0.1
+    class BaseDeserializer
+      include Solace::Utils
 
       # @!attribute io
       #   The input to read bytes from.
       #
       # @return [IO, StringIO] The input to read bytes from.
-      #
+      attr_reader :io
+
       # @!attribute record
       #   The record instance being deserialized.
       #
       # @return [Record] The deserialized record.
-      attr_reader :io, :record
+      attr_reader :record
 
       # Initialize a new deserializer
       #
@@ -54,6 +46,20 @@ module Solace
       def call
         self.class.steps.each { send(_1) }
         record
+      end
+
+      class << self
+        # @!attribute steps
+        #   An ordered list of methods to deserialize the record
+        #
+        # @return [Array] The steps to deserialize the record
+        attr_accessor :steps
+
+        # @!attribute record_class
+        #   The class of the record being deserialized
+        #
+        # @return [Class] The class of the record
+        attr_accessor :record_class
       end
     end
   end

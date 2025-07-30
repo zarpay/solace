@@ -1,15 +1,10 @@
 # frozen_string_literal: true
 
-# =============================
-# Message Deserializer
-# =============================
-#
-# Deserializes a binary message into a Solace::Message object.
 module Solace
   module Serializers
-    # !@class MessageDeserializer
+    # Deserializes a binary message into a Solace::Message object.
     #
-    # @return [Class]
+    # @since 0.0.1
     class MessageDeserializer < Solace::Serializers::BaseDeserializer
       # @!attribute record_class
       #   The class of the record being deserialized

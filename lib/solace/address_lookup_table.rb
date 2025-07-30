@@ -2,18 +2,35 @@
 # frozen_string_literal: true
 
 module Solace
-  # !@class AddressLookupTable
+  # Represents a Solana Address Lookup Table account.
   #
-  # A class representing an address lookup table. Handles deserialization and serialization of address lookup tables.
+  # This class models the internal structure of a deserialized address lookup table and provides
+  # access to the account key, writable indexes, and readonly indexes.
   #
-  # The BufferLayout is:
-  #   - [Account key (32 bytes)]
-  #   - [Number of writable indexes (compact u16)]
-  #   - [Writable indexes (variable length)]
-  #   - [Number of readonly indexes (compact u16)]
-  #   - [Readonly indexes (variable length)]
+  # It includes serialization and deserialization logic for encoding and decoding the table
+  # according to Solana’s buffer layout.
   #
-  # @return [Class]
+  # ## Buffer Layout (in bytes):
+  # - `[account (32 bytes)]`
+  # - `[num_writable (compact-u16)]`
+  # - `[writable indexes]`
+  # - `[num_readonly (compact-u16)]`
+  # - `[readonly indexes]`
+  #
+  # Includes `BinarySerializable`, enabling methods like `#to_binary`, `#to_io`, and `#to_bytes`.
+  #
+  # @example Deserialize from base64
+  #   io = StringIO.new(base64)
+  #   table = Solace::AddressLookupTable.deserialize(io)
+  #
+  # @example Serialize to base64
+  #   table = Solace::AddressLookupTable.new
+  #   table.account = pubkey
+  #   table.writable_indexes = [1, 2]
+  #   table.readonly_indexes = [3, 4]
+  #   base64 = table.serialize
+  #
+  # @since 0.0.1
   class AddressLookupTable
     include Solace::Concerns::BinarySerializable
 
@@ -35,7 +52,7 @@ module Solace
       # @param io [IO, StringIO] The input to read bytes from.
       # @return [Solace::AddressLookupTable] Parsed address lookup table object
       def deserialize(io)
-        Solace::Serializers::AddressLookupTableDeserializer.call(io)
+        Solace::Serializers::AddressLookupTableDeserializer.new(io).call
       end
     end
 
@@ -43,7 +60,7 @@ module Solace
     #
     # @return [String] The serialized address lookup table (base64)
     def serialize
-      Solace::Serializers::AddressLookupTableSerializer.call(self)
+      Solace::Serializers::AddressLookupTableSerializer.new(self).call
     end
   end
 end

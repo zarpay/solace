@@ -2,11 +2,33 @@
 
 module Solace
   module Composers
-    # !@class SplTokenProgramTransferCheckedComposer
+    # Composer for creating a SPL Token Program `TransferChecked` instruction.
     #
-    # A composer for creating a spl token program transfer checked instruction.
+    # This composer resolves and orders the required accounts for a `TransferChecked` instruction,
+    # sets up their access permissions, and delegates construction to the appropriate
+    # instruction builder (`Instructions::SplToken::TransferCheckedInstruction`).
     #
-    # @return [Class]
+    # It is used for transferring SPL tokens with decimal precision and validation checks.
+    #
+    # Required accounts:
+    # - **From**: source token account (writable, non-signer)
+    # - **To**: destination token account (writable, non-signer)
+    # - **Mint**: mint address (readonly, non-signer)
+    # - **Authority**: token owner (writable, signer)
+    # - **Program**: SPL Token program (readonly, non-signer)
+    #
+    # @example Compose and build a transfer_checked instruction
+    #   composer = SplTokenProgramTransferCheckedComposer.new(
+    #     from: from_address,
+    #     to: to_address,
+    #     mint: mint_address,
+    #     authority: authority_pubkey,
+    #     amount: 1_000_000,
+    #     decimals: 6
+    #   )
+    #
+    # @see Instructions::SplToken::TransferCheckedInstruction
+    # @since 0.0.3
     class SplTokenProgramTransferCheckedComposer < Base
       # Extracts the to address from the params
       #

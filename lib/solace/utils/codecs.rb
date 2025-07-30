@@ -7,39 +7,22 @@ require 'stringio'
 
 module Solace
   module Utils
-    # !@module Codecs
-    #   A module for encoding and decoding data
+    # Module for encoding and decoding data
     #
-    # @return [Module]
+    # @since 0.0.1
     module Codecs
-      # =============================
-      # Helper: IO Stream
-      # =============================
-      #
       # Creates a StringIO from a base64 string.
       #
-      # Args:
-      #   base64 (String): The base64 string to decode
-      #
-      # Returns:
-      #   StringIO: A StringIO object containing the decoded bytes
-      #
+      # @param base64 [String] The base64 string to decode
+      # @return [StringIO] A StringIO object containing the decoded bytes
       def self.base64_to_bytestream(base64)
         StringIO.new(Base64.decode64(base64))
       end
 
-      # =============================
-      # Helper: Compact-u16 Encoding (ShortVec)
-      # =============================
+      # Encodes a compact-u16 value in a compact form (shortvec)
       #
-      # Encodes a u16 value in a compact form
-      #
-      # Args:
-      #   u16 (Integer): The u16 value to encode
-      #
-      # Returns:
-      #   String: The compactly encoded u16 value
-      #
+      # @param u16 [Integer] The compact-u16 value to encode
+      # @return [String] The compactly encoded compact-u16 value
       def self.encode_compact_u16(u16)
         out = []
 
@@ -74,19 +57,12 @@ module Solace
         out.pack('C*')
       end
 
-      # =============================
-      # Helper: Compact-u16 Decoding (ShortVec)
-      # =============================
-      #
       # Decodes a compact-u16 (ShortVec) value from an IO-like object.
+      #
       # Reads bytes one at a time, accumulating the result until the MSB is 0.
       #
-      # Args:
-      #   stream (IO or StringIO): The input to read bytes from.
-      #
-      # Returns:
-      #   [Integer, Integer]: The decoded value and the number of bytes read.
-      #
+      # @param stream [IO, StringIO] The input to read bytes from.
+      # @return [Integer, Integer] The decoded value and the number of bytes read.
       def self.decode_compact_u16(stream)
         value = 0
         shift = 0
@@ -107,114 +83,58 @@ module Solace
         [value, bytes_read]
       end
 
-      # =============================
-      # Helper: Little-Endian u64 Encoding
-      # =============================
-      #
       # Encodes a u64 value in little-endian format
       #
-      # Args:
-      #   u64 (Integer): The u64 value to encode
-      #
-      # Returns:
-      #   String: The little-endian encoded u64 value
-      #
+      # @param u64 [Integer] The u64 value to encode
+      # @return [String] The little-endian encoded u64 value
       def self.encode_le_u64(u64)
         [u64].pack('Q<') # 64-bit little-endian
       end
 
-      # =============================
-      # Helper: Little-Endian u64 Decoding
-      # =============================
-      #
       # Decodes a little-endian u64 value from a sequence of bytes
       #
-      # Args:
-      #   stream (IO or StringIO): The input to read bytes from.
-      #
-      # Returns:
-      #   Integer: The decoded u64 value
-      #
+      # @param stream [IO, StringIO] The input to read bytes from.
+      # @return [Integer] The decoded u64 value
       def self.decode_le_u64(stream)
         stream.read(8).unpack1('Q<')
       end
 
-      # =============================
-      # Helper: Binary to Base58 Encoding
-      # =============================
-      #
       # Encodes a sequence of bytes in Base58 format
       #
-      # Args:
-      #   bytes (String): The bytes to encode
-      #
-      # Returns:
-      #   String: The Base58 encoded string
-      #
+      # @param binary [String] The bytes to encode
+      # @return [String] The Base58 encoded string
       def self.binary_to_base58(binary)
         Base58.binary_to_base58(binary, :bitcoin)
       end
 
-      # =============================
-      # Helper: Base58 Decoding
-      # =============================
-      #
       # Decodes a Base58 string into a binary string
       #
-      # Args:
-      #   string (String): The Base58 encoded string
-      #
-      # Returns:
-      #   String: The decoded binary string
-      #
+      # @param string [String] The Base58 encoded string
+      # @return [String] The decoded binary string
       def self.base58_to_binary(string)
         base58_to_bytes(string).pack('C*')
       end
 
-      # =============================
-      # Helper: Base58 Encoding
-      # =============================
-      #
       # Encodes a sequence of bytes in Base58 format
       #
-      # Args:
-      #   bytes (String): The bytes to encode
-      #
-      # Returns:
-      #   String: The Base58 encoded string
-      #
+      # @param bytes [String] The bytes to encode
+      # @return [String] The Base58 encoded string
       def self.bytes_to_base58(bytes)
         binary_to_base58(bytes.pack('C*'))
       end
 
-      # =============================
-      # Helper: Base58 Decoding
-      # =============================
-      #
       # Decodes a Base58 string into a sequence of bytes
       #
-      # Args:
-      #   string (String): The Base58 encoded string
-      #
-      # Returns:
-      #   String: The decoded bytes
-      #
+      # @param string [String] The Base58 encoded string
+      # @return [String] The decoded bytes
       def self.base58_to_bytes(string)
         Base58.base58_to_binary(string, :bitcoin).bytes
       end
 
-      # =============================
-      # Helper: Base58 Validation
-      # =============================
-      #
       # Checks if a string is a valid Base58 string
       #
-      # Args:
-      #   string (String): The string to check
-      #
-      # Returns:
-      #   Boolean: True if the string is a valid Base58 string, false otherwise
-      #
+      # @param string [String] The string to check
+      # @return [Boolean] True if the string is a valid Base58 string, false otherwise
       def self.valid_base58?(string)
         return false if string.nil? || string.empty?
 

@@ -3,9 +3,22 @@
 module Solace
   module Instructions
     module SplToken
-      # A class to build the Transfer instruction for the SPL Token Program.
+      # Instruction for transferring SPL tokens.
+      #
+      # This instruction is used to transfer SPL tokens from one token account to another.
+      #
+      # @example Build a Transfer instruction
+      #   instruction = Solace::Instructions::SplToken::TransferInstruction.build(
+      #     amount: 100,
+      #     owner_index: 1,
+      #     source_index: 2,
+      #     destination_index: 3,
+      #     program_index: 4
+      #   )
+      #
+      # @since 0.0.2
       class TransferInstruction
-        # @!const [Array<Integer>] INSTRUCTION_INDEX
+        # @!attribute [Array<Integer>] INSTRUCTION_INDEX
         #   Instruction index for SPL Token Program's Transfer instruction.
         INSTRUCTION_INDEX = [3].freeze
 

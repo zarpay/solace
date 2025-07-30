@@ -3,7 +3,23 @@
 module Solace
   module Instructions
     module SplToken
-      # Service object for building an SPL Token Program transfer instruction
+      # Instruction for transferring SPL tokens.
+      #
+      # This instruction is used to transfer SPL tokens from one token account to another while checking the decimals
+      # of the token to ensure the transfer amount is correct.
+      #
+      # @example Build a TransferChecked instruction
+      #   instruction = Solace::Instructions::SplToken::TransferCheckedInstruction.build(
+      #     amount: 100,
+      #     decimals: 6,
+      #     to_index: 1,
+      #     from_index: 2,
+      #     mint_index: 3,
+      #     authority_index: 4,
+      #     program_index: 5
+      #   )
+      #
+      # @since 0.0.2
       class TransferCheckedInstruction
         # SPL Token Program instruction index for Transfer Checked
         INSTRUCTION_INDEX = [12].freeze

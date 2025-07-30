@@ -2,24 +2,54 @@
 
 # lib/solace/transaction_composer.rb
 module Solace
-  # !@class TransactionComposer
-  #   Composes multi-instruction transactions with automatic account management
+  # Composes multi-instruction transactions with automatic account management
   #
-  # @return [Class]
+  # @example
+  #   # Initialize a transaction composer
+  #   composer = Solace::TransactionComposer.new(connection: connection)
+  #
+  #   # Add an instruction composer
+  #   composer.add_instruction(
+  #     Solace::Composers::SystemProgramTransferComposer.new(
+  #       to: 'pubkey1',
+  #       from: 'pubkey2',
+  #       lamports: 100
+  #     )
+  #   )
+  #
+  #   # Add another instruction composer
+  #   composer.add_instruction(
+  #     Solace::Composers::SplTokenProgramTransferCheckedComposer.new(
+  #       from: 'pubkey4',
+  #       to: 'pubkey5',
+  #       mint: 'pubkey6',
+  #       authority: 'pubkey7',
+  #       amount: 1_000_000,
+  #       decimals: 6
+  #     )
+  #   )
+  #
+  #   # Set the fee payer
+  #   composer.set_fee_payer('pubkey8')
+  #
+  #   # Compose the transaction
+  #   tx = composer.compose_transaction
+  #
+  #   # Sign the transaction with all required signers
+  #   tx.sign(*required_signers)
+  #
+  # @since 0.0.1
   class TransactionComposer
     # @!attribute connection
-    #
-    # @return [Solace::Connection] The connection to the Solana cluster
+    #   The connection to the Solana cluster
     attr_reader :connection
 
     # @!attribute context
-    #
-    # @return [Utils::AccountContext] The account registry
+    #   The account context
     attr_reader :context
 
     # @!attribute instruction_composers
-    #
-    # @return [Array<Composers::Base>] The instruction composers
+    #   The instruction composers
     attr_reader :instruction_composers
 
     # Initialize the composer

@@ -8,7 +8,7 @@ describe Solace::Serializers::MessageDeserializer do
       let(:msg) { build(:legacy_message, :with_transfer_instruction) }
 
       before do
-        @msg = Solace::Serializers::MessageDeserializer.call(msg.to_io)
+        @msg = Solace::Serializers::MessageDeserializer.new(msg.to_io).call
       end
 
       it 'does not extract version' do
@@ -37,7 +37,7 @@ describe Solace::Serializers::MessageDeserializer do
       let(:msg) { build(:versioned_message, :with_transfer_instruction) }
 
       before do
-        @msg = Solace::Serializers::MessageDeserializer.call(msg.to_io)
+        @msg = Solace::Serializers::MessageDeserializer.new(msg.to_io).call
       end
 
       it 'extracts version' do

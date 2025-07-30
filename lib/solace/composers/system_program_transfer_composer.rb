@@ -2,11 +2,28 @@
 
 module Solace
   module Composers
-    # !@class SystemProgramTransferComposer
+    # Composer for creating a system program transfer instruction.
     #
-    # A composer for creating a system program transfer instruction.
+    # This composer resolves and orders the required accounts for a `Transfer` instruction,
+    # sets up their access permissions, and delegates construction to the appropriate
+    # instruction builder (`Instructions::SystemProgram::TransferInstruction`).
     #
-    # @return [Class]
+    # It is used for transferring lamports from one account to another.
+    #
+    # Required accounts:
+    # - **From**: source account (writable, signer)
+    # - **To**: destination account (writable, non-signer)
+    # - **Program**: System program (readonly, non-signer)
+    #
+    # @example Compose and build a transfer instruction
+    #   composer = SystemProgramTransferComposer.new(
+    #     from: from_address,
+    #     to: to_address,
+    #     lamports: 1_000_000
+    #   )
+    #
+    # @see Instructions::SystemProgram::TransferInstruction
+    # @since 0.0.3
     class SystemProgramTransferComposer < Base
       # Extracts the to address from the params
       #

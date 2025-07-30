@@ -15,7 +15,7 @@ describe Solace::Serializers::InstructionSerializer do
 
   describe '#call' do
     before do
-      @serialized_ix = Solace::Serializers::InstructionSerializer.call(ix)
+      @serialized_ix = Solace::Serializers::InstructionSerializer.new(ix).call
     end
 
     it 'returns a serialized instruction' do

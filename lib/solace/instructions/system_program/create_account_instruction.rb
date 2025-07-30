@@ -3,16 +3,25 @@
 module Solace
   module Instructions
     module SystemProgram
-      # !@class CreateAccountInstruction
+      # Instruction for creating a new account.
       #
-      # A class representing a SystemProgram::CreateAccount instruction
+      # This instruction is used to create a new account for a given program.
       #
-      # @return [Class]
+      # @example Build a CreateAccount instruction
+      #   instruction = Solace::Instructions::SystemProgram::CreateAccountInstruction.build(
+      #     space: 1024,
+      #     lamports: 1000,
+      #     from_index: 0,
+      #     new_account_index: 1,
+      #     owner: owner.address,
+      #     system_program_index: 2
+      #   )
+      #
+      # @since 0.0.2
       class CreateAccountInstruction
-        # !@const INSTRUCTION_INDEX
+        # @!attribute [Array<Integer>] INSTRUCTION_INDEX
         #   Instruction index for SystemProgram::CreateAccount
         #   This is the same across all Solana clusters
-        # @return [Array<Integer>]
         INSTRUCTION_INDEX = [0, 0, 0, 0].freeze
 
         # Builds a SystemProgram::CreateAccount instruction
@@ -24,7 +33,6 @@ module Solace
         # @param new_account_index [Integer] Index of the new account to create in the transaction's accounts
         # @param system_program_index [Integer] Index of the system program in the transaction's accounts (default: 2)
         # @return [Solace::Instruction]
-        #
         def self.build(
           space:,
           lamports:,

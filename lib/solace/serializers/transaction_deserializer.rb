@@ -1,15 +1,10 @@
 # frozen_string_literal: true
 
-# =============================
-# Transaction Deserializer
-# =============================
-#
-# Deserializes a binary transaction into a Solace::Transaction object.
 module Solace
   module Serializers
-    # !@class TransactionDeserializer
+    # Deserializes a binary transaction into a Solace::Transaction object.
     #
-    # @return [Class]
+    # @since 0.0.1
     class TransactionDeserializer < Solace::Serializers::BaseDeserializer
       # @!attribute record_class
       #   The class of the record being deserialized
@@ -17,7 +12,7 @@ module Solace
       # @return [Class] The class of the record
       self.record_class = Solace::Transaction
 
-      # @!attribute steps
+      # @!attribute  steps
       #   An ordered list of methods to deserialize the transaction
       #
       # @return [Array] The steps to deserialize the transaction
@@ -45,7 +40,7 @@ module Solace
       #
       # @return [Solace::Message] The deserialized message instance
       def next_extract_message
-        record.message = Solace::Serializers::MessageDeserializer.call(io)
+        record.message = Solace::Serializers::MessageDeserializer.new(io).call
       end
     end
   end

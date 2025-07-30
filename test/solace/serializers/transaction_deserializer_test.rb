@@ -10,7 +10,7 @@ describe Solace::Serializers::TransactionDeserializer do
       end
 
       before do
-        @tx = Solace::Serializers::TransactionDeserializer.call(legacy_tx_io)
+        @tx = Solace::Serializers::TransactionDeserializer.new(legacy_tx_io).call
       end
 
       it 'returns a transaction' do
@@ -32,7 +32,7 @@ describe Solace::Serializers::TransactionDeserializer do
       end
 
       before do
-        @tx = Solace::Serializers::TransactionDeserializer.call(versioned_tx_io)
+        @tx = Solace::Serializers::TransactionDeserializer.new(versioned_tx_io).call
       end
 
       it 'returns a transaction' do

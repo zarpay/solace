@@ -11,6 +11,12 @@ gem 'minitest-hooks'
 gem 'solace', path: '.'
 
 group :development do
+  # Yard
+  gem 'redcarpet', require: false
+  gem 'yard', require: false
+  gem 'yardstick', require: false
+
+  # Rubocop
   gem 'rubocop', require: false
   gem 'rubocop-yard', require: false
 end

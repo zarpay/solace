@@ -8,7 +8,7 @@ describe Solace::Serializers::TransactionSerializer do
       let(:tx) { build(:transaction, :with_legacy_transfer) }
 
       before do
-        @serialized_tx = Solace::Serializers::TransactionSerializer.call(tx)
+        @serialized_tx = Solace::Serializers::TransactionSerializer.new(tx).call
       end
 
       it 'returns a valid binary string' do
@@ -24,7 +24,7 @@ describe Solace::Serializers::TransactionSerializer do
       let(:tx) { build(:transaction, :with_versioned_transfer) }
 
       before do
-        @serialized_tx = Solace::Serializers::TransactionSerializer.call(tx)
+        @serialized_tx = Solace::Serializers::TransactionSerializer.new(tx).call
       end
 
       it 'returns a valid binary string' do

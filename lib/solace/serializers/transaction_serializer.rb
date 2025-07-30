@@ -1,17 +1,12 @@
 # frozen_string_literal: true
 
-# =============================
-# Transaction Serializer
-# =============================
-#
-# Serializes a Solana transaction to a binary format.
 module Solace
   module Serializers
-    # !@class TransactionSerializer
+    # Serializes a Solana transaction to a binary format.
     #
-    # @return [Class]
+    # @since 0.0.1
     class TransactionSerializer < Solace::Serializers::BaseSerializer
-      # @!const SIGNATURE_PLACEHOLDER
+      # @!attribute SIGNATURE_PLACEHOLDER
       #   @return [String] Placeholder for a signature in the transaction
       SIGNATURE_PLACEHOLDER = ([0] * 64).pack('C*')
 

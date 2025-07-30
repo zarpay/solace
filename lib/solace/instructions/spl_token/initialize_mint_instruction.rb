@@ -3,11 +3,23 @@
 module Solace
   module Instructions
     module SplToken
-      # !@class InitializeMintInstruction
+      # Instruction for initializing a new mint.
       #
-      # A class to build the InitializeMint instruction for the SPL Token Program.
+      # This instruction is used to initialize a new mint for a given token. It is used in conjunction with the SystemProgram::CreateAccount
+      # instruction to create and initialize a new mint account.
       #
-      # @return [Class]
+      # @example Build an InitializeMint instruction
+      #   instruction = Solace::Instructions::SplToken::InitializeMintInstruction.build(
+      #     decimals: 6,
+      #     mint_authority: mint_authority.address,
+      #     freeze_authority: freeze_authority.address,
+      #     rent_sysvar_index: 2,
+      #     mint_account_index: 1,
+      #     program_index: 3
+      #   )
+      #
+      # @see Solace::Instructions::SystemProgram::CreateAccountInstruction
+      # @since 0.0.2
       class InitializeMintInstruction
         # Instruction index for Initialize Mint
         INSTRUCTION_INDEX = [0].freeze

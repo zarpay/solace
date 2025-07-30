@@ -1,15 +1,10 @@
 # frozen_string_literal: true
 
-# =============================
-# Address Lookup Table Deserializer
-# =============================
-#
-# Deserializes a Solana address lookup table from a binary format.
 module Solace
   module Serializers
-    # !@class AddressLookupTableDeserializer
+    # Deserializes a Solana address lookup table from a binary format.
     #
-    # @return [Class]
+    # @since 0.0.2
     class AddressLookupTableDeserializer < Solace::Serializers::BaseDeserializer
       # @!attribute record_class
       #   The class of the record being deserialized

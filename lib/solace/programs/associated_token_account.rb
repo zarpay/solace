@@ -2,7 +2,27 @@
 
 module Solace
   module Programs
-    # A client for interacting with the SPL Token Program.
+    # Client for interacting with the Associated Token Account Program.
+    #
+    # This client provides methods for interacting with the Associated Token Account Program. It is a
+    # wrapper around the SPL Token Program and provides a more convenient interface for creating and
+    # managing associated token accounts.
+    #
+    # @example Create an associated token account
+    #   # Initialize the program with a connection
+    #   program = Solace::Programs::AssociatedTokenAccount.new(connection: connection)
+    #
+    #   # Create an associated token account
+    #   result = program.create_associated_token_account(
+    #     payer: payer,
+    #     owner: owner,
+    #     mint: mint
+    #   )
+    #
+    #   # Wait for the transaction to be finalized
+    #   @connection.wait_for_confirmed_signature('finalized') { result['result'] }
+    #
+    # @since 0.0.2
     class AssociatedTokenAccount < Base
       class << self
         # Gets the address of an associated token account.

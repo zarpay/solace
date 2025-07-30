@@ -5,10 +5,14 @@ require 'ffi'
 
 module Solace
   module Utils
-    # !@module Curve25519Dalek
-    #   A module for interacting with the Curve25519 Dalek library
+    # Module for interacting with the Curve25519 Dalek library
     #
-    # @return [Module]
+    # This module provides a wrapper around the Curve25519 Dalek library, which is a pure-Rust
+    # implementation of the Curve25519 elliptic curve. It uses FFI to interface with the native
+    # rust library when checking if a point is on the curve.
+    #
+    # @see Solace::Utils::PDA
+    # @since 0.0.2
     module Curve25519Dalek
       extend FFI::Library
 
@@ -26,8 +30,7 @@ module Solace
                 else raise 'Unsupported platform'
                 end
 
-      # The path to the native library
-      #
+      # !@attribute LIB_PATH
       # @return [String] The path to the native library
       LIB_PATH = File.expand_path(libfile, __dir__)
 
@@ -35,8 +38,6 @@ module Solace
       ffi_lib LIB_PATH
 
       # Attach the native function
-      #
-      # @return [FFI::Function] The native function
       attach_function :is_on_curve, [:pointer], :int
 
       # Checks if a point is on the curve

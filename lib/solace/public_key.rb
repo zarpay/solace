@@ -1,11 +1,19 @@
 # frozen_string_literal: true
 
 module Solace
-  # !@class PublicKey
+  # Class representing a Solana Ed25519 Public Key
   #
-  # Represents a Solana Ed25519 Public Key and provides utility methods for encoding, decoding, and validation
+  # This class provides utility methods for encoding, decoding, and validating public keys.
   #
-  # @return [Class]
+  # @example
+  #   # Initialize a public key from a 32-byte array
+  #   pubkey = Solace::PublicKey.new(public_key_bytes)
+  #
+  #   # Get the address representation of the public key
+  #   pubkey.to_base58
+  #   pubkey.address
+  #
+  # @since 0.0.1
   class PublicKey
     include Solace::Utils::PDA
 
@@ -52,6 +60,13 @@ module Solace
     #
     # @return [String]
     def to_s
+      to_base58
+    end
+
+    # Return the address of the public key
+    #
+    # @return [String]
+    def address
       to_base58
     end
 

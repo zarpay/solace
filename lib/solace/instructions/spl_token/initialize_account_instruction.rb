@@ -5,9 +5,28 @@
 module Solace
   module Instructions
     module SplToken
-      # A class to build the InitializeAccount instruction for the SPL Token Program.
+      # Instruction for initializing a new token account.
+      #
+      # This instruction is used to initialize a new token account for a given mint and owner. It
+      # is used in conjunction with the CreateAccount instruction to create and initialize a new
+      # token account. Note that the AssociatedTokenAccount::CreateAssociatedTokenAccountInstruction
+      # is a special "all-in-one" instruction that creates and initializes the account in a single
+      # instruction.
+      #
+      # @example Build an InitializeAccount instruction
+      #   instruction = Solace::Instructions::SplToken::InitializeAccountInstruction.build(
+      #     account_index: 0,
+      #     mint_index: 1,
+      #     owner_index: 2,
+      #     rent_sysvar_index: 3,
+      #     program_index: 4
+      #   )
+      #
+      # @see Solace::Instructions::AssociatedTokenAccount::CreateAssociatedTokenAccountInstruction
+      # @see Solace::Instructions::SystemProgram::CreateAccountInstruction
+      # @since 0.0.2
       class InitializeAccountInstruction
-        # @!const [Array<Integer>] INSTRUCTION_INDEX
+        # @!attribute [Array<Integer>] INSTRUCTION_INDEX
         #   Instruction index for SPL Token Program's InitializeAccount instruction.
         INSTRUCTION_INDEX = [1].freeze
 

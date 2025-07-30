@@ -2,11 +2,29 @@
 
 module Solace
   module Programs
-    # !@class SplToken
+    # Client for interacting with the SPL Token Program.
     #
-    # A client for interacting with the SPL Token Program.
+    # This client provides methods for interacting with the SPL Token Program. It is a wrapper around
+    # the SPL Token Program and provides a more convenient interface for creating and managing SPL
+    # Token mints and accounts.
     #
-    # @return [Class]
+    # @example Create an SPL Token mint
+    #   # Initialize the program with a connection
+    #   program = Solace::Programs::SplToken.new(connection: connection)
+    #
+    #   # Create an SPL Token mint
+    #   result = program.create_mint(
+    #     payer: payer,
+    #     decimals: 6,
+    #     mint_keypair: mint_keypair,
+    #     mint_authority: mint_authority,
+    #     freeze_authority: freeze_authority
+    #   )
+    #
+    #   # Wait for the transaction to be finalized
+    #   @connection.wait_for_confirmed_signature('finalized') { result['result'] }
+    #
+    # @since 0.0.2
     #
     # rubocop:disable Metrics/ClassLength
     class SplToken < Base

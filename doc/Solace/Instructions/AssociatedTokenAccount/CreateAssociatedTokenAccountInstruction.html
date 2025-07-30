@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>
+  Class: Solace::Instructions::AssociatedTokenAccount::CreateAssociatedTokenAccountInstruction
+  
+    &mdash; Solace Ruby SDK Documentation
+  
+</title>
+
+  <link rel="stylesheet" href="../../../css/style.css" type="text/css" />
+
+  <link rel="stylesheet" href="../../../css/common.css" type="text/css" />
+
+<script type="text/javascript">
+  pathId = "Solace::Instructions::AssociatedTokenAccount::CreateAssociatedTokenAccountInstruction";
+  relpath = '../../../';
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="../../../js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="../../../js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div class="nav_wrap">
+      <iframe id="nav" src="../../../class_list.html?1"></iframe>
+      <div id="resizer"></div>
+    </div>
+
+    <div id="main" tabindex="-1">
+      <div id="header">
+        <div id="menu">
+  
+    <a href="../../../_index.html">Index (C)</a> &raquo;
+    <span class='title'><span class='object_link'><a href="../../../Solace.html" title="Solace (module)">Solace</a></span></span> &raquo; <span class='title'><span class='object_link'><a href="../../Instructions.html" title="Solace::Instructions (module)">Instructions</a></span></span> &raquo; <span class='title'><span class='object_link'><a href="../AssociatedTokenAccount.html" title="Solace::Instructions::AssociatedTokenAccount (module)">AssociatedTokenAccount</a></span></span>
+     &raquo; 
+    <span class="title">CreateAssociatedTokenAccountInstruction</span>
+  
+</div>
+
+        <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="../../../class_list.html">
+
+        <svg width="24" height="24">
+          <rect x="0" y="4" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="12" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
+        </svg>
+    </a>
+  
+</div>
+        <div class="clear"></div>
+      </div>
+
+      <div id="content"><h1>Class: Solace::Instructions::AssociatedTokenAccount::CreateAssociatedTokenAccountInstruction
+  
+  
+  
+</h1>
+<div class="box_info">
+  
+  <dl>
+    <dt>Inherits:</dt>
+    <dd>
+      <span class="inheritName">Object</span>
+      
+        <ul class="fullTree">
+          <li>Object</li>
+          
+            <li class="next">Solace::Instructions::AssociatedTokenAccount::CreateAssociatedTokenAccountInstruction</li>
+          
+        </ul>
+        <a href="#" class="inheritanceTree">show all</a>
+      
+    </dd>
+  </dl>
+  
+
+  
+  
+  
+  
+  
+
+  
+
+  
+  <dl>
+    <dt>Defined in:</dt>
+    <dd>lib/solace/instructions/associated_token_account/create_associated_token_account_instruction.rb</dd>
+  </dl>
+  
+</div>
+
+<h2>Overview</h2><div class="docstring">
+  <div class="discussion">
+    <p>Instruction for creating an Associated Token Account.</p>
+
+<p>This is a special &quot;all-in-one&quot; instruction that creates and initializes the account. It
+is used to create an Associated Token Account (ATA) for a given mint and owner.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+  <div class="examples">
+    <h4 class="tag_title">Examples:</h4>
+    
+      
+        <h5 class="example_title"><div class='inline'><p>Build a CreateAssociatedTokenAccount instruction</p>
+</div></h5>
+      
+      <pre class="example code"><code><span class='id identifier rubyid_instruction'>instruction</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../../Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../../Instructions.html" title="Solace::Instructions (module)">Instructions</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../AssociatedTokenAccount.html" title="Solace::Instructions::AssociatedTokenAccount (module)">AssociatedTokenAccount</a></span></span><span class='op'>::</span><span class='const'>CreateAssociatedTokenAccountInstruction</span><span class='period'>.</span><span class='id identifier rubyid_build'><span class='object_link'><a href="#build-class_method" title="Solace::Instructions::AssociatedTokenAccount::CreateAssociatedTokenAccountInstruction.build (method)">build</a></span></span><span class='lparen'>(</span>
+  <span class='label'>funder_index:</span> <span class='int'>0</span><span class='comma'>,</span>
+  <span class='label'>associated_token_account_index:</span> <span class='int'>1</span><span class='comma'>,</span>
+  <span class='label'>owner_index:</span> <span class='int'>2</span><span class='comma'>,</span>
+  <span class='label'>mint_index:</span> <span class='int'>3</span><span class='comma'>,</span>
+  <span class='label'>system_program_index:</span> <span class='int'>4</span><span class='comma'>,</span>
+  <span class='label'>token_program_index:</span> <span class='int'>5</span><span class='comma'>,</span>
+  <span class='label'>program_index:</span> <span class='int'>6</span>
+<span class='rparen'>)</span></code></pre>
+    
+  </div>
+
+<p class="tag_title">Since:</p>
+<ul class="since">
+  
+    <li>
+      
+      
+      
+      
+        
+        <div class='inline'><p>0.0.2</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div>
+  
+    <h2>
+      Constant Summary
+      <small><a href="#" class="constants_summary_toggle">collapse</a></small>
+    </h2>
+
+    <dl class="constants">
+      
+        <dt id="INSTRUCTION_INDEX-constant" class="">INSTRUCTION_INDEX =
+          <div class="docstring">
+  <div class="discussion">
+    <p>!@const INSTRUCTION_INDEX
+  Instruction index for CreateAssociatedTokenAccount</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Array&lt;Integer&gt;</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+<p class="tag_title">Since:</p>
+<ul class="since">
+  
+    <li>
+      
+      
+      
+      
+        
+        <div class='inline'><p>0.0.2</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div>
+        </dt>
+        <dd><pre class="code"><span class='lbracket'>[</span><span class='int'>0</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_freeze'>freeze</span></pre></dd>
+      
+    </dl>
+  
+
+
+
+
+
+
+
+  
+    <h2>
+      Class Method Summary
+      <small><a href="#" class="summary_toggle">collapse</a></small>
+    </h2>
+
+    <ul class="summary">
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#build-class_method" title="build (class method)">.<strong>build</strong>(funder_index:, associated_token_account_index:, owner_index:, mint_index:, system_program_index:, token_program_index:, program_index:)  &#x21d2; Solace::Instruction </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Builds a CreateAssociatedTokenAccount instruction.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#data-class_method" title="data (class method)">.<strong>data</strong>  &#x21d2; Array </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Data for a CreateAssociatedTokenAccount instruction.</p>
+</div></span>
+  
+</li>
+
+      
+    </ul>
+  
+
+
+
+  <div id="class_method_details" class="method_details_list">
+    <h2>Class Method Details</h2>
+
+    
+      <div class="method_details first">
+  <h3 class="signature first" id="build-class_method">
+  
+    .<strong>build</strong>(funder_index:, associated_token_account_index:, owner_index:, mint_index:, system_program_index:, token_program_index:, program_index:)  &#x21d2; <tt><span class='object_link'><a href="../../Instruction.html" title="Solace::Instruction (class)">Solace::Instruction</a></span></tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Builds a CreateAssociatedTokenAccount instruction.</p>
+
+<p>The on-chain program requires accounts in a specific order:</p>
+
+<ol>
+<li>[writable, signer] Funder: The account paying for the rent.</li>
+<li>[writable] ATA: The new Associated Token Account to be created.</li>
+<li>[readonly] Owner: The wallet that will own the new ATA.</li>
+<li>[readonly] Mint: The token mint for the new ATA.</li>
+<li>[readonly] System Program: Required to create the account.</li>
+<li>[readonly] SPL Token Program: Required to initialize the account.</li>
+</ol>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>funder_index</span>
+      
+      
+        <span class='type'>(<tt>Integer</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>Index of the funding account (payer).</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>associated_token_account_index</span>
+      
+      
+        <span class='type'>(<tt>Integer</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>Index of the Associated Token Account to be created.</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>owner_index</span>
+      
+      
+        <span class='type'>(<tt>Integer</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>Index of the wallet that will own the new ATA.</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>mint_index</span>
+      
+      
+        <span class='type'>(<tt>Integer</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>Index of the token mint.</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>system_program_index</span>
+      
+      
+        <span class='type'>(<tt>Integer</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>Index of the System Program.</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>token_program_index</span>
+      
+      
+        <span class='type'>(<tt>Integer</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>Index of the SPL Token Program.</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>program_index</span>
+      
+      
+        <span class='type'>(<tt>Integer</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>Index of the Associated Token Program itself.</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="../../Instruction.html" title="Solace::Instruction (class)">Solace::Instruction</a></span></tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+<p class="tag_title">Since:</p>
+<ul class="since">
+  
+    <li>
+      
+      
+      
+      
+        
+        <div class='inline'><p>0.0.2</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/solace/instructions/associated_token_account/create_associated_token_account_instruction.rb', line 48</span>
+
+<span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_build'>build</span><span class='lparen'>(</span>
+  <span class='label'>funder_index:</span><span class='comma'>,</span>
+  <span class='label'>associated_token_account_index:</span><span class='comma'>,</span>
+  <span class='label'>owner_index:</span><span class='comma'>,</span>
+  <span class='label'>mint_index:</span><span class='comma'>,</span>
+  <span class='label'>system_program_index:</span><span class='comma'>,</span>
+  <span class='label'>token_program_index:</span><span class='comma'>,</span>
+  <span class='label'>program_index:</span>
+<span class='rparen'>)</span>
+  <span class='const'><span class='object_link'><a href="../../../Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../../Instruction.html" title="Solace::Instruction (class)">Instruction</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='period'>.</span><span class='id identifier rubyid_tap'>tap</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_ix'>ix</span><span class='op'>|</span>
+    <span class='id identifier rubyid_ix'>ix</span><span class='period'>.</span><span class='id identifier rubyid_program_index'>program_index</span> <span class='op'>=</span> <span class='id identifier rubyid_program_index'>program_index</span>
+    <span class='id identifier rubyid_ix'>ix</span><span class='period'>.</span><span class='id identifier rubyid_accounts'>accounts</span> <span class='op'>=</span> <span class='lbracket'>[</span>
+      <span class='id identifier rubyid_funder_index'>funder_index</span><span class='comma'>,</span>
+      <span class='id identifier rubyid_associated_token_account_index'>associated_token_account_index</span><span class='comma'>,</span>
+      <span class='id identifier rubyid_owner_index'>owner_index</span><span class='comma'>,</span>
+      <span class='id identifier rubyid_mint_index'>mint_index</span><span class='comma'>,</span>
+      <span class='id identifier rubyid_system_program_index'>system_program_index</span><span class='comma'>,</span>
+      <span class='id identifier rubyid_token_program_index'>token_program_index</span>
+    <span class='rbracket'>]</span>
+    <span class='id identifier rubyid_ix'>ix</span><span class='period'>.</span><span class='id identifier rubyid_data'>data</span> <span class='op'>=</span> <span class='id identifier rubyid_data'>data</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="data-class_method">
+  
+    .<strong>data</strong>  &#x21d2; <tt>Array</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Data for a CreateAssociatedTokenAccount instruction</p>
+
+<p>The BufferLayout is:</p>
+
+<ul>
+<li>[Instruction Index (1 byte)]</li>
+</ul>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Array</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>1-byte instruction index</p>
+</div>
+      
+    </li>
+  
+</ul>
+<p class="tag_title">Since:</p>
+<ul class="since">
+  
+    <li>
+      
+      
+      
+      
+        
+        <div class='inline'><p>0.0.2</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+77
+78
+79</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/solace/instructions/associated_token_account/create_associated_token_account_instruction.rb', line 77</span>
+
+<span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_data'>data</span>
+  <span class='const'><span class='object_link'><a href="#INSTRUCTION_INDEX-constant" title="Solace::Instructions::AssociatedTokenAccount::CreateAssociatedTokenAccountInstruction::INSTRUCTION_INDEX (constant)">INSTRUCTION_INDEX</a></span></span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+</div>
+
+      <div id="footer">
+  Generated on Wed Jul 30 22:56:08 2025 by
+  <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.9.37 (ruby-3.4.4).
+</div>
+
+    </div>
+  </body>
+</html>
