@@ -36,27 +36,24 @@ module Solace
         self.class.get_address(**options)
       end
 
-      # Alias method for get_address
-      # 
-      # @param oprtions [Hash] A hash of options for the get_address class method
-      def get_address(**options)
-        self.class.get_address(**options)
-      end
-
       # Gets the address of an associated token account, creating it if it doesn't exist.
       #
       # @param payer [Solace::Keypair] The keypair that will pay for fees and rent (required if account needs to be created).
       # @param owner [Solace::Keypair || Solace::PublicKey] The keypair of the owner.
       # @param mint [Solace::Keypair || Solace::PublicKey] The keypair of the mint.
       # @return [String] The address of the associated token account
-      def get_or_create_address(payer:, owner:, mint:)
+      def get_or_create_address(payer:, owner:, mint:, commitment: 'confirmed')
         ata_address, _ = get_address(owner:, mint:)
         
         account_info = @connection.get_account_info(ata_address)
         
         return ata_address if account_info
 
-        create_associated_token_account(payer:, owner:, mint:)
+        response = create_associated_token_account(payer:, owner:, mint:)
+
+        raise "Failed to create associated token account" unless response['result']
+
+        @connection.wait_for_confirmed_signature(commitment) { response['result'] }
         
         ata_address
       end

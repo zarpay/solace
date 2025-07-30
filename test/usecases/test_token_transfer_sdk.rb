@@ -34,7 +34,7 @@ puts 'Recipient token balance before:'
 puts `spl-token balance --owner ./test/fixtures/anna.json #{mint}`
 
 # 5. Build SPL token transfer instruction
-instruction = Solace::Instructions::SystemProgram::TransferCheckedInstruction.build(
+instruction = Solace::Instructions::SplToken::TransferCheckedInstruction.build(
   amount: 100,
   decimals: 6,
   from_index: 1,      # sender_token_account

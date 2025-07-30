@@ -16,14 +16,30 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ### Fixed
 ```
 
-
-## [WIP] - yyyy-mm-dd
+## [0.0.3] - 2025-07-30
   
 ### Added
 1. Moved `TransferCheckedInstruction` and `TransferInstruction` to `Solace::Instructions::SystemProgram` namespace.
 2. Added `get_token_account_balance` to `Solace::Connection`.
 3. Added `get_or_create_address` to `Solace::Programs::AssociatedTokenAccount`.
+4. Added Composer system for handling accounts and instructions in a higher level abstraction.
+5. Added `SystemProgramTransferComposer` to `Solace::Composers` namespace.
+6. Added `SplTokenProgramTransferCheckedComposer` to `Solace::Composers` namespace.
+7. Moved TransferCheckedInstruction to proper namespace `Solace::Instructions::SplToken::TransferCheckedInstruction`.
+8. Updated `get_or_create_address` to wait for confirmation before returning the address in `Solace::Programs::AssociatedTokenAccount`.
+9. Moved default options to instance variable in `Solace::Connection`.
+10. Moved test setup to `test/bootstrap.rb` and added rake task `bootstrap` to run it.
 
 ### Changed
+
+THESE ARE BREAKING CHANGES FROM 0.0.2 TO 0.0.3. Solice is still in alpha and the API is subject to change. 
+
+There was a bit of a refactoring of the codebase to make it more maintainable and to make it easier to add new features. Additonally, the SDK now has `Composers` for handling accounts and instructions in a higher level abstraction. These composers are used in the tests and can be used in your own code as well.
+
+Soon, YARD documentation will be added to the SDK and published to https://solace-rb.github.io/solace/. 
+
+Stay tuned.
  
 ### Fixed
+
+N/A

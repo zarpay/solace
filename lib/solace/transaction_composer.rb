@@ -53,9 +53,9 @@ module Solace
       context.compile
 
       message = Solace::Message.new(
-        instructions: build_instructions,
         header: context.header,
         accounts: context.accounts,
+        instructions: build_instructions,
         recent_blockhash: connection.get_latest_blockhash,
       )
       

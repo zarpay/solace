@@ -2,14 +2,14 @@
 
 require 'test_helper'
 
-describe Solace::Instructions::SystemProgram::TransferCheckedInstruction do
+describe Solace::Instructions::SplToken::TransferCheckedInstruction do
   describe '.build' do
     let(:amount) { 100 }
     let(:decimals) { 6 }
 
     # Build a transfer instruction
     let(:ix) do
-      Solace::Instructions::SystemProgram::TransferCheckedInstruction.build(
+      Solace::Instructions::SplToken::TransferCheckedInstruction.build(
         amount: amount,
         decimals: decimals,
         to_index: 0,
@@ -39,7 +39,7 @@ describe Solace::Instructions::SystemProgram::TransferCheckedInstruction do
       let(:program_index) { 5 }
 
       let(:ix_with_custom_program_index) do
-        Solace::Instructions::SystemProgram::TransferCheckedInstruction.build(
+        Solace::Instructions::SplToken::TransferCheckedInstruction.build(
           amount: amount,
           decimals: decimals,
           to_index: 0,

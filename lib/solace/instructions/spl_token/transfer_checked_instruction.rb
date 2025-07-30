@@ -2,7 +2,7 @@
 
 module Solace
   module Instructions
-    module SystemProgram
+    module SplToken
       # Service object for building an SPL Token Program transfer instruction
       class TransferCheckedInstruction
         # SPL Token Program instruction index for Transfer Checked

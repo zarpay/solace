@@ -8,6 +8,7 @@ require_relative 'solace/constants'
 require_relative 'solace/connection'
 require_relative 'solace/utils/codecs'
 require_relative 'solace/utils/pda'
+require_relative 'solace/utils/account_context'
 require_relative 'solace/utils/curve25519_dalek'
 require_relative 'solace/concerns/binary_serializable'
 
@@ -26,6 +27,7 @@ require_relative 'solace/transaction'
 require_relative 'solace/message'
 require_relative 'solace/instruction'
 require_relative 'solace/address_lookup_table'
+require_relative 'solace/transaction_composer'
 
 # 📦 Composers (Builders)
 # 

@@ -2,9 +2,9 @@
 
 Gem::Specification.new do |spec|
   spec.name          = 'solace'
-  spec.version       = '0.0.2'
+  spec.version       = '0.0.3'
   spec.authors       = ['Sebastian Scholl']
-  spec.email         = ['sebastian@scholl.io']
+  spec.email         = ['sebscholl@gmail.com']
   spec.summary       = 'Solana ruby library'
   spec.homepage      = 'https://github.com/sebscholl/solace'
   spec.description   = 'A Ruby library for working with Solana blockchain. Provides both low-level instruction builders and high-level program clients for interacting with Solana programs.'

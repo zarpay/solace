@@ -6,21 +6,31 @@ require 'uri'
 
 module Solace
   class Connection
+    # @!attribute [r] rpc_url
+    #   The URL of the Solana RPC node
+    #
+    # @return [String] The URL of the Solana RPC node
     attr_reader :rpc_url
 
-    # !const default options
-    DEFAULT_OPTIONS = {
-      encoding: 'base64',
-      commitment: 'confirmed'
-    }.freeze
+    # @!attribute [r] default_options
+    #   The default options for RPC requests
+    #
+    # @return [Hash] The default options for RPC requests
+    attr_reader :default_options
 
     # Initialize the connection with a default or custom RPC URL
     #
     # @param rpc_url [String] The URL of the Solana RPC node
     # @return [Solace::Connection] The connection object
-    def initialize(rpc_url = 'http://localhost:8899')
-      @rpc_url = rpc_url
+    def initialize(rpc_url = 'http://localhost:8899', commitment: 'confirmed')
       @request_id = nil
+      @rpc_url = rpc_url
+
+      # Set default options
+      @default_options = { 
+        commitment: commitment,
+        encoding: 'base64'
+      }
     end
 
     # Make an RPC request to the Solana node
@@ -68,7 +78,7 @@ module Solace
         [
           pubkey,
           lamports,
-          DEFAULT_OPTIONS.merge(options)
+          default_options.merge(options)
         ]
       )
     end
@@ -97,7 +107,7 @@ module Solace
         'getAccountInfo',
         [
           pubkey,
-          DEFAULT_OPTIONS
+          default_options
         ]
       )['result']
 
@@ -115,7 +125,7 @@ module Solace
         'getBalance',
         [
           pubkey,
-          DEFAULT_OPTIONS
+          default_options
         ]
       )['result']['value']
     end
@@ -129,7 +139,7 @@ module Solace
         'getTokenAccountBalance',
         [
           token_account,
-          DEFAULT_OPTIONS
+          default_options
         ]
       )['result']['value']
     end
@@ -143,7 +153,7 @@ module Solace
         'getTransaction',
         [
           signature,
-          DEFAULT_OPTIONS.merge(options)
+          default_options.merge(options)
         ]
       )['result']
     end
@@ -157,7 +167,7 @@ module Solace
         'getSignatureStatuses',
         [
           signatures,
-          DEFAULT_OPTIONS.merge({ 'searchTransactionHistory' => true })
+          default_options.merge({ 'searchTransactionHistory' => true })
         ]
       )['result']
     end
@@ -171,7 +181,7 @@ module Solace
         'sendTransaction',
         [
           transaction,
-          DEFAULT_OPTIONS.merge(options)
+          default_options.merge(options)
         ]
       )
     end
@@ -186,15 +196,17 @@ module Solace
       # Get the signature from the block
       signature = yield
 
+      interval = 0.1
+
       # Wait for confirmation
       loop do
         status = get_signature_status([signature]).dig('value', 0)
-
+        
         break if status && status['confirmationStatus'] == commitment
-
-        sleep 0.5
+        
+        sleep interval
       end
-
+      
       signature
     end
   end

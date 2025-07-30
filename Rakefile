@@ -16,6 +16,13 @@ Rake::TestTask.new(:test) do |t|
   t.verbose = false
 end
 
+# Bootstrap test environment
+Rake::TestTask.new(:bootstrap) do |t|
+  t.libs << 'test'
+  t.pattern = 'test/bootstrap.rb'
+  t.verbose = false
+end
+
 # Run all usecases
 Rake::TestTask.new(:usecases) do |t|
   t.libs << 'test'
