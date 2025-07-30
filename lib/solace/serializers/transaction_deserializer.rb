@@ -7,6 +7,9 @@
 # Deserializes a binary transaction into a Solace::Transaction object.
 module Solace
   module Serializers
+    # !@class TransactionDeserializer
+    #
+    # @return [Class]
     class TransactionDeserializer < Solace::Serializers::BaseDeserializer
       # @!attribute record_class
       #   The class of the record being deserialized

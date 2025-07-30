@@ -14,7 +14,9 @@ require 'test_helper'
 #
 # Base64 encoded legacy transaction
 #
+# rubocop:disable Layout/LineLength
 serialized_transaction = 'AcaMpLmLt94VN+8I6G5Gl4fkr8yAawMrfDLgHzllHPuJh9UrMwPGFg8f1+XIPCJ++1gQhUm2iqykguCCW8yLXAEBAAMFrBYKcNpllQ32WLoMCd2PaL1ByibWi05UEFONRtCO9tN/rqFhq+q8I5Y2Z+0JFrZ3yFicOGyV+ehkL4SjrHfiJQan1RcZLwqvxvJl4/t3zHragsUp0L47E24tAFUgAAAABqfVFxjHdMkoVmOYaR1etoteuKObS21cc1VbIQAAAAAHYUgdNXR0u3xNdiTr072z2DVec9EQQ/wNo1OAAAAAAGCuTeqVWHTH4S+Zvy3yupOkl9cHQQW+HrLw7BH9zvaHAQQEAQIDADUCAAAAAQAAAAAAAAADAAAAAAAAAMKSUZmaRJYqMQtNQ+kLV4M8Ln+LqIHtLf+eM3ERhdG3AA=='
+# rubocop:enable Layout/LineLength
 
 # Step 1: Base64 decode
 transaction_bytes = Base64.decode64(serialized_transaction)

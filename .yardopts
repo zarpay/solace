@@ -1,0 +1,7 @@
+--markup markdown
+--markup-provider redcarpet
+--title "Solace Ruby SDK Documentation"
+
+README.md
+docs/**/*.md
+lib/**/*.rb

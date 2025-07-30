@@ -4,8 +4,8 @@ require 'test_helper'
 
 describe Solace::Instructions::SplToken::TransferInstruction do
   let(:connection) { Solace::Connection.new }
-  let(:spl_token_program) { Solace::Programs::SplToken.new(connection:) }
-  let(:associated_token_account_program) { Solace::Programs::AssociatedTokenAccount.new(connection:) }
+  let(:spl_token_program) { Solace::Programs::SplToken.new(connection: connection) }
+  let(:associated_token_account_program) { Solace::Programs::AssociatedTokenAccount.new(connection: connection) }
 
   let(:mint) { Fixtures.load_keypair('mint') }
   let(:mint_authority) { Fixtures.load_keypair('mint-authority') }
@@ -19,7 +19,7 @@ describe Solace::Instructions::SplToken::TransferInstruction do
   describe '.build' do
     let(:ix) do
       Solace::Instructions::SplToken::TransferInstruction.build(
-        amount:,
+        amount: amount,
         source_index: 1,
         destination_index: 2,
         owner_index: 0,
@@ -45,15 +45,8 @@ describe Solace::Instructions::SplToken::TransferInstruction do
   end
 
   describe 'on-chain test' do
-    let(:source) do
-      ata_address, _ = Solace::Programs::AssociatedTokenAccount.get_address(owner: source_owner, mint:)
-      ata_address
-    end
-
-    let(:destination) do
-      ata_address, _ = Solace::Programs::AssociatedTokenAccount.get_address(owner: destination_owner, mint:)
-      ata_address
-    end
+    let(:source) { Solace::Programs::AssociatedTokenAccount.get_address(owner: source_owner, mint: mint).first }
+    let(:destination) { Solace::Programs::AssociatedTokenAccount.get_address(owner: destination_owner, mint: mint).first }
 
     before(:all) do
       # # Create ata for source and destination
@@ -62,11 +55,11 @@ describe Solace::Instructions::SplToken::TransferInstruction do
       # Create mint, source ATA, and mint tokens
       connection.wait_for_confirmed_signature do
         spl_token_program.mint_to(
-          payer:, 
-          mint:,
-          destination:,
-          amount:,
-          mint_authority:
+          amount: amount,
+          payer: payer,
+          mint: mint,
+          destination: destination,
+          mint_authority: mint_authority
         )['result']
       end
 
@@ -81,7 +74,7 @@ describe Solace::Instructions::SplToken::TransferInstruction do
 
       # Instruction
       ix = Solace::Instructions::SplToken::TransferInstruction.build(
-        amount:,
+        amount: amount,
         source_index: 2,
         destination_index: 3,
         owner_index: 1,
@@ -91,13 +84,13 @@ describe Solace::Instructions::SplToken::TransferInstruction do
       # Message
       message = Solace::Message.new(
         header: [2, 0, 1],
-        accounts:,
+        accounts: accounts,
         instructions: [ix],
-        recent_blockhash: connection.get_latest_blockhash,
+        recent_blockhash: connection.get_latest_blockhash
       )
 
       # Transaction
-      tx = Solace::Transaction.new(message:)
+      tx = Solace::Transaction.new(message: message)
       tx.sign(payer, source_owner)
 
       # Send transaction

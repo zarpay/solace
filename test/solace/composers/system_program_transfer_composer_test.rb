@@ -8,9 +8,9 @@ describe Solace::Composers::SystemProgramTransferComposer do
   let(:payer) { Fixtures.load_keypair('payer') }
 
   let(:connection) { Solace::Connection.new }
-  let(:transaction_composer) { Solace::TransactionComposer.new(connection:) }
-  
-  describe "sponsored transaction" do
+  let(:transaction_composer) { Solace::TransactionComposer.new(connection: connection) }
+
+  describe 'sponsored transaction' do
     let(:composer) do
       Solace::Composers::SystemProgramTransferComposer.new(
         to: anna,
@@ -36,7 +36,7 @@ describe Solace::Composers::SystemProgramTransferComposer do
       # Send transaction and wait for confirmation
       @signature = connection.send_transaction(tx.serialize)
       connection.wait_for_confirmed_signature { @signature['result'] }
-    
+
       # Get ending balances
       @bob_ending_balance = connection.get_balance(bob.address)
       @anna_ending_balance = connection.get_balance(anna.address)
@@ -57,7 +57,7 @@ describe Solace::Composers::SystemProgramTransferComposer do
     end
   end
 
-  describe "non-sponsored transaction" do
+  describe 'non-sponsored transaction' do
     let(:composer) do
       Solace::Composers::SystemProgramTransferComposer.new(
         to: anna,
@@ -82,7 +82,7 @@ describe Solace::Composers::SystemProgramTransferComposer do
       # Send transaction and wait for confirmation
       @signature = connection.send_transaction(tx.serialize)
       connection.wait_for_confirmed_signature { @signature['result'] }
-    
+
       # Get ending balances
       @bob_ending_balance = connection.get_balance(bob.address)
       @anna_ending_balance = connection.get_balance(anna.address)
@@ -98,8 +98,8 @@ describe Solace::Composers::SystemProgramTransferComposer do
     end
   end
 
-  describe "sponsored transaction with multiple instructions" do
-    let(:composer_1) do
+  describe 'sponsored transaction with multiple instructions' do
+    let(:composer1) do
       Solace::Composers::SystemProgramTransferComposer.new(
         to: bob,
         from: payer,
@@ -107,7 +107,7 @@ describe Solace::Composers::SystemProgramTransferComposer do
       )
     end
 
-    let(:composer_2) do
+    let(:composer2) do
       Solace::Composers::SystemProgramTransferComposer.new(
         to: anna,
         from: payer,
@@ -122,8 +122,8 @@ describe Solace::Composers::SystemProgramTransferComposer do
       @payer_starting_balance = connection.get_balance(payer.address)
 
       # Add instructions and set fee payer
-      transaction_composer.add_instruction(composer_1)
-      transaction_composer.add_instruction(composer_2)
+      transaction_composer.add_instruction(composer1)
+      transaction_composer.add_instruction(composer2)
       transaction_composer.set_fee_payer(payer)
 
       # Compose and sign transaction
@@ -133,7 +133,7 @@ describe Solace::Composers::SystemProgramTransferComposer do
       # Send transaction and wait for confirmation
       @signature = connection.send_transaction(tx.serialize)
       connection.wait_for_confirmed_signature { @signature['result'] }
-    
+
       # Get ending balances
       @bob_ending_balance = connection.get_balance(bob.address)
       @anna_ending_balance = connection.get_balance(anna.address)

@@ -2,32 +2,32 @@
 
 require 'test_helper'
 
-describe Solace::Composers::SplTokenProgramTransferCheckedComposer do    
+describe Solace::Composers::SplTokenProgramTransferCheckedComposer do
   let(:bob) { Fixtures.load_keypair('bob') }
   let(:anna) { Fixtures.load_keypair('anna') }
   let(:payer) { Fixtures.load_keypair('payer') }
   let(:mint) { Fixtures.load_keypair('mint') }
   let(:fee_collector) { Fixtures.load_keypair('fee-collector') }
-  
-  let(:bob_ata) { Solace::Programs::AssociatedTokenAccount.get_address(owner: bob, mint:).first }
-  let(:anna_ata) { Solace::Programs::AssociatedTokenAccount.get_address(owner: anna, mint:).first }
-  let(:fee_collector_ata) { Solace::Programs::AssociatedTokenAccount.get_address(owner: fee_collector, mint:).first }
+
+  let(:bob_ata) { Solace::Programs::AssociatedTokenAccount.get_address(owner: bob, mint: mint).first }
+  let(:anna_ata) { Solace::Programs::AssociatedTokenAccount.get_address(owner: anna, mint: mint).first }
+  let(:fee_collector_ata) { Solace::Programs::AssociatedTokenAccount.get_address(owner: fee_collector, mint: mint).first }
 
   let(:decimals) { 6 }
   let(:amount) { 1_000 }
 
   let(:connection) { Solace::Connection.new }
-  let(:transaction_composer) { Solace::TransactionComposer.new(connection:) }
+  let(:transaction_composer) { Solace::TransactionComposer.new(connection: connection) }
 
-  describe "sponsored transaction" do
+  describe 'sponsored transaction' do
     let(:composer) do
       Solace::Composers::SplTokenProgramTransferCheckedComposer.new(
-        amount:,
-        decimals:,
         mint: mint,
         to: anna_ata,
         from: bob_ata,
         authority: bob,
+        amount: amount,
+        decimals: decimals
       )
     end
 
@@ -48,7 +48,7 @@ describe Solace::Composers::SplTokenProgramTransferCheckedComposer do
       # Send transaction and wait for confirmation
       @signature = connection.send_transaction(tx.serialize)
       connection.wait_for_confirmed_signature { @signature['result'] }
-    
+
       # Get ending balances
       @payer_ending_balance = connection.get_balance(payer.address)
       @bob_ending_token_balance = connection.get_token_account_balance(bob_ata)['amount'].to_i
@@ -68,15 +68,15 @@ describe Solace::Composers::SplTokenProgramTransferCheckedComposer do
     end
   end
 
-  describe "non-sponsored transaction" do
+  describe 'non-sponsored transaction' do
     let(:composer) do
       Solace::Composers::SplTokenProgramTransferCheckedComposer.new(
-        amount:,
-        decimals:,
         mint: mint,
         to: anna_ata,
         from: bob_ata,
         authority: bob,
+        amount: amount,
+        decimals: decimals
       )
     end
 
@@ -97,14 +97,14 @@ describe Solace::Composers::SplTokenProgramTransferCheckedComposer do
       # Send transaction and wait for confirmation
       @signature = connection.send_transaction(tx.serialize)
       connection.wait_for_confirmed_signature { @signature['result'] }
-    
+
       # Get ending balances
       @bob_ending_balance = connection.get_balance(bob.address)
       @bob_ending_token_balance = connection.get_token_account_balance(bob_ata)['amount'].to_i
       @anna_ending_token_balance = connection.get_token_account_balance(anna_ata)['amount'].to_i
     end
 
-    it 'transfers tokens from bob' do  
+    it 'transfers tokens from bob' do
       assert_equal @bob_ending_token_balance, @bob_starting_token_balance - amount
     end
 
@@ -117,37 +117,37 @@ describe Solace::Composers::SplTokenProgramTransferCheckedComposer do
     end
   end
 
-  describe "transaction with multiple instructions" do
+  describe 'transaction with multiple instructions' do
     let(:fee) { 10_000 }
     let(:lamports) { 50_000 }
 
-    let(:composer_1) do
+    let(:composer1) do
       Solace::Composers::SplTokenProgramTransferCheckedComposer.new(
-        amount:,
-        decimals:,
         mint: mint,
         to: anna_ata,
         from: bob_ata,
         authority: bob,
+        amount: amount,
+        decimals: decimals
       )
     end
 
-    let(:composer_2) do
+    let(:composer2) do
       Solace::Composers::SplTokenProgramTransferCheckedComposer.new(
-        amount: fee,
-        decimals:,
         mint: mint,
         to: fee_collector_ata,
         from: bob_ata,
         authority: bob,
+        amount: fee,
+        decimals: decimals
       )
     end
 
-    let(:composer_3) do
+    let(:composer3) do
       Solace::Composers::SystemProgramTransferComposer.new(
-        lamports:,
         to: bob,
         from: anna,
+        lamports: lamports
       )
     end
 
@@ -162,9 +162,9 @@ describe Solace::Composers::SplTokenProgramTransferCheckedComposer do
       @fee_collector_starting_balance = connection.get_token_account_balance(fee_collector_ata)['amount'].to_i
 
       # Add instructions and set fee payer
-      transaction_composer.add_instruction(composer_1)
-      transaction_composer.add_instruction(composer_2)
-      transaction_composer.add_instruction(composer_3)
+      transaction_composer.add_instruction(composer1)
+      transaction_composer.add_instruction(composer2)
+      transaction_composer.add_instruction(composer3)
       transaction_composer.set_fee_payer(payer)
 
       # Compose and sign transaction
@@ -174,7 +174,7 @@ describe Solace::Composers::SplTokenProgramTransferCheckedComposer do
       # Send transaction and wait for confirmation
       @signature = connection.send_transaction(tx.serialize)
       connection.wait_for_confirmed_signature { @signature['result'] }
-    
+
       # Get ending balances
       @payer_ending_balance = connection.get_balance(payer.address)
       @bob_ending_balance = connection.get_balance(bob.address)

@@ -7,6 +7,9 @@
 # Serializes a Solana message to a binary format.
 module Solace
   module Serializers
+    # !@class MessageSerializer
+    #
+    # @return [Class]
     class MessageSerializer < Solace::Serializers::BaseSerializer
       # @!attribute steps
       #   An ordered list of methods to serialize the message

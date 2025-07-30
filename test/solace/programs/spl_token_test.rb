@@ -6,9 +6,8 @@ describe Solace::Programs::SplToken do
   let(:klass) { Solace::Programs::SplToken }
   let(:connection) { Solace::Connection.new }
   let(:program) { klass.new(connection: connection) }
-  
+
   describe '#initialize' do
-    
     it 'assigns connection' do
       assert_equal program.connection, connection
     end
@@ -18,25 +17,24 @@ describe Solace::Programs::SplToken do
     end
   end
 
-  describe "create a token mint" do
+  describe 'create a token mint' do
     let(:decimals) { 6 }
     let(:payer) { Fixtures.load_keypair('payer') }
-    
+
     let(:mint_keypair) { Solace::Keypair.generate }
     let(:mint_authority) { Solace::Keypair.generate }
     let(:freeze_authority) { Solace::Keypair.generate }
-  
-    describe '#prepare_create_mint' do
 
+    describe '#prepare_create_mint' do
       let(:tx) do
         program.prepare_create_mint(
-          payer:,
-          decimals:,
-          mint_keypair:,
-          mint_authority:,
-          freeze_authority:,
+          payer: payer,
+          decimals: decimals,
+          mint_keypair: mint_keypair,
+          mint_authority: mint_authority,
+          freeze_authority: freeze_authority
         )
-      end  
+      end
 
       it 'should prepare a transaction' do
         assert_kind_of Solace::Transaction, tx
@@ -49,7 +47,7 @@ describe Solace::Programs::SplToken do
         assert_equal tx.message.accounts[0], payer.address
 
         # Second account is mint keypair
-        assert_equal tx.message.accounts[1], mint_keypair.address 
+        assert_equal tx.message.accounts[1], mint_keypair.address
       end
 
       it 'should set the correct header' do
@@ -58,7 +56,7 @@ describe Solace::Programs::SplToken do
 
       it 'should order the accounts correctly' do
         assert_equal(
-          tx.message.accounts, 
+          tx.message.accounts,
           [
             payer.address,
             mint_keypair.address,
@@ -78,11 +76,11 @@ describe Solace::Programs::SplToken do
         # 1. Create the mint and await confirmation
         connection.wait_for_confirmed_signature do
           response = program.create_mint(
-            payer:,
-            decimals:,
-            mint_keypair:,
-            mint_authority:,
-            freeze_authority:,
+            payer: payer,
+            decimals: decimals,
+            mint_keypair: mint_keypair,
+            mint_authority: mint_authority,
+            freeze_authority: freeze_authority
           )
 
           response['result']
@@ -115,18 +113,18 @@ describe Solace::Programs::SplToken do
     let(:mint_authority) { Fixtures.load_keypair('mint-authority') }
 
     let(:destination) do
-      ata_address, _ = Solace::Programs::AssociatedTokenAccount.get_address(owner:, mint:)
+      ata_address, = Solace::Programs::AssociatedTokenAccount.get_address(owner: owner, mint: mint)
       ata_address
     end
-    
+
     describe '#prepare_mint_to' do
       let(:tx) do
         program.prepare_mint_to(
-          payer:,
-          mint:,
-          destination:,
-          amount:,
-          mint_authority:,
+          amount: amount,
+          mint: mint,
+          payer: payer,
+          destination: destination,
+          mint_authority: mint_authority
         )
       end
 
@@ -156,11 +154,11 @@ describe Solace::Programs::SplToken do
       before(:all) do
         connection.wait_for_confirmed_signature do
           @result = program.mint_to(
-            payer:,
-            mint:,
-            destination:,
-            amount:,
-            mint_authority:,
+            amount: amount,
+            mint: mint,
+            payer: payer,
+            destination: destination,
+            mint_authority: mint_authority
           )
 
           @result['result']
@@ -176,30 +174,24 @@ describe Solace::Programs::SplToken do
   describe 'transfer tokens' do
     let(:amount) { 1_000_000 }
 
-    let(:mint) { Fixtures.load_keypair('mint') }
+    let(:payer) { Fixtures.load_keypair('payer') }
     let(:source_owner) { Fixtures.load_keypair('bob') }
     let(:destination_owner) { Fixtures.load_keypair('anna') }
-    let(:payer) { Fixtures.load_keypair('payer') }
+
+    let(:mint) { Fixtures.load_keypair('mint') }
     let(:mint_authority) { Fixtures.load_keypair('mint-authority') }
 
-    let(:source) do
-      ata_address, _ = Solace::Programs::AssociatedTokenAccount.get_address(owner: source_owner, mint:)
-      ata_address
-    end
-
-    let(:destination) do
-      ata_address, _ = Solace::Programs::AssociatedTokenAccount.get_address(owner: destination_owner, mint:)
-      ata_address
-    end
+    let(:source) { Solace::Programs::AssociatedTokenAccount.get_address(owner: source_owner, mint: mint).first }
+    let(:destination) { Solace::Programs::AssociatedTokenAccount.get_address(owner: destination_owner, mint: mint).first }
 
     describe '#prepare_transfer' do
       let(:tx) do
         program.prepare_transfer(
-          amount:,
-          payer:,
-          source:,
-          destination:,
-          owner: source_owner,
+          amount: amount,
+          payer: payer,
+          source: source,
+          destination: destination,
+          owner: source_owner
         )
       end
 
@@ -211,11 +203,11 @@ describe Solace::Programs::SplToken do
     describe '#transfer' do
       before(:all) do
         @response = program.transfer(
-          amount:,
-          payer:,
-          source:,
-          destination:,
+          amount: amount,
+          payer: payer,
+          source: source,
           owner: source_owner,
+          destination: destination
         )
 
         connection.wait_for_confirmed_signature { @response['result'] }

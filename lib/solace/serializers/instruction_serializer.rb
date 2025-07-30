@@ -7,6 +7,9 @@
 # Serializes a Solana instruction to a binary format.
 module Solace
   module Serializers
+    # !@class InstructionSerializer
+    #
+    # @return [Class]
     class InstructionSerializer < Solace::Serializers::BaseSerializer
       # @!attribute steps
       #   An ordered list of methods to serialize the instruction

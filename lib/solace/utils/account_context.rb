@@ -2,8 +2,11 @@
 
 module Solace
   module Utils
-    # Internal utility for managing account context in transaction building
-    # with automatic deduplication and sorting
+    # !@class AccountContext
+    #   Internal utility for managing account context in transaction building
+    #   with automatic deduplication and sorting
+    #
+    # @return [Class]
     class AccountContext
       # @!attribute DEFAULT_ACCOUNT
       #   The default account data
@@ -12,15 +15,15 @@ module Solace
       DEFAULT_ACCOUNT = {
         signer: false,
         writable: false,
-        fee_payer: false,
-      }
-      
+        fee_payer: false
+      }.freeze
+
       # @!attribute header
       #   The header for the transaction
       #
       # @return [Array<Integer>] The header for the transaction
       attr_accessor :header
-      
+
       # @!attribute accounts
       #   The accounts in the transaction
       #
@@ -42,36 +45,35 @@ module Solace
 
       # Set the fee payer account
       #
-      # @param pubkey [Solace::Keypair | Solace::PublicKey | String] The pubkey of the fee payer account
+      # @param pubkey [Solace::Keypair, Solace::PublicKey, String] The pubkey of the fee payer account
       def set_fee_payer(pubkey)
         merge_account(pubkey, signer: true, writable: true, fee_payer: true)
       end
 
       # Add a signer account
       #
-      # @param pubkey [Solace::Keypair | Solace::PublicKey | String] The pubkey of the signer account
+      # @param pubkey [Solace::Keypair, Solace::PublicKey, String] The pubkey of the signer account
       def add_writable_signer(pubkey)
         merge_account(pubkey, signer: true, writable: true)
       end
 
       # Add a writable account
       #
-      # @param pubkey [Solace::Keypair | Solace::PublicKey | String] The pubkey of the writable account
+      # @param pubkey [Solace::Keypair, Solace::PublicKey, String] The pubkey of the writable account
       def add_writable_nonsigner(pubkey)
         merge_account(pubkey, signer: false, writable: true)
       end
-      
+
       # Add a readonly signer account
       #
-      # @param pubkey [Solace::Keypair | Solace::PublicKey | String] The pubkey of the readonly signer account
+      # @param pubkey [Solace::Keypair, Solace::PublicKey, String] The pubkey of the readonly signer account
       def add_readonly_signer(pubkey)
         merge_account(pubkey, signer: true, writable: false)
       end
-      
 
       # Add a readonly account
       #
-      # @param pubkey [Solace::Keypair | Solace::PublicKey | String] The pubkey of the readonly account
+      # @param pubkey [Solace::Keypair, Solace::PublicKey, String] The pubkey of the readonly account
       def add_readonly_nonsigner(pubkey)
         merge_account(pubkey, signer: false, writable: false)
       end
@@ -99,7 +101,7 @@ module Solace
       def writable?(pubkey)
         @pubkey_account_map[pubkey].try { |acc| acc[:writable] }
       end
-      
+
       # Predicate to check if an account is a writable signer
       #
       # @param pubkey [String] The pubkey of the account
@@ -107,7 +109,7 @@ module Solace
       def writable_signer?(pubkey)
         @pubkey_account_map[pubkey].try { |acc| acc[:signer] && acc[:writable] }
       end
-      
+
       # Predicate to check if an account is writable and not a signer
       #
       # @param pubkey [String] The pubkey of the account
@@ -131,23 +133,19 @@ module Solace
       def readonly_nonsigner?(pubkey)
         @pubkey_account_map[pubkey].try { |acc| !acc[:signer] && !acc[:writable] }
       end
-      
+
       # Merge all accounts from another AccountContext into this one
       #
       # @param other_context [AccountContext] The other context to merge from
       def merge_from(other_context)
         other_context.pubkey_account_map.each do |pubkey, data|
-          merge_account(
-            pubkey,
-            signer: data[:signer],
-            writable: data[:writable],
-            fee_payer: data[:fee_payer]
-          )
+          signer, writable, fee_payer = data.values_at(:signer, :writable, :fee_payer)
+          merge_account(pubkey, signer: signer, writable: writable, fee_payer: fee_payer)
         end
       end
 
       # Compile accounts into final format
-      # 
+      #
       # Gets unique accounts and sorts them in the following order:
       #   - Signers first (Solana requirement)
       #   - Then writable accounts
@@ -156,10 +154,10 @@ module Solace
       # @return [Hash] The compiled accounts and header
       def compile
         self.header = calculate_header
-        self.accounts = order_accounts        
+        self.accounts = order_accounts
         self
       end
-      
+
       # Index of a pubkey in the accounts array
       #
       # @param pubkey_str [String] The public key of the account
@@ -170,7 +168,7 @@ module Solace
 
       # Get map of indicies for pubkeys in accounts array
       #
-      # @return [Hash<String, Integer>] The indices of the pubkeys in the accounts array
+      # @return [Hash{String => Integer}] The indices of the pubkeys in the accounts array
       def indices
         accounts.each_with_index.to_h
       end
@@ -179,22 +177,18 @@ module Solace
 
       # Add or merge an account into the context
       #
-      # @param pubkey [String | Solace::PublicKey | Solace::Keypair] The public key of the account
+      # @param pubkey [String, Solace::PublicKey, Solace::Keypair] The public key of the account
       # @param signer [Boolean] Whether the account is a signer
       # @param writable [Boolean] Whether the account is writable
-      def merge_account(
-        pubkey,
-        signer:,
-        writable:,
-        fee_payer: false
-      )
-        pubkey_str = resolve_pubkey(pubkey)
+      # @param [Boolean] fee_payer
+      def merge_account(pubkey, signer:, writable:, fee_payer: false)
+        pubkey_str = pubkey.is_a?(String) ? pubkey : pubkey.address
 
         @pubkey_account_map[pubkey_str] ||= DEFAULT_ACCOUNT.dup
         @pubkey_account_map[pubkey_str][:signer] ||= signer
         @pubkey_account_map[pubkey_str][:writable] ||= writable
         @pubkey_account_map[pubkey_str][:fee_payer] ||= fee_payer
-        
+
         self
       end
 
@@ -203,16 +197,11 @@ module Solace
       # @return [Array<String>] The ordered accounts
       def order_accounts
         @pubkey_account_map.keys.sort_by do |pubkey|
-          if fee_payer?(pubkey)
-            0
-          elsif writable_signer?(pubkey)
-            1
-          elsif readonly_signer?(pubkey)
-            2
-          elsif writable_nonsigner?(pubkey)
-            2
-          elsif readonly_nonsigner?(pubkey)
-            3
+          if fee_payer?(pubkey) then 0
+          elsif writable_signer?(pubkey) then 1
+          elsif readonly_signer?(pubkey) then 2
+          elsif writable_nonsigner?(pubkey) then 3
+          elsif readonly_nonsigner?(pubkey) then 4
           else
             raise ArgumentError, "Unknown account type for pubkey: #{pubkey}"
           end
@@ -228,25 +217,13 @@ module Solace
       #
       # @return [Array] The header for the transaction
       def calculate_header
-        @pubkey_account_map.keys.reduce([0, 0, 0]) do |acc, pubkey|
+        @pubkey_account_map.keys.each_with_object([0, 0, 0]) do |pubkey, acc|
           acc[0] += 1 if signer?(pubkey)
-           
-          if readonly_signer?(pubkey)
-            acc[1] += 1
-          elsif readonly_nonsigner?(pubkey)
-            acc[2] += 1
+
+          if readonly_signer?(pubkey) then acc[1] += 1
+          elsif readonly_nonsigner?(pubkey) then acc[2] += 1
           end
-
-          acc
         end
-      end
-
-      # Resolve the pubkey from a Solace::PublicKey or String
-      #
-      # @param pubkey [String|Solace::PublicKey] The pubkey to resolve
-      # @return [String] The resolved pubkey
-      def resolve_pubkey(pubkey)
-        pubkey.is_a?(String) ? pubkey : pubkey.address
       end
     end
   end

@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
 module Solace
+  # !@module Serializers
+  #
+  # @return [Module]
   module Serializers
     # Autoload deserializers
     autoload :TransactionDeserializer, 'solace/serializers/transaction_deserializer'
@@ -27,7 +30,7 @@ module Solace
       # @!attribute io
       #   The input to read bytes from.
       #
-      # @return [IO or StringIO] The input to read bytes from.
+      # @return [IO, StringIO] The input to read bytes from.
       #
       # @!attribute record
       #   The record instance being deserialized.
@@ -37,9 +40,10 @@ module Solace
 
       # Initialize a new deserializer
       #
-      # @param io [IO or StringIO] The input to read bytes from.
+      # @param io [IO, StringIO] The input to read bytes from.
       # @return [BaseDeserializer] The new deserializer object
       def initialize(io)
+        super()
         @io = io
         @record = self.class.record_class.new
       end

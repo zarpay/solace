@@ -7,6 +7,9 @@
 # Deserializes a binary instruction into a Solace::Instruction object.
 module Solace
   module Serializers
+    # !@class InstructionDeserializer
+    #
+    # @return [Class]
     class InstructionDeserializer < Solace::Serializers::BaseDeserializer
       # @!attribute record_class
       #   The class of the record being deserialized

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
 # 1. Setup
@@ -25,9 +27,23 @@ destination_owner = Fixtures.load_keypair('anna')
 fee_collector = Fixtures.load_keypair('fee-collector')
 
 # Get or create associated token accounts
-source_ata, _ = ata_program.get_or_create_address(owner: source_owner, mint:, payer:)
-destination_ata, _ = ata_program.get_or_create_address(owner: destination_owner, mint:, payer:)
-fee_collector_ata, _ = ata_program.get_or_create_address(owner: fee_collector, mint:, payer:)
+source_ata, = ata_program.get_or_create_address(
+  owner: source_owner,
+  mint: mint.address,
+  payer: payer
+)
+
+destination_ata, = ata_program.get_or_create_address(
+  owner: destination_owner,
+  mint: mint.address,
+  payer: payer
+)
+
+fee_collector_ata, = ata_program.get_or_create_address(
+  owner: fee_collector,
+  mint: mint.address,
+  payer: payer
+)
 
 # Get token account balances
 source_ata_start_balance = conn.get_token_account_balance(source_ata)
@@ -77,13 +93,13 @@ puts '--- Step 3: Preparing Transaction ---'
 # Message
 message = Solace::Message.new(
   header: [2, 0, 1],
-  accounts:,
+  accounts: accounts,
   instructions: [transfer_ix, fee_ix],
-  recent_blockhash: conn.get_latest_blockhash,
+  recent_blockhash: conn.get_latest_blockhash
 )
 
 # Transaction
-tx = Solace::Transaction.new(message:)
+tx = Solace::Transaction.new(message: message)
 
 # 4. Sign and send the transaction
 puts '--- Step 4: Signing and Sending Transaction ---'
@@ -93,13 +109,13 @@ response = conn.send_transaction(tx.serialize)
 conn.wait_for_confirmed_signature { response['result'] }
 
 # 5. Print final balances
-puts "--- Step 5: Printing Final Balances ---"
+puts '--- Step 5: Printing Final Balances ---'
 
 source_ata_end_balance = conn.get_token_account_balance(source_ata)
 destination_ata_end_balance = conn.get_token_account_balance(destination_ata)
 fee_collector_ata_end_balance = conn.get_token_account_balance(fee_collector_ata)
 
-puts """
+puts "
 ✅ Fee Collector's account:
 - Primary: #{fee_collector.address}
 - ATA: #{fee_collector_ata}
@@ -108,7 +124,7 @@ puts """
 
 ✅ Bobs's account:
 - Primary: #{source_owner.address}
-- ATA: #{source_ata}  
+- ATA: #{source_ata}
 - Start Token Balance: #{source_ata_start_balance['uiAmountString']}
 - End Token Balance: #{source_ata_end_balance['uiAmountString']}
 
@@ -117,4 +133,4 @@ puts """
 - ATA: #{destination_ata}
 - Start Token Balance: #{destination_ata_start_balance['uiAmountString']}
 - End Token Balance: #{destination_ata_end_balance['uiAmountString']}
-"""
+"

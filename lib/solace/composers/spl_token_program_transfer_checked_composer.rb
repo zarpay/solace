@@ -2,6 +2,11 @@
 
 module Solace
   module Composers
+    # !@class SplTokenProgramTransferCheckedComposer
+    #
+    # A composer for creating a spl token program transfer checked instruction.
+    #
+    # @return [Class]
     class SplTokenProgramTransferCheckedComposer < Base
       # Extracts the to address from the params
       #
@@ -84,4 +89,3 @@ module Solace
     end
   end
 end
-

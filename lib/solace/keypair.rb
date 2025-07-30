@@ -3,12 +3,12 @@
 require 'rbnacl'
 require 'base58'
 
-# =============================
-# Keypair
-# =============================
-#
-# Represents a Solana Ed25519 Keypair
 module Solace
+  # !@class Keypair
+  #
+  # A class representing a Solana Ed25519 Keypair with utility methods for encoding, decoding, signing, and validation
+  #
+  # @return [Class]
   class Keypair
     # !@const SECRET_LENGTH
     #   The length of a Solana secret key in bytes
@@ -112,7 +112,7 @@ module Solace
 
     # Signs a message (string or binary)
     #
-    # @param message [String | Binary]
+    # @param message [String, Binary]
     # @return [Binary] signature (binary)
     def sign(message)
       signing_key.sign(message)

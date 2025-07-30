@@ -3,6 +3,11 @@
 module Solace
   module Instructions
     module SystemProgram
+      # !@class CreateAccountInstruction
+      #
+      # A class representing a SystemProgram::CreateAccount instruction
+      #
+      # @return [Class]
       class CreateAccountInstruction
         # !@const INSTRUCTION_INDEX
         #   Instruction index for SystemProgram::CreateAccount
@@ -19,12 +24,13 @@ module Solace
         # @param new_account_index [Integer] Index of the new account to create in the transaction's accounts
         # @param system_program_index [Integer] Index of the system program in the transaction's accounts (default: 2)
         # @return [Solace::Instruction]
+        #
         def self.build(
           space:,
           lamports:,
-          owner: Solace::Constants::SYSTEM_PROGRAM_ID,
           from_index:,
           new_account_index:,
+          owner: Solace::Constants::SYSTEM_PROGRAM_ID,
           system_program_index: 2
         )
           Solace::Instruction.new.tap do |ix|
@@ -33,6 +39,7 @@ module Solace
             ix.data = data(lamports, space, owner)
           end
         end
+        # rubocop:enable Metrics/ParameterLists
 
         # Builds the data for a SystemProgram::CreateAccount instruction
         #

@@ -30,17 +30,16 @@ require_relative 'solace/address_lookup_table'
 require_relative 'solace/transaction_composer'
 
 # 📦 Composers (Builders)
-# 
+#
 # Glob require all instructions
-Dir[File.join(__dir__, 'solace/composers', '**', '*.rb')].sort.each { |file| require file }
+Dir[File.join(__dir__, 'solace/composers', '**', '*.rb')].each { |file| require file }
 
 # 📦 Instructions (Builders)
-# 
+#
 # Glob require all instructions
-Dir[File.join(__dir__, 'solace/instructions', '**', '*.rb')].sort.each { |file| require file }
+Dir[File.join(__dir__, 'solace/instructions', '**', '*.rb')].each { |file| require file }
 
 # 📦 Programs
 require_relative 'solace/programs/base'
 require_relative 'solace/programs/spl_token'
 require_relative 'solace/programs/associated_token_account'
-

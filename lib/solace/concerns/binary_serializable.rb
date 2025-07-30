@@ -2,6 +2,9 @@
 
 module Solace
   module Concerns
+    # !@module BinarySerializable
+    #
+    # @return [Module]
     module BinarySerializable
       # Returns the binary decoded from the serialized string
       #

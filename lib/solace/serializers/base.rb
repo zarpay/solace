@@ -2,6 +2,9 @@
 
 module Solace
   module Serializers
+    # !@class Base
+    #
+    # @return [Class]
     class Base
       include Solace::Utils
 

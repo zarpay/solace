@@ -12,12 +12,11 @@ if ENV['USE_GEM']
   puts 'Requiring installed gem'
   require 'solace'
 else
-  puts 'Autoloading local files'
-  project_root = File.expand_path('..', __dir__)
-  # Autoload all Ruby files in utils and other directories as needed
-  Dir[File.join(project_root, 'lib', '**', '*.rb')].sort.each { |file| require file }
+  puts 'Requiring local files'
+  solace = File.expand_path('../lib/solace.rb', __dir__)
+  require solace
 end
 
-require_relative './support/fixtures'
-require_relative './support/factory_bot'
-require_relative './support/solana_test_validator'
+require_relative 'support/fixtures'
+require_relative 'support/factory_bot'
+require_relative 'support/solana_test_validator'

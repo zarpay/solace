@@ -1,20 +1,21 @@
 # frozen_string_literal: true
+
 require 'test_helper'
 
 describe Solace::Instructions::SystemProgram::CreateAccountInstruction do
-  describe 'build' do    
+  describe 'build' do
     let(:space) { 100 }
-    let(:lamports) { 1000000000 }
+    let(:lamports) { 1_000_000_000 }
     let(:owner) { Solace::Constants::SYSTEM_PROGRAM_ID }
 
     let(:ix) do
       Solace::Instructions::SystemProgram::CreateAccountInstruction.build(
-        space:,
-        lamports:,
-        owner:,
+        space: space,
+        lamports: lamports,
+        owner: owner,
         from_index: 0,
         new_account_index: 1,
-        system_program_index: 2,
+        system_program_index: 2
       )
     end
 
@@ -31,11 +32,11 @@ describe Solace::Instructions::SystemProgram::CreateAccountInstruction do
     end
 
     it 'should have the correct data' do
-      assert_equal( 
-        [0, 0, 0, 0] + 
-        [lamports].pack('Q<').bytes + 
-        [space].pack('Q<').bytes + 
-        Solace::Utils::Codecs.base58_to_bytes(owner), 
+      assert_equal(
+        [0, 0, 0, 0] +
+        [lamports].pack('Q<').bytes +
+        [space].pack('Q<').bytes +
+        Solace::Utils::Codecs.base58_to_bytes(owner),
         ix.data
       )
     end
@@ -45,11 +46,11 @@ describe Solace::Instructions::SystemProgram::CreateAccountInstruction do
     let(:ix_with_custom_program_index) do
       Solace::Instructions::SystemProgram::CreateAccountInstruction.build(
         space: 100,
-        lamports: 1000000000,
+        lamports: 1_000_000_000,
         owner: Solace::Constants::SYSTEM_PROGRAM_ID,
         from_index: 0,
         new_account_index: 1,
-        system_program_index: 3,
+        system_program_index: 3
       )
     end
 
@@ -62,21 +63,21 @@ describe Solace::Instructions::SystemProgram::CreateAccountInstruction do
     let(:conn) { Solace::Connection.new }
 
     let(:payer) { Fixtures.load_keypair('payer') }
-    let(:new_account) { Solace::Keypair.generate }  
+    let(:new_account) { Solace::Keypair.generate }
 
     let(:space) { 100 }
     let(:owner) { Solace::Constants::SYSTEM_PROGRAM_ID }
     let(:lamports) { conn.get_minimum_lamports_for_rent_exemption(space) }
-    
-   before(:all) do
+
+    before(:all) do
       # 1. Build instruction
       instruction = Solace::Instructions::SystemProgram::CreateAccountInstruction.build(
-        owner:,
-        space:,
-        lamports:,
+        owner: owner,
+        space: space,
+        lamports: lamports,
         from_index: 0,
         new_account_index: 1,
-        system_program_index: 2,
+        system_program_index: 2
       )
 
       # 2. Build message
@@ -97,7 +98,7 @@ describe Solace::Instructions::SystemProgram::CreateAccountInstruction do
 
       # 3. Build transaction
       transaction = Solace::Transaction.new(message: message)
-      
+
       transaction.sign(payer, new_account)
 
       # 4. Send transaction
@@ -112,19 +113,19 @@ describe Solace::Instructions::SystemProgram::CreateAccountInstruction do
     end
 
     it 'account should not be executable' do
-      assert_equal false, @account_info["executable"]
+      assert_equal false, @account_info['executable']
     end
 
     it 'account should have correct owner' do
-      assert_equal owner, @account_info["owner"]
+      assert_equal owner, @account_info['owner']
     end
 
     it 'account should have correct space' do
-      assert_equal space, @account_info["space"]
+      assert_equal space, @account_info['space']
     end
 
     it 'account should have correct lamports' do
-      assert_equal lamports, @account_info["lamports"]
+      assert_equal lamports, @account_info['lamports']
     end
   end
 end

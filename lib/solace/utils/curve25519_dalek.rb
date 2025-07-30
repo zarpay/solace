@@ -5,6 +5,10 @@ require 'ffi'
 
 module Solace
   module Utils
+    # !@module Curve25519Dalek
+    #   A module for interacting with the Curve25519 Dalek library
+    #
+    # @return [Module]
     module Curve25519Dalek
       extend FFI::Library
 

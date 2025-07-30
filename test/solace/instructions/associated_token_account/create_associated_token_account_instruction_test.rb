@@ -44,9 +44,9 @@ describe Solace::Instructions::AssociatedTokenAccount::CreateAssociatedTokenAcco
     before(:all) do
       # 1. Derive the Associated Token Account (ATA) address
       # This is a Program Derived Address (PDA), so we find it before creating it.
-      ata_address, _ = Solace::Utils::PDA.find_program_address(
+      ata_address, = Solace::Utils::PDA.find_program_address(
         [
-          owner.address, 
+          owner.address,
           Solace::Constants::TOKEN_PROGRAM_ID,
           mint.address
         ],
@@ -60,7 +60,7 @@ describe Solace::Instructions::AssociatedTokenAccount::CreateAssociatedTokenAcco
         ata_address,            # 1: New ATA, writable
         owner.address,          # 2: Owner, readonly
         mint.address,           # 3: Mint, readonly
-        Solace::Constants::SYSTEM_PROGRAM_ID,                      # 4: System Program, readonly
+        Solace::Constants::SYSTEM_PROGRAM_ID, # 4: System Program, readonly
         Solace::Constants::TOKEN_PROGRAM_ID,                   # 5: SPL Token Program, readonly
         Solace::Constants::ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID # 6: The program we are calling
       ]
@@ -100,15 +100,15 @@ describe Solace::Instructions::AssociatedTokenAccount::CreateAssociatedTokenAcco
     end
 
     it 'account should be owned by the token program' do
-      assert_equal Solace::Constants::TOKEN_PROGRAM_ID, @account_info["owner"]
+      assert_equal Solace::Constants::TOKEN_PROGRAM_ID, @account_info['owner']
     end
 
     it 'account should have 165 bytes of blockspace' do
-      assert_equal 165, @account_info["space"]
+      assert_equal 165, @account_info['space']
     end
 
     it 'account should not be executable' do
-      assert_equal false, @account_info["executable"]
+      assert_equal false, @account_info['executable']
     end
   end
 end

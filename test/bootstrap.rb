@@ -10,9 +10,9 @@ require 'minitest/hooks/default'
 
 require 'solace'
 
-require_relative './support/fixtures'
-require_relative './support/factory_bot'
-require_relative './support/solana_test_validator'
+require_relative 'support/fixtures'
+require_relative 'support/factory_bot'
+require_relative 'support/solana_test_validator'
 
 # Make sure keypairs are loaded
 bob = Fixtures.load_keypair('bob')
@@ -24,8 +24,8 @@ fee_collector = Fixtures.load_keypair('fee-collector')
 
 # Make sure connection is loaded
 connection = Solace::Connection.new(commitment: 'finalized')
-spl_token_program = Solace::Programs::SplToken.new(connection:)
-ata_program = Solace::Programs::AssociatedTokenAccount.new(connection:)
+spl_token_program = Solace::Programs::SplToken.new(connection: connection)
+ata_program = Solace::Programs::AssociatedTokenAccount.new(connection: connection)
 
 # Amounts to airdrop
 TOKENS_AIRDROP = 10_000_000
@@ -43,36 +43,36 @@ if connection.get_account_info(mint.address).nil?
   puts "⤷ Mint Authority: #{mint_authority.address}"
 
   response = spl_token_program.create_mint(
-      payer: setup_payer,
-      decimals: 6,
-      freeze_authority: nil,
-      mint_keypair: mint,
-      mint_authority: mint_authority,
-    )
+    payer: setup_payer,
+    decimals: 6,
+    freeze_authority: nil,
+    mint_keypair: mint,
+    mint_authority: mint_authority
+  )
   connection.wait_for_confirmed_signature('finalized') { response['result'] }
 end
 
 [
   {
     name: 'payer',
-    keypair: payer,
+    keypair: payer
   },
   {
     name: 'bob',
-    keypair: bob,
+    keypair: bob
   },
   {
     name: 'anna',
-    keypair: anna,
+    keypair: anna
   },
   {
     name: 'mint-authority',
-    keypair: mint_authority,
+    keypair: mint_authority
   },
   {
     name: 'fee-collector',
-    keypair: fee_collector,
-  },
+    keypair: fee_collector
+  }
 ].each do |account|
   # Extract name and keypair from account hash
   name, keypair = account.values_at(:name, :keypair)
@@ -86,9 +86,21 @@ end
   connection.wait_for_confirmed_signature('finalized') { result['result'] }
 
   puts "⤷ Airdropping #{TOKENS_AIRDROP / 1_000_000} tokens..."
-  bob_ata = ata_program.get_or_create_address(payer: setup_payer, owner: keypair, mint:, commitment: 'finalized')
-  result = spl_token_program.mint_to(payer: setup_payer, mint:, destination: bob_ata, amount: TOKENS_AIRDROP, mint_authority:)  
-  
+  bob_ata = ata_program.get_or_create_address(
+    payer: setup_payer,
+    owner: keypair,
+    mint: mint.address,
+    commitment: 'finalized'
+  )
+
+  result = spl_token_program.mint_to(
+    payer: setup_payer,
+    mint: mint.address,
+    destination: bob_ata,
+    amount: TOKENS_AIRDROP,
+    mint_authority: mint_authority.address
+  )
+
   puts "⤷ Signature: #{result['result']}"
   connection.wait_for_confirmed_signature('finalized') { result['result'] }
 end

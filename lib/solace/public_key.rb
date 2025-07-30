@@ -1,12 +1,11 @@
 # frozen_string_literal: true
 
-# =============================
-# PublicKey
-# =============================
-#
-# Represents a Solana Ed25519 Public Key
-# Provides utility methods for encoding, decoding, and validation
 module Solace
+  # !@class PublicKey
+  #
+  # Represents a Solana Ed25519 Public Key and provides utility methods for encoding, decoding, and validation
+  #
+  # @return [Class]
   class PublicKey
     include Solace::Utils::PDA
 

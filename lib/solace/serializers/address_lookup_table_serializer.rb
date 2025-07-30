@@ -7,6 +7,9 @@
 # Serializes a Solana address lookup table to a binary format.
 module Solace
   module Serializers
+    # !@class AddressLookupTableSerializer
+    #
+    # @return [Class]
     class AddressLookupTableSerializer < Solace::Serializers::BaseSerializer
       # @!attribute steps
       #   An ordered list of methods to serialize the address lookup table

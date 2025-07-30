@@ -1,8 +1,12 @@
+# frozen_string_literal: true
+
 # lib/solace/transaction_composer.rb
 module Solace
-  # Composes multi-instruction transactions with automatic account management
+  # !@class TransactionComposer
+  #   Composes multi-instruction transactions with automatic account management
+  #
+  # @return [Class]
   class TransactionComposer
-
     # @!attribute connection
     #
     # @return [Solace::Connection] The connection to the Solana cluster
@@ -26,7 +30,7 @@ module Solace
       @instruction_composers = []
       @context = Utils::AccountContext.new
     end
-    
+
     # Add an instruction composer to the transaction
     #
     # @param composer [Composers::Base] The instruction composer
@@ -36,10 +40,10 @@ module Solace
       instruction_composers << composer
       self
     end
-    
+
     # Set the fee payer for the transaction
     #
-    # @param pubkey [String | Solace::PublicKey | Solace::Keypair] The fee payer pubkey
+    # @param pubkey [String, Solace::PublicKey, Solace::Keypair] The fee payer pubkey
     # @return [TransactionComposer] Self for chaining
     def set_fee_payer(pubkey)
       context.set_fee_payer(pubkey)
@@ -56,11 +60,11 @@ module Solace
         header: context.header,
         accounts: context.accounts,
         instructions: build_instructions,
-        recent_blockhash: connection.get_latest_blockhash,
+        recent_blockhash: connection.get_latest_blockhash
       )
-      
+
       Solace::Transaction.new(message: message)
-    end    
+    end
 
     private
 

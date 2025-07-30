@@ -2,7 +2,13 @@
 
 module Solace
   module Programs
+    # !@class SplToken
+    #
     # A client for interacting with the SPL Token Program.
+    #
+    # @return [Class]
+    #
+    # rubocop:disable Metrics/ClassLength
     class SplToken < Base
       # Initializes a new SPL Token client.
       #
@@ -29,6 +35,8 @@ module Solace
       # @param freeze_authority [String] (Optional) The base58 public key for the freeze authority.
       # @param mint_keypair [Solace::Keypair] (Optional) The keypair for the new mint.
       # @return [Solace::Transaction] The signed transaction.
+      #
+      # rubocop:disable Metrics/MethodLength
       def prepare_create_mint(
         payer:,
         decimals:,
@@ -78,6 +86,7 @@ module Solace
 
         tx
       end
+      # rubocop:enable Metrics/MethodLength
 
       # Mint tokens to a token account
       #
@@ -91,10 +100,16 @@ module Solace
 
       # Prepares a mint to instruction and returns the signed transaction.
       #
-      # @param options [Hash] Options for calling the prepare_mint_to method.
+      # @param [Integer] amount The amount of tokens to mint.
+      # @param [PublicKey, Keypair, String] payer The payer of the transaction.
+      # @param [PublicKey, Keypair, String] mint The mint of the token.
+      # @param [PublicKey, Keypair, String] destination The destination of the token.
+      # @param [PublicKey, Keypair, String] mint_authority The mint authority of the token.
       # @return [Solace::Transaction] The signed transaction.
+      #
+      # rubocop:disable Metrics/MethodLength
       def prepare_mint_to(
-        payer:, 
+        payer:,
         mint:,
         destination:,
         amount:,
@@ -105,11 +120,11 @@ module Solace
           mint_authority.address,
           mint.address,
           destination,
-          Solace::Constants::TOKEN_PROGRAM_ID,
+          Solace::Constants::TOKEN_PROGRAM_ID
         ]
 
         ix = Solace::Instructions::SplToken::MintToInstruction.build(
-          amount:,
+          amount: amount,
           mint_authority_index: 1,
           mint_index: 2,
           destination_index: 3,
@@ -118,9 +133,9 @@ module Solace
 
         message = Solace::Message.new(
           header: [2, 0, 1],
-          accounts:,
+          accounts: accounts,
           instructions: [ix],
-          recent_blockhash: connection.get_latest_blockhash,
+          recent_blockhash: connection.get_latest_blockhash
         )
 
         tx = Solace::Transaction.new(message: message)
@@ -128,6 +143,7 @@ module Solace
 
         tx
       end
+      # rubocop:enable Metrics/MethodLength
 
       # Transfers tokens from one account to another
       #
@@ -147,11 +163,13 @@ module Solace
       # @param amount [Integer] The number of tokens to transfer.
       # @param owner [Solace::Keypair] The keypair of the owner of the source account.
       # @return [Solace::Transaction] The signed transaction.
+      #
+      # rubocop:disable Metrics/MethodLength
       def prepare_transfer(
-        amount:, 
-        payer:, 
-        source:, 
-        destination:, 
+        amount:,
+        payer:,
+        source:,
+        destination:,
         owner:
       )
         accounts = [
@@ -163,7 +181,7 @@ module Solace
         ]
 
         ix = Solace::Instructions::SplToken::TransferInstruction.build(
-          amount:,
+          amount: amount,
           owner_index: 1,
           source_index: 2,
           destination_index: 3,
@@ -172,16 +190,18 @@ module Solace
 
         message = Solace::Message.new(
           header: [2, 0, 1],
-          accounts:,
+          accounts: accounts,
           instructions: [ix],
           recent_blockhash: connection.get_latest_blockhash
         )
 
-        tx = Solace::Transaction.new(message:)
+        tx = Solace::Transaction.new(message: message)
         tx.sign(payer, owner)
 
         tx
       end
+      # rubocop:enable Metrics/MethodLength
     end
+    # rubocop:enable Metrics/ClassLength
   end
 end

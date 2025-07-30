@@ -5,6 +5,10 @@ require 'digest'
 
 module Solace
   module Utils
+    # !@module PDA
+    #   A module for generating program addresses
+    #
+    # @return [Module]
     module PDA
       # !@class InvalidPDAError
       #   An error raised when an invalid PDA is generated
@@ -68,17 +72,9 @@ module Solace
       def self.seed_to_bytes(seed)
         case seed
         when String
-          if looks_like_base58_address?(seed)
-            Solace::Utils::Codecs.base58_to_bytes(seed)
-          else
-            seed.bytes
-          end
+          looks_like_base58_address?(seed) ? Solace::Utils::Codecs.base58_to_bytes(seed) : seed.bytes
         when Integer
-          if seed.between?(0, 255)
-            [seed]
-          else
-            seed.digits(256)
-          end
+          seed.between?(0, 255) ? [seed] : seed.digits(256)
         when Array
           seed
         else
@@ -91,8 +87,7 @@ module Solace
       # @param string [String] The string to check
       # @return [Boolean] True if the string looks like a base58 address, false otherwise
       def self.looks_like_base58_address?(string)
-        string.length >= 32 &&
-          string.length <= 44 &&
+        string.length.between?(32, 44) &&
           Solace::Utils::Codecs.valid_base58?(string)
       end
     end

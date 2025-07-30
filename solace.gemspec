@@ -24,20 +24,20 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'rbnacl', '~> 7.0'
 
   # Development dependencies
-  spec.add_development_dependency 'rake', '~> 13.0'
   spec.add_development_dependency 'minitest', '~> 5.0'
+  spec.add_development_dependency 'rake', '~> 13.0'
 
   # Required Ruby version
   spec.required_ruby_version = '>= 3.0'
 
   # Platform-specific gems for native binaries
   spec.platform = Gem::Platform::RUBY
-    
+
   # Post-install message
   spec.post_install_message = <<~MSG
 
     Thank you for installing Solace!
-    
+
     This gem includes native binaries for curve25519 operations.
     If you encounter any issues with native library loading,
     please check that your platform is supported or file an issue at:

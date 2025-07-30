@@ -3,6 +3,11 @@
 module Solace
   module Instructions
     module SplToken
+      # !@class InitializeMintInstruction
+      #
+      # A class to build the InitializeMint instruction for the SPL Token Program.
+      #
+      # @return [Class]
       class InitializeMintInstruction
         # Instruction index for Initialize Mint
         INSTRUCTION_INDEX = [0].freeze
@@ -49,7 +54,7 @@ module Solace
         # @param decimals [Integer] Number of decimals for the token
         # @param mint_authority [String] Public key of the mint authority
         # @param freeze_authority [String, nil] Public key of the freeze authority
-        # @return [Array] 1-byte instruction index + 1-byte decimals + 32-byte mint authority + 1-byte freeze authority option + 32-byte freeze authority
+        # @return [Array<u8>] The instruction data
         def self.data(decimals, mint_authority, freeze_authority)
           INSTRUCTION_INDEX +
             [decimals] +

@@ -7,6 +7,9 @@
 # Serializes a Solana transaction to a binary format.
 module Solace
   module Serializers
+    # !@class TransactionSerializer
+    #
+    # @return [Class]
     class TransactionSerializer < Solace::Serializers::BaseSerializer
       # @!const SIGNATURE_PLACEHOLDER
       #   @return [String] Placeholder for a signature in the transaction

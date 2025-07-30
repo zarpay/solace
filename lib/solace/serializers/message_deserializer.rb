@@ -7,6 +7,9 @@
 # Deserializes a binary message into a Solace::Message object.
 module Solace
   module Serializers
+    # !@class MessageDeserializer
+    #
+    # @return [Class]
     class MessageDeserializer < Solace::Serializers::BaseDeserializer
       # @!attribute record_class
       #   The class of the record being deserialized

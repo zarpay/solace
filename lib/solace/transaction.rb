@@ -17,6 +17,9 @@
 #   - [Address lookup table (variable length)] (if versioned)
 #
 module Solace
+  # !@class Transaction
+  #
+  # @return [Class]
   class Transaction < Solace::SerializableRecord
     # @!const SERIALIZER
     #   @return [Solace::Serializers::TransactionSerializer] The serializer for the transaction
@@ -55,6 +58,7 @@ module Solace
       signatures: [],
       message: Solace::Message.new
     )
+      super()
       @signatures = signatures
       @message = message
     end
@@ -63,7 +67,7 @@ module Solace
     #
     # Calls sign_and_update_signatures for each keypair passed in.
     #
-    # @param keypairs [<Solace::Keypair>] The keypairs to sign the transaction with
+    # @param keypairs [Array<Solace::Keypair>] The keypairs to sign the transaction with
     # @return [Array<String>] The signatures of the transaction
     def sign(*keypairs)
       keypairs.map { |keypair| sign_and_update_signatures(keypair) }

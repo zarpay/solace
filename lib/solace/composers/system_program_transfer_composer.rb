@@ -2,6 +2,11 @@
 
 module Solace
   module Composers
+    # !@class SystemProgramTransferComposer
+    #
+    # A composer for creating a system program transfer instruction.
+    #
+    # @return [Class]
     class SystemProgramTransferComposer < Base
       # Extracts the to address from the params
       #
@@ -56,4 +61,3 @@ module Solace
     end
   end
 end
-

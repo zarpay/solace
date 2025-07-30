@@ -9,3 +9,8 @@ gem 'minitest-hooks'
 
 # Local gem
 gem 'solace', path: '.'
+
+group :development do
+  gem 'rubocop', require: false
+  gem 'rubocop-yard', require: false
+end

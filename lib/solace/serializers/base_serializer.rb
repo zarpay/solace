@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
 module Solace
+  # !@module Serializers
+  #
+  # @return [Module]
   module Serializers
     # Autoload serializers
     autoload :TransactionSerializer, 'solace/serializers/transaction_serializer'
@@ -29,6 +32,7 @@ module Solace
       # @param record [Record] The record to serialize
       # @return [BaseSerializer] The new serializer object
       def initialize(record)
+        super()
         @record = record
       end
 

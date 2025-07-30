@@ -7,8 +7,8 @@ module Solace
       class << self
         # Gets the address of an associated token account.
         #
-        # @param owner [Solace::Keypair || Solace::PublicKey] The keypair of the owner.
-        # @param mint [Solace::Keypair || Solace::PublicKey] The keypair of the mint.
+        # @param owner [Solace::Keypair, Solace::PublicKey] The keypair of the owner.
+        # @param mint [Solace::Keypair, Solace::PublicKey] The keypair of the mint.
         # @return [String] The address of the associated token account.
         def get_address(owner:, mint:)
           Solace::Utils::PDA.find_program_address(
@@ -26,35 +26,37 @@ module Solace
       #
       # @param connection [Solace::Connection] The connection to the Solana cluster.
       def initialize(connection:)
-        super(connection:, program_id: Solace::Constants::ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID)
+        super(connection: connection, program_id: Solace::Constants::ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID)
       end
 
       # Alias method for get_address
-      # 
-      # @param oprtions [Hash] A hash of options for the get_address class method
+      #
+      # @option options [Hash] A hash of options for the get_address class method
+      # @return [Array<String, Integer>] The address of the associated token account and the bump seed
       def get_address(**options)
         self.class.get_address(**options)
       end
 
       # Gets the address of an associated token account, creating it if it doesn't exist.
       #
-      # @param payer [Solace::Keypair] The keypair that will pay for fees and rent (required if account needs to be created).
-      # @param owner [Solace::Keypair || Solace::PublicKey] The keypair of the owner.
-      # @param mint [Solace::Keypair || Solace::PublicKey] The keypair of the mint.
+      # @param payer [Solace::Keypair] The keypair that will pay for fees and rent.
+      # @param owner [Solace::Keypair, Solace::PublicKey] The keypair of the owner.
+      # @param mint [Solace::Keypair, Solace::PublicKey] The keypair of the mint.
+      # @param commitment [String] The commitment level for the get_account_info call.
       # @return [String] The address of the associated token account
       def get_or_create_address(payer:, owner:, mint:, commitment: 'confirmed')
-        ata_address, _ = get_address(owner:, mint:)
-        
+        ata_address, _bump = get_address(owner: owner, mint: mint)
+
         account_info = @connection.get_account_info(ata_address)
-        
+
         return ata_address if account_info
 
-        response = create_associated_token_account(payer:, owner:, mint:)
+        response = create_associated_token_account(payer: payer, owner: owner, mint: mint)
 
-        raise "Failed to create associated token account" unless response['result']
+        raise 'Failed to create associated token account' unless response['result']
 
         @connection.wait_for_confirmed_signature(commitment) { response['result'] }
-        
+
         ata_address
       end
 
@@ -70,16 +72,18 @@ module Solace
 
       # Prepares a new associated token account and returns the signed transaction.
       #
-      # @param owner [Solace::Keypair || Solace::PublicKey] The keypair of the owner.
-      # @param mint [Solace::Keypair || Solace::PublicKey] The keypair of the mint.
+      # @param owner [Solace::Keypair, Solace::PublicKey] The keypair of the owner.
+      # @param mint [Solace::Keypair, Solace::PublicKey] The keypair of the mint.
       # @param payer [Solace::Keypair] The keypair that will pay for fees and rent.
       # @return [Solace::Transaction] The signed transaction.
+      #
+      # rubocop:disable Metrics/MethodLength
       def prepare_create_associated_token_account(
-        payer:, 
-        owner:, 
+        payer:,
+        owner:,
         mint:
       )
-        ata_address, _ = get_address(owner:, mint:)
+        ata_address, = get_address(owner: owner, mint: mint)
 
         accounts = [
           payer.address,
@@ -113,6 +117,7 @@ module Solace
 
         tx
       end
+      # rubocop:enable Metrics/MethodLength
     end
   end
 end

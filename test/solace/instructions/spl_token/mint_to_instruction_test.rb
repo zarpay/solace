@@ -46,22 +46,22 @@ describe Solace::Instructions::SplToken::MintToInstruction do
     before(:all) do
       # We need a token account to mint to, so we'll use the Associated Token Account program
       # to create one for the owner.
-      ata_program = Solace::Programs::AssociatedTokenAccount.new(connection:)
+      ata_program = Solace::Programs::AssociatedTokenAccount.new(connection: connection)
 
       # Get the associated token account address
-      @ata_address, _ = ata_program.get_address(owner:, mint:)
+      @ata_address, = ata_program.get_address(owner: owner, mint: mint)
 
       accounts = [
         payer.address,
         mint_authority.address,
         mint.address,
         @ata_address,
-        Solace::Constants::TOKEN_PROGRAM_ID,
+        Solace::Constants::TOKEN_PROGRAM_ID
       ]
 
       # Now, mint to the newly created associated token account
       ix = Solace::Instructions::SplToken::MintToInstruction.build(
-        amount:,
+        amount: amount,
         mint_authority_index: 1,
         mint_index: 2,
         destination_index: 3,
@@ -74,9 +74,9 @@ describe Solace::Instructions::SplToken::MintToInstruction do
           0, # num_readonly_signed
           1  # num_readonly_unsigned
         ],
-        accounts:,
+        accounts: accounts,
         instructions: [ix],
-        recent_blockhash: connection.get_latest_blockhash,
+        recent_blockhash: connection.get_latest_blockhash
       )
 
       tx = Solace::Transaction.new(message: message)
@@ -95,8 +95,8 @@ describe Solace::Instructions::SplToken::MintToInstruction do
       data_binary = Base64.decode64(balance.dig('data', 0))
       amount_slice = data_binary.slice(64, 8)
       token_balance = amount_slice.unpack1('Q<')
-      
+
       assert_operator amount, :<=, token_balance
     end
-  end 
+  end
 end
