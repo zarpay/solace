@@ -3,7 +3,7 @@
 require 'irb'
 
 # Autoload all Ruby files in utils and other directories as needed
-Dir[File.join(__dir__, 'lib', '**', '*.rb')].each { |file| require file }
+require_relative 'lib/solace'
 
 require 'minitest/autorun'
 require 'minitest/hooks/default'

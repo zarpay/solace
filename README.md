@@ -1,17 +1,18 @@
 # Solace Ruby SDK Documentation
+A Ruby SDK for the Solana blockchain.
 
 ## Overview
 
-**Solace** is a comprehensive Ruby SDK for interacting with the Solana blockchain. It provides both low-level building blocks and high-level abstractions for creating, signing, and sending Solana transactions. The library follows Ruby conventions while maintaining compatibility with Solana's binary protocols.
+Solace is a comprehensive Ruby SDK for interacting with the Solana blockchain. It provides both low-level building blocks and high-level abstractions for composing, signing, and sending Solana transactions. The library aims to follow Ruby conventions while maintaining compatibility with Solana's binary protocols.
 
 ## Architecture
 
 The Solace SDK is organized into several key layers:
 
-### 1. **Core Primitives** (Low-Level)
+### 1. **Core Classes** (Low-Level)
 - **Keypair/PublicKey**: Ed25519 cryptographic operations
 - **Connection**: RPC client for Solana nodes
-- **Transaction/Message/Instruction**: Transaction building blocks
+- **Transaction/Message/Instruction/AddressLookupTable**: Transaction building blocks
 - **Serializers**: Binary serialization/deserialization system
 
 ### 2. **Instruction Builders** (Low-Level)
@@ -19,92 +20,23 @@ The Solace SDK is organized into several key layers:
 - Handle binary data encoding and account indexing
 - Located in `lib/solace/instructions/`
 
-### 3. **Program Clients** (High-Level)
+### 3. **Composers** (High-Level)
+- Convenient interfaces for composing transactions and instructions
+- Handle account ordering and header calculations for transactions
+- Located in `lib/solace/composers`
+
+### 3. **Programs** (High-Level)
 - Convenient interfaces for interacting with on-chain programs
 - Handle transaction assembly, signing, and submission
 - Located in `lib/solace/programs/`
 
-### 4. **Utilities** (Supporting)
+### 4. **Utilities** (Support modules & classes)
 - **Codecs**: Base58/Base64 encoding, compact integers, little-endian encoding
 - **PDA**: Program Derived Address generation
 - **Curve25519**: Native curve operations via FFI
+- **More...**: Checkout `lib/solace/utils` 
 
 ## Core Components
-
-### Keypair
-
-The `Solace::Keypair` class represents Ed25519 keypairs for signing transactions.
-
-```ruby
-# Generate a new random keypair
-keypair = Solace::Keypair.generate
-
-# Create from seed (32 bytes)
-seed = SecureRandom.random_bytes(32)
-keypair = Solace::Keypair.from_seed(seed)
-
-# Create from secret key (64 bytes)
-keypair = Solace::Keypair.from_secret_key(secret_key_bytes)
-
-# Usage
-puts keypair.address          # Base58 public key
-signature = keypair.sign(message)  # Sign binary data
-```
-
-**Key Features:**
-- Ed25519 signature support via RbNaCl
-- Base58 address encoding
-- Secure random generation
-- Compatible with Solana's key format
-
-### PublicKey
-
-The `Solace::PublicKey` class represents Solana public keys with utility methods.
-
-```ruby
-# Create from bytes
-pubkey = Solace::PublicKey.new(32_byte_array)
-
-# Usage
-puts pubkey.to_base58    # Base58 representation
-puts pubkey.to_s         # Same as to_base58
-bytes = pubkey.to_bytes  # Get raw bytes
-```
-
-**Key Features:**
-- 32-byte Ed25519 public keys
-- Base58 encoding/decoding
-- PDA (Program Derived Address) support via mixin
-- Equality comparison
-
-### Connection
-
-The `Solace::Connection` class provides RPC communication with Solana nodes.
-
-```ruby
-# Connect to local validator (default = http://localhost:8899)
-connection = Solace::Connection.new
-
-# Connect to devnet or other RPC nodes
-connection = Solace::Connection.new('https://api.devnet.solana.com')
-
-# RPC methods
-balance = connection.get_balance(pubkey)
-blockhash = connection.get_latest_blockhash
-account_info = connection.get_account_info(pubkey)
-signature = connection.send_transaction(transaction)
-
-# Airdrop (devnet/testnet only)
-response = connection.request_airdrop(pubkey, 1_000_000_000) # 1 SOL
-connection.wait_for_confirmed_signature { response['result'] }
-```
-
-**Key Features:**
-- JSON-RPC 2.0 client
-- Automatic request ID generation
-- Built-in error handling
-- Support for all major RPC methods
-- Transaction confirmation waiting
 
 ### Transaction & Message
 

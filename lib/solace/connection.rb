@@ -12,7 +12,7 @@ module Solace
   #
   # @example
   #   # Initialize the connection
-  #   connection = Solace::Connection.new
+  #   connection = Solace::Connection.new('http://localhost:8899', commitment: 'confirmed')
   #
   #   # Get account information
   #   connection.get_account_info(account.address)
@@ -20,8 +20,8 @@ module Solace
   #   # Request an airdrop
   #   result = connection.request_airdrop(account.address, 1000000)
   #
-  #   # Wait for the transaction to be confirmed
-  #   connection.wait_for_confirmed_signature('confirmed') { result['result'] }
+  #   # Wait for the transaction to be finalized
+  #   connection.wait_for_confirmed_signature('finalized') { result['result'] }
   #
   # @since 0.0.1
   #

@@ -1,7 +1,5 @@
-README.md 472eff0e020a7149a50445fedec9e5a55cdab861
-docs/getting_started.md 0938c3209c3ce8bff6ca3f2b985e6264cafa85e0
 lib/solace.rb 0f8cd9421e3f249abd00b10ea06dcbd4d12c0d9b
-lib/solace/keypair.rb 88512d98afb401381ea0acffc2cf36471ab62ba1
+lib/solace/keypair.rb 22d14c2ab5d990c018b938bb3555b657fbcf81b8
 lib/solace/message.rb 2725a423190f86dd4293edf407d4b718fb2da7ae
 lib/solace/version.rb 68e30bb6465f22582044fb38d6de6f05307ee8ec
 lib/solace/constants.rb f3727dffab6029189e941a106f5b44890080da18

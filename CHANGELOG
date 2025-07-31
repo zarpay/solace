@@ -16,6 +16,16 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ### Fixed
 ```
 
+## [WIP] - yyyy-mm-dd
+  
+### Added
+1. 
+
+### Changed
+1. Change `private_key` method on Keypair to `pivate_key_bytes`
+ 
+### Fixed
+
 ## [0.0.3] - 2025-07-30
   
 ### Added

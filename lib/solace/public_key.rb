@@ -17,31 +17,27 @@ module Solace
   class PublicKey
     include Solace::Utils::PDA
 
-    # !@const LENGTH
-    #   The length of a Solana public key in bytes
-    #
-    # @return [Integer] The length of a public key
+    # The length of a Solana public key in bytes
     LENGTH = 32
 
-    # !@const MAX_BUMP_SEED
-    #   The maximum seed value for a Program Derived Address
-    #
-    # @return [Integer] The maximum seed value
+    # The maximum seed value for a Program Derived Address
     MAX_BUMP_SEED = 255
 
-    # !@const PDA_MARKER
-    #   The marker for a Program Derived Address
-    #
-    # @return [String] The marker for a PDA
+    # The marker for a Program Derived Address
     PDA_MARKER = 'ProgramDerivedAddress'
 
-    # !@attribute bytes
-    #   @return [Array<Integer>] The bytes of the public key
+    # The bytes of the public key
+    #
+    # @return [Array<u8>] The bytes of the public key
     attr_reader :bytes
 
     # Initialize with a 32-byte array or string
     #
+    # @example
+    #   pubkey = Solace::PubKey.new(bytes)
+    #
     # @param bytes [String, Array<Integer>] 32-byte array or string
+    # @raise [ArgumentError] If the public key bytes length isn't 32 long
     # @return [PublicKey]
     def initialize(bytes)
       raise ArgumentError, "Public key must be #{LENGTH} bytes" unless bytes.length == LENGTH
@@ -51,12 +47,18 @@ module Solace
 
     # Return the base58 representation of the public key
     #
+    # @example
+    #   pubkey_str = instance.to_base58
+    #
     # @return [String]
     def to_base58
       Solace::Utils::Codecs.bytes_to_base58(@bytes)
     end
 
     # String representation (base58)
+    #
+    # @example
+    #   pubkey_str = instance.to_s
     #
     # @return [String]
     def to_s
@@ -65,12 +67,18 @@ module Solace
 
     # Return the address of the public key
     #
+    # @example
+    #   pubkey_str = instance.address
+    #
     # @return [String]
     def address
       to_base58
     end
 
     # Compare two public keys for equality
+    #
+    # @example
+    #   pubkey1 == pubkey2
     #
     # @param other [PublicKey]
     # @return [Boolean]
@@ -79,6 +87,9 @@ module Solace
     end
 
     # Return the public key as a byte array
+    #
+    # @example
+    #   pubkey_bytes = instance.to_bytes
     #
     # @return [Array<Integer>]
     def to_bytes
