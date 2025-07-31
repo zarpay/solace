@@ -114,9 +114,14 @@
     <h4 class="tag_title">Examples:</h4>
     
       
-      <pre class="example code"><code><span class='id identifier rubyid_keypair'>keypair</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'>Keypair</span><span class='period'>.</span><span class='id identifier rubyid_generate'><span class='object_link'><a href="#generate-class_method" title="Solace::Keypair.generate (method)">generate</a></span></span>
-<span class='id identifier rubyid_keypair'>keypair</span><span class='period'>.</span><span class='id identifier rubyid_address'>address</span>
-<span class='id identifier rubyid_keypair'>keypair</span><span class='period'>.</span><span class='id identifier rubyid_sign'>sign</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>&lt;any-message&gt;</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span></code></pre>
+      <pre class="example code"><code><span class='comment'># Generate a new keypair
+</span><span class='id identifier rubyid_keypair'>keypair</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'>Keypair</span><span class='period'>.</span><span class='id identifier rubyid_generate'><span class='object_link'><a href="#generate-class_method" title="Solace::Keypair.generate (method)">generate</a></span></span>
+
+<span class='comment'># Get the address of the pubkey
+</span><span class='id identifier rubyid_keypair'>keypair</span><span class='period'>.</span><span class='id identifier rubyid_address'>address</span>
+
+<span class='comment'># Sign a message using the keypair
+</span><span class='id identifier rubyid_keypair'>keypair</span><span class='period'>.</span><span class='id identifier rubyid_sign'>sign</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>&lt;any-message&gt;</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span></code></pre>
     
   </div>
 
@@ -148,8 +153,7 @@
         <dt id="SECRET_LENGTH-constant" class="">SECRET_LENGTH =
           <div class="docstring">
   <div class="discussion">
-    <p>!@const SECRET_LENGTH
-  The length of a Solana secret key in bytes</p>
+    <p>The length of a Solana secret key in bytes.</p>
 
 
   </div>
@@ -179,8 +183,7 @@
         <dt id="SEED_LENGTH-constant" class="">SEED_LENGTH =
           <div class="docstring">
   <div class="discussion">
-    <p>!@const SEED_LENGTH
-  The length of a Solana seed in bytes (borrowed from RbNaCl = 32)</p>
+    <p>The length of a Solana seed in bytes.</p>
 
 
   </div>
@@ -205,38 +208,7 @@
 
 </div>
         </dt>
-        <dd><pre class="code"><span class='const'>RbNaCl</span><span class='op'>::</span><span class='const'>Signatures</span><span class='op'>::</span><span class='const'>Ed25519</span><span class='op'>::</span><span class='const'>SEEDBYTES</span></pre></dd>
-      
-        <dt id="SigningKey-constant" class="">SigningKey =
-          <div class="docstring">
-  <div class="discussion">
-    <p>!@const SigningKey
-  The RbNaCl signing key class</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  
-<p class="tag_title">Since:</p>
-<ul class="since">
-  
-    <li>
-      
-      
-      
-      
-        
-        <div class='inline'><p>0.0.1</p>
-</div>
-      
-    </li>
-  
-</ul>
-
-</div>
-        </dt>
-        <dd><pre class="code"><span class='const'>RbNaCl</span><span class='op'>::</span><span class='const'>Signatures</span><span class='op'>::</span><span class='const'>Ed25519</span><span class='op'>::</span><span class='const'>SigningKey</span></pre></dd>
+        <dd><pre class="code"><span class='int'>32</span></pre></dd>
       
     </dl>
   
@@ -250,7 +222,7 @@
       <li class="public ">
   <span class="summary_signature">
     
-      <a href="#keypair_bytes-instance_method" title="#keypair_bytes (instance method)">#<strong>keypair_bytes</strong>  &#x21d2; Object </a>
+      <a href="#keypair_bytes-instance_method" title="#keypair_bytes (instance method)">#<strong>keypair_bytes</strong>  &#x21d2; Array&lt;u8&gt; </a>
     
 
     
@@ -269,7 +241,7 @@
   
 
   
-    <span class="summary_desc"><div class='inline'><p>!@attribute [r] keypair_bytes   The keypair bytes.</p>
+    <span class="summary_desc"><div class='inline'><p>The full keypair bytes array.</p>
 </div></span>
   
 </li>
@@ -383,7 +355,7 @@
   
 
   
-    <span class="summary_desc"><div class='inline'><p>Returns the public key as a Base58 string.</p>
+    <span class="summary_desc"><div class='inline'><p>Returns the public key address as a Base58 string.</p>
 </div></span>
   
 </li>
@@ -417,7 +389,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#private_key-instance_method" title="#private_key (instance method)">#<strong>private_key</strong>  &#x21d2; String </a>
+      <a href="#private_key_bytes-instance_method" title="#private_key_bytes (instance method)">#<strong>private_key_bytes</strong>  &#x21d2; Array&lt;u8&gt; </a>
     
 
     
@@ -463,7 +435,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#public_key_bytes-instance_method" title="#public_key_bytes (instance method)">#<strong>public_key_bytes</strong>  &#x21d2; String </a>
+      <a href="#public_key_bytes-instance_method" title="#public_key_bytes (instance method)">#<strong>public_key_bytes</strong>  &#x21d2; Array&lt;u8&gt; </a>
     
 
     
@@ -486,7 +458,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#sign-instance_method" title="#sign (instance method)">#<strong>sign</strong>(message)  &#x21d2; Binary </a>
+      <a href="#sign-instance_method" title="#sign (instance method)">#<strong>sign</strong>(message)  &#x21d2; String </a>
     
 
     
@@ -552,7 +524,15 @@
   </div>
 </div>
 <div class="tags">
-  <p class="tag_title">Parameters:</p>
+  
+  <div class="examples">
+    <h4 class="tag_title">Examples:</h4>
+    
+      
+      <pre class="example code"><code><span class='id identifier rubyid_keypair'>keypair</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="" title="Solace::Keypair (class)">Keypair</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_bytes'>bytes</span><span class='rparen'>)</span></code></pre>
+    
+  </div>
+<p class="tag_title">Parameters:</p>
 <ul class="param">
   
     <li>
@@ -582,6 +562,10 @@
       
       
       
+        &mdash;
+        <div class='inline'><p>If the length of the keypair_bytes isn&#39;t 64 bytes</p>
+</div>
+      
     </li>
   
 </ul>
@@ -607,14 +591,14 @@
       <pre class="lines">
 
 
-67
-68
-69
-70
-71</pre>
+82
+83
+84
+85
+86</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/solace/keypair.rb', line 67</span>
+      <pre class="code"><span class="info file"># File 'lib/solace/keypair.rb', line 82</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='id identifier rubyid_keypair_bytes'>keypair_bytes</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_raise'>raise</span> <span class='const'>ArgumentError</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Keypair must be 64 bytes</span><span class='tstring_end'>&#39;</span></span> <span class='kw'>unless</span> <span class='id identifier rubyid_keypair_bytes'>keypair_bytes</span><span class='period'>.</span><span class='id identifier rubyid_length'>length</span> <span class='op'>==</span> <span class='const'><span class='object_link'><a href="#SECRET_LENGTH-constant" title="Solace::Keypair::SECRET_LENGTH (constant)">SECRET_LENGTH</a></span></span>
@@ -636,7 +620,7 @@
       <div class="method_details first">
   <h3 class="signature first" id="keypair_bytes-instance_method">
   
-    #<strong>keypair_bytes</strong>  &#x21d2; <tt>Object</tt>  <span class="extras">(readonly)</span>
+    #<strong>keypair_bytes</strong>  &#x21d2; <tt>Array&lt;u8&gt;</tt>  <span class="extras">(readonly)</span>
   
 
   
@@ -644,14 +628,30 @@
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>!@attribute [r] keypair_bytes
-  The keypair bytes</p>
+    <p>The full keypair bytes array</p>
 
 
   </div>
 </div>
 <div class="tags">
   
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Array&lt;u8&gt;</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>The 64 bytes of the keypair</p>
+</div>
+      
+    </li>
+  
+</ul>
 <p class="tag_title">Since:</p>
 <ul class="since">
   
@@ -713,7 +713,15 @@
   </div>
 </div>
 <div class="tags">
-  <p class="tag_title">Parameters:</p>
+  
+  <div class="examples">
+    <h4 class="tag_title">Examples:</h4>
+    
+      
+      <pre class="example code"><code><span class='id identifier rubyid_keypair'>keypair</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="" title="Solace::Keypair (class)">Keypair</a></span></span><span class='period'>.</span><span class='id identifier rubyid_from_secret_key'>from_secret_key</span><span class='lparen'>(</span><span class='id identifier rubyid_secret_key'>secret_key</span><span class='rparen'>)</span></code></pre>
+    
+  </div>
+<p class="tag_title">Parameters:</p>
 <ul class="param">
   
     <li>
@@ -756,6 +764,10 @@
       
       
       
+        &mdash;
+        <div class='inline'><p>If the length of the secret_key isn&#39;t 64 bytes</p>
+</div>
+      
     </li>
   
 </ul>
@@ -781,19 +793,19 @@
       <pre class="lines">
 
 
-56
-57
-58
-59
-60</pre>
+67
+68
+69
+70
+71</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/solace/keypair.rb', line 56</span>
+      <pre class="code"><span class="info file"># File 'lib/solace/keypair.rb', line 67</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_from_secret_key'>from_secret_key</span><span class='lparen'>(</span><span class='id identifier rubyid_secret_key'>secret_key</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_raise'>raise</span> <span class='const'>ArgumentError</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Secret key must be 64 bytes</span><span class='tstring_end'>&#39;</span></span> <span class='kw'>unless</span> <span class='id identifier rubyid_secret_key'>secret_key</span><span class='period'>.</span><span class='id identifier rubyid_length'>length</span> <span class='op'>==</span> <span class='const'><span class='object_link'><a href="#SECRET_LENGTH-constant" title="Solace::Keypair::SECRET_LENGTH (constant)">SECRET_LENGTH</a></span></span>
 
-  <span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="#SigningKey-constant" title="Solace::Keypair::SigningKey (constant)">SigningKey</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="#initialize-instance_method" title="Solace::Keypair#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_secret_key'>secret_key</span><span class='lbracket'>[</span><span class='int'>0</span><span class='op'>..</span><span class='int'>31</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_keypair_bytes'><span class='object_link'><a href="#keypair_bytes-instance_method" title="Solace::Keypair#keypair_bytes (method)">keypair_bytes</a></span></span><span class='period'>.</span><span class='id identifier rubyid_bytes'>bytes</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='const'>RbNaCl</span><span class='op'>::</span><span class='const'>Signatures</span><span class='op'>::</span><span class='const'>Ed25519</span><span class='op'>::</span><span class='const'>SigningKey</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_secret_key'>secret_key</span><span class='lbracket'>[</span><span class='int'>0</span><span class='op'>..</span><span class='int'>31</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_keypair_bytes'>keypair_bytes</span><span class='period'>.</span><span class='id identifier rubyid_bytes'>bytes</span><span class='rparen'>)</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -817,7 +829,15 @@
   </div>
 </div>
 <div class="tags">
-  <p class="tag_title">Parameters:</p>
+  
+  <div class="examples">
+    <h4 class="tag_title">Examples:</h4>
+    
+      
+      <pre class="example code"><code><span class='id identifier rubyid_keypair'>keypair</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="" title="Solace::Keypair (class)">Keypair</a></span></span><span class='period'>.</span><span class='id identifier rubyid_from_seed'>from_seed</span><span class='lparen'>(</span><span class='id identifier rubyid_seed'>seed</span><span class='rparen'>)</span></code></pre>
+    
+  </div>
+<p class="tag_title">Parameters:</p>
 <ul class="param">
   
     <li>
@@ -860,6 +880,10 @@
       
       
       
+        &mdash;
+        <div class='inline'><p>If the length of the seed isn&#39;t 32 bytes</p>
+</div>
+      
     </li>
   
 </ul>
@@ -885,19 +909,19 @@
       <pre class="lines">
 
 
-46
-47
-48
-49
-50</pre>
+53
+54
+55
+56
+57</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/solace/keypair.rb', line 46</span>
+      <pre class="code"><span class="info file"># File 'lib/solace/keypair.rb', line 53</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_from_seed'>from_seed</span><span class='lparen'>(</span><span class='id identifier rubyid_seed'>seed</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_raise'>raise</span> <span class='const'>ArgumentError</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Seed must be 32 bytes</span><span class='tstring_end'>&#39;</span></span> <span class='kw'>unless</span> <span class='id identifier rubyid_seed'>seed</span><span class='period'>.</span><span class='id identifier rubyid_length'>length</span> <span class='op'>==</span> <span class='const'><span class='object_link'><a href="#SEED_LENGTH-constant" title="Solace::Keypair::SEED_LENGTH (constant)">SEED_LENGTH</a></span></span>
 
-  <span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="#SigningKey-constant" title="Solace::Keypair::SigningKey (constant)">SigningKey</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="#initialize-instance_method" title="Solace::Keypair#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_seed'>seed</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_keypair_bytes'><span class='object_link'><a href="#keypair_bytes-instance_method" title="Solace::Keypair#keypair_bytes (method)">keypair_bytes</a></span></span><span class='period'>.</span><span class='id identifier rubyid_bytes'>bytes</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='const'>RbNaCl</span><span class='op'>::</span><span class='const'>Signatures</span><span class='op'>::</span><span class='const'>Ed25519</span><span class='op'>::</span><span class='const'>SigningKey</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_seed'>seed</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_keypair_bytes'>keypair_bytes</span><span class='period'>.</span><span class='id identifier rubyid_bytes'>bytes</span><span class='rparen'>)</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -922,6 +946,14 @@
 </div>
 <div class="tags">
   
+  <div class="examples">
+    <h4 class="tag_title">Examples:</h4>
+    
+      
+      <pre class="example code"><code><span class='id identifier rubyid_keypair'>keypair</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="" title="Solace::Keypair (class)">Keypair</a></span></span><span class='period'>.</span><span class='id identifier rubyid_generate'>generate</span></code></pre>
+    
+  </div>
+
 <p class="tag_title">Returns:</p>
 <ul class="return">
   
@@ -957,12 +989,12 @@
       <pre class="lines">
 
 
-38
-39
-40</pre>
+41
+42
+43</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/solace/keypair.rb', line 38</span>
+      <pre class="code"><span class="info file"># File 'lib/solace/keypair.rb', line 41</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_generate'>generate</span>
   <span class='id identifier rubyid_from_seed'>from_seed</span><span class='lparen'>(</span><span class='const'>RbNaCl</span><span class='op'>::</span><span class='const'>Random</span><span class='period'>.</span><span class='id identifier rubyid_random_bytes'>random_bytes</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="#SEED_LENGTH-constant" title="Solace::Keypair::SEED_LENGTH (constant)">SEED_LENGTH</a></span></span><span class='rparen'>)</span><span class='rparen'>)</span>
@@ -989,13 +1021,21 @@
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Returns the public key as a Base58 string</p>
+    <p>Returns the public key address as a Base58 string</p>
 
 
   </div>
 </div>
 <div class="tags">
   
+  <div class="examples">
+    <h4 class="tag_title">Examples:</h4>
+    
+      
+      <pre class="example code"><code><span class='id identifier rubyid_pubkey_str'>pubkey_str</span> <span class='op'>=</span> <span class='id identifier rubyid_instance'>instance</span><span class='period'>.</span><span class='id identifier rubyid_address'>address</span></code></pre>
+    
+  </div>
+
 <p class="tag_title">Returns:</p>
 <ul class="return">
   
@@ -1035,12 +1075,12 @@
       <pre class="lines">
 
 
-108
-109
-110</pre>
+138
+139
+140</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/solace/keypair.rb', line 108</span>
+      <pre class="code"><span class="info file"># File 'lib/solace/keypair.rb', line 138</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_address'>address</span>
   <span class='id identifier rubyid_public_key'>public_key</span><span class='period'>.</span><span class='id identifier rubyid_to_base58'>to_base58</span>
@@ -1051,9 +1091,9 @@
 </div>
     
       <div class="method_details ">
-  <h3 class="signature " id="private_key-instance_method">
+  <h3 class="signature " id="private_key_bytes-instance_method">
   
-    #<strong>private_key</strong>  &#x21d2; <tt>String</tt> 
+    #<strong>private_key_bytes</strong>  &#x21d2; <tt>Array&lt;u8&gt;</tt> 
   
 
   
@@ -1070,13 +1110,21 @@
 </div>
 <div class="tags">
   
+  <div class="examples">
+    <h4 class="tag_title">Examples:</h4>
+    
+      
+      <pre class="example code"><code><span class='id identifier rubyid_private_key_bytes'>private_key_bytes</span> <span class='op'>=</span> <span class='id identifier rubyid_instance'>instance</span><span class='period'>.</span><span class='id identifier rubyid_private_key_bytes'>private_key_bytes</span></code></pre>
+    
+  </div>
+
 <p class="tag_title">Returns:</p>
 <ul class="return">
   
     <li>
       
       
-        <span class='type'>(<tt>String</tt>)</span>
+        <span class='type'>(<tt>Array&lt;u8&gt;</tt>)</span>
       
       
       
@@ -1109,15 +1157,15 @@
       <pre class="lines">
 
 
-101
-102
-103</pre>
+128
+129
+130</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/solace/keypair.rb', line 101</span>
+      <pre class="code"><span class="info file"># File 'lib/solace/keypair.rb', line 128</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_private_key'>private_key</span>
-  <span class='id identifier rubyid_keypair_bytes'>keypair_bytes</span><span class='lbracket'>[</span><span class='int'>0</span><span class='op'>..</span><span class='int'>31</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_pack'>pack</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>C*</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_private_key_bytes'>private_key_bytes</span>
+  <span class='id identifier rubyid_keypair_bytes'>keypair_bytes</span><span class='lbracket'>[</span><span class='int'>0</span><span class='op'>..</span><span class='int'>31</span><span class='rbracket'>]</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -1142,6 +1190,14 @@
 </div>
 <div class="tags">
   
+  <div class="examples">
+    <h4 class="tag_title">Examples:</h4>
+    
+      
+      <pre class="example code"><code><span class='id identifier rubyid_pubkey'>pubkey</span> <span class='op'>=</span> <span class='id identifier rubyid_keypair'>keypair</span><span class='period'>.</span><span class='id identifier rubyid_public_key'>public_key</span></code></pre>
+    
+  </div>
+
 <p class="tag_title">Returns:</p>
 <ul class="return">
   
@@ -1177,12 +1233,12 @@
       <pre class="lines">
 
 
-76
-77
-78</pre>
+94
+95
+96</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/solace/keypair.rb', line 76</span>
+      <pre class="code"><span class="info file"># File 'lib/solace/keypair.rb', line 94</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_public_key'>public_key</span>
   <span class='ivar'>@public_key</span> <span class='op'>||=</span> <span class='const'><span class='object_link'><a href="../Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="PublicKey.html" title="Solace::PublicKey (class)">PublicKey</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="PublicKey.html#initialize-instance_method" title="Solace::PublicKey#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_public_key_bytes'>public_key_bytes</span><span class='rparen'>)</span>
@@ -1195,7 +1251,7 @@
       <div class="method_details ">
   <h3 class="signature " id="public_key_bytes-instance_method">
   
-    #<strong>public_key_bytes</strong>  &#x21d2; <tt>String</tt> 
+    #<strong>public_key_bytes</strong>  &#x21d2; <tt>Array&lt;u8&gt;</tt> 
   
 
   
@@ -1212,105 +1268,26 @@
 </div>
 <div class="tags">
   
+  <div class="examples">
+    <h4 class="tag_title">Examples:</h4>
+    
+      
+      <pre class="example code"><code><span class='id identifier rubyid_public_key_bytes'>public_key_bytes</span> <span class='op'>=</span> <span class='id identifier rubyid_instance'>instance</span><span class='period'>.</span><span class='id identifier rubyid_public_key_bytes'>public_key_bytes</span></code></pre>
+    
+  </div>
+
 <p class="tag_title">Returns:</p>
 <ul class="return">
   
     <li>
       
       
-        <span class='type'>(<tt>String</tt>)</span>
+        <span class='type'>(<tt>Array&lt;u8&gt;</tt>)</span>
       
       
       
         &mdash;
         <div class='inline'><p>32 bytes</p>
-</div>
-      
-    </li>
-  
-</ul>
-<p class="tag_title">Since:</p>
-<ul class="since">
-  
-    <li>
-      
-      
-      
-      
-        
-        <div class='inline'><p>0.0.1</p>
-</div>
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-92
-93
-94</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/solace/keypair.rb', line 92</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_public_key_bytes'>public_key_bytes</span>
-  <span class='id identifier rubyid_keypair_bytes'>keypair_bytes</span><span class='lbracket'>[</span><span class='int'>32</span><span class='op'>..</span><span class='int'>63</span><span class='rbracket'>]</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="sign-instance_method">
-  
-    #<strong>sign</strong>(message)  &#x21d2; <tt>Binary</tt> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    <p>Signs a message (string or binary)</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  <p class="tag_title">Parameters:</p>
-<ul class="param">
-  
-    <li>
-      
-        <span class='name'>message</span>
-      
-      
-        <span class='type'>(<tt>String</tt>, <tt>Binary</tt>)</span>
-      
-      
-      
-    </li>
-  
-</ul>
-
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>Binary</tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'><p>signature (binary)</p>
 </div>
       
     </li>
@@ -1345,6 +1322,102 @@
     <td>
       <pre class="code"><span class="info file"># File 'lib/solace/keypair.rb', line 116</span>
 
+<span class='kw'>def</span> <span class='id identifier rubyid_public_key_bytes'>public_key_bytes</span>
+  <span class='id identifier rubyid_keypair_bytes'>keypair_bytes</span><span class='lbracket'>[</span><span class='int'>32</span><span class='op'>..</span><span class='int'>63</span><span class='rbracket'>]</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="sign-instance_method">
+  
+    #<strong>sign</strong>(message)  &#x21d2; <tt>String</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Signs a message (string or binary)</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+  <div class="examples">
+    <h4 class="tag_title">Examples:</h4>
+    
+      
+      <pre class="example code"><code><span class='id identifier rubyid_message'>message</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>An important message to be signed,</span><span class='tstring_end'>&quot;</span></span>
+<span class='id identifier rubyid_signature'>signature</span> <span class='op'>=</span> <span class='id identifier rubyid_instance'>instance</span><span class='period'>.</span><span class='id identifier rubyid_sign'>sign</span><span class='lparen'>(</span><span class='id identifier rubyid_message'>message</span><span class='rparen'>)</span></code></pre>
+    
+  </div>
+<p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>message</span>
+      
+      
+        <span class='type'>(<tt>String</tt>, <tt>Binary</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>signature (binary string)</p>
+</div>
+      
+    </li>
+  
+</ul>
+<p class="tag_title">Since:</p>
+<ul class="since">
+  
+    <li>
+      
+      
+      
+      
+        
+        <div class='inline'><p>0.0.1</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+150
+151
+152</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/solace/keypair.rb', line 150</span>
+
 <span class='kw'>def</span> <span class='id identifier rubyid_sign'>sign</span><span class='lparen'>(</span><span class='id identifier rubyid_message'>message</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_signing_key'>signing_key</span><span class='period'>.</span><span class='id identifier rubyid_sign'>sign</span><span class='lparen'>(</span><span class='id identifier rubyid_message'>message</span><span class='rparen'>)</span>
 <span class='kw'>end</span></pre>
@@ -1371,6 +1444,14 @@
 </div>
 <div class="tags">
   
+  <div class="examples">
+    <h4 class="tag_title">Examples:</h4>
+    
+      
+      <pre class="example code"><code><span class='id identifier rubyid_signing_key'>signing_key</span> <span class='op'>=</span> <span class='id identifier rubyid_instance'>instance</span><span class='period'>.</span><span class='id identifier rubyid_signing_key'>signing_key</span></code></pre>
+    
+  </div>
+
 <p class="tag_title">Returns:</p>
 <ul class="return">
   
@@ -1406,15 +1487,15 @@
       <pre class="lines">
 
 
-83
-84
-85</pre>
+104
+105
+106</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/solace/keypair.rb', line 83</span>
+      <pre class="code"><span class="info file"># File 'lib/solace/keypair.rb', line 104</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_signing_key'>signing_key</span>
-  <span class='ivar'>@signing_key</span> <span class='op'>||=</span> <span class='const'><span class='object_link'><a href="#SigningKey-constant" title="Solace::Keypair::SigningKey (constant)">SigningKey</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="#initialize-instance_method" title="Solace::Keypair#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_private_key'>private_key</span><span class='rparen'>)</span>
+  <span class='ivar'>@signing_key</span> <span class='op'>||=</span> <span class='const'>RbNaCl</span><span class='op'>::</span><span class='const'>Signatures</span><span class='op'>::</span><span class='const'>Ed25519</span><span class='op'>::</span><span class='const'>SigningKey</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_private_key_bytes'>private_key_bytes</span><span class='period'>.</span><span class='id identifier rubyid_pack'>pack</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>C*</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span><span class='rparen'>)</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -1426,7 +1507,7 @@
 </div>
 
       <div id="footer">
-  Generated on Wed Jul 30 16:07:08 2025 by
+  Generated on Thu Jul 31 07:33:54 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.4).
 </div>

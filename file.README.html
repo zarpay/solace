@@ -59,20 +59,22 @@
 
       <div id="content"><div id='filecontents'><h1 id="solace-ruby-sdk-documentation">Solace Ruby SDK Documentation</h1>
 
+<p>A Ruby SDK for the Solana blockchain.</p>
+
 <h2 id="overview">Overview</h2>
 
-<p><strong>Solace</strong> is a comprehensive Ruby SDK for interacting with the Solana blockchain. It provides both low-level building blocks and high-level abstractions for creating, signing, and sending Solana transactions. The library follows Ruby conventions while maintaining compatibility with Solana&#39;s binary protocols.</p>
+<p>Solace is a comprehensive Ruby SDK for interacting with the Solana blockchain. It provides both low-level building blocks and high-level abstractions for composing, signing, and sending Solana transactions. The library aims to follow Ruby conventions while maintaining compatibility with Solana&#39;s binary protocols.</p>
 
 <h2 id="architecture">Architecture</h2>
 
 <p>The Solace SDK is organized into several key layers:</p>
 
-<h3 id="1-core-primitives-low-level">1. <strong>Core Primitives</strong> (Low-Level)</h3>
+<h3 id="1-core-classes-low-level">1. <strong>Core Classes</strong> (Low-Level)</h3>
 
 <ul>
 <li><strong>Keypair/PublicKey</strong>: Ed25519 cryptographic operations</li>
 <li><strong>Connection</strong>: RPC client for Solana nodes</li>
-<li><strong>Transaction/Message/Instruction</strong>: Transaction building blocks</li>
+<li><strong>Transaction/Message/Instruction/AddressLookupTable</strong>: Transaction building blocks</li>
 <li><strong>Serializers</strong>: Binary serialization/deserialization system</li>
 </ul>
 
@@ -84,7 +86,15 @@
 <li>Located in <code>lib/solace/instructions/</code></li>
 </ul>
 
-<h3 id="3-program-clients-high-level">3. <strong>Program Clients</strong> (High-Level)</h3>
+<h3 id="3-composers-high-level">3. <strong>Composers</strong> (High-Level)</h3>
+
+<ul>
+<li>Convenient interfaces for composing transactions and instructions</li>
+<li>Handle account ordering and header calculations for transactions</li>
+<li>Located in <code>lib/solace/composers</code></li>
+</ul>
+
+<h3 id="3-programs-high-level">3. <strong>Programs</strong> (High-Level)</h3>
 
 <ul>
 <li>Convenient interfaces for interacting with on-chain programs</li>
@@ -92,96 +102,16 @@
 <li>Located in <code>lib/solace/programs/</code></li>
 </ul>
 
-<h3 id="4-utilities-supporting">4. <strong>Utilities</strong> (Supporting)</h3>
+<h3 id="4-utilities-support-modules-classes">4. <strong>Utilities</strong> (Support modules &amp; classes)</h3>
 
 <ul>
 <li><strong>Codecs</strong>: Base58/Base64 encoding, compact integers, little-endian encoding</li>
 <li><strong>PDA</strong>: Program Derived Address generation</li>
 <li><strong>Curve25519</strong>: Native curve operations via FFI</li>
+<li><strong>More...</strong>: Checkout <code>lib/solace/utils</code> </li>
 </ul>
 
 <h2 id="core-components">Core Components</h2>
-
-<h3 id="keypair">Keypair</h3>
-
-<p>The <code>Solace::Keypair</code> class represents Ed25519 keypairs for signing transactions.</p>
-
-<pre class="code ruby"><code class="ruby"><span class='comment'># Generate a new random keypair
-</span><span class='id identifier rubyid_keypair'>keypair</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Keypair.html" title="Solace::Keypair (class)">Keypair</a></span></span><span class='period'>.</span><span class='id identifier rubyid_generate'><span class='object_link'><a href="Solace/Keypair.html#generate-class_method" title="Solace::Keypair.generate (method)">generate</a></span></span>
-
-<span class='comment'># Create from seed (32 bytes)
-</span><span class='id identifier rubyid_seed'>seed</span> <span class='op'>=</span> <span class='const'>SecureRandom</span><span class='period'>.</span><span class='id identifier rubyid_random_bytes'>random_bytes</span><span class='lparen'>(</span><span class='int'>32</span><span class='rparen'>)</span>
-<span class='id identifier rubyid_keypair'>keypair</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Keypair.html" title="Solace::Keypair (class)">Keypair</a></span></span><span class='period'>.</span><span class='id identifier rubyid_from_seed'><span class='object_link'><a href="Solace/Keypair.html#from_seed-class_method" title="Solace::Keypair.from_seed (method)">from_seed</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_seed'>seed</span><span class='rparen'>)</span>
-
-<span class='comment'># Create from secret key (64 bytes)
-</span><span class='id identifier rubyid_keypair'>keypair</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Keypair.html" title="Solace::Keypair (class)">Keypair</a></span></span><span class='period'>.</span><span class='id identifier rubyid_from_secret_key'><span class='object_link'><a href="Solace/Keypair.html#from_secret_key-class_method" title="Solace::Keypair.from_secret_key (method)">from_secret_key</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_secret_key_bytes'>secret_key_bytes</span><span class='rparen'>)</span>
-
-<span class='comment'># Usage
-</span><span class='id identifier rubyid_puts'>puts</span> <span class='id identifier rubyid_keypair'>keypair</span><span class='period'>.</span><span class='id identifier rubyid_address'>address</span>          <span class='comment'># Base58 public key
-</span><span class='id identifier rubyid_signature'>signature</span> <span class='op'>=</span> <span class='id identifier rubyid_keypair'>keypair</span><span class='period'>.</span><span class='id identifier rubyid_sign'>sign</span><span class='lparen'>(</span><span class='id identifier rubyid_message'>message</span><span class='rparen'>)</span>  <span class='comment'># Sign binary data
-</span></code></pre>
-
-<p><strong>Key Features:</strong></p>
-
-<ul>
-<li>Ed25519 signature support via RbNaCl</li>
-<li>Base58 address encoding</li>
-<li>Secure random generation</li>
-<li>Compatible with Solana&#39;s key format</li>
-</ul>
-
-<h3 id="publickey">PublicKey</h3>
-
-<p>The <code>Solace::PublicKey</code> class represents Solana public keys with utility methods.</p>
-
-<pre class="code ruby"><code class="ruby"># Create from bytes
-pubkey = Solace::PublicKey.new(32_byte_array)
-
-# Usage
-puts pubkey.to_base58    # Base58 representation
-puts pubkey.to_s         # Same as to_base58
-bytes = pubkey.to_bytes  # Get raw bytes
-</code></pre>
-
-<p><strong>Key Features:</strong></p>
-
-<ul>
-<li>32-byte Ed25519 public keys</li>
-<li>Base58 encoding/decoding</li>
-<li>PDA (Program Derived Address) support via mixin</li>
-<li>Equality comparison</li>
-</ul>
-
-<h3 id="connection">Connection</h3>
-
-<p>The <code>Solace::Connection</code> class provides RPC communication with Solana nodes.</p>
-
-<pre class="code ruby"><code class="ruby"><span class='comment'># Connect to local validator (default = http://localhost:8899)
-</span><span class='id identifier rubyid_connection'>connection</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Connection.html" title="Solace::Connection (class)">Connection</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Solace/Connection.html#initialize-instance_method" title="Solace::Connection#initialize (method)">new</a></span></span>
-
-<span class='comment'># Connect to devnet or other RPC nodes
-</span><span class='id identifier rubyid_connection'>connection</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Connection.html" title="Solace::Connection (class)">Connection</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Solace/Connection.html#initialize-instance_method" title="Solace::Connection#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>https://api.devnet.solana.com</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
-
-<span class='comment'># RPC methods
-</span><span class='id identifier rubyid_balance'>balance</span> <span class='op'>=</span> <span class='id identifier rubyid_connection'>connection</span><span class='period'>.</span><span class='id identifier rubyid_get_balance'>get_balance</span><span class='lparen'>(</span><span class='id identifier rubyid_pubkey'>pubkey</span><span class='rparen'>)</span>
-<span class='id identifier rubyid_blockhash'>blockhash</span> <span class='op'>=</span> <span class='id identifier rubyid_connection'>connection</span><span class='period'>.</span><span class='id identifier rubyid_get_latest_blockhash'>get_latest_blockhash</span>
-<span class='id identifier rubyid_account_info'>account_info</span> <span class='op'>=</span> <span class='id identifier rubyid_connection'>connection</span><span class='period'>.</span><span class='id identifier rubyid_get_account_info'>get_account_info</span><span class='lparen'>(</span><span class='id identifier rubyid_pubkey'>pubkey</span><span class='rparen'>)</span>
-<span class='id identifier rubyid_signature'>signature</span> <span class='op'>=</span> <span class='id identifier rubyid_connection'>connection</span><span class='period'>.</span><span class='id identifier rubyid_send_transaction'>send_transaction</span><span class='lparen'>(</span><span class='id identifier rubyid_transaction'>transaction</span><span class='rparen'>)</span>
-
-<span class='comment'># Airdrop (devnet/testnet only)
-</span><span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='id identifier rubyid_connection'>connection</span><span class='period'>.</span><span class='id identifier rubyid_request_airdrop'>request_airdrop</span><span class='lparen'>(</span><span class='id identifier rubyid_pubkey'>pubkey</span><span class='comma'>,</span> <span class='int'>1_000_000_000</span><span class='rparen'>)</span> <span class='comment'># 1 SOL
-</span><span class='id identifier rubyid_connection'>connection</span><span class='period'>.</span><span class='id identifier rubyid_wait_for_confirmed_signature'>wait_for_confirmed_signature</span> <span class='lbrace'>{</span> <span class='id identifier rubyid_response'>response</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>result</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span> <span class='rbrace'>}</span>
-</code></pre>
-
-<p><strong>Key Features:</strong></p>
-
-<ul>
-<li>JSON-RPC 2.0 client</li>
-<li>Automatic request ID generation</li>
-<li>Built-in error handling</li>
-<li>Support for all major RPC methods</li>
-<li>Transaction confirmation waiting</li>
-</ul>
 
 <h3 id="transaction-message">Transaction &amp; Message</h3>
 
@@ -783,7 +713,7 @@ on_curve = Solace::Utils::Curve25519Dalek.on_curve?(32_byte_point)
 </div></div>
 
       <div id="footer">
-  Generated on Wed Jul 30 16:07:07 2025 by
+  Generated on Thu Jul 31 07:33:54 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.4).
 </div>

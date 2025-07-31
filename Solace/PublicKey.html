@@ -156,31 +156,13 @@
         <dt id="LENGTH-constant" class="">LENGTH =
           <div class="docstring">
   <div class="discussion">
-    <p>!@const LENGTH
-  The length of a Solana public key in bytes</p>
+    <p>The length of a Solana public key in bytes</p>
 
 
   </div>
 </div>
 <div class="tags">
   
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>Integer</tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'><p>The length of a public key</p>
-</div>
-      
-    </li>
-  
-</ul>
 <p class="tag_title">Since:</p>
 <ul class="since">
   
@@ -204,31 +186,13 @@
         <dt id="MAX_BUMP_SEED-constant" class="">MAX_BUMP_SEED =
           <div class="docstring">
   <div class="discussion">
-    <p>!@const MAX_BUMP_SEED
-  The maximum seed value for a Program Derived Address</p>
+    <p>The maximum seed value for a Program Derived Address</p>
 
 
   </div>
 </div>
 <div class="tags">
   
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>Integer</tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'><p>The maximum seed value</p>
-</div>
-      
-    </li>
-  
-</ul>
 <p class="tag_title">Since:</p>
 <ul class="since">
   
@@ -252,31 +216,13 @@
         <dt id="PDA_MARKER-constant" class="">PDA_MARKER =
           <div class="docstring">
   <div class="discussion">
-    <p>!@const PDA_MARKER
-  The marker for a Program Derived Address</p>
+    <p>The marker for a Program Derived Address</p>
 
 
   </div>
 </div>
 <div class="tags">
   
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>String</tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'><p>The marker for a PDA</p>
-</div>
-      
-    </li>
-  
-</ul>
 <p class="tag_title">Since:</p>
 <ul class="since">
   
@@ -309,7 +255,7 @@
       <li class="public ">
   <span class="summary_signature">
     
-      <a href="#bytes-instance_method" title="#bytes (instance method)">#<strong>bytes</strong>  &#x21d2; Object </a>
+      <a href="#bytes-instance_method" title="#bytes (instance method)">#<strong>bytes</strong>  &#x21d2; Array&lt;u8&gt; </a>
     
 
     
@@ -328,7 +274,7 @@
   
 
   
-    <span class="summary_desc"><div class='inline'><p>!@attribute bytes   @return [Array<Integer>] The bytes of the public key.</p>
+    <span class="summary_desc"><div class='inline'><p>The bytes of the public key.</p>
 </div></span>
   
 </li>
@@ -521,7 +467,15 @@
   </div>
 </div>
 <div class="tags">
-  <p class="tag_title">Parameters:</p>
+  
+  <div class="examples">
+    <h4 class="tag_title">Examples:</h4>
+    
+      
+      <pre class="example code"><code><span class='id identifier rubyid_pubkey'>pubkey</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'>PubKey</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_bytes'>bytes</span><span class='rparen'>)</span></code></pre>
+    
+  </div>
+<p class="tag_title">Parameters:</p>
 <ul class="param">
   
     <li>
@@ -551,6 +505,10 @@
       
       
       
+        &mdash;
+        <div class='inline'><p>If the public key bytes length isn&#39;t 32 long</p>
+</div>
+      
     </li>
   
 </ul>
@@ -576,14 +534,14 @@
       <pre class="lines">
 
 
-46
-47
-48
-49
-50</pre>
+42
+43
+44
+45
+46</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/solace/public_key.rb', line 46</span>
+      <pre class="code"><span class="info file"># File 'lib/solace/public_key.rb', line 42</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='id identifier rubyid_bytes'>bytes</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_raise'>raise</span> <span class='const'>ArgumentError</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Public key must be </span><span class='embexpr_beg'>#{</span><span class='const'><span class='object_link'><a href="#LENGTH-constant" title="Solace::PublicKey::LENGTH (constant)">LENGTH</a></span></span><span class='embexpr_end'>}</span><span class='tstring_content'> bytes</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='id identifier rubyid_bytes'>bytes</span><span class='period'>.</span><span class='id identifier rubyid_length'>length</span> <span class='op'>==</span> <span class='const'><span class='object_link'><a href="#LENGTH-constant" title="Solace::PublicKey::LENGTH (constant)">LENGTH</a></span></span>
@@ -605,7 +563,7 @@
       <div class="method_details first">
   <h3 class="signature first" id="bytes-instance_method">
   
-    #<strong>bytes</strong>  &#x21d2; <tt>Object</tt>  <span class="extras">(readonly)</span>
+    #<strong>bytes</strong>  &#x21d2; <tt>Array&lt;u8&gt;</tt>  <span class="extras">(readonly)</span>
   
 
   
@@ -613,14 +571,30 @@
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>!@attribute bytes
-  @return [Array<Integer>] The bytes of the public key</p>
+    <p>The bytes of the public key</p>
 
 
   </div>
 </div>
 <div class="tags">
   
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Array&lt;u8&gt;</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>The bytes of the public key</p>
+</div>
+      
+    </li>
+  
+</ul>
 <p class="tag_title">Since:</p>
 <ul class="since">
   
@@ -643,12 +617,12 @@
       <pre class="lines">
 
 
-40
-41
-42</pre>
+32
+33
+34</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/solace/public_key.rb', line 40</span>
+      <pre class="code"><span class="info file"># File 'lib/solace/public_key.rb', line 32</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_bytes'>bytes</span>
   <span class='ivar'>@bytes</span>
@@ -682,7 +656,15 @@
   </div>
 </div>
 <div class="tags">
-  <p class="tag_title">Parameters:</p>
+  
+  <div class="examples">
+    <h4 class="tag_title">Examples:</h4>
+    
+      
+      <pre class="example code"><code><span class='id identifier rubyid_pubkey1'>pubkey1</span> <span class='op'>==</span> <span class='id identifier rubyid_pubkey2'>pubkey2</span></code></pre>
+    
+  </div>
+<p class="tag_title">Parameters:</p>
 <ul class="param">
   
     <li>
@@ -733,12 +715,12 @@
       <pre class="lines">
 
 
-77
-78
-79</pre>
+85
+86
+87</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/solace/public_key.rb', line 77</span>
+      <pre class="code"><span class="info file"># File 'lib/solace/public_key.rb', line 85</span>
 
 <span class='kw'>def</span> <span class='op'>==</span><span class='lparen'>(</span><span class='id identifier rubyid_other'>other</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_other'>other</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="../Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="" title="Solace::PublicKey (class)">PublicKey</a></span></span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_other'>other</span><span class='period'>.</span><span class='id identifier rubyid_bytes'>bytes</span> <span class='op'>==</span> <span class='id identifier rubyid_bytes'>bytes</span>
@@ -766,6 +748,14 @@
 </div>
 <div class="tags">
   
+  <div class="examples">
+    <h4 class="tag_title">Examples:</h4>
+    
+      
+      <pre class="example code"><code><span class='id identifier rubyid_pubkey_str'>pubkey_str</span> <span class='op'>=</span> <span class='id identifier rubyid_instance'>instance</span><span class='period'>.</span><span class='id identifier rubyid_address'>address</span></code></pre>
+    
+  </div>
+
 <p class="tag_title">Returns:</p>
 <ul class="return">
   
@@ -801,12 +791,12 @@
       <pre class="lines">
 
 
-69
-70
-71</pre>
+74
+75
+76</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/solace/public_key.rb', line 69</span>
+      <pre class="code"><span class="info file"># File 'lib/solace/public_key.rb', line 74</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_address'>address</span>
   <span class='id identifier rubyid_to_base58'>to_base58</span>
@@ -834,6 +824,14 @@
 </div>
 <div class="tags">
   
+  <div class="examples">
+    <h4 class="tag_title">Examples:</h4>
+    
+      
+      <pre class="example code"><code><span class='id identifier rubyid_pubkey_str'>pubkey_str</span> <span class='op'>=</span> <span class='id identifier rubyid_instance'>instance</span><span class='period'>.</span><span class='id identifier rubyid_to_base58'>to_base58</span></code></pre>
+    
+  </div>
+
 <p class="tag_title">Returns:</p>
 <ul class="return">
   
@@ -869,12 +867,12 @@
       <pre class="lines">
 
 
+54
 55
-56
-57</pre>
+56</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/solace/public_key.rb', line 55</span>
+      <pre class="code"><span class="info file"># File 'lib/solace/public_key.rb', line 54</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_to_base58'>to_base58</span>
   <span class='const'><span class='object_link'><a href="../Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Utils.html" title="Solace::Utils (module)">Utils</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Utils/Codecs.html" title="Solace::Utils::Codecs (module)">Codecs</a></span></span><span class='period'>.</span><span class='id identifier rubyid_bytes_to_base58'><span class='object_link'><a href="Utils/Codecs.html#bytes_to_base58-class_method" title="Solace::Utils::Codecs.bytes_to_base58 (method)">bytes_to_base58</a></span></span><span class='lparen'>(</span><span class='ivar'>@bytes</span><span class='rparen'>)</span>
@@ -902,6 +900,14 @@
 </div>
 <div class="tags">
   
+  <div class="examples">
+    <h4 class="tag_title">Examples:</h4>
+    
+      
+      <pre class="example code"><code><span class='id identifier rubyid_pubkey_bytes'>pubkey_bytes</span> <span class='op'>=</span> <span class='id identifier rubyid_instance'>instance</span><span class='period'>.</span><span class='id identifier rubyid_to_bytes'>to_bytes</span></code></pre>
+    
+  </div>
+
 <p class="tag_title">Returns:</p>
 <ul class="return">
   
@@ -937,12 +943,12 @@
       <pre class="lines">
 
 
-84
-85
-86</pre>
+95
+96
+97</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/solace/public_key.rb', line 84</span>
+      <pre class="code"><span class="info file"># File 'lib/solace/public_key.rb', line 95</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_to_bytes'>to_bytes</span>
   <span class='ivar'>@bytes</span><span class='period'>.</span><span class='id identifier rubyid_dup'>dup</span>
@@ -970,6 +976,14 @@
 </div>
 <div class="tags">
   
+  <div class="examples">
+    <h4 class="tag_title">Examples:</h4>
+    
+      
+      <pre class="example code"><code><span class='id identifier rubyid_pubkey_str'>pubkey_str</span> <span class='op'>=</span> <span class='id identifier rubyid_instance'>instance</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span></code></pre>
+    
+  </div>
+
 <p class="tag_title">Returns:</p>
 <ul class="return">
   
@@ -1005,12 +1019,12 @@
       <pre class="lines">
 
 
-62
-63
-64</pre>
+64
+65
+66</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/solace/public_key.rb', line 62</span>
+      <pre class="code"><span class="info file"># File 'lib/solace/public_key.rb', line 64</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_to_s'>to_s</span>
   <span class='id identifier rubyid_to_base58'>to_base58</span>
@@ -1025,7 +1039,7 @@
 </div>
 
       <div id="footer">
-  Generated on Wed Jul 30 16:07:08 2025 by
+  Generated on Thu Jul 31 07:33:54 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.4).
 </div>
