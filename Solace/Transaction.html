@@ -950,7 +950,7 @@ serializing, and deserializing transactions.</p>
       <pre class="code"><span class="info file"># File 'lib/solace/transaction.rb', line 60</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_from'>from</span><span class='lparen'>(</span><span class='id identifier rubyid_base64_tx'>base64_tx</span><span class='rparen'>)</span>
-  <span class='const'><span class='object_link'><a href="../Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Utils.html" title="Solace::Utils (module)">Utils</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Utils/Codecs.html" title="Solace::Utils::Codecs (module)">Codecs</a></span></span><span class='period'>.</span><span class='id identifier rubyid_base64_to_bytestream'><span class='object_link'><a href="Utils/Codecs.html#base64_to_bytestream-class_method" title="Solace::Utils::Codecs.base64_to_bytestream (method)">base64_to_bytestream</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_base64_tx'>base64_tx</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_try'>try</span> <span class='lbrace'>{</span> <span class='const'><span class='object_link'><a href="#DESERIALIZER-constant" title="Solace::Transaction::DESERIALIZER (constant)">DESERIALIZER</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="#initialize-instance_method" title="Solace::Transaction#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid__1'>_1</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span> <span class='rbrace'>}</span>
+  <span class='const'><span class='object_link'><a href="#DESERIALIZER-constant" title="Solace::Transaction::DESERIALIZER (constant)">DESERIALIZER</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="#initialize-instance_method" title="Solace::Transaction#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="../Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Utils.html" title="Solace::Utils (module)">Utils</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Utils/Codecs.html" title="Solace::Utils::Codecs (module)">Codecs</a></span></span><span class='period'>.</span><span class='id identifier rubyid_base64_to_bytestream'><span class='object_link'><a href="Utils/Codecs.html#base64_to_bytestream-class_method" title="Solace::Utils::Codecs.base64_to_bytestream (method)">base64_to_bytestream</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_base64_tx'>base64_tx</span><span class='rparen'>)</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -1061,7 +1061,7 @@ serializing, and deserializing transactions.</p>
 </div>
 
       <div id="footer">
-  Generated on Thu Jul 31 07:33:54 2025 by
+  Generated on Mon Aug  4 12:28:46 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.4).
 </div>

@@ -431,22 +431,22 @@ The maximum seed value for PDA calculations</p>
       <pre class="lines">
 
 
-51
-52
-53
-54
-55
-56
 57
 58
 59
 60
 61
 62
-63</pre>
+63
+64
+65
+66
+67
+68
+69</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/solace/utils/pda.rb', line 51</span>
+      <pre class="code"><span class="info file"># File 'lib/solace/utils/pda.rb', line 57</span>
 
 <span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_create_program_address'>create_program_address</span><span class='lparen'>(</span><span class='id identifier rubyid_seeds'>seeds</span><span class='comma'>,</span> <span class='id identifier rubyid_program_id'>program_id</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_seed_bytes'>seed_bytes</span> <span class='op'>=</span> <span class='id identifier rubyid_seeds'>seeds</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_seed'>seed</span><span class='op'>|</span> <span class='id identifier rubyid_seed_to_bytes'>seed_to_bytes</span><span class='lparen'>(</span><span class='id identifier rubyid_seed'>seed</span><span class='rparen'>)</span> <span class='rbrace'>}</span><span class='period'>.</span><span class='id identifier rubyid_flatten'>flatten</span>
@@ -483,7 +483,21 @@ The maximum seed value for PDA calculations</p>
   </div>
 </div>
 <div class="tags">
-  <p class="tag_title">Parameters:</p>
+  
+  <div class="examples">
+    <h4 class="tag_title">Examples:</h4>
+    
+      
+        <h5 class="example_title"><div class='inline'><p>Find a PDA with bump seed</p>
+</div></h5>
+      
+      <pre class="example code"><code><span class='id identifier rubyid_seeds'>seeds</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>metadata</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_mint_address'>mint_address</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>edition</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span>
+<span class='id identifier rubyid_program_id'>program_id</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s</span><span class='tstring_end'>&#39;</span></span>
+
+<span class='id identifier rubyid_address'>address</span><span class='comma'>,</span> <span class='id identifier rubyid_bump'>bump</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Utils.html" title="Solace::Utils (module)">Utils</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="" title="Solace::Utils::PDA (module)">PDA</a></span></span><span class='period'>.</span><span class='id identifier rubyid_find_program_address'>find_program_address</span><span class='lparen'>(</span><span class='id identifier rubyid_seeds'>seeds</span><span class='comma'>,</span> <span class='id identifier rubyid_program_id'>program_id</span><span class='rparen'>)</span></code></pre>
+    
+  </div>
+<p class="tag_title">Parameters:</p>
 <ul class="param">
   
     <li>
@@ -574,19 +588,19 @@ The maximum seed value for PDA calculations</p>
       <pre class="lines">
 
 
-34
-35
-36
-37
-38
-39
 40
 41
 42
-43</pre>
+43
+44
+45
+46
+47
+48
+49</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/solace/utils/pda.rb', line 34</span>
+      <pre class="code"><span class="info file"># File 'lib/solace/utils/pda.rb', line 40</span>
 
 <span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_find_program_address'>find_program_address</span><span class='lparen'>(</span><span class='id identifier rubyid_seeds'>seeds</span><span class='comma'>,</span> <span class='id identifier rubyid_program_id'>program_id</span><span class='rparen'>)</span>
   <span class='const'><span class='object_link'><a href="#MAX_BUMP_SEED-constant" title="Solace::Utils::PDA::MAX_BUMP_SEED (constant)">MAX_BUMP_SEED</a></span></span><span class='period'>.</span><span class='id identifier rubyid_downto'>downto</span><span class='lparen'>(</span><span class='int'>0</span><span class='rparen'>)</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_bump'>bump</span><span class='op'>|</span>
@@ -679,13 +693,13 @@ The maximum seed value for PDA calculations</p>
       <pre class="lines">
 
 
-86
-87
-88
-89</pre>
+92
+93
+94
+95</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/solace/utils/pda.rb', line 86</span>
+      <pre class="code"><span class="info file"># File 'lib/solace/utils/pda.rb', line 92</span>
 
 <span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_looks_like_base58_address?'>looks_like_base58_address?</span><span class='lparen'>(</span><span class='id identifier rubyid_string'>string</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_string'>string</span><span class='period'>.</span><span class='id identifier rubyid_length'>length</span><span class='period'>.</span><span class='id identifier rubyid_between?'>between?</span><span class='lparen'>(</span><span class='int'>32</span><span class='comma'>,</span> <span class='int'>44</span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span>
@@ -772,21 +786,21 @@ The maximum seed value for PDA calculations</p>
       <pre class="lines">
 
 
-69
-70
-71
-72
-73
-74
 75
 76
 77
 78
 79
-80</pre>
+80
+81
+82
+83
+84
+85
+86</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/solace/utils/pda.rb', line 69</span>
+      <pre class="code"><span class="info file"># File 'lib/solace/utils/pda.rb', line 75</span>
 
 <span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_seed_to_bytes'>seed_to_bytes</span><span class='lparen'>(</span><span class='id identifier rubyid_seed'>seed</span><span class='rparen'>)</span>
   <span class='kw'>case</span> <span class='id identifier rubyid_seed'>seed</span>
@@ -810,7 +824,7 @@ The maximum seed value for PDA calculations</p>
 </div>
 
       <div id="footer">
-  Generated on Thu Jul 31 07:33:54 2025 by
+  Generated on Mon Aug  4 12:28:45 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.4).
 </div>
