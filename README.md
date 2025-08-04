@@ -40,7 +40,12 @@ The Solace SDK is organized into several key layers:
 
 ### Transaction & Message
 
-Transactions contain a message and signatures. Messages contain instructions and metadata.
+Transactions contain a message and signatures. Messages contain instructions and metadata. This core class is as simple as possible and provide the lowest level of abstraction for building and sending transactions. A developer is expected to:
+
+1. Manually fill and order the accounts array
+2. Manually fill and order the instructions array
+3. Manually calculate the header
+4. ...did I forget to say manually?
 
 ```ruby
 # Create a message
@@ -75,7 +80,11 @@ signature = connection.send_transaction(transaction.serialize)
 
 ### Instruction
 
-Instructions represent individual operations within a transaction.
+Instructions represent individual operations within a transaction. Like messages, instructions are as simple as possible and provide the lowest level of abstraction for building and sending transactions. A developer is expected to:
+
+1. Manually fill and order the accounts indices array
+2. Manually specify the program index
+3. Manually specify the data
 
 ```ruby
 instruction = Solace::Instruction.new(
@@ -98,11 +107,9 @@ instruction.data # => [2, 0, 0, 0] + amount_bytes
 
 ## Low-Level Instruction Builders
 
-Instruction builders are service objects that create specific instruction types. They handle the binary encoding required by Solana programs.
+Given that the low-level instruction class is fully available, it's easy to build higher-level instruction builders that wrap the low-level instruction class. These builders are service objects that create specific instruction types. They handle the binary encoding required by Solana programs.
 
-### System Program Instructions
-
-#### Transfer Instruction
+For example, the SystemProgram::TransferInstruction builder is a service object that creates and returns a Solace::Instruction object with the correct program index, accounts indices, and data for a System Program solana transfer.
 
 ```ruby
 # Build a SOL transfer instruction
@@ -114,71 +121,33 @@ transfer_ix = Solace::Instructions::SystemProgram::TransferInstruction.build(
 )
 ```
 
-#### Create Account Instruction
+Solace includes a number of these, and you can build your own as well.
 
-```ruby
-# Build account creation instruction
-create_ix = Solace::Instructions::SystemProgram::CreateAccountInstruction.build(
-  from_index: 0,              # Payer account index
-  new_account_index: 1,       # New account index
-  system_program_index: 2,    # System program index
-  lamports: rent_lamports,    # Rent-exempt amount
-  space: 165,                 # Account data size
-  owner: token_program_id     # Owning program
-)
-```
-
-### SPL Token Instructions
-
-#### Initialize Mint Instruction
-
-```ruby
-# Initialize a new token mint
-init_mint_ix = Solace::Instructions::SplToken::InitializeMintInstruction.build(
-  mint_account_index: 1,      # Mint account index
-  rent_sysvar_index: 2,       # Rent sysvar index
-  program_index: 3,           # Token program index
-  decimals: 6,                # Token decimals
-  mint_authority: authority_pubkey,
-  freeze_authority: freeze_pubkey  # Optional
-)
-```
-
-#### Mint To Instruction
-
-```ruby
-# Mint tokens to an account
-mint_to_ix = Solace::Instructions::SplToken::MintToInstruction.build(
-  amount: 1_000_000,          # Amount to mint
-  mint_index: 0,              # Mint account index
-  destination_index: 1,       # Destination token account
-  mint_authority_index: 2,    # Mint authority index
-  program_index: 3            # Token program index
-)
-```
-
-#### Transfer Instruction
-
-```ruby
-# Transfer tokens between accounts
-transfer_ix = Solace::Instructions::SplToken::TransferInstruction.build(
-  amount: 500_000,            # Amount to transfer
-  source_index: 0,            # Source token account
-  destination_index: 1,       # Destination token account
-  owner_index: 2,             # Owner/authority index
-  program_index: 3            # Token program index
-)
-```
+- `Solace::Instructions::SystemProgram::TransferInstruction`
+- `Solace::Instructions::SystemProgram::CreateAccountInstruction`
+- `Solace::Instructions::SplToken::InitializeMintInstruction`
+- `Solace::Instructions::SplToken::InitializeAccountInstruction`
+- `Solace::Instructions::SplToken::MintToInstruction`
+- `Solace::Instructions::SplToken::TransferInstruction`
+- `Solace::Instructions::SplToken::TransferCheckedInstruction`
+- `Solace::Instructions::AssociatedTokenAccount::CreateAssociatedTokenAccountInstruction`
 
 **Common Patterns:**
 - All builders use `.build()` class method
+- All builders use `.data()` method to specify the instruction data
+- All builders use named parameters and `_index` suffix for account indices
+- All builders use a `program_index` parameter to specify the program index
 - Account indices reference the transaction's accounts array
 - Binary data encoding handled automatically
 - Instruction-specific data layouts documented in comments
 
-## High-Level Program Methods
+## High-Level Program Classes
 
-Program clients provide convenient interfaces for common operations, handling transaction assembly, signing, and submission.
+**WARNING: Programs will probably get deprecated in favor of composers in the future.**
+
+Now that we have the mid-level instruction builders, we can create high-level program classes that provide convenient interfaces for common operations, handling transaction assembly, signing, and submission.
+
+For example, the `Solace::Programs::SplToken` class provides a high-level interface for interacting with the SPL Token Program.
 
 ### SPL Token Program
 
@@ -187,31 +156,34 @@ Program clients provide convenient interfaces for common operations, handling tr
 spl_token = Solace::Programs::SplToken.new(connection: connection)
 
 # Create a new token mint
-signature = spl_token.create_mint(
+response = spl_token.create_mint(
   payer: payer_keypair,
   decimals: 6,
   mint_authority: authority_keypair,
   freeze_authority: freeze_keypair,  # Optional
   mint_keypair: mint_keypair         # Optional, generates if not provided
 )
+connection.wait_for_confirmed_signature { response['result'] }
 
 # Mint tokens to an account
-signature = spl_token.mint_to(
+response = spl_token.mint_to(
   payer: payer_keypair,
   mint: mint_keypair,
   destination: token_account_address,
   amount: 1_000_000,
   mint_authority: authority_keypair
 )
+connection.wait_for_confirmed_signature { response['result'] }
 
 # Transfer tokens
-signature = spl_token.transfer(
+response = spl_token.transfer(
   payer: payer_keypair,
   source: source_token_account,
   destination: dest_token_account,
   amount: 500_000,
   owner: owner_keypair
 )
+connection.wait_for_confirmed_signature { response['result'] }
 ```
 
 **Key Features:**
@@ -223,7 +195,7 @@ signature = spl_token.transfer(
 
 ### Prepare Methods
 
-For more control, use "prepare" methods that return signed transactions without sending:
+For more control, use "prepare" methods that return signed transactions without sending it on the program:
 
 ```ruby
 # Prepare transaction without sending
@@ -239,54 +211,6 @@ transaction = spl_token.prepare_create_mint(
 puts transaction.serialize  # Base64 transaction
 signature = connection.send_transaction(transaction.serialize)
 ```
-
-## Serialization System
-
-Solace uses a serialization system for converting Ruby objects to/from Solana's binary format.
-
-### SerializableRecord Base Class
-
-```ruby
-class Transaction < Solace::SerializableRecord
-  SERIALIZER = Solace::Serializers::TransactionSerializer
-  DESERIALIZER = Solace::Serializers::TransactionDeserializer
-  
-  # Automatic serialization
-  def serialize
-    self.class::SERIALIZER.call(self)
-  end
-  
-  # Automatic deserialization
-  def self.deserialize(io)
-    self::DESERIALIZER.call(io)
-  end
-end
-```
-
-### Serializer Pattern
-
-```ruby
-class TransactionSerializer < Solace::Serializers::Base
-  STEPS = %i[
-    serialize_signatures
-    serialize_message
-  ].freeze
-  
-  def serialize_signatures
-    # Convert signatures to binary format
-  end
-  
-  def serialize_message
-    # Serialize message component
-  end
-end
-```
-
-**Key Features:**
-- Step-based serialization process
-- Automatic Base64 encoding
-- Consistent error handling
-- Reversible serialization/deserialization
 
 ## Utility Modules
 
@@ -319,9 +243,6 @@ seeds = ['metadata', mint_address, 'edition']
 program_id = 'metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s'
 
 address, bump = Solace::Utils::PDA.find_program_address(seeds, program_id)
-
-# Create PDA directly
-address = Solace::Utils::PDA.create_program_address(seeds + [bump], program_id)
 ```
 
 **Key Features:**
@@ -339,6 +260,8 @@ on_curve = Solace::Utils::Curve25519Dalek.on_curve?(32_byte_point)
 
 ## Constants
 
+**WARNING: Constants will probably get deprecated in favor of config file that developers can use to define their own constants with required values.**
+
 Common Solana program IDs are defined in `Solace::Constants`:
 
 ```ruby
@@ -349,6 +272,79 @@ Solace::Constants::SYSVAR_RENT_PROGRAM_ID               # 'SysvarRent11111111111
 Solace::Constants::MEMO_PROGRAM_ID                      # 'MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr'
 ```
 
+## Composers
+
+Composers are used to build transactions from multiple instructions. They handle all the low-level details of transaction assembly, such as account ordering, header calculation, and fee payer selection.
+
+```ruby
+# Initialize a transaction composer
+composer = Solace::TransactionComposer.new(connection: connection)
+
+# Add an instruction composer
+composer.add_instruction(
+  Solace::Composers::SystemProgramTransferComposer.new(
+    to: 'pubkey1',
+    from: 'pubkey2',
+    lamports: 100
+  )
+)
+
+# Add another instruction composer
+composer.add_instruction(
+  Solace::Composers::SplTokenProgramTransferCheckedComposer.new(
+    from: 'pubkey4',
+    to: 'pubkey5',
+    mint: 'pubkey6',
+    authority: 'pubkey7',
+    amount: 1_000_000,
+    decimals: 6
+  )
+)
+
+# Set the fee payer
+composer.set_fee_payer('pubkey8')
+
+# Compose the transaction
+tx = composer.compose_transaction
+
+# Sign the transaction with all required signers
+tx.sign(*any_required_signers)
+```
+
+Composers are intended to be extended by developers with custom instruction composers to interface with their own programs. Simply inherit from `Solace::Composers::Base` and implement the required methods.
+
+```ruby
+class MyProgramComposer < Solace::Composers::Base
+  # All keyword arguments are passed to the constructor and available
+  # as a `params` hash.
+  # 
+  # The setup_accounts method is called automatically by the transaction composer
+  # during compilation and should be used to add accounts to the account_context 
+  # with the appropriate access permissions. Conditional logic is fine here given 
+  # and available params to determine the access permissions.
+  def setup_accounts
+    account_context.add_writable_signer(params[:from])
+    account_context.add_writable_nonsigner(params[:to])
+    account_context.add_readonly_nonsigner(params[:program])
+  end
+
+  # The build_instruction method is called automatically by the transaction composer
+  # during compilation and should be used to build the instruction using an instruction builder.
+  # 
+  # The passed context to the build_instruction method provides the indices of all accounts
+  # that were added to the account_context in the setup_accounts method. These are accessible
+  # by the index_of method of the context using the account address as a parameter.
+  def build_instruction(context)
+    Solace::Instructions::MyProgram::MyInstruction.build(
+      data: params[:data],
+      from_index: context.index_of(params[:from]),
+      to_index: context.index_of(params[:to]),
+      program_index: context.index_of(params[:program])
+    )
+  end
+end
+```
+
 ## Practical Examples
 
 ### Complete SOL Transfer
@@ -357,12 +353,15 @@ Solace::Constants::MEMO_PROGRAM_ID                      # 'MemoSq4gqABAXKb96qnH8
 require 'solace'
 
 # Setup
-connection = Solace::Connection.new('https://api.devnet.solana.com')
 payer = Solace::Keypair.generate
 recipient = Solace::Keypair.generate
 
+# Create connection
+connection = Solace::Connection.new('https://api.devnet.solana.com')
+
 # Fund payer (devnet only)
-connection.request_airdrop(payer.address, 1_000_000_000)
+response = connection.request_airdrop(payer.address, 1_000_000_000)
+connection.wait_for_confirmed_signature('finalized') { response['result'] }
 
 # Build transfer instruction
 transfer_ix = Solace::Instructions::SystemProgram::TransferInstruction.build(
@@ -387,9 +386,9 @@ message = Solace::Message.new(
 # Sign and send
 transaction = Solace::Transaction.new(message: message)
 transaction.sign(payer)
-signature = connection.send_transaction(transaction.serialize)
 
-puts "Transaction: #{signature}"
+response = connection.send_transaction(transaction.serialize)
+puts "Transaction: #{response['result']}"
 ```
 
 ### Complete Token Mint Creation
@@ -398,16 +397,19 @@ puts "Transaction: #{signature}"
 require 'solace'
 
 # Setup
-connection = Solace::Connection.new('https://api.devnet.solana.com')
 payer = Solace::Keypair.generate
 mint_keypair = Solace::Keypair.generate
 
+# Create connection
+connection = Solace::Connection.new('https://api.devnet.solana.com')
+
 # Fund payer
-connection.request_airdrop(payer.address, 1_000_000_000)
+response = connection.request_airdrop(payer.address, 1_000_000_000)
+connection.wait_for_confirmed_signature('finalized') { response['result'] }
 
 # High-level approach
-spl_token = Solace::Programs::SplToken.new(connection: connection)
-signature = spl_token.create_mint(
+program = Solace::Programs::SplToken.new(connection: connection)
+signature = program.create_mint(
   payer: payer,
   decimals: 6,
   mint_authority: payer,
@@ -419,49 +421,6 @@ puts "Mint created: #{mint_keypair.address}"
 puts "Transaction: #{signature}"
 ```
 
-### Manual Transaction Building
-
-```ruby
-# Low-level approach for maximum control
-rent_lamports = connection.get_minimum_lamports_for_rent_exemption(82)
-
-# Build instructions
-create_account_ix = Solace::Instructions::SystemProgram::CreateAccountInstruction.build(
-  from_index: 0,
-  new_account_index: 1,
-  system_program_index: 4,
-  lamports: rent_lamports,
-  space: 82,
-  owner: Solace::Constants::TOKEN_PROGRAM_ID
-)
-
-initialize_mint_ix = Solace::Instructions::SplToken::InitializeMintInstruction.build(
-  mint_account_index: 1,
-  rent_sysvar_index: 2,
-  program_index: 3,
-  decimals: 6,
-  mint_authority: payer.address
-)
-
-# Assemble transaction
-message = Solace::Message.new(
-  accounts: [
-    payer.address,
-    mint_keypair.address,
-    Solace::Constants::SYSVAR_RENT_PROGRAM_ID,
-    Solace::Constants::TOKEN_PROGRAM_ID,
-    Solace::Constants::SYSTEM_PROGRAM_ID
-  ],
-  instructions: [create_account_ix, initialize_mint_ix],
-  recent_blockhash: connection.get_latest_blockhash,
-  header: [2, 0, 3]  # 2 signers, 0 readonly signed, 3 readonly unsigned
-)
-
-transaction = Solace::Transaction.new(message: message)
-transaction.sign(payer, mint_keypair)
-signature = connection.send_transaction(transaction.serialize)
-```
-
 ## Design Patterns
 
 ### Service Objects
@@ -470,43 +429,6 @@ Instruction builders follow the service object pattern:
 - Class methods for stateless operations
 - Consistent `.build()` interface
 - Separate `.data()` methods for instruction data
-
-### Serializable Records
-Core data structures inherit from `SerializableRecord`:
-- Automatic serialization/deserialization
-- Consistent binary format handling
-- SERIALIZER/DESERIALIZER constants pattern
-
-### Mixin Modules
-Shared functionality via mixins:
-- `BinarySerializable` for serialization support
-- `PDA` for Program Derived Address operations
-- `Utils` modules for common operations
-
-### Builder Pattern
-High-level program methods use builder pattern:
-- Fluent interfaces with keyword arguments
-- Sensible defaults for optional parameters
-- Automatic transaction assembly and signing
-
-## Error Handling
-
-The SDK provides comprehensive error handling:
-
-```ruby
-begin
-  signature = connection.send_transaction(transaction.serialize)
-rescue StandardError => e
-  puts "Transaction failed: #{e.message}"
-end
-
-# PDA validation
-begin
-  address = Solace::Utils::PDA.create_program_address(seeds, program_id)
-rescue Solace::Utils::PDA::InvalidPDAError => e
-  puts "Invalid PDA: #{e.message}"
-end
-```
 
 ## Testing Support
 
@@ -529,6 +451,7 @@ connection.wait_for_confirmed_signature { response['result'] }
 ## Dependencies
 
 - **base58**: Base58 encoding/decoding
+- **base64**: Base64 encoding/decoding
 - **rbnacl**: Ed25519 cryptography
 - **ffi**: Foreign Function Interface for native libraries
 - **json**: JSON parsing for RPC

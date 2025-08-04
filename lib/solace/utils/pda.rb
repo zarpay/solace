@@ -27,6 +27,12 @@ module Solace
 
       # Finds a valid program address by trying different seeds
       #
+      # @example Find a PDA with bump seed
+      #   seeds = ['metadata', mint_address, 'edition']
+      #   program_id = 'metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s'
+      #
+      #   address, bump = Solace::Utils::PDA.find_program_address(seeds, program_id)
+      #
       # @param seeds [Array] The seeds to use in the calculation
       # @param program_id [String] The program ID to use in the calculation
       # @return [Array] The program address and bump seed

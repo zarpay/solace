@@ -58,7 +58,7 @@ module Solace
       # @param base64_tx [String] The base64 encoded transaction
       # @return [Solace::Transaction] The deserialized transaction
       def from(base64_tx)
-        Solace::Utils::Codecs.base64_to_bytestream(base64_tx).try { DESERIALIZER.new(_1).call }
+        DESERIALIZER.new(Solace::Utils::Codecs.base64_to_bytestream(base64_tx)).call
       end
     end
 

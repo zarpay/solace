@@ -23,6 +23,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ### Changed
 1. Change `private_key` method on Keypair to `pivate_key_bytes`
+2. Change docs on most methods to include an `@example` section.
+3. Change README to include a practical example of using composers.
  
 ### Fixed
 
