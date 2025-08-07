@@ -103,7 +103,10 @@ module Solace
       #   pubkey = Solace::PublicKey.from_address(address)
       #
       # @param address [String] The base58 address of the public key
-      # @return [PublicKey]
+      # @return [PublicKey] The public key instance
+      # @raise [ArgumentError] If the address is not a valid base58 string
+      #
+      # @since 0.0.6
       def from_address(address)
         new(Solace::Utils::Codecs.base58_to_bytes(address))
       end
