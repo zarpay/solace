@@ -726,6 +726,27 @@
       
       
       
+        &mdash;
+        <div class='inline'><p>The public key instance</p>
+</div>
+      
+    </li>
+  
+</ul>
+<p class="tag_title">Raises:</p>
+<ul class="raise">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>ArgumentError</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>If the address is not a valid base58 string</p>
+</div>
+      
     </li>
   
 </ul>
@@ -738,7 +759,7 @@
       
       
         
-        <div class='inline'><p>0.0.1</p>
+        <div class='inline'><p>0.0.6</p>
 </div>
       
     </li>
@@ -751,12 +772,12 @@
       <pre class="lines">
 
 
-107
-108
-109</pre>
+110
+111
+112</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/solace/public_key.rb', line 107</span>
+      <pre class="code"><span class="info file"># File 'lib/solace/public_key.rb', line 110</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_from_address'>from_address</span><span class='lparen'>(</span><span class='id identifier rubyid_address'>address</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="../Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Utils.html" title="Solace::Utils (module)">Utils</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Utils/Codecs.html" title="Solace::Utils::Codecs (module)">Codecs</a></span></span><span class='period'>.</span><span class='id identifier rubyid_base58_to_bytes'><span class='object_link'><a href="Utils/Codecs.html#base58_to_bytes-class_method" title="Solace::Utils::Codecs.base58_to_bytes (method)">base58_to_bytes</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_address'>address</span><span class='rparen'>)</span><span class='rparen'>)</span>
@@ -1172,7 +1193,7 @@
 </div>
 
       <div id="footer">
-  Generated on Thu Aug  7 17:24:07 2025 by
+  Generated on Thu Aug  7 17:30:01 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.4).
 </div>
