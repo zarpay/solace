@@ -503,7 +503,7 @@ the placeholder for each expected index in the signatures array.</p>
       <pre class="code"><span class="info file"># File 'lib/solace/serializers/transaction_serializer.rb', line 32</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_encode_signatures'>encode_signatures</span>
-  <span class='const'><span class='object_link'><a href="../Utils/Codecs.html" title="Solace::Utils::Codecs (module)">Codecs</a></span></span><span class='period'>.</span><span class='id identifier rubyid_encode_compact_u16'><span class='object_link'><a href="../Utils/Codecs.html#encode_compact_u16-class_method" title="Solace::Utils::Codecs.encode_compact_u16 (method)">encode_compact_u16</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_record'>record</span><span class='period'>.</span><span class='id identifier rubyid_signatures'>signatures</span><span class='period'>.</span><span class='id identifier rubyid_size'>size</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_bytes'>bytes</span> <span class='op'>+</span>
+  <span class='const'><span class='object_link'><a href="../Utils/Codecs.html" title="Solace::Utils::Codecs (module)">Codecs</a></span></span><span class='period'>.</span><span class='id identifier rubyid_encode_compact_u16'><span class='object_link'><a href="../Utils/Codecs.html#encode_compact_u16-class_method" title="Solace::Utils::Codecs.encode_compact_u16 (method)">encode_compact_u16</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_record'>record</span><span class='period'>.</span><span class='id identifier rubyid_message'>message</span><span class='period'>.</span><span class='id identifier rubyid_num_required_signatures'>num_required_signatures</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_bytes'>bytes</span> <span class='op'>+</span>
     <span class='id identifier rubyid_index_signatures'>index_signatures</span><span class='lparen'>(</span><span class='id identifier rubyid_record'>record</span><span class='period'>.</span><span class='id identifier rubyid_message'>message</span><span class='period'>.</span><span class='id identifier rubyid_num_required_signatures'>num_required_signatures</span><span class='rparen'>)</span>
 <span class='kw'>end</span></pre>
     </td>
@@ -516,7 +516,7 @@ the placeholder for each expected index in the signatures array.</p>
 </div>
 
       <div id="footer">
-  Generated on Mon Aug  4 12:28:46 2025 by
+  Generated on Thu Aug  7 17:23:16 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.4).
 </div>
