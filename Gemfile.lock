@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    solace (0.0.3)
+    solace (0.0.5)
       base58 (~> 0.2)
       ffi (~> 1.15)
       rbnacl (~> 7.0)

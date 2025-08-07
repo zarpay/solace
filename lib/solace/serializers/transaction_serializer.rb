@@ -30,7 +30,7 @@ module Solace
       #
       # @return [Array<Integer>] The bytes of the encoded signatures
       def encode_signatures
-        Codecs.encode_compact_u16(record.signatures.size).bytes +
+        Codecs.encode_compact_u16(record.message.num_required_signatures).bytes +
           index_signatures(record.message.num_required_signatures)
       end
 

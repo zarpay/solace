@@ -95,5 +95,18 @@ module Solace
     def to_bytes
       @bytes.dup
     end
+
+    class << self
+      # Create a public key instance from a base58 address
+      #
+      # @example
+      #   pubkey = Solace::PublicKey.from_address(address)
+      #
+      # @param address [String] The base58 address of the public key
+      # @return [PublicKey]
+      def from_address(address)
+        new(Solace::Utils::Codecs.base58_to_bytes(address))
+      end
+    end
   end
 end

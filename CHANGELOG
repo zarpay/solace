@@ -16,17 +16,19 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ### Fixed
 ```
 
-## [WIP] - yyyy-mm-dd
+## [0.0.6] - 2025-08-07
   
 ### Added
-1. 
+1. Added `from_address` method to `Solace::PublicKey`.
+2. Change docs on most methods to include an `@example` section.
 
 ### Changed
 1. Change `private_key` method on Keypair to `pivate_key_bytes`
-2. Change docs on most methods to include an `@example` section.
-3. Change README to include a practical example of using composers.
+2. Change README to include a practical example of using composers.
  
 ### Fixed
+1. Fix `encode_signatures` method in `Solace::Serializers::TransactionSerializer` to correctly count the number of signatures using the `num_required_signatures` field in the message.
+
 
 ## [0.0.3] - 2025-07-30
   

@@ -53,4 +53,16 @@ describe Solace::PublicKey do
       refute_same @public_key.bytes, bytes_copy
     end
   end
+
+  describe '.from_address' do
+    it 'returns public key instance from base58 address' do
+      pk4 = Solace::PublicKey.from_address(@base58)
+
+      assert_equal @public_key, pk4
+    end
+
+    it 'raises on invalid address' do
+      assert_raises(ArgumentError) { Solace::PublicKey.from_address('invalid_address') }
+    end
+  end
 end
