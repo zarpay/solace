@@ -51,7 +51,7 @@ module Solace
 
       # Alias method for get_address
       #
-      # @option options [Hash] A hash of options for the get_address class method
+      # @param options [Hash] A hash of options for the get_address class method
       # @return [Array<String, Integer>] The address of the associated token account and the bump seed
       def get_address(**options)
         self.class.get_address(**options)
@@ -67,9 +67,9 @@ module Solace
       def get_or_create_address(payer:, owner:, mint:, commitment: 'confirmed')
         ata_address, _bump = get_address(owner: owner, mint: mint)
 
-        account_info = @connection.get_account_info(ata_address)
+        account_balance = @connection.get_balance(ata_address)
 
-        return ata_address if account_info
+        return ata_address if account_balance
 
         response = create_associated_token_account(payer: payer, owner: owner, mint: mint)
 
@@ -87,6 +87,8 @@ module Solace
       def create_associated_token_account(**options)
         tx = prepare_create_associated_token_account(**options)
 
+        tx.sign(options[:payer])
+
         @connection.send_transaction(tx.serialize)
       end
 
@@ -97,7 +99,6 @@ module Solace
       # @param payer [Solace::Keypair] The keypair that will pay for fees and rent.
       # @return [Solace::Transaction] The signed transaction.
       #
-      # rubocop:disable Metrics/MethodLength
       def prepare_create_associated_token_account(
         payer:,
         owner:,
@@ -105,39 +106,21 @@ module Solace
       )
         ata_address, = get_address(owner: owner, mint: mint)
 
-        accounts = [
-          payer.address,
-          ata_address,
-          owner.address,
-          mint.address,
-          Solace::Constants::SYSTEM_PROGRAM_ID,
-          Solace::Constants::TOKEN_PROGRAM_ID,
-          Solace::Constants::ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID
-        ]
+        TransactionComposer.new(connection: connection).try do |tx_composer|
+          tx_composer.set_fee_payer(payer)
 
-        instruction = Solace::Instructions::AssociatedTokenAccount::CreateAssociatedTokenAccountInstruction.build(
-          funder_index: 0,
-          associated_token_account_index: 1,
-          owner_index: 2,
-          mint_index: 3,
-          system_program_index: 4,
-          token_program_index: 5,
-          program_index: 6
-        )
+          tx_composer.add_instruction(
+            Solace::Composers::AssociatedTokenAccountProgramCreateAccountComposer.new(
+              mint: mint,
+              owner: owner,
+              funder: payer,
+              ata_address: ata_address
+            )
+          )
 
-        message = Solace::Message.new(
-          header: [1, 0, 4],
-          accounts: accounts,
-          recent_blockhash: @connection.get_latest_blockhash,
-          instructions: [instruction]
-        )
-
-        tx = Solace::Transaction.new(message: message)
-        tx.sign(payer)
-
-        tx
+          tx_composer.compose_transaction
+        end
       end
-      # rubocop:enable Metrics/MethodLength
     end
   end
 end

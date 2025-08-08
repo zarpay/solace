@@ -5,21 +5,19 @@ YARD:
   Enabled: true
 
 AllCops:
+  TargetRubyVersion: 3.0
   NewCops: enable
   Exclude:
     - 'solace.gemspec'
-
-Naming/AccessorMethodName:
-  Enabled: false
-
-Metrics/ParameterLists:
-  Enabled: false
 
 Layout/LineLength:
   Max: 120
   Exclude:
     - 'test/**/*_test.rb'
     - 'test/usecases/**/*.rb'
+
+Metrics/ParameterLists:
+  Enabled: false
 
 Metrics/MethodLength:
   Max: 15
@@ -29,3 +27,6 @@ Metrics/BlockLength:
     - 'test/**/*_test.rb'
     - 'test/usecases/**/*.rb'
     - 'test/factories/**/*.rb'
+
+Naming/AccessorMethodName:
+  Enabled: false

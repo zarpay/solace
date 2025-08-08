@@ -58,7 +58,7 @@ describe Solace::Instructions::SplToken::TransferInstruction do
           amount: amount,
           payer: payer,
           mint: mint,
-          destination: destination,
+          destination: source,
           mint_authority: mint_authority
         )['result']
       end

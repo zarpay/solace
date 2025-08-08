@@ -2,5 +2,5 @@
 
 # Solace::VERSION is the version of the Solace gem
 module Solace
-  VERSION = '0.0.6'
+  VERSION = '0.0.7'
 end

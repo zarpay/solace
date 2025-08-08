@@ -16,6 +16,16 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ### Fixed
 ```
 
+## [0.0.7] - 2025-08-09
+  
+### Added
+1. Added `AssociatedTokenAccountProgramCreateAccountComposer` with tests.
+
+### Changed
+1. Updated `AssociatedTokenAccount` to use `AssociatedTokenAccountProgramCreateAccountComposer` and sign the transaction in the `create_associated_token_account` method instead of the `prepare_create_associated_token_account` method.
+ 
+### Fixed
+
 ## [0.0.6] - 2025-08-07
   
 ### Added

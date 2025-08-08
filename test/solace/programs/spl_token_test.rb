@@ -190,8 +190,8 @@ describe Solace::Programs::SplToken do
           amount: amount,
           payer: payer,
           source: source,
-          destination: destination,
-          owner: source_owner
+          owner: source_owner,
+          destination: destination
         )
       end
 

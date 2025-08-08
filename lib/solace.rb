@@ -25,9 +25,13 @@ require_relative 'solace/instruction'
 require_relative 'solace/address_lookup_table'
 require_relative 'solace/transaction_composer'
 
-# 📦 Composers (Builders)
+# Base Classes (Abstract classes)
+require_relative 'solace/programs/base'
+require_relative 'solace/composers/base'
+
+# 📦 Composers
 #
-# Glob require all instructions
+# Glob require all composers
 Dir[File.join(__dir__, 'solace/composers', '**', '*.rb')].each { |file| require file }
 
 # 📦 Instructions (Builders)
@@ -36,6 +40,5 @@ Dir[File.join(__dir__, 'solace/composers', '**', '*.rb')].each { |file| require 
 Dir[File.join(__dir__, 'solace/instructions', '**', '*.rb')].each { |file| require file }
 
 # 📦 Programs
-require_relative 'solace/programs/base'
 require_relative 'solace/programs/spl_token'
 require_relative 'solace/programs/associated_token_account'
