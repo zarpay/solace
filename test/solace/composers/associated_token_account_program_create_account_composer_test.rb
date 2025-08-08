@@ -6,10 +6,10 @@ describe Solace::Composers::AssociatedTokenAccountProgramCreateAccountComposer d
   let(:mint) { Fixtures.load_keypair('mint') }
   let(:funder) { Fixtures.load_keypair('bob') }
   let(:payer) { Fixtures.load_keypair('payer') }
-    
+
   let(:connection) { Solace::Connection.new }
   let(:transaction_composer) { Solace::TransactionComposer.new(connection: connection) }
-  
+
   describe 'sponsored transaction' do
     let(:owner) { Solace::Keypair.generate }
     let(:owner_ata) { Solace::Programs::AssociatedTokenAccount.get_address(owner: owner, mint: mint).first }
@@ -19,7 +19,7 @@ describe Solace::Composers::AssociatedTokenAccountProgramCreateAccountComposer d
         mint: mint,
         owner: owner,
         funder: funder,
-        ata_address: owner_ata,
+        ata_address: owner_ata
       )
     end
 
@@ -70,7 +70,7 @@ describe Solace::Composers::AssociatedTokenAccountProgramCreateAccountComposer d
       Solace::Composers::SystemProgramTransferComposer.new(
         to: owner,
         from: payer,
-        lamports: owner_starting_balance,
+        lamports: owner_starting_balance
       )
     end
 
@@ -79,7 +79,7 @@ describe Solace::Composers::AssociatedTokenAccountProgramCreateAccountComposer d
         mint: mint,
         owner: owner,
         funder: owner,
-        ata_address: owner_ata,
+        ata_address: owner_ata
       )
     end
 
