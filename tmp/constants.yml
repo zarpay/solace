@@ -1,0 +1,12 @@
+# Devnet
+devnet:
+  my_program_id: my_program_id_devnet
+  squads_program_id: squads_program_id_devnet
+  usdc_mint_account: usdc_mint_account_devnet
+  usdt_mint_account: usdt_mint_account_devnet
+# Mainnet
+mainnet:
+  my_program_id: my_program_id_mainnet
+  squads_program_id: squads_program_id_mainnet
+  usdc_mint_account: usdc_mint_account_mainnet
+  usdt_mint_account: usdt_mint_account_mainnet

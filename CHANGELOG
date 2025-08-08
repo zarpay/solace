@@ -16,6 +16,15 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ### Fixed
 ```
 
+## [0.0.8] - yyyy-mm-dd
+  
+### Added
+1. Added `load` method to `Solace::Constants` to load constants from a YAML file. This method allows for loading constants from a YAML file (i.e. custom program addresses and mint accounts).
+
+### Changed
+ 
+### Fixed
+
 ## [0.0.7] - 2025-08-09
   
 ### Added
