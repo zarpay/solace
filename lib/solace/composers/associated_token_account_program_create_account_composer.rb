@@ -83,8 +83,8 @@ module Solace
       # @return [void]
       def setup_accounts # rubocop:disable Metrics/AbcSize
         account_context.add_writable_signer(funder)
+        account_context.add_writable_nonsigner(ata_address)
         account_context.add_readonly_nonsigner(owner)
-        account_context.add_readonly_nonsigner(ata_address)
         account_context.add_readonly_nonsigner(mint)
         account_context.add_readonly_nonsigner(system_program_id)
         account_context.add_readonly_nonsigner(token_program_id)
@@ -98,9 +98,9 @@ module Solace
       def build_instruction(account_context)
         Instructions::AssociatedTokenAccount::CreateAssociatedTokenAccountInstruction.build(
           funder_index: account_context.index_of(funder),
-          associated_token_account_index: account_context.index_of(ata_address),
           owner_index: account_context.index_of(owner),
           mint_index: account_context.index_of(mint),
+          associated_token_account_index: account_context.index_of(ata_address),
           system_program_index: account_context.index_of(system_program_id),
           token_program_index: account_context.index_of(token_program_id),
           program_index: account_context.index_of(associated_token_account_program_id)
