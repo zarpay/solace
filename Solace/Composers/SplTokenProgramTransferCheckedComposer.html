@@ -559,7 +559,7 @@ instruction builder (<code>Instructions::SplToken::TransferCheckedInstruction</c
       <pre class="code"><span class="info file"># File 'lib/solace/composers/spl_token_program_transfer_checked_composer.rb', line 52</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_authority'>authority</span>
-  <span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='symbol'>:authority</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>String</span><span class='rparen'>)</span> <span class='op'>?</span> <span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='symbol'>:authority</span><span class='rbracket'>]</span> <span class='op'>:</span> <span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='symbol'>:authority</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_address'>address</span>
+  <span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='symbol'>:authority</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -806,7 +806,7 @@ instruction builder (<code>Instructions::SplToken::TransferCheckedInstruction</c
       <pre class="code"><span class="info file"># File 'lib/solace/composers/spl_token_program_transfer_checked_composer.rb', line 43</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_from'>from</span>
-  <span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='symbol'>:from</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>String</span><span class='rparen'>)</span> <span class='op'>?</span> <span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='symbol'>:from</span><span class='rbracket'>]</span> <span class='op'>:</span> <span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='symbol'>:from</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_address'>address</span>
+  <span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='symbol'>:from</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -878,7 +878,7 @@ instruction builder (<code>Instructions::SplToken::TransferCheckedInstruction</c
       <pre class="code"><span class="info file"># File 'lib/solace/composers/spl_token_program_transfer_checked_composer.rb', line 59</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_mint'>mint</span>
-  <span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='symbol'>:mint</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>String</span><span class='rparen'>)</span> <span class='op'>?</span> <span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='symbol'>:mint</span><span class='rbracket'>]</span> <span class='op'>:</span> <span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='symbol'>:mint</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_address'>address</span>
+  <span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='symbol'>:mint</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -1014,7 +1014,7 @@ Called automatically during initialization</p>
       <pre class="code"><span class="info file"># File 'lib/solace/composers/spl_token_program_transfer_checked_composer.rb', line 66</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_spl_token_program'>spl_token_program</span>
-  <span class='const'><span class='object_link'><a href="../Constants.html" title="Solace::Constants (module)">Constants</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Constants.html#TOKEN_PROGRAM_ID-constant" title="Solace::Constants::TOKEN_PROGRAM_ID (constant)">TOKEN_PROGRAM_ID</a></span></span>
+  <span class='const'><span class='object_link'><a href="../Constants.html" title="Solace::Constants (module)">Constants</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Constants.html#TOKEN_PROGRAM_ID-constant" title="Solace::Constants::TOKEN_PROGRAM_ID (constant)">TOKEN_PROGRAM_ID</a></span></span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -1086,7 +1086,7 @@ Called automatically during initialization</p>
       <pre class="code"><span class="info file"># File 'lib/solace/composers/spl_token_program_transfer_checked_composer.rb', line 36</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_to'>to</span>
-  <span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='symbol'>:to</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>String</span><span class='rparen'>)</span> <span class='op'>?</span> <span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='symbol'>:to</span><span class='rbracket'>]</span> <span class='op'>:</span> <span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='symbol'>:to</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_address'>address</span>
+  <span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='symbol'>:to</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -1098,7 +1098,7 @@ Called automatically during initialization</p>
 </div>
 
       <div id="footer">
-  Generated on Fri Aug  8 21:48:38 2025 by
+  Generated on Sun Aug 10 20:27:13 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.4).
 </div>

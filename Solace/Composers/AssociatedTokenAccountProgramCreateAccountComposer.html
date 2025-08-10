@@ -483,7 +483,7 @@ instruction builder (<code>Instructions::AssociatedTokenAccount::CreateAssociate
       <pre class="code"><span class="info file"># File 'lib/solace/composers/associated_token_account_program_create_account_composer.rb', line 76</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_associated_token_account_program_id'>associated_token_account_program_id</span>
-  <span class='const'><span class='object_link'><a href="../Constants.html" title="Solace::Constants (module)">Constants</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Constants.html#ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID-constant" title="Solace::Constants::ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID (constant)">ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID</a></span></span>
+  <span class='const'><span class='object_link'><a href="../Constants.html" title="Solace::Constants (module)">Constants</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Constants.html#ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID-constant" title="Solace::Constants::ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID (constant)">ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID</a></span></span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -555,7 +555,7 @@ instruction builder (<code>Instructions::AssociatedTokenAccount::CreateAssociate
       <pre class="code"><span class="info file"># File 'lib/solace/composers/associated_token_account_program_create_account_composer.rb', line 48</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_ata_address'>ata_address</span>
-  <span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='symbol'>:ata_address</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>String</span><span class='rparen'>)</span> <span class='op'>?</span> <span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='symbol'>:ata_address</span><span class='rbracket'>]</span> <span class='op'>:</span> <span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='symbol'>:ata_address</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_address'>address</span>
+  <span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='symbol'>:ata_address</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -734,7 +734,7 @@ instruction builder (<code>Instructions::AssociatedTokenAccount::CreateAssociate
       <pre class="code"><span class="info file"># File 'lib/solace/composers/associated_token_account_program_create_account_composer.rb', line 55</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_funder'>funder</span>
-  <span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='symbol'>:funder</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>String</span><span class='rparen'>)</span> <span class='op'>?</span> <span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='symbol'>:funder</span><span class='rbracket'>]</span> <span class='op'>:</span> <span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='symbol'>:funder</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_address'>address</span>
+  <span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='symbol'>:funder</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -806,7 +806,7 @@ instruction builder (<code>Instructions::AssociatedTokenAccount::CreateAssociate
       <pre class="code"><span class="info file"># File 'lib/solace/composers/associated_token_account_program_create_account_composer.rb', line 41</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_mint'>mint</span>
-  <span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='symbol'>:mint</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>String</span><span class='rparen'>)</span> <span class='op'>?</span> <span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='symbol'>:mint</span><span class='rbracket'>]</span> <span class='op'>:</span> <span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='symbol'>:mint</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_address'>address</span>
+  <span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='symbol'>:mint</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -878,7 +878,7 @@ instruction builder (<code>Instructions::AssociatedTokenAccount::CreateAssociate
       <pre class="code"><span class="info file"># File 'lib/solace/composers/associated_token_account_program_create_account_composer.rb', line 34</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_owner'>owner</span>
-  <span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='symbol'>:owner</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>String</span><span class='rparen'>)</span> <span class='op'>?</span> <span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='symbol'>:owner</span><span class='rbracket'>]</span> <span class='op'>:</span> <span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='symbol'>:owner</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_address'>address</span>
+  <span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='symbol'>:owner</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -1018,7 +1018,7 @@ Called automatically during initialization</p>
       <pre class="code"><span class="info file"># File 'lib/solace/composers/associated_token_account_program_create_account_composer.rb', line 62</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_system_program_id'>system_program_id</span>
-  <span class='const'><span class='object_link'><a href="../Constants.html" title="Solace::Constants (module)">Constants</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Constants.html#SYSTEM_PROGRAM_ID-constant" title="Solace::Constants::SYSTEM_PROGRAM_ID (constant)">SYSTEM_PROGRAM_ID</a></span></span>
+  <span class='const'><span class='object_link'><a href="../Constants.html" title="Solace::Constants (module)">Constants</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Constants.html#SYSTEM_PROGRAM_ID-constant" title="Solace::Constants::SYSTEM_PROGRAM_ID (constant)">SYSTEM_PROGRAM_ID</a></span></span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -1090,7 +1090,7 @@ Called automatically during initialization</p>
       <pre class="code"><span class="info file"># File 'lib/solace/composers/associated_token_account_program_create_account_composer.rb', line 69</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_token_program_id'>token_program_id</span>
-  <span class='const'><span class='object_link'><a href="../Constants.html" title="Solace::Constants (module)">Constants</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Constants.html#TOKEN_PROGRAM_ID-constant" title="Solace::Constants::TOKEN_PROGRAM_ID (constant)">TOKEN_PROGRAM_ID</a></span></span>
+  <span class='const'><span class='object_link'><a href="../Constants.html" title="Solace::Constants (module)">Constants</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Constants.html#TOKEN_PROGRAM_ID-constant" title="Solace::Constants::TOKEN_PROGRAM_ID (constant)">TOKEN_PROGRAM_ID</a></span></span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -1102,7 +1102,7 @@ Called automatically during initialization</p>
 </div>
 
       <div id="footer">
-  Generated on Fri Aug  8 21:48:38 2025 by
+  Generated on Sun Aug 10 20:27:13 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.4).
 </div>

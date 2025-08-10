@@ -4,7 +4,7 @@
     <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>
-  Module: Solace::Programs
+  Module: Solace::Errors
   
     &mdash; Solace Ruby SDK Documentation
   
@@ -15,7 +15,7 @@
   <link rel="stylesheet" href="../css/common.css" type="text/css" />
 
 <script type="text/javascript">
-  pathId = "Solace::Programs";
+  pathId = "Solace::Errors";
   relpath = '../';
 </script>
 
@@ -36,10 +36,10 @@
       <div id="header">
         <div id="menu">
   
-    <a href="../_index.html">Index (P)</a> &raquo;
+    <a href="../_index.html">Index (E)</a> &raquo;
     <span class='title'><span class='object_link'><a href="../Solace.html" title="Solace (module)">Solace</a></span></span>
      &raquo; 
-    <span class="title">Programs</span>
+    <span class="title">Errors</span>
   
 </div>
 
@@ -59,7 +59,7 @@
         <div class="clear"></div>
       </div>
 
-      <div id="content"><h1>Module: Solace::Programs
+      <div id="content"><h1>Module: Solace::Errors
   
   
   
@@ -78,20 +78,48 @@
   
   <dl>
     <dt>Defined in:</dt>
-    <dd>lib/solace/programs/base.rb<span class="defines">,<br />
-  lib/solace/programs/spl_token.rb,<br /> lib/solace/programs/associated_token_account.rb</span>
+    <dd>lib/solace/errors.rb<span class="defines">,<br />
+  lib/solace/errors/rpc_error.rb,<br /> lib/solace/errors/http_error.rb,<br /> lib/solace/errors/parse_error.rb,<br /> lib/solace/errors/confirmation_timeout.rb</span>
 </dd>
   </dl>
   
 </div>
 
-<h2>Defined Under Namespace</h2>
+<h2>Overview</h2><div class="docstring">
+  <div class="discussion">
+    <p>Error handling module</p>
+
+<p>This module provides error classes for handling different types of errors that may occur during
+Solana RPC requests and processing transactions.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Since:</p>
+<ul class="since">
+  
+    <li>
+      
+      
+      
+      
+        
+        <div class='inline'><p>0.0.8</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><h2>Defined Under Namespace</h2>
 <p class="children">
   
     
   
     
-      <strong class="classes">Classes:</strong> <span class='object_link'><a href="Programs/AssociatedTokenAccount.html" title="Solace::Programs::AssociatedTokenAccount (class)">AssociatedTokenAccount</a></span>, <span class='object_link'><a href="Programs/Base.html" title="Solace::Programs::Base (class)">Base</a></span>, <span class='object_link'><a href="Programs/SplToken.html" title="Solace::Programs::SplToken (class)">SplToken</a></span>
+      <strong class="classes">Classes:</strong> <span class='object_link'><a href="Errors/ConfirmationTimeout.html" title="Solace::Errors::ConfirmationTimeout (class)">ConfirmationTimeout</a></span>, <span class='object_link'><a href="Errors/HTTPError.html" title="Solace::Errors::HTTPError (class)">HTTPError</a></span>, <span class='object_link'><a href="Errors/ParseError.html" title="Solace::Errors::ParseError (class)">ParseError</a></span>, <span class='object_link'><a href="Errors/RPCError.html" title="Solace::Errors::RPCError (class)">RPCError</a></span>
     
   
 </p>

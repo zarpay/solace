@@ -106,7 +106,7 @@
 <p>This class provides methods for sending JSON-RPC requests to a Solana RPC node and parsing responses.
 It includes methods for sending transactions, getting account information, and getting blockhashes.</p>
 
-<p>rubocop:disable Metrics/ClassLength</p>
+<p>]</p>
 
 
   </div>
@@ -131,6 +131,26 @@ It includes methods for sending transactions, getting account information, and g
     
   </div>
 
+<p class="tag_title">Raises:</p>
+<ul class="raise">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="Errors/HTTPError.html" title="Solace::Errors::HTTPError (class)">Solace::Errors::HTTPError</a></span></tt>, <tt><span class='object_link'><a href="Errors/ParseError.html" title="Solace::Errors::ParseError (class)">Solace::Errors::ParseError</a></span></tt>, <tt><span class='object_link'><a href="Errors/RPCError.html" title="Solace::Errors::RPCError (class)">Solace::Errors::RPCError</a></span></tt>, <tt><span class='object_link'><a href="Errors/ConfirmationTimeout.html" title="Solace::Errors::ConfirmationTimeout (class)">Solace::Errors::ConfirmationTimeout</a></span></tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>Solace::Errors::HTTPError,
+Solace::Errors::ParseError,
+Solace::Errors::RPCError,
+Solace::Errors::ConfirmationTimeout</p>
+</div>
+      
+    </li>
+  
+</ul>
 <p class="tag_title">Since:</p>
 <ul class="since">
   
@@ -184,7 +204,7 @@ It includes methods for sending transactions, getting account information, and g
       <li class="public ">
   <span class="summary_signature">
     
-      <a href="#rpc_url-instance_method" title="#rpc_url (instance method)">#<strong>rpc_url</strong>  &#x21d2; Object </a>
+      <a href="#rpc_client-instance_method" title="#rpc_client (instance method)">#<strong>rpc_client</strong>  &#x21d2; Object </a>
     
 
     
@@ -204,6 +224,34 @@ It includes methods for sending transactions, getting account information, and g
 
   
     <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+    
+      <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#rpc_url-instance_method" title="#rpc_url (instance method)">#<strong>rpc_url</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+    
+      <span class="note title readonly">readonly</span>
+    
+    
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>The URL of the Solana RPC node.</p>
+</div></span>
   
 </li>
 
@@ -316,7 +364,30 @@ It includes methods for sending transactions, getting account information, and g
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#get_signature_status-instance_method" title="#get_signature_status (instance method)">#<strong>get_signature_status</strong>(signatures)  &#x21d2; Object </a>
+      <a href="#get_signature_status-instance_method" title="#get_signature_status (instance method)">#<strong>get_signature_status</strong>(signature)  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Get the signature status.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#get_signature_statuses-instance_method" title="#get_signature_statuses (instance method)">#<strong>get_signature_statuses</strong>(signatures)  &#x21d2; Object </a>
     
 
     
@@ -385,7 +456,7 @@ It includes methods for sending transactions, getting account information, and g
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#initialize-instance_method" title="#initialize (instance method)">#<strong>initialize</strong>(rpc_url = &#39;http://localhost:8899&#39;, commitment: &#39;confirmed&#39;)  &#x21d2; Solace::Connection </a>
+      <a href="#initialize-instance_method" title="#initialize (instance method)">#<strong>initialize</strong>(rpc_url = &#39;http://localhost:8899&#39;, commitment: &#39;confirmed&#39;, http_open_timeout: 30, http_read_timeout: 60)  &#x21d2; Solace::Connection </a>
     
 
     
@@ -479,7 +550,7 @@ It includes methods for sending transactions, getting account information, and g
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#wait_for_confirmed_signature-instance_method" title="#wait_for_confirmed_signature (instance method)">#<strong>wait_for_confirmed_signature</strong>(commitment = &#39;confirmed&#39;)  &#x21d2; Boolean </a>
+      <a href="#wait_for_confirmed_signature-instance_method" title="#wait_for_confirmed_signature (instance method)">#<strong>wait_for_confirmed_signature</strong>(commitment = &#39;confirmed&#39;, timeout: 60, interval: 0.1)  &#x21d2; String </a>
     
 
     
@@ -493,7 +564,7 @@ It includes methods for sending transactions, getting account information, and g
   
 
   
-    <span class="summary_desc"><div class='inline'><p>Wait for a confirmed signature from the transaction.</p>
+    <span class="summary_desc"><div class='inline'><p>Wait until the yielded signature reaches the desired commitment or timeout.</p>
 </div></span>
   
 </li>
@@ -508,7 +579,7 @@ It includes methods for sending transactions, getting account information, and g
     <div class="method_details first">
   <h3 class="signature first" id="initialize-instance_method">
   
-    #<strong>initialize</strong>(rpc_url = &#39;http://localhost:8899&#39;, commitment: &#39;confirmed&#39;)  &#x21d2; <tt><span class='object_link'><a href="" title="Solace::Connection (class)">Solace::Connection</a></span></tt> 
+    #<strong>initialize</strong>(rpc_url = &#39;http://localhost:8899&#39;, commitment: &#39;confirmed&#39;, http_open_timeout: 30, http_read_timeout: 60)  &#x21d2; <tt><span class='object_link'><a href="" title="Solace::Connection (class)">Solace::Connection</a></span></tt> 
   
 
   
@@ -559,6 +630,40 @@ It includes methods for sending transactions, getting account information, and g
       
     </li>
   
+    <li>
+      
+        <span class='name'>http_open_timeout</span>
+      
+      
+        <span class='type'>(<tt>Integer</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>30</tt>)</em>
+      
+      
+        &mdash;
+        <div class='inline'><p>The timeout for opening an HTTP connection</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>http_read_timeout</span>
+      
+      
+        <span class='type'>(<tt>Integer</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>60</tt>)</em>
+      
+      
+        &mdash;
+        <div class='inline'><p>The timeout for reading an HTTP response</p>
+</div>
+      
+    </li>
+  
 </ul>
 
 <p class="tag_title">Since:</p>
@@ -583,25 +688,43 @@ It includes methods for sending transactions, getting account information, and g
       <pre class="lines">
 
 
-43
-44
-45
-46
-47
-48
-49
-50
-51
-52</pre>
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/solace/connection.rb', line 43</span>
+      <pre class="code"><span class="info file"># File 'lib/solace/connection.rb', line 52</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='id identifier rubyid_rpc_url'>rpc_url</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>http://localhost:8899</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='label'>commitment:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>confirmed</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
-  <span class='ivar'>@request_id</span> <span class='op'>=</span> <span class='kw'>nil</span>
-  <span class='ivar'>@rpc_url</span> <span class='op'>=</span> <span class='id identifier rubyid_rpc_url'>rpc_url</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span>
+  <span class='id identifier rubyid_rpc_url'>rpc_url</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>http://localhost:8899</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>commitment:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>confirmed</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>http_open_timeout:</span> <span class='int'>30</span><span class='comma'>,</span>
+  <span class='label'>http_read_timeout:</span> <span class='int'>60</span>
+<span class='rparen'>)</span>
+  <span class='comment'># Initialize the RPC client
+</span>  <span class='ivar'>@rpc_client</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Utils.html" title="Solace::Utils (module)">Utils</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Utils/RPCClient.html" title="Solace::Utils::RPCClient (class)">RPCClient</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Utils/RPCClient.html#initialize-instance_method" title="Solace::Utils::RPCClient#initialize (method)">new</a></span></span><span class='lparen'>(</span>
+    <span class='id identifier rubyid_rpc_url'>rpc_url</span><span class='comma'>,</span>
+    <span class='label'>open_timeout:</span> <span class='id identifier rubyid_http_open_timeout'>http_open_timeout</span><span class='comma'>,</span>
+    <span class='label'>read_timeout:</span> <span class='id identifier rubyid_http_read_timeout'>http_read_timeout</span>
+  <span class='rparen'>)</span>
 
-  <span class='comment'># Set default options
+  <span class='comment'># Set default options for rpc requests
 </span>  <span class='ivar'>@default_options</span> <span class='op'>=</span> <span class='lbrace'>{</span>
     <span class='label'>commitment:</span> <span class='id identifier rubyid_commitment'>commitment</span><span class='comma'>,</span>
     <span class='label'>encoding:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>base64</span><span class='tstring_end'>&#39;</span></span>
@@ -658,12 +781,12 @@ It includes methods for sending transactions, getting account information, and g
       <pre class="lines">
 
 
-36
-37
-38</pre>
+43
+44
+45</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/solace/connection.rb', line 36</span>
+      <pre class="code"><span class="info file"># File 'lib/solace/connection.rb', line 43</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_default_options'>default_options</span>
   <span class='ivar'>@default_options</span>
@@ -676,9 +799,9 @@ It includes methods for sending transactions, getting account information, and g
       
       <span id=""></span>
       <div class="method_details ">
-  <h3 class="signature " id="rpc_url-instance_method">
+  <h3 class="signature " id="rpc_client-instance_method">
   
-    #<strong>rpc_url</strong>  &#x21d2; <tt>Object</tt>  <span class="extras">(readonly)</span>
+    #<strong>rpc_client</strong>  &#x21d2; <tt>Object</tt>  <span class="extras">(readonly)</span>
   
 
   
@@ -714,16 +837,54 @@ It includes methods for sending transactions, getting account information, and g
       <pre class="lines">
 
 
-32
-33
-34</pre>
+39
+40
+41</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/solace/connection.rb', line 32</span>
+      <pre class="code"><span class="info file"># File 'lib/solace/connection.rb', line 39</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_rpc_url'>rpc_url</span>
-  <span class='ivar'>@rpc_url</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_rpc_client'>rpc_client</span>
+  <span class='ivar'>@rpc_client</span>
 <span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      
+      <span id=""></span>
+      <div class="method_details ">
+  <h3 class="signature " id="rpc_url-instance_method">
+  
+    #<strong>rpc_url</strong>  &#x21d2; <tt>Object</tt>  <span class="extras">(readonly)</span>
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>The URL of the Solana RPC node</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+39</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/solace/connection.rb', line 39</span>
+
+<span class='id identifier rubyid_attr_reader'>attr_reader</span> <span class='symbol'>:rpc_client</span></pre>
     </td>
   </tr>
 </table>
@@ -812,35 +973,15 @@ It includes methods for sending transactions, getting account information, and g
       <pre class="lines">
 
 
-102
-103
-104
-105
-106
-107
-108
-109
-110
-111
-112
-113
-114</pre>
+125
+126
+127</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/solace/connection.rb', line 102</span>
+      <pre class="code"><span class="info file"># File 'lib/solace/connection.rb', line 125</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_get_account_info'>get_account_info</span><span class='lparen'>(</span><span class='id identifier rubyid_pubkey'>pubkey</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='id identifier rubyid_rpc_request'>rpc_request</span><span class='lparen'>(</span>
-    <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>getAccountInfo</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
-    <span class='lbracket'>[</span>
-      <span class='id identifier rubyid_pubkey'>pubkey</span><span class='comma'>,</span>
-      <span class='id identifier rubyid_default_options'>default_options</span>
-    <span class='rbracket'>]</span>
-  <span class='rparen'>)</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>result</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span>
-
-  <span class='kw'>return</span> <span class='kw'>if</span> <span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
-
-  <span class='id identifier rubyid_response'>response</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>value</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span>
+  <span class='ivar'>@rpc_client</span><span class='period'>.</span><span class='id identifier rubyid_rpc_request'>rpc_request</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>getAccountInfo</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='lbracket'>[</span><span class='id identifier rubyid_pubkey'>pubkey</span><span class='comma'>,</span> <span class='id identifier rubyid_default_options'>default_options</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_dig'>dig</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>result</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>value</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -923,27 +1064,15 @@ It includes methods for sending transactions, getting account information, and g
       <pre class="lines">
 
 
-120
-121
-122
-123
-124
-125
-126
-127
-128</pre>
+133
+134
+135</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/solace/connection.rb', line 120</span>
+      <pre class="code"><span class="info file"># File 'lib/solace/connection.rb', line 133</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_get_balance'>get_balance</span><span class='lparen'>(</span><span class='id identifier rubyid_pubkey'>pubkey</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_rpc_request'>rpc_request</span><span class='lparen'>(</span>
-    <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>getBalance</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
-    <span class='lbracket'>[</span>
-      <span class='id identifier rubyid_pubkey'>pubkey</span><span class='comma'>,</span>
-      <span class='id identifier rubyid_default_options'>default_options</span>
-    <span class='rbracket'>]</span>
-  <span class='rparen'>)</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>result</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>value</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span>
+  <span class='ivar'>@rpc_client</span><span class='period'>.</span><span class='id identifier rubyid_rpc_request'>rpc_request</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>getBalance</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='lbracket'>[</span><span class='id identifier rubyid_pubkey'>pubkey</span><span class='comma'>,</span> <span class='id identifier rubyid_default_options'>default_options</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_dig'>dig</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>result</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>value</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -1007,15 +1136,15 @@ It includes methods for sending transactions, getting account information, and g
       <pre class="lines">
 
 
-86
-87
-88</pre>
+109
+110
+111</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/solace/connection.rb', line 86</span>
+      <pre class="code"><span class="info file"># File 'lib/solace/connection.rb', line 109</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_get_latest_blockhash'>get_latest_blockhash</span>
-  <span class='id identifier rubyid_rpc_request'>rpc_request</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>getLatestBlockhash</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>result</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>value</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>blockhash</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span>
+  <span class='ivar'>@rpc_client</span><span class='period'>.</span><span class='id identifier rubyid_rpc_request'>rpc_request</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>getLatestBlockhash</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_dig'>dig</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>result</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>value</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>blockhash</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -1098,15 +1227,15 @@ It includes methods for sending transactions, getting account information, and g
       <pre class="lines">
 
 
-94
-95
-96</pre>
+117
+118
+119</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/solace/connection.rb', line 94</span>
+      <pre class="code"><span class="info file"># File 'lib/solace/connection.rb', line 117</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_get_minimum_lamports_for_rent_exemption'>get_minimum_lamports_for_rent_exemption</span><span class='lparen'>(</span><span class='id identifier rubyid_space'>space</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_rpc_request'>rpc_request</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>getMinimumBalanceForRentExemption</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='lbracket'>[</span><span class='id identifier rubyid_space'>space</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>result</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span>
+  <span class='ivar'>@rpc_client</span><span class='period'>.</span><span class='id identifier rubyid_rpc_request'>rpc_request</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>getMinimumBalanceForRentExemption</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='lbracket'>[</span><span class='id identifier rubyid_space'>space</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>result</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -1116,7 +1245,98 @@ It includes methods for sending transactions, getting account information, and g
       <div class="method_details ">
   <h3 class="signature " id="get_signature_status-instance_method">
   
-    #<strong>get_signature_status</strong>(signatures)  &#x21d2; <tt>Object</tt> 
+    #<strong>get_signature_status</strong>(signature)  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Get the signature status</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>signature</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>The signature of the transaction</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Object</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>The signature status</p>
+</div>
+      
+    </li>
+  
+</ul>
+<p class="tag_title">Since:</p>
+<ul class="since">
+  
+    <li>
+      
+      
+      
+      
+        
+        <div class='inline'><p>0.0.1</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+167
+168
+169</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/solace/connection.rb', line 167</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_get_signature_status'>get_signature_status</span><span class='lparen'>(</span><span class='id identifier rubyid_signature'>signature</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_get_signature_statuses'>get_signature_statuses</span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='id identifier rubyid_signature'>signature</span><span class='rbracket'>]</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="get_signature_statuses-instance_method">
+  
+    #<strong>get_signature_statuses</strong>(signatures)  &#x21d2; <tt>Object</tt> 
   
 
   
@@ -1189,27 +1409,17 @@ It includes methods for sending transactions, getting account information, and g
       <pre class="lines">
 
 
-163
-164
-165
-166
-167
-168
-169
-170
-171</pre>
+158
+159
+160
+161</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/solace/connection.rb', line 163</span>
+      <pre class="code"><span class="info file"># File 'lib/solace/connection.rb', line 158</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_get_signature_status'>get_signature_status</span><span class='lparen'>(</span><span class='id identifier rubyid_signatures'>signatures</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_rpc_request'>rpc_request</span><span class='lparen'>(</span>
-    <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>getSignatureStatuses</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
-    <span class='lbracket'>[</span>
-      <span class='id identifier rubyid_signatures'>signatures</span><span class='comma'>,</span>
-      <span class='id identifier rubyid_default_options'>default_options</span><span class='period'>.</span><span class='id identifier rubyid_merge'>merge</span><span class='lparen'>(</span><span class='lbrace'>{</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>searchTransactionHistory</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='kw'>true</span> <span class='rbrace'>}</span><span class='rparen'>)</span>
-    <span class='rbracket'>]</span>
-  <span class='rparen'>)</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>result</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_get_signature_statuses'>get_signature_statuses</span><span class='lparen'>(</span><span class='id identifier rubyid_signatures'>signatures</span><span class='rparen'>)</span>
+  <span class='ivar'>@rpc_client</span><span class='period'>.</span><span class='id identifier rubyid_rpc_request'>rpc_request</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>getSignatureStatuses</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+                          <span class='lbracket'>[</span><span class='id identifier rubyid_signatures'>signatures</span><span class='comma'>,</span> <span class='id identifier rubyid_default_options'>default_options</span><span class='period'>.</span><span class='id identifier rubyid_merge'>merge</span><span class='lparen'>(</span><span class='lbrace'>{</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>searchTransactionHistory</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='kw'>true</span> <span class='rbrace'>}</span><span class='rparen'>)</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>result</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -1292,27 +1502,15 @@ It includes methods for sending transactions, getting account information, and g
       <pre class="lines">
 
 
-134
-135
-136
-137
-138
-139
-140
 141
-142</pre>
+142
+143</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/solace/connection.rb', line 134</span>
+      <pre class="code"><span class="info file"># File 'lib/solace/connection.rb', line 141</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_get_token_account_balance'>get_token_account_balance</span><span class='lparen'>(</span><span class='id identifier rubyid_token_account'>token_account</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_rpc_request'>rpc_request</span><span class='lparen'>(</span>
-    <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>getTokenAccountBalance</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
-    <span class='lbracket'>[</span>
-      <span class='id identifier rubyid_token_account'>token_account</span><span class='comma'>,</span>
-      <span class='id identifier rubyid_default_options'>default_options</span>
-    <span class='rbracket'>]</span>
-  <span class='rparen'>)</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>result</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>value</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span>
+  <span class='ivar'>@rpc_client</span><span class='period'>.</span><span class='id identifier rubyid_rpc_request'>rpc_request</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>getTokenAccountBalance</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='lbracket'>[</span><span class='id identifier rubyid_token_account'>token_account</span><span class='comma'>,</span> <span class='id identifier rubyid_default_options'>default_options</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_dig'>dig</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>result</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>value</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -1408,27 +1606,15 @@ It includes methods for sending transactions, getting account information, and g
       <pre class="lines">
 
 
-149
 150
 151
-152
-153
-154
-155
-156
-157</pre>
+152</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/solace/connection.rb', line 149</span>
+      <pre class="code"><span class="info file"># File 'lib/solace/connection.rb', line 150</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_get_transaction'>get_transaction</span><span class='lparen'>(</span><span class='id identifier rubyid_signature'>signature</span><span class='comma'>,</span> <span class='id identifier rubyid_options'>options</span> <span class='op'>=</span> <span class='lbrace'>{</span> <span class='label'>maxSupportedTransactionVersion:</span> <span class='int'>0</span> <span class='rbrace'>}</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_rpc_request'>rpc_request</span><span class='lparen'>(</span>
-    <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>getTransaction</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
-    <span class='lbracket'>[</span>
-      <span class='id identifier rubyid_signature'>signature</span><span class='comma'>,</span>
-      <span class='id identifier rubyid_default_options'>default_options</span><span class='period'>.</span><span class='id identifier rubyid_merge'>merge</span><span class='lparen'>(</span><span class='id identifier rubyid_options'>options</span><span class='rparen'>)</span>
-    <span class='rbracket'>]</span>
-  <span class='rparen'>)</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>result</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span>
+  <span class='ivar'>@rpc_client</span><span class='period'>.</span><span class='id identifier rubyid_rpc_request'>rpc_request</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>getTransaction</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='lbracket'>[</span><span class='id identifier rubyid_signature'>signature</span><span class='comma'>,</span> <span class='id identifier rubyid_default_options'>default_options</span><span class='period'>.</span><span class='id identifier rubyid_merge'>merge</span><span class='lparen'>(</span><span class='id identifier rubyid_options'>options</span><span class='rparen'>)</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>result</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -1543,22 +1729,22 @@ It includes methods for sending transactions, getting account information, and g
       <pre class="lines">
 
 
-72
-73
-74
-75
-76
-77
-78
-79
-80
-81</pre>
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/solace/connection.rb', line 72</span>
+      <pre class="code"><span class="info file"># File 'lib/solace/connection.rb', line 95</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_request_airdrop'>request_airdrop</span><span class='lparen'>(</span><span class='id identifier rubyid_pubkey'>pubkey</span><span class='comma'>,</span> <span class='id identifier rubyid_lamports'>lamports</span><span class='comma'>,</span> <span class='id identifier rubyid_options'>options</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_rpc_request'>rpc_request</span><span class='lparen'>(</span>
+  <span class='ivar'>@rpc_client</span><span class='period'>.</span><span class='id identifier rubyid_rpc_request'>rpc_request</span><span class='lparen'>(</span>
     <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>requestAirdrop</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
     <span class='lbracket'>[</span>
       <span class='id identifier rubyid_pubkey'>pubkey</span><span class='comma'>,</span>
@@ -1584,6 +1770,8 @@ It includes methods for sending transactions, getting account information, and g
 </h3><div class="docstring">
   <div class="discussion">
     <p>Sends a JSON-RPC request to the configured Solana RPC server.</p>
+
+<p>]</p>
 
 
   </div>
@@ -1649,12 +1837,15 @@ It includes methods for sending transactions, getting account information, and g
     <li>
       
       
-        <span class='type'>(<tt>RuntimeError</tt>)</span>
+        <span class='type'>(<tt><span class='object_link'><a href="Errors/HTTPError.html" title="Solace::Errors::HTTPError (class)">Solace::Errors::HTTPError</a></span></tt>, <tt><span class='object_link'><a href="Errors/ParseError.html" title="Solace::Errors::ParseError (class)">Solace::Errors::ParseError</a></span></tt>, <tt><span class='object_link'><a href="Errors/RPCError.html" title="Solace::Errors::RPCError (class)">Solace::Errors::RPCError</a></span></tt>, <tt><span class='object_link'><a href="Errors/ConfirmationTimeout.html" title="Solace::Errors::ConfirmationTimeout (class)">Solace::Errors::ConfirmationTimeout</a></span></tt>)</span>
       
       
       
         &mdash;
-        <div class='inline'><p>if the response is not successful</p>
+        <div class='inline'><p>Solace::Errors::HTTPError,
+Solace::Errors::ParseError,
+Solace::Errors::RPCError,
+Solace::Errors::ConfirmationTimeout</p>
 </div>
       
     </li>
@@ -1682,14 +1873,14 @@ It includes methods for sending transactions, getting account information, and g
       <pre class="lines">
 
 
-60
-61
-62
-63
-64</pre>
+83
+84
+85
+86
+87</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/solace/connection.rb', line 60</span>
+      <pre class="code"><span class="info file"># File 'lib/solace/connection.rb', line 83</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_rpc_request'>rpc_request</span><span class='lparen'>(</span><span class='id identifier rubyid_method'>method</span><span class='comma'>,</span> <span class='id identifier rubyid_params'>params</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_request'>request</span> <span class='op'>=</span> <span class='id identifier rubyid_build_rpc_request'>build_rpc_request</span><span class='lparen'>(</span><span class='id identifier rubyid_method'>method</span><span class='comma'>,</span> <span class='id identifier rubyid_params'>params</span><span class='rparen'>)</span>
@@ -1790,27 +1981,15 @@ It includes methods for sending transactions, getting account information, and g
       <pre class="lines">
 
 
-178
-179
-180
-181
-182
-183
-184
-185
-186</pre>
+176
+177
+178</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/solace/connection.rb', line 178</span>
+      <pre class="code"><span class="info file"># File 'lib/solace/connection.rb', line 176</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_send_transaction'>send_transaction</span><span class='lparen'>(</span><span class='id identifier rubyid_transaction'>transaction</span><span class='comma'>,</span> <span class='id identifier rubyid_options'>options</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_rpc_request'>rpc_request</span><span class='lparen'>(</span>
-    <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>sendTransaction</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
-    <span class='lbracket'>[</span>
-      <span class='id identifier rubyid_transaction'>transaction</span><span class='comma'>,</span>
-      <span class='id identifier rubyid_default_options'>default_options</span><span class='period'>.</span><span class='id identifier rubyid_merge'>merge</span><span class='lparen'>(</span><span class='id identifier rubyid_options'>options</span><span class='rparen'>)</span>
-    <span class='rbracket'>]</span>
-  <span class='rparen'>)</span>
+  <span class='ivar'>@rpc_client</span><span class='period'>.</span><span class='id identifier rubyid_rpc_request'>rpc_request</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>sendTransaction</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='lbracket'>[</span><span class='id identifier rubyid_transaction'>transaction</span><span class='comma'>,</span> <span class='id identifier rubyid_default_options'>default_options</span><span class='period'>.</span><span class='id identifier rubyid_merge'>merge</span><span class='lparen'>(</span><span class='id identifier rubyid_options'>options</span><span class='rparen'>)</span><span class='rbracket'>]</span><span class='rparen'>)</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -1820,7 +1999,7 @@ It includes methods for sending transactions, getting account information, and g
       <div class="method_details ">
   <h3 class="signature " id="wait_for_confirmed_signature-instance_method">
   
-    #<strong>wait_for_confirmed_signature</strong>(commitment = &#39;confirmed&#39;)  &#x21d2; <tt>Boolean</tt> 
+    #<strong>wait_for_confirmed_signature</strong>(commitment = &#39;confirmed&#39;, timeout: 60, interval: 0.1)  &#x21d2; <tt>String</tt> 
   
 
   
@@ -1828,7 +2007,7 @@ It includes methods for sending transactions, getting account information, and g
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Wait for a confirmed signature from the transaction</p>
+    <p>Wait until the yielded signature reaches the desired commitment or timeout.</p>
 
 
   </div>
@@ -1849,25 +2028,76 @@ It includes methods for sending transactions, getting account information, and g
       
       
         &mdash;
-        <div class='inline'><p>The commitment level to wait for</p>
+        <div class='inline'><p>One of &quot;processed&quot;, &quot;confirmed&quot;, &quot;finalized&quot;</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>timeout</span>
+      
+      
+        <span class='type'>(<tt>Numeric</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>60</tt>)</em>
+      
+      
+        &mdash;
+        <div class='inline'><p>seconds to wait before raising</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>interval</span>
+      
+      
+        <span class='type'>(<tt>Numeric</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>0.1</tt>)</em>
+      
+      
+        &mdash;
+        <div class='inline'><p>polling interval in seconds</p>
 </div>
       
     </li>
   
 </ul>
 
+<p class="tag_title">Yield Returns:</p>
+<ul class="yieldreturn">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>String</tt>, <tt>Hash</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>a signature string or a JSON-RPC hash with &quot;result&quot;</p>
+</div>
+      
+    </li>
+  
+</ul>
 <p class="tag_title">Returns:</p>
 <ul class="return">
   
     <li>
       
       
-        <span class='type'>(<tt>Boolean</tt>)</span>
+        <span class='type'>(<tt>String</tt>)</span>
       
       
       
         &mdash;
-        <div class='inline'><p>True if the transaction was confirmed, false otherwise</p>
+        <div class='inline'><p>the signature when the commitment is reached</p>
 </div>
       
     </li>
@@ -1879,7 +2109,7 @@ It includes methods for sending transactions, getting account information, and g
     <li>
       
       
-        <span class='type'>(<tt>ArgumentError</tt>)</span>
+        <span class='type'>(<tt>ArgumentError</tt>, <tt><span class='object_link'><a href="Errors/ConfirmationTimeout.html" title="Solace::Errors::ConfirmationTimeout (class)">Errors::ConfirmationTimeout</a></span></tt>)</span>
       
       
       
@@ -1908,6 +2138,10 @@ It includes methods for sending transactions, getting account information, and g
       <pre class="lines">
 
 
+188
+189
+190
+191
 192
 193
 194
@@ -1922,33 +2156,29 @@ It includes methods for sending transactions, getting account information, and g
 203
 204
 205
-206
-207
-208
-209
-210</pre>
+206</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/solace/connection.rb', line 192</span>
+      <pre class="code"><span class="info file"># File 'lib/solace/connection.rb', line 188</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_wait_for_confirmed_signature'>wait_for_confirmed_signature</span><span class='lparen'>(</span><span class='id identifier rubyid_commitment'>commitment</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>confirmed</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_wait_for_confirmed_signature'>wait_for_confirmed_signature</span><span class='lparen'>(</span>
+  <span class='id identifier rubyid_commitment'>commitment</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>confirmed</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>timeout:</span> <span class='int'>60</span><span class='comma'>,</span>
+  <span class='label'>interval:</span> <span class='float'>0.1</span>
+<span class='rparen'>)</span>
   <span class='id identifier rubyid_raise'>raise</span> <span class='const'>ArgumentError</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Block required</span><span class='tstring_end'>&#39;</span></span> <span class='kw'>unless</span> <span class='id identifier rubyid_block_given?'>block_given?</span>
 
-  <span class='comment'># Get the signature from the block
-</span>  <span class='id identifier rubyid_signature'>signature</span> <span class='op'>=</span> <span class='kw'>yield</span>
-
-  <span class='id identifier rubyid_interval'>interval</span> <span class='op'>=</span> <span class='float'>0.1</span>
+  <span class='id identifier rubyid_signature'>signature</span> <span class='op'>=</span> <span class='id identifier rubyid_extract_signature_from'>extract_signature_from</span><span class='lparen'>(</span><span class='kw'>yield</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_deadline'>deadline</span> <span class='op'>=</span> <span class='id identifier rubyid_monotonic_deadline'>monotonic_deadline</span><span class='lparen'>(</span><span class='id identifier rubyid_timeout'>timeout</span><span class='rparen'>)</span>
 
   <span class='comment'># Wait for confirmation
-</span>  <span class='id identifier rubyid_loop'>loop</span> <span class='kw'>do</span>
-    <span class='id identifier rubyid_status'>status</span> <span class='op'>=</span> <span class='id identifier rubyid_get_signature_status'>get_signature_status</span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='id identifier rubyid_signature'>signature</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_dig'>dig</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>value</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='int'>0</span><span class='rparen'>)</span>
-
-    <span class='kw'>break</span> <span class='kw'>if</span> <span class='id identifier rubyid_status'>status</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_status'>status</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>confirmationStatus</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span> <span class='op'>==</span> <span class='id identifier rubyid_commitment'>commitment</span>
+</span>  <span class='kw'>until</span> <span class='id identifier rubyid_dealine_passed?'>dealine_passed?</span><span class='lparen'>(</span><span class='id identifier rubyid_deadline'>deadline</span><span class='rparen'>)</span>
+    <span class='kw'>return</span> <span class='id identifier rubyid_signature'>signature</span> <span class='kw'>if</span> <span class='id identifier rubyid_commitment_reached?'>commitment_reached?</span><span class='lparen'>(</span><span class='id identifier rubyid_signature'>signature</span><span class='comma'>,</span> <span class='id identifier rubyid_commitment'>commitment</span><span class='rparen'>)</span>
 
     <span class='id identifier rubyid_sleep'>sleep</span> <span class='id identifier rubyid_interval'>interval</span>
   <span class='kw'>end</span>
 
-  <span class='id identifier rubyid_signature'>signature</span>
+  <span class='id identifier rubyid_raise'>raise</span> <span class='const'><span class='object_link'><a href="Errors.html" title="Solace::Errors (module)">Errors</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Errors/ConfirmationTimeout.html" title="Solace::Errors::ConfirmationTimeout (class)">ConfirmationTimeout</a></span></span><span class='period'>.</span><span class='id identifier rubyid_format'><span class='object_link'><a href="Errors/ConfirmationTimeout.html#format-class_method" title="Solace::Errors::ConfirmationTimeout.format (method)">format</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_signature'>signature</span><span class='comma'>,</span> <span class='id identifier rubyid_commitment'>commitment</span><span class='comma'>,</span> <span class='id identifier rubyid_timeout'>timeout</span><span class='rparen'>)</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -1960,7 +2190,7 @@ It includes methods for sending transactions, getting account information, and g
 </div>
 
       <div id="footer">
-  Generated on Fri Aug  8 21:48:37 2025 by
+  Generated on Sun Aug 10 20:27:12 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.4).
 </div>
