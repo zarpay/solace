@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-# Constants module
-#
-# Contains constants used across the library.
-#
-# @return [Module] Constants module
 module Solace
+  # Constants module
+  #
+  # Contains constants used across the library.
+  #
+  # @return [Module] Constants module
   module Constants
     # @!attribute SYSTEM_PROGRAM_ID
     #   The public key of the System Program (native SOL transfers, account creation, etc)

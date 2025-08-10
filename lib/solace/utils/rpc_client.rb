@@ -8,7 +8,8 @@ require 'solace/errors'
 
 module Solace
   module Utils
-    # RPCClient provides Net::HTTP based HTTP client for sending HTTP requests to a Solana RPC node and parsing responses.
+    # RPCClient provides Net::HTTP based HTTP client for sending HTTP
+    # requests to a Solana RPC node and parsing responses.
     #
     # @since 0.0.8
     class RPCClient
@@ -52,7 +53,7 @@ module Solace
       # ]
       def rpc_request(method, params = [])
         request = build_rpc_request(method, params)
-        response = perform_http_request(request)
+        response = perform_http_request(*request)
         handle_rpc_response(response)
       end
 
@@ -90,10 +91,11 @@ module Solace
 
       # Performs an HTTP request to the configured Solana RPC server.
       #
-      # @param (uri, req) [Array] the URI and request object
+      # @param uri [URI] the URI for the HTTP request
+      # @param req [Net::HTTP::Post] the request object
       # @return [Net::HTTPResponse] the HTTP response
       # @raise [Solace::Errors::HTTPError]
-      def perform_http_request((uri, req))
+      def perform_http_request(uri, req)
         Net::HTTP.start(
           uri.hostname,
           uri.port,
