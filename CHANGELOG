@@ -27,7 +27,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ### Changed
 1. All methods that take a `Solace::Keypair` or `Solace::Pubkey` where an address is needed now also accept a plain string address. This prevents the need of creating instances of the classes when all that is needed is the address. This is with the exception of the low-level instruction builders, which only expect the correct data and indicies with no required casting.
-2. Changed `wait_for_confirmed_signature` method to accept a `timeout`, `interval`, and `commitment` keyword arguments (breaking change on commitment).
+2. Changed `wait_for_confirmed_signature` method to accept a `timeout`, `interval`, and `commitment` arguments.
  
 ### Fixed
 1. Fixed `get_or_create_address` method in `Solace::Programs::AssociatedTokenAccount` to return the address of the associated token account if it already exists by checking if there is any data at the address.
