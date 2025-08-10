@@ -101,7 +101,8 @@
 
 <h2>Overview</h2><div class="docstring">
   <div class="discussion">
-    <p>RPCClient provides Net::HTTP based HTTP client for sending HTTP requests to a Solana RPC node and parsing responses.</p>
+    <p>RPCClient provides Net::HTTP based HTTP client for sending HTTP
+requests to a Solana RPC node and parsing responses.</p>
 
 
   </div>
@@ -368,7 +369,6 @@
       <pre class="lines">
 
 
-32
 33
 34
 35
@@ -376,10 +376,11 @@
 37
 38
 39
-40</pre>
+40
+41</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/solace/utils/rpc_client.rb', line 32</span>
+      <pre class="code"><span class="info file"># File 'lib/solace/utils/rpc_client.rb', line 33</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span>
   <span class='id identifier rubyid_url'>url</span><span class='comma'>,</span>
@@ -441,12 +442,12 @@
       <pre class="lines">
 
 
-21
 22
-23</pre>
+23
+24</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/solace/utils/rpc_client.rb', line 21</span>
+      <pre class="code"><span class="info file"># File 'lib/solace/utils/rpc_client.rb', line 22</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_open_timeout'>open_timeout</span>
   <span class='ivar'>@open_timeout</span>
@@ -497,12 +498,12 @@
       <pre class="lines">
 
 
-25
 26
-27</pre>
+27
+28</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/solace/utils/rpc_client.rb', line 25</span>
+      <pre class="code"><span class="info file"># File 'lib/solace/utils/rpc_client.rb', line 26</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_read_timeout'>read_timeout</span>
   <span class='ivar'>@read_timeout</span>
@@ -553,12 +554,12 @@
       <pre class="lines">
 
 
-17
 18
-19</pre>
+19
+20</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/solace/utils/rpc_client.rb', line 17</span>
+      <pre class="code"><span class="info file"># File 'lib/solace/utils/rpc_client.rb', line 18</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_url'>url</span>
   <span class='ivar'>@url</span>
@@ -690,18 +691,18 @@ Solace::Errors::ConfirmationTimeout</p>
       <pre class="lines">
 
 
-53
 54
 55
 56
-57</pre>
+57
+58</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/solace/utils/rpc_client.rb', line 53</span>
+      <pre class="code"><span class="info file"># File 'lib/solace/utils/rpc_client.rb', line 54</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_rpc_request'>rpc_request</span><span class='lparen'>(</span><span class='id identifier rubyid_method'>method</span><span class='comma'>,</span> <span class='id identifier rubyid_params'>params</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_request'>request</span> <span class='op'>=</span> <span class='id identifier rubyid_build_rpc_request'>build_rpc_request</span><span class='lparen'>(</span><span class='id identifier rubyid_method'>method</span><span class='comma'>,</span> <span class='id identifier rubyid_params'>params</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='id identifier rubyid_perform_http_request'>perform_http_request</span><span class='lparen'>(</span><span class='id identifier rubyid_request'>request</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='id identifier rubyid_perform_http_request'>perform_http_request</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_request'>request</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_handle_rpc_response'>handle_rpc_response</span><span class='lparen'>(</span><span class='id identifier rubyid_response'>response</span><span class='rparen'>)</span>
 <span class='kw'>end</span></pre>
     </td>
@@ -714,7 +715,7 @@ Solace::Errors::ConfirmationTimeout</p>
 </div>
 
       <div id="footer">
-  Generated on Sun Aug 10 20:27:13 2025 by
+  Generated on Sun Aug 10 20:30:28 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.4).
 </div>
