@@ -29,21 +29,21 @@ module Solace
       #
       # @return [String] The to address
       def to
-        params[:to].is_a?(String) ? params[:to] : params[:to].address
+        params[:to].to_s
       end
 
       # Extracts the from address from the params
       #
       # @return [String] The from address
       def from
-        params[:from].is_a?(String) ? params[:from] : params[:from].address
+        params[:from].to_s
       end
 
       # Returns the system program id
       #
       # @return [String] The system program id
       def system_program
-        Solace::Constants::SYSTEM_PROGRAM_ID
+        Solace::Constants::SYSTEM_PROGRAM_ID.to_s
       end
 
       # Returns the lamports to transfer

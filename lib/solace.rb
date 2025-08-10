@@ -4,6 +4,7 @@
 require_relative 'solace/version'
 
 # 🛠️ Helpers
+require_relative 'solace/errors'
 require_relative 'solace/constants'
 require_relative 'solace/connection'
 require_relative 'solace/utils/codecs'

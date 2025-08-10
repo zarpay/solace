@@ -68,7 +68,7 @@ describe Solace::Keypair do
     end
 
     it 'returns the public key bytes of the keypair' do
-      assert_equal @keypair.public_key_bytes.length, @keypair.keypair_bytes[32..63]
+      assert_equal @keypair.public_key_bytes, @keypair.keypair_bytes[32..63]
     end
   end
 
@@ -78,7 +78,7 @@ describe Solace::Keypair do
     end
 
     it 'returns the private key bytes of the keypair' do
-      assert_equal @keypair.private_key_bytes.length, @keypair.keypair_bytes[0..31]
+      assert_equal @keypair.private_key_bytes, @keypair.keypair_bytes[0..31]
     end
   end
 

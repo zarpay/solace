@@ -38,7 +38,7 @@ module Solace
   #   # Sign the transaction with all required signers
   #   tx.sign(*required_signers)
   #
-  # @since 0.0.1
+  # @since 0.0.6
   class TransactionComposer
     # @!attribute connection
     #   The connection to the Solana cluster
@@ -76,7 +76,7 @@ module Solace
     # @param pubkey [String, Solace::PublicKey, Solace::Keypair] The fee payer pubkey
     # @return [TransactionComposer] Self for chaining
     def set_fee_payer(pubkey)
-      context.set_fee_payer(pubkey)
+      context.set_fee_payer(pubkey.to_s)
       self
     end
 

@@ -89,11 +89,8 @@ describe Solace::Instructions::AssociatedTokenAccount::CreateAssociatedTokenAcco
       tx.sign(payer)
 
       # 6. Send the transaction and verify success
-      conn.wait_for_confirmed_signature do
-        response = conn.send_transaction(tx.serialize)
-
-        response['result']
-      end
+      response = conn.send_transaction(tx.serialize)
+      conn.wait_for_confirmed_signature { response }
 
       # 7. Get account info
       @account_info = conn.get_account_info(ata_address)

@@ -34,14 +34,14 @@ module Solace
       #
       # @return [String] The to address
       def to
-        params[:to].is_a?(String) ? params[:to] : params[:to].address
+        params[:to].to_s
       end
 
       # Extracts the from address from the params
       #
       # @return [String] The from address
       def from
-        params[:from].is_a?(String) ? params[:from] : params[:from].address
+        params[:from].to_s
       end
 
       # Extracts the authority address from the params
@@ -50,21 +50,21 @@ module Solace
       #
       # @return [String] The authority address
       def authority
-        params[:authority].is_a?(String) ? params[:authority] : params[:authority].address
+        params[:authority].to_s
       end
 
       # Extracts the mint address from the params
       #
       # @return [String] The mint address
       def mint
-        params[:mint].is_a?(String) ? params[:mint] : params[:mint].address
+        params[:mint].to_s
       end
 
       # Returns the spl token program id
       #
       # @return [String] The spl token program id
       def spl_token_program
-        Constants::TOKEN_PROGRAM_ID
+        Constants::TOKEN_PROGRAM_ID.to_s
       end
 
       # Returns the lamports to transfer

@@ -4,6 +4,9 @@ require 'net/http'
 require 'json'
 require 'uri'
 
+require 'solace/errors'
+require 'solace/utils/rpc_client'
+
 module Solace
   # Connection to a Solana RPC node
   #
@@ -23,13 +26,17 @@ module Solace
   #   # Wait for the transaction to be finalized
   #   connection.wait_for_confirmed_signature('finalized') { result['result'] }
   #
+  # @raise [
+  #   Solace::Errors::HTTPError,
+  #   Solace::Errors::ParseError,
+  #   Solace::Errors::RPCError,
+  #   Solace::Errors::ConfirmationTimeout
+  # ]
   # @since 0.0.1
-  #
-  # rubocop:disable Metrics/ClassLength
   class Connection
     # @!attribute [r] rpc_url
     #   The URL of the Solana RPC node
-    attr_reader :rpc_url
+    attr_reader :rpc_client
 
     # @!attribute [r] default_options
     #   The default options for RPC requests
@@ -40,11 +47,22 @@ module Solace
     # @param rpc_url [String] The URL of the Solana RPC node
     # @param commitment [String] The commitment level for RPC requests
     # @return [Solace::Connection] The connection object
-    def initialize(rpc_url = 'http://localhost:8899', commitment: 'confirmed')
-      @request_id = nil
-      @rpc_url = rpc_url
+    # @param [Integer] http_open_timeout The timeout for opening an HTTP connection
+    # @param [Integer] http_read_timeout The timeout for reading an HTTP response
+    def initialize(
+      rpc_url = 'http://localhost:8899',
+      commitment: 'confirmed',
+      http_open_timeout: 30,
+      http_read_timeout: 60
+    )
+      # Initialize the RPC client
+      @rpc_client = Utils::RPCClient.new(
+        rpc_url,
+        open_timeout: http_open_timeout,
+        read_timeout: http_read_timeout
+      )
 
-      # Set default options
+      # Set default options for rpc requests
       @default_options = {
         commitment: commitment,
         encoding: 'base64'
@@ -56,7 +74,12 @@ module Solace
     # @param method [String] the JSON-RPC method name
     # @param params [Array] the parameters for the RPC method
     # @return [Hash] the parsed JSON response
-    # @raise [RuntimeError] if the response is not successful
+    # @raise [
+    #   Solace::Errors::HTTPError,
+    #   Solace::Errors::ParseError,
+    #   Solace::Errors::RPCError,
+    #   Solace::Errors::ConfirmationTimeout
+    # ]
     def rpc_request(method, params = [])
       request = build_rpc_request(method, params)
       response = perform_http_request(request)
@@ -70,7 +93,7 @@ module Solace
     # @param [Hash{Symbol => Object}] options The options for the request
     # @return [String] The transaction signature of the airdrop
     def request_airdrop(pubkey, lamports, options = {})
-      rpc_request(
+      @rpc_client.rpc_request(
         'requestAirdrop',
         [
           pubkey,
@@ -84,7 +107,7 @@ module Solace
     #
     # @return [String] The latest blockhash
     def get_latest_blockhash
-      rpc_request('getLatestBlockhash')['result']['value']['blockhash']
+      @rpc_client.rpc_request('getLatestBlockhash').dig('result', 'value', 'blockhash')
     end
 
     # Get the minimum required lamports for rent exemption
@@ -92,7 +115,7 @@ module Solace
     # @param space [Integer] Number of bytes to allocate for the account
     # @return [Integer] The minimum required lamports
     def get_minimum_lamports_for_rent_exemption(space)
-      rpc_request('getMinimumBalanceForRentExemption', [space])['result']
+      @rpc_client.rpc_request('getMinimumBalanceForRentExemption', [space])['result']
     end
 
     # Get the account information from the Solana node
@@ -100,17 +123,7 @@ module Solace
     # @param pubkey [String] The public key of the account
     # @return [Object] The account information
     def get_account_info(pubkey)
-      response = rpc_request(
-        'getAccountInfo',
-        [
-          pubkey,
-          default_options
-        ]
-      )['result']
-
-      return if response.nil?
-
-      response['value']
+      @rpc_client.rpc_request('getAccountInfo', [pubkey, default_options]).dig('result', 'value')
     end
 
     # Get the balance of a specific account
@@ -118,13 +131,7 @@ module Solace
     # @param pubkey [String] The public key of the account
     # @return [Integer] The balance of the account
     def get_balance(pubkey)
-      rpc_request(
-        'getBalance',
-        [
-          pubkey,
-          default_options
-        ]
-      )['result']['value']
+      @rpc_client.rpc_request('getBalance', [pubkey, default_options]).dig('result', 'value')
     end
 
     # Get the balance of a token account
@@ -132,13 +139,7 @@ module Solace
     # @param token_account [String] The public key of the token account
     # @return [Hash] Token account balance information with amount and decimals
     def get_token_account_balance(token_account)
-      rpc_request(
-        'getTokenAccountBalance',
-        [
-          token_account,
-          default_options
-        ]
-      )['result']['value']
+      @rpc_client.rpc_request('getTokenAccountBalance', [token_account, default_options]).dig('result', 'value')
     end
 
     # Get the transaction by signature
@@ -147,27 +148,24 @@ module Solace
     # @return [Solace::Transaction] The transaction object
     # @param [Hash{Symbol => Object}] options
     def get_transaction(signature, options = { maxSupportedTransactionVersion: 0 })
-      rpc_request(
-        'getTransaction',
-        [
-          signature,
-          default_options.merge(options)
-        ]
-      )['result']
+      @rpc_client.rpc_request('getTransaction', [signature, default_options.merge(options)])['result']
     end
 
     # Get the signature status
     #
     # @param signatures [Array] The signatures of the transactions
     # @return [Object] The signature status
-    def get_signature_status(signatures)
-      rpc_request(
-        'getSignatureStatuses',
-        [
-          signatures,
-          default_options.merge({ 'searchTransactionHistory' => true })
-        ]
-      )['result']
+    def get_signature_statuses(signatures)
+      @rpc_client.rpc_request('getSignatureStatuses',
+                              [signatures, default_options.merge({ 'searchTransactionHistory' => true })])['result']
+    end
+
+    # Get the signature status
+    #
+    # @param signature [String] The signature of the transaction
+    # @return [Object] The signature status
+    def get_signature_status(signature)
+      get_signature_statuses([signature])
     end
 
     # Send a transaction to the Solana node
@@ -176,69 +174,70 @@ module Solace
     # @return [String] The signature of the transaction
     # @param [Hash{Symbol => Object}] options
     def send_transaction(transaction, options = {})
-      rpc_request(
-        'sendTransaction',
-        [
-          transaction,
-          default_options.merge(options)
-        ]
-      )
+      @rpc_client.rpc_request('sendTransaction', [transaction, default_options.merge(options)])
     end
 
-    # Wait for a confirmed signature from the transaction
+    # Wait until the yielded signature reaches the desired commitment or timeout.
     #
-    # @param commitment [String] The commitment level to wait for
-    # @return [Boolean] True if the transaction was confirmed, false otherwise
-    def wait_for_confirmed_signature(commitment = 'confirmed')
+    # @param commitment [String] One of "processed", "confirmed", "finalized"
+    # @param timeout [Numeric] seconds to wait before raising
+    # @param interval [Numeric] polling interval in seconds
+    # @yieldreturn [String, Hash] a signature string or a JSON-RPC hash with "result"
+    # @return [String] the signature when the commitment is reached
+    # @raise [ArgumentError, Errors::ConfirmationTimeout]
+    def wait_for_confirmed_signature(
+      commitment = 'confirmed',
+      timeout: 60,
+      interval: 0.1
+    )
       raise ArgumentError, 'Block required' unless block_given?
 
-      # Get the signature from the block
-      signature = yield
-
-      interval = 0.1
+      signature = extract_signature_from(yield)
+      deadline = monotonic_deadline(timeout)
 
       # Wait for confirmation
-      loop do
-        status = get_signature_status([signature]).dig('value', 0)
-
-        break if status && status['confirmationStatus'] == commitment
+      until dealine_passed?(deadline)
+        return signature if commitment_reached?(signature, commitment)
 
         sleep interval
       end
 
-      signature
+      raise Errors::ConfirmationTimeout.format(signature, commitment, timeout)
     end
 
     private
 
-    def build_rpc_request(method, params)
-      uri = URI(rpc_url)
-      req = Net::HTTP::Post.new(uri)
-      req['Accept'] = 'application/json'
-      req['Content-Type'] = 'application/json'
-      @request_id = SecureRandom.uuid
-
-      req.body = {
-        jsonrpc: '2.0',
-        id: @request_id,
-        method: method,
-        params: params
-      }.to_json
-
-      [uri, req]
+    # Confirms the commitment is reached
+    #
+    # @param signature [String] The signature of the transaction
+    # @param commitment [String] The commitment level not reached
+    # @return [Boolean] Whether the commitment is reached
+    def commitment_reached?(signature, commitment)
+      get_signature_status(signature).dig('value', 0, 'confirmationStatus') == commitment
     end
 
-    def perform_http_request((uri, req))
-      Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == 'https') do |http|
-        http.request(req)
-      end
+    # Extracts signature from given value
+    #
+    # @param value [String, Object] The result of the yielded block
+    # @return [String] The signature
+    def extract_signature_from(value)
+      value.is_a?(String) ? value : value['result']
     end
 
-    def handle_rpc_response(response)
-      raise "RPC error: #{response.body}" unless response.is_a?(Net::HTTPSuccess)
+    # Checks if a timeout deadline has been reached
+    #
+    # @params deadline [Integer] The deadline for the timeout
+    # @return [boolean] whether the dealine has passed
+    def dealine_passed?(deadline)
+      Process.clock_gettime(Process::CLOCK_MONOTONIC) >= deadline
+    end
 
-      JSON.parse(response.body)
+    # Sets a deadline given a timeout in seconds
+    #
+    # @params seconds [Integer] The seconds for the deadline
+    # @return [Integer] The deadline in seconds
+    def monotonic_deadline(seconds)
+      Process.clock_gettime(Process::CLOCK_MONOTONIC) + seconds
     end
   end
-  # rubocop:enable Metrics/ClassLength
 end

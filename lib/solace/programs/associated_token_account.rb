@@ -33,9 +33,9 @@ module Solace
         def get_address(owner:, mint:)
           Solace::Utils::PDA.find_program_address(
             [
-              owner.address,
+              owner.to_s,
               Solace::Constants::TOKEN_PROGRAM_ID,
-              mint.address
+              mint.to_s
             ],
             Solace::Constants::ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID
           )
@@ -67,15 +67,15 @@ module Solace
       def get_or_create_address(payer:, owner:, mint:, commitment: 'confirmed')
         ata_address, _bump = get_address(owner: owner, mint: mint)
 
-        account_balance = @connection.get_balance(ata_address)
+        account_balance = @connection.get_account_info(ata_address)
 
-        return ata_address if account_balance
+        return ata_address unless account_balance.nil?
 
         response = create_associated_token_account(payer: payer, owner: owner, mint: mint)
 
         raise 'Failed to create associated token account' unless response['result']
 
-        @connection.wait_for_confirmed_signature(commitment) { response['result'] }
+        @connection.wait_for_confirmed_signature(commitment) { response }
 
         ata_address
       end

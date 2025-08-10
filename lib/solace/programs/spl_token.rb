@@ -63,8 +63,8 @@ module Solace
         mint_keypair: Solace::Keypair.generate
       )
         accounts = [
-          payer.address,
-          mint_keypair.address,
+          payer.to_s,
+          mint_keypair.to_s,
           Solace::Constants::SYSVAR_RENT_PROGRAM_ID,
           Solace::Constants::TOKEN_PROGRAM_ID,
           Solace::Constants::SYSTEM_PROGRAM_ID
@@ -81,15 +81,15 @@ module Solace
           owner: program_id
         )
 
-        freeze_authority_address = freeze_authority.respond_to?(:address) ? freeze_authority.address : nil
+        freeze_authority = freeze_authority.to_s unless freeze_authority.nil?
 
         initialize_mint_ix = Solace::Instructions::SplToken::InitializeMintInstruction.build(
           mint_account_index: 1,
           rent_sysvar_index: 2,
           program_index: 3,
           decimals: decimals,
-          mint_authority: mint_authority.address,
-          freeze_authority: freeze_authority_address
+          mint_authority: mint_authority.to_s,
+          freeze_authority: freeze_authority
         )
 
         message = Message.new(
@@ -134,11 +134,11 @@ module Solace
         mint_authority:
       )
         accounts = [
-          payer.address,
-          mint_authority.address,
-          mint.address,
-          destination,
-          Solace::Constants::TOKEN_PROGRAM_ID
+          payer.to_s,
+          mint_authority.to_s,
+          mint.to_s,
+          destination.to_s,
+          Solace::Constants::TOKEN_PROGRAM_ID.to_s
         ]
 
         ix = Solace::Instructions::SplToken::MintToInstruction.build(
@@ -191,11 +191,11 @@ module Solace
         owner:
       )
         accounts = [
-          payer.address,
-          owner.address,
-          source,
-          destination,
-          Solace::Constants::TOKEN_PROGRAM_ID
+          payer.to_s,
+          owner.to_s,
+          source.to_s,
+          destination.to_s,
+          Solace::Constants::TOKEN_PROGRAM_ID.to_s
         ]
 
         ix = Solace::Instructions::SplToken::TransferInstruction.build(

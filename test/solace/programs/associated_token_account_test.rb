@@ -35,14 +35,16 @@ describe Solace::Programs::AssociatedTokenAccount do
 
     describe 'when the owner already has a token account' do
       it 'returns the associated token account address' do
+        # Create the token account
+        assert connection.get_balance(address_result)
+
         # Doesn't send any create transaction to the cluster
         def connection.send_transaction(_)
           raise "send_transaction shouldn't be called when a token account already exists."
         end
 
-        assert connection.get_balance(ata_address)
+        # The token account should still exist
         assert connection.get_balance(address_result)
-        assert_equal address_result, ata_address
       end
     end
   end

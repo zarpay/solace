@@ -31,9 +31,10 @@ PLATFORMS = {
 }.freeze
 
 # Run all Minitest tests
+# rake test [test_file]
 Rake::TestTask.new(:test) do |t|
   t.libs << 'test'
-  t.pattern = 'test/**/*_test.rb'
+  t.pattern = ARGV[1] || 'test/**/*_test.rb'
   t.verbose = false
 end
 
