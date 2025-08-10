@@ -20,8 +20,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
   
 ### Added
 1. Added `load` method to `Solace::Constants` to load constants from a YAML file. This method allows for loading constants from a YAML file (i.e. custom program addresses and mint accounts).
+2. Added `to_s` and `address` method to `Solace::Keypair` and `Solace::PublicKey` to return the public key as a Base58 string.
 
 ### Changed
+1. All methods that take a `Solace::Keypair` or `Solace::Pubkey` where an address is needed now also accept a plain string address. This prevents the need of creating instances of the classes when all that is needed is the address.
  
 ### Fixed
 

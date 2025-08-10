@@ -89,16 +89,16 @@ end
   bob_ata = ata_program.get_or_create_address(
     payer: setup_payer,
     owner: keypair,
-    mint: mint.address,
+    mint: mint,
     commitment: 'finalized'
   )
 
   result = spl_token_program.mint_to(
     payer: setup_payer,
-    mint: mint.address,
+    mint: mint,
     destination: bob_ata,
     amount: TOKENS_AIRDROP,
-    mint_authority: mint_authority.address
+    mint_authority: mint_authority
   )
 
   puts "⤷ Signature: #{result['result']}"

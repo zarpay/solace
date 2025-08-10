@@ -51,6 +51,7 @@ module Solace
     #   pubkey_str = instance.to_base58
     #
     # @return [String]
+    # @since 0.0.1
     def to_base58
       Solace::Utils::Codecs.bytes_to_base58(@bytes)
     end
@@ -61,9 +62,8 @@ module Solace
     #   pubkey_str = instance.to_s
     #
     # @return [String]
-    def to_s
-      to_base58
-    end
+    # @since 0.0.8
+    alias to_s to_base58
 
     # Return the address of the public key
     #
@@ -71,9 +71,8 @@ module Solace
     #   pubkey_str = instance.address
     #
     # @return [String]
-    def address
-      to_base58
-    end
+    # @since 0.0.8
+    alias address to_base58
 
     # Compare two public keys for equality
     #
@@ -82,6 +81,7 @@ module Solace
     #
     # @param other [PublicKey]
     # @return [Boolean]
+    # @since 0.0.1
     def ==(other)
       other.is_a?(Solace::PublicKey) && other.bytes == bytes
     end
@@ -92,6 +92,7 @@ module Solace
     #   pubkey_bytes = instance.to_bytes
     #
     # @return [Array<Integer>]
+    # @since 0.0.1
     def to_bytes
       @bytes.dup
     end

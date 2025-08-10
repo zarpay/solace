@@ -61,4 +61,54 @@ describe Solace::Keypair do
       assert sig1 != sig2
     end
   end
+
+  describe '#public_key_bytes' do
+    before do
+      @keypair = klass.generate
+    end
+
+    it 'returns the public key bytes of the keypair' do
+      assert_equal @keypair.public_key_bytes.length, @keypair.keypair_bytes[32..63]
+    end
+  end
+
+  describe '#private_key_bytes' do
+    before do
+      @keypair = klass.generate
+    end
+
+    it 'returns the private key bytes of the keypair' do
+      assert_equal @keypair.private_key_bytes.length, @keypair.keypair_bytes[0..31]
+    end
+  end
+
+  describe '#to_base58' do
+    before do
+      @keypair = klass.generate
+    end
+
+    it 'returns the public key of the keypair as a Base58 string' do
+      assert_equal @keypair.to_base58, @keypair.public_key.to_base58
+    end
+  end
+
+  describe '#to_s' do
+    before do
+      @keypair = klass.generate
+    end
+
+    it 'returns the public key as a Base58 string' do
+      assert_equal @keypair.to_base58, @keypair.to_s
+    end
+  end
+
+  describe '#address' do
+    before do
+      @keypair = klass.generate
+    end
+
+    it 'returns the public key as a Base58 string' do
+      assert_equal @keypair.to_base58, @keypair.address
+    end
+  end
 end

@@ -32,49 +32,49 @@ module Solace
       #
       # @return [String] The owner address
       def owner
-        params[:owner].is_a?(String) ? params[:owner] : params[:owner].address
+        params[:owner].to_s
       end
 
       # Extracts the mint address from the params
       #
       # @return [String] The mint address
       def mint
-        params[:mint].is_a?(String) ? params[:mint] : params[:mint].address
+        params[:mint].to_s
       end
 
       # Extracts the ata_address from the params
       #
       # @return [String] The ata_address
       def ata_address
-        params[:ata_address].is_a?(String) ? params[:ata_address] : params[:ata_address].address
+        params[:ata_address].to_s
       end
 
       # Extracts the funder address from the params
       #
       # @return [String] The funder address
       def funder
-        params[:funder].is_a?(String) ? params[:funder] : params[:funder].address
+        params[:funder].to_s
       end
 
       # Extracts the system program id from the constants
       #
       # @return [String] The system program id
       def system_program_id
-        Constants::SYSTEM_PROGRAM_ID
+        Constants::SYSTEM_PROGRAM_ID.to_s
       end
 
       # Extracts the token program id from the constants
       #
       # @return [String] The token program id
       def token_program_id
-        Constants::TOKEN_PROGRAM_ID
+        Constants::TOKEN_PROGRAM_ID.to_s
       end
 
       # Extracts the associated token account program id from the constants
       #
       # @return [String] The associated token account program id
       def associated_token_account_program_id
-        Constants::ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID
+        Constants::ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID.to_s
       end
 
       # Setup accounts required for associated token account program create account instruction

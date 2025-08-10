@@ -27,6 +27,18 @@ describe Solace::PublicKey do
     end
   end
 
+  describe '#address' do
+    it 'returns base58 representation' do
+      assert_equal @base58, @public_key.address
+    end
+  end
+
+  describe '#to_s' do
+    it 'returns base58 representation' do
+      assert_equal @base58, @public_key.to_s
+    end
+  end
+
   describe '#==' do
     it 'returns true for equal keys' do
       pk2 = Solace::PublicKey.new(@bytes.dup)

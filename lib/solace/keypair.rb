@@ -132,12 +132,30 @@ module Solace
     # Returns the public key address as a Base58 string
     #
     # @example
-    #   pubkey_str = instance.address
+    #   pubkey_str = instance.to_base58
     #
     # @return [String] Base58 encoded public key
-    def address
+    def to_base58
       public_key.to_base58
     end
+
+    # Returns the public key address as a Base58 string
+    #
+    # @example
+    #   pubkey_str = instance.to_s
+    #
+    # @return [String] Base58 encoded public key
+    # @since 0.0.8
+    alias to_s to_base58
+
+    # Returns the public key address as a Base58 string
+    #
+    # @example
+    #   pubkey_str = instance.to_base58
+    #
+    # @return [String] Base58 encoded public key
+    # @since 0.0.8
+    alias address to_base58
 
     # Signs a message (string or binary)
     #
