@@ -62,7 +62,7 @@ describe Solace::Transaction do
       ]
 
       # Get latest blockhash
-      @msg.recent_blockhash = conn.get_latest_blockhash
+      @msg.recent_blockhash = conn.get_latest_blockhash[0]
 
       @msg.instructions = [
         # Send money from account 1 to account 2

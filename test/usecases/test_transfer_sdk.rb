@@ -44,7 +44,7 @@ message = Solace::Message.new(
     recipient.address,
     Solace::Constants::SYSTEM_PROGRAM_ID
   ],
-  recent_blockhash: conn.get_latest_blockhash,
+  recent_blockhash: conn.get_latest_blockhash[0],
   instructions: [instruction]
 )
 

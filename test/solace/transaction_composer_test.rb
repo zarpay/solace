@@ -118,7 +118,7 @@ describe Solace::TransactionComposer do
     before do
       # Mock connection to return a blockhash
       def connection.get_latest_blockhash
-        'EkSnNWid2cvwEVnVx9aBqawnmiCNiDgp3gUdkDPTKN1N'
+        ['EkSnNWid2cvwEVnVx9aBqawnmiCNiDgp3gUdkDPTKN1N', 1000]
       end
     end
 

@@ -16,6 +16,28 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ### Fixed
 ```
 
+## [0.0.10] - yyyy-mm-dd
+  
+### Added
+1. 
+
+### Changed
+2. Updated `build_instructions` method on `TransactionComposer` to flatten the array, allowing composers to return multiple instructions when relevant (i.e. creating an account and then writing to it).
+3. Changed get_latest_blockhash to use the expected comittment level by the connection or passed options and return array (blockhash and lastValidBlockheight)
+4. Changed default commitment level to `processed` in `Solace::Connection`.
+
+### Fixed
+
+## [0.0.9] - 2025-08-12
+  
+### Added
+1. Added `get_program_accounts` to `Solace::Connection`.
+
+### Changed
+ 
+### Fixed
+1. Removed use of the `try` method for supporting non-rails environments.
+
 ## [0.0.8] - 2025-08-11
   
 ### Added

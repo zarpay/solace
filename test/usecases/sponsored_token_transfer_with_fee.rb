@@ -95,7 +95,7 @@ message = Solace::Message.new(
   header: [2, 0, 1],
   accounts: accounts,
   instructions: [transfer_ix, fee_ix],
-  recent_blockhash: conn.get_latest_blockhash
+  recent_blockhash: conn.get_latest_blockhash[0]
 )
 
 # Transaction

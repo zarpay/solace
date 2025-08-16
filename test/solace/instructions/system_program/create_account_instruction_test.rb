@@ -92,7 +92,7 @@ describe Solace::Instructions::SystemProgram::CreateAccountInstruction do
           new_account.address,
           Solace::Constants::SYSTEM_PROGRAM_ID
         ],
-        recent_blockhash: conn.get_latest_blockhash,
+        recent_blockhash: conn.get_latest_blockhash[0],
         instructions: [instruction]
       )
 

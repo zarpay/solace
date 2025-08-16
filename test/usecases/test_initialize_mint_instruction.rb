@@ -39,7 +39,7 @@ message = Solace::Message.new(
     2 # num_readonly_unsigned
   ],
   accounts: accounts,
-  recent_blockhash: conn.get_latest_blockhash,
+  recent_blockhash: conn.get_latest_blockhash[0],
   instructions: [instruction]
 )
 

@@ -51,7 +51,7 @@ module Solace
     # @param [Integer] http_read_timeout The timeout for reading an HTTP response
     def initialize(
       rpc_url = 'http://localhost:8899',
-      commitment: 'confirmed',
+      commitment: 'processed',
       http_open_timeout: 30,
       http_read_timeout: 60
     )
@@ -67,23 +67,6 @@ module Solace
         commitment: commitment,
         encoding: 'base64'
       }
-    end
-
-    # Sends a JSON-RPC request to the configured Solana RPC server.
-    #
-    # @param method [String] the JSON-RPC method name
-    # @param params [Array] the parameters for the RPC method
-    # @return [Hash] the parsed JSON response
-    # @raise [
-    #   Solace::Errors::HTTPError,
-    #   Solace::Errors::ParseError,
-    #   Solace::Errors::RPCError,
-    #   Solace::Errors::ConfirmationTimeout
-    # ]
-    def rpc_request(method, params = [])
-      request = build_rpc_request(method, params)
-      response = perform_http_request(request)
-      handle_rpc_response(response)
     end
 
     # Request an airdrop of lamports to a given address
@@ -103,11 +86,23 @@ module Solace
       )
     end
 
+    # Build options for get_latest_blockhash
+    #
+    # @return [Hash{Symbol => Object}]
+    def build_get_latest_blockhash_options
+      {
+        commitment: default_options[:commitment]
+      }
+    end
+
     # Get the latest blockhash from the Solana node
     #
-    # @return [String] The latest blockhash
+    # @return [Array<String, Integer>] The latest blockhash and lastValidBlockHeight
     def get_latest_blockhash
-      @rpc_client.rpc_request('getLatestBlockhash').dig('result', 'value', 'blockhash')
+      @rpc_client
+        .rpc_request('getLatestBlockhash', [build_get_latest_blockhash_options])
+        .dig('result', 'value')
+        .values_at('blockhash', 'lastValidBlockHeight')
     end
 
     # Get the minimum required lamports for rent exemption
@@ -160,6 +155,16 @@ module Solace
                               [signatures, default_options.merge({ 'searchTransactionHistory' => true })])['result']
     end
 
+    # Get the program accounts
+    #
+    # @param program_id [String] The program ID
+    # @param filters [Array] The filters
+    # @return [Array] The program accounts
+    # @param [Hash{Symbol => Object}] options
+    def get_program_accounts(program_id, filters)
+      @rpc_client.rpc_request('getProgramAccounts', [program_id, default_options.merge(filters: filters)])['result']
+    end
+
     # Get the signature status
     #
     # @param signature [String] The signature of the transaction
@@ -168,13 +173,26 @@ module Solace
       get_signature_statuses([signature])
     end
 
+    # Builds send_tranaction options
+    #
+    # @params [Hash] The overrides for the options
+    # @return [Hash] The options for the send_transaction call
+    def build_send_transaction_options(overrides)
+      {
+        skipPreflight: false,
+        encoding: default_options[:encoding],
+        commitment: default_options[:commitment],
+        preflightCommitment: default_options[:commitment]
+      }.merge(overrides)
+    end
+
     # Send a transaction to the Solana node
     #
     # @param transaction [Solace::Transaction] The transaction to send
+    # @param [Hash{Symbol => Object}] overrides
     # @return [String] The signature of the transaction
-    # @param [Hash{Symbol => Object}] options
-    def send_transaction(transaction, options = {})
-      @rpc_client.rpc_request('sendTransaction', [transaction, default_options.merge(options)])
+    def send_transaction(transaction, overrides = {})
+      @rpc_client.rpc_request('sendTransaction', [transaction, build_send_transaction_options(overrides)])
     end
 
     # Wait until the yielded signature reaches the desired commitment or timeout.

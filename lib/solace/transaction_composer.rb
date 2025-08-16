@@ -90,7 +90,7 @@ module Solace
         header: context.header,
         accounts: context.accounts,
         instructions: build_instructions,
-        recent_blockhash: connection.get_latest_blockhash
+        recent_blockhash: connection.get_latest_blockhash[0]
       )
 
       Solace::Transaction.new(message: message)
@@ -102,7 +102,7 @@ module Solace
     #
     # @return [Array<Solace::Instruction>] The built instructions
     def build_instructions
-      instruction_composers.map { _1.build_instruction(context) }
+      instruction_composers.map { _1.build_instruction(context) }.flatten
     end
 
     # Merge all accounts from another AccountContext into this one

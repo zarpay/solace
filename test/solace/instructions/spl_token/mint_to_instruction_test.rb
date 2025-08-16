@@ -76,7 +76,7 @@ describe Solace::Instructions::SplToken::MintToInstruction do
         ],
         accounts: accounts,
         instructions: [ix],
-        recent_blockhash: connection.get_latest_blockhash
+        recent_blockhash: connection.get_latest_blockhash[0]
       )
 
       tx = Solace::Transaction.new(message: message)

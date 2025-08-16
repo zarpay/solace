@@ -86,7 +86,7 @@ describe Solace::Instructions::SplToken::TransferInstruction do
         header: [2, 0, 1],
         accounts: accounts,
         instructions: [ix],
-        recent_blockhash: connection.get_latest_blockhash
+        recent_blockhash: connection.get_latest_blockhash[0]
       )
 
       # Transaction

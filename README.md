@@ -61,7 +61,7 @@ message = Solace::Message.new(
         system_program_id
     ],
     instructions: [transfer_instruction],
-    recent_blockhash: connection.get_latest_blockhash,
+    recent_blockhash: connection.get_latest_blockhash[0],
 )
 
 # Create and sign transaction

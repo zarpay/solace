@@ -7,7 +7,7 @@ describe Solace::Composers::SystemProgramTransferComposer do
   let(:anna) { Fixtures.load_keypair('anna') }
   let(:payer) { Fixtures.load_keypair('payer') }
 
-  let(:connection) { Solace::Connection.new }
+  let(:connection) { Solace::Connection.new(commitment: 'processed') }
   let(:transaction_composer) { Solace::TransactionComposer.new(connection: connection) }
 
   describe 'sponsored transaction' do

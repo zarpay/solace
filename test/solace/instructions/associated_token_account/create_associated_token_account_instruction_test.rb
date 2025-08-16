@@ -80,7 +80,7 @@ describe Solace::Instructions::AssociatedTokenAccount::CreateAssociatedTokenAcco
       message = Solace::Message.new(
         header: [1, 0, 4], # 1 signer (payer), 4 readonly accounts
         accounts: accounts,
-        recent_blockhash: conn.get_latest_blockhash,
+        recent_blockhash: conn.get_latest_blockhash[0],
         instructions: [instruction]
       )
 

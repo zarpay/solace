@@ -24,7 +24,7 @@ return unless @validator_pid.empty?
 puts "[SolanaTestValidator] Validator started on PID #{@solana_validator_pid}."
 
 def validator_started?
-  Solace::Connection.new.get_latest_blockhash
+  Solace::Connection.new.get_latest_blockhash[0]
   true
 rescue Errno::ECONNREFUSED
   false

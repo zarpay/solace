@@ -75,7 +75,7 @@ message = Solace::Message.new(
   # Signers: payer (writable), mint_keypair (writable)
   # Read-only: Rent Sysvar, SPL Token Program, System Program
   header: [2, 0, 3],
-  recent_blockhash: conn.get_latest_blockhash
+  recent_blockhash: conn.get_latest_blockhash[0]
 )
 puts '✅ Assembled message'
 

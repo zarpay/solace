@@ -1,5 +1,14 @@
 # frozen_string_literal: true
 
+# The AssociatedTokenAccount program is a Solana program that provides a standardized way to create and manage token accounts.
+#
+# This class provides a Ruby interface to the Associated Token Account program, allowing you to easily
+# find or create associated token accounts for a given wallet and mint.
+#
+# @see https://spl.solana.com/associated-token-account Solana Associated Token Account Program
+#
+# @author Sebastian Scholl
+# @since 0.1.0
 module Solace
   module Programs
     # Client for interacting with the Associated Token Account Program.
@@ -106,20 +115,18 @@ module Solace
       )
         ata_address, = get_address(owner: owner, mint: mint)
 
-        TransactionComposer.new(connection: connection).try do |tx_composer|
-          tx_composer.set_fee_payer(payer)
+        ix = Solace::Composers::AssociatedTokenAccountProgramCreateAccountComposer.new(
+          mint: mint,
+          owner: owner,
+          funder: payer,
+          ata_address: ata_address
+        )
 
-          tx_composer.add_instruction(
-            Solace::Composers::AssociatedTokenAccountProgramCreateAccountComposer.new(
-              mint: mint,
-              owner: owner,
-              funder: payer,
-              ata_address: ata_address
-            )
-          )
-
-          tx_composer.compose_transaction
-        end
+        TransactionComposer
+          .new(connection: connection)
+          .set_fee_payer(payer)
+          .add_instruction(ix)
+          .compose_transaction
       end
     end
   end

@@ -105,7 +105,7 @@ module Solace
       # @param pubkey [String] The pubkey of the account
       # @return [Boolean] Whether the account is a fee payer
       def fee_payer?(pubkey)
-        @pubkey_account_map[pubkey].try { |acc| acc[:fee_payer] }
+        @pubkey_account_map.dig(pubkey, :fee_payer)
       end
 
       # Predicate to check if an account is a signer
@@ -113,7 +113,7 @@ module Solace
       # @param pubkey [String] The pubkey of the account
       # @return [Boolean] Whether the account is a signer
       def signer?(pubkey)
-        @pubkey_account_map[pubkey].try { |acc| acc[:signer] }
+        @pubkey_account_map.dig(pubkey, :signer)
       end
 
       # Predicate to check if an account is writable
@@ -121,7 +121,7 @@ module Solace
       # @param pubkey [String] The pubkey of the account
       # @return [Boolean] Whether the account is writable
       def writable?(pubkey)
-        @pubkey_account_map[pubkey].try { |acc| acc[:writable] }
+        @pubkey_account_map.dig(pubkey, :writable)
       end
 
       # Predicate to check if an account is a writable signer
@@ -129,7 +129,7 @@ module Solace
       # @param pubkey [String] The pubkey of the account
       # @return [Boolean] Whether the account is a writable signer
       def writable_signer?(pubkey)
-        @pubkey_account_map[pubkey].try { |acc| acc[:signer] && acc[:writable] }
+        (acc = @pubkey_account_map[pubkey]) && acc[:signer] && acc[:writable]
       end
 
       # Predicate to check if an account is writable and not a signer
@@ -137,7 +137,7 @@ module Solace
       # @param pubkey [String] The pubkey of the account
       # @return [Boolean] Whether the account is writable and not a signer
       def writable_nonsigner?(pubkey)
-        @pubkey_account_map[pubkey].try { |acc| !acc[:signer] && acc[:writable] }
+        (acc = @pubkey_account_map[pubkey]) && !acc[:signer] && acc[:writable]
       end
 
       # Predicate to check if an account is a readonly signer
@@ -145,7 +145,7 @@ module Solace
       # @param pubkey [String] The pubkey of the account
       # @return [Boolean] Whether the account is a readonly signer
       def readonly_signer?(pubkey)
-        @pubkey_account_map[pubkey].try { |acc| acc[:signer] && !acc[:writable] }
+        (acc = @pubkey_account_map[pubkey]) && acc[:signer] && !acc[:writable]
       end
 
       # Predicate to check if an account is readonly and not a signer
@@ -153,7 +153,7 @@ module Solace
       # @param pubkey [String] The pubkey of the account
       # @return [Boolean] Whether the account is readonly and not a signer
       def readonly_nonsigner?(pubkey)
-        @pubkey_account_map[pubkey].try { |acc| !acc[:signer] && !acc[:writable] }
+        (acc = @pubkey_account_map[pubkey]) && !acc[:signer] && !acc[:writable]
       end
 
       # Merge all accounts from another AccountContext into this one

@@ -23,7 +23,7 @@ connection = Solace::Connection.new
 # =============================
 # 🧩 Get latest blockhash
 # =============================
-recent_blockhash = connection.get_latest_blockhash
+recent_blockhash = connection.get_latest_blockhash[0]
 
 # =============================
 # 🔐 Key Setup

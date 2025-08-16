@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |spec|
   spec.name          = 'solace'
-  spec.version       = '0.0.8'
+  spec.version       = '0.0.10'
   spec.authors       = ['Sebastian Scholl']
   spec.email         = ['sebscholl@gmail.com']
   spec.summary       = 'Solana ruby library'

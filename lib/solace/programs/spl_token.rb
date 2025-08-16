@@ -95,7 +95,7 @@ module Solace
         message = Message.new(
           header: [2, 0, 3],
           accounts: accounts,
-          recent_blockhash: @connection.get_latest_blockhash,
+          recent_blockhash: @connection.get_latest_blockhash[0],
           instructions: [create_account_ix, initialize_mint_ix]
         )
 
@@ -153,7 +153,7 @@ module Solace
           header: [2, 0, 1],
           accounts: accounts,
           instructions: [ix],
-          recent_blockhash: connection.get_latest_blockhash
+          recent_blockhash: connection.get_latest_blockhash[0]
         )
 
         tx = Solace::Transaction.new(message: message)
@@ -210,7 +210,7 @@ module Solace
           header: [2, 0, 1],
           accounts: accounts,
           instructions: [ix],
-          recent_blockhash: connection.get_latest_blockhash
+          recent_blockhash: connection.get_latest_blockhash[0]
         )
 
         tx = Solace::Transaction.new(message: message)
