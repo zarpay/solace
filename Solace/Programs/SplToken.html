@@ -855,7 +855,7 @@ Token mints and accounts.</p>
   <span class='id identifier rubyid_message'>message</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../Message.html" title="Solace::Message (class)">Message</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="../Message.html#initialize-instance_method" title="Solace::Message#initialize (method)">new</a></span></span><span class='lparen'>(</span>
     <span class='label'>header:</span> <span class='lbracket'>[</span><span class='int'>2</span><span class='comma'>,</span> <span class='int'>0</span><span class='comma'>,</span> <span class='int'>3</span><span class='rbracket'>]</span><span class='comma'>,</span>
     <span class='label'>accounts:</span> <span class='id identifier rubyid_accounts'>accounts</span><span class='comma'>,</span>
-    <span class='label'>recent_blockhash:</span> <span class='ivar'>@connection</span><span class='period'>.</span><span class='id identifier rubyid_get_latest_blockhash'>get_latest_blockhash</span><span class='comma'>,</span>
+    <span class='label'>recent_blockhash:</span> <span class='ivar'>@connection</span><span class='period'>.</span><span class='id identifier rubyid_get_latest_blockhash'>get_latest_blockhash</span><span class='lbracket'>[</span><span class='int'>0</span><span class='rbracket'>]</span><span class='comma'>,</span>
     <span class='label'>instructions:</span> <span class='lbracket'>[</span><span class='id identifier rubyid_create_account_ix'>create_account_ix</span><span class='comma'>,</span> <span class='id identifier rubyid_initialize_mint_ix'>initialize_mint_ix</span><span class='rbracket'>]</span>
   <span class='rparen'>)</span>
 
@@ -1073,7 +1073,7 @@ Token mints and accounts.</p>
     <span class='label'>header:</span> <span class='lbracket'>[</span><span class='int'>2</span><span class='comma'>,</span> <span class='int'>0</span><span class='comma'>,</span> <span class='int'>1</span><span class='rbracket'>]</span><span class='comma'>,</span>
     <span class='label'>accounts:</span> <span class='id identifier rubyid_accounts'>accounts</span><span class='comma'>,</span>
     <span class='label'>instructions:</span> <span class='lbracket'>[</span><span class='id identifier rubyid_ix'>ix</span><span class='rbracket'>]</span><span class='comma'>,</span>
-    <span class='label'>recent_blockhash:</span> <span class='id identifier rubyid_connection'>connection</span><span class='period'>.</span><span class='id identifier rubyid_get_latest_blockhash'>get_latest_blockhash</span>
+    <span class='label'>recent_blockhash:</span> <span class='id identifier rubyid_connection'>connection</span><span class='period'>.</span><span class='id identifier rubyid_get_latest_blockhash'>get_latest_blockhash</span><span class='lbracket'>[</span><span class='int'>0</span><span class='rbracket'>]</span>
   <span class='rparen'>)</span>
 
   <span class='id identifier rubyid_tx'>tx</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Transaction.html" title="Solace::Transaction (class)">Transaction</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="../Transaction.html#initialize-instance_method" title="Solace::Transaction#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='label'>message:</span> <span class='id identifier rubyid_message'>message</span><span class='rparen'>)</span>
@@ -1290,7 +1290,7 @@ Token mints and accounts.</p>
     <span class='label'>header:</span> <span class='lbracket'>[</span><span class='int'>2</span><span class='comma'>,</span> <span class='int'>0</span><span class='comma'>,</span> <span class='int'>1</span><span class='rbracket'>]</span><span class='comma'>,</span>
     <span class='label'>accounts:</span> <span class='id identifier rubyid_accounts'>accounts</span><span class='comma'>,</span>
     <span class='label'>instructions:</span> <span class='lbracket'>[</span><span class='id identifier rubyid_ix'>ix</span><span class='rbracket'>]</span><span class='comma'>,</span>
-    <span class='label'>recent_blockhash:</span> <span class='id identifier rubyid_connection'>connection</span><span class='period'>.</span><span class='id identifier rubyid_get_latest_blockhash'>get_latest_blockhash</span>
+    <span class='label'>recent_blockhash:</span> <span class='id identifier rubyid_connection'>connection</span><span class='period'>.</span><span class='id identifier rubyid_get_latest_blockhash'>get_latest_blockhash</span><span class='lbracket'>[</span><span class='int'>0</span><span class='rbracket'>]</span>
   <span class='rparen'>)</span>
 
   <span class='id identifier rubyid_tx'>tx</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Transaction.html" title="Solace::Transaction (class)">Transaction</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="../Transaction.html#initialize-instance_method" title="Solace::Transaction#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='label'>message:</span> <span class='id identifier rubyid_message'>message</span><span class='rparen'>)</span>
@@ -1403,7 +1403,7 @@ Token mints and accounts.</p>
 </div>
 
       <div id="footer">
-  Generated on Sun Aug 10 20:31:43 2025 by
+  Generated on Sat Aug 16 21:22:39 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.4).
 </div>

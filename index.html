@@ -137,7 +137,7 @@
         <span class='id identifier rubyid_system_program_id'>system_program_id</span>
     <span class='rbracket'>]</span><span class='comma'>,</span>
     <span class='label'>instructions:</span> <span class='lbracket'>[</span><span class='id identifier rubyid_transfer_instruction'>transfer_instruction</span><span class='rbracket'>]</span><span class='comma'>,</span>
-    <span class='label'>recent_blockhash:</span> <span class='id identifier rubyid_connection'>connection</span><span class='period'>.</span><span class='id identifier rubyid_get_latest_blockhash'>get_latest_blockhash</span><span class='comma'>,</span>
+    <span class='label'>recent_blockhash:</span> <span class='id identifier rubyid_connection'>connection</span><span class='period'>.</span><span class='id identifier rubyid_get_latest_blockhash'>get_latest_blockhash</span><span class='lbracket'>[</span><span class='int'>0</span><span class='rbracket'>]</span><span class='comma'>,</span>
 <span class='rparen'>)</span>
 
 <span class='comment'># Create and sign transaction
@@ -633,7 +633,7 @@ on_curve = Solace::Utils::Curve25519Dalek.on_curve?(32_byte_point)
 </div></div>
 
       <div id="footer">
-  Generated on Sun Aug 10 20:31:42 2025 by
+  Generated on Sat Aug 16 21:22:39 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.4).
 </div>

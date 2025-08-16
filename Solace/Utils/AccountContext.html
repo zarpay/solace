@@ -1455,7 +1455,7 @@ are handled by this utility.</p>
       <pre class="code"><span class="info file"># File 'lib/solace/utils/account_context.rb', line 107</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_fee_payer?'>fee_payer?</span><span class='lparen'>(</span><span class='id identifier rubyid_pubkey'>pubkey</span><span class='rparen'>)</span>
-  <span class='ivar'>@pubkey_account_map</span><span class='lbracket'>[</span><span class='id identifier rubyid_pubkey'>pubkey</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_try'>try</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_acc'>acc</span><span class='op'>|</span> <span class='id identifier rubyid_acc'>acc</span><span class='lbracket'>[</span><span class='symbol'>:fee_payer</span><span class='rbracket'>]</span> <span class='rbrace'>}</span>
+  <span class='ivar'>@pubkey_account_map</span><span class='period'>.</span><span class='id identifier rubyid_dig'>dig</span><span class='lparen'>(</span><span class='id identifier rubyid_pubkey'>pubkey</span><span class='comma'>,</span> <span class='symbol'>:fee_payer</span><span class='rparen'>)</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -1789,7 +1789,7 @@ are handled by this utility.</p>
       <pre class="code"><span class="info file"># File 'lib/solace/utils/account_context.rb', line 155</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_readonly_nonsigner?'>readonly_nonsigner?</span><span class='lparen'>(</span><span class='id identifier rubyid_pubkey'>pubkey</span><span class='rparen'>)</span>
-  <span class='ivar'>@pubkey_account_map</span><span class='lbracket'>[</span><span class='id identifier rubyid_pubkey'>pubkey</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_try'>try</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_acc'>acc</span><span class='op'>|</span> <span class='op'>!</span><span class='id identifier rubyid_acc'>acc</span><span class='lbracket'>[</span><span class='symbol'>:signer</span><span class='rbracket'>]</span> <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='id identifier rubyid_acc'>acc</span><span class='lbracket'>[</span><span class='symbol'>:writable</span><span class='rbracket'>]</span> <span class='rbrace'>}</span>
+  <span class='lparen'>(</span><span class='id identifier rubyid_acc'>acc</span> <span class='op'>=</span> <span class='ivar'>@pubkey_account_map</span><span class='lbracket'>[</span><span class='id identifier rubyid_pubkey'>pubkey</span><span class='rbracket'>]</span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='id identifier rubyid_acc'>acc</span><span class='lbracket'>[</span><span class='symbol'>:signer</span><span class='rbracket'>]</span> <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='id identifier rubyid_acc'>acc</span><span class='lbracket'>[</span><span class='symbol'>:writable</span><span class='rbracket'>]</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -1880,7 +1880,7 @@ are handled by this utility.</p>
       <pre class="code"><span class="info file"># File 'lib/solace/utils/account_context.rb', line 147</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_readonly_signer?'>readonly_signer?</span><span class='lparen'>(</span><span class='id identifier rubyid_pubkey'>pubkey</span><span class='rparen'>)</span>
-  <span class='ivar'>@pubkey_account_map</span><span class='lbracket'>[</span><span class='id identifier rubyid_pubkey'>pubkey</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_try'>try</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_acc'>acc</span><span class='op'>|</span> <span class='id identifier rubyid_acc'>acc</span><span class='lbracket'>[</span><span class='symbol'>:signer</span><span class='rbracket'>]</span> <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='id identifier rubyid_acc'>acc</span><span class='lbracket'>[</span><span class='symbol'>:writable</span><span class='rbracket'>]</span> <span class='rbrace'>}</span>
+  <span class='lparen'>(</span><span class='id identifier rubyid_acc'>acc</span> <span class='op'>=</span> <span class='ivar'>@pubkey_account_map</span><span class='lbracket'>[</span><span class='id identifier rubyid_pubkey'>pubkey</span><span class='rbracket'>]</span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_acc'>acc</span><span class='lbracket'>[</span><span class='symbol'>:signer</span><span class='rbracket'>]</span> <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='id identifier rubyid_acc'>acc</span><span class='lbracket'>[</span><span class='symbol'>:writable</span><span class='rbracket'>]</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -2045,7 +2045,7 @@ are handled by this utility.</p>
       <pre class="code"><span class="info file"># File 'lib/solace/utils/account_context.rb', line 115</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_signer?'>signer?</span><span class='lparen'>(</span><span class='id identifier rubyid_pubkey'>pubkey</span><span class='rparen'>)</span>
-  <span class='ivar'>@pubkey_account_map</span><span class='lbracket'>[</span><span class='id identifier rubyid_pubkey'>pubkey</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_try'>try</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_acc'>acc</span><span class='op'>|</span> <span class='id identifier rubyid_acc'>acc</span><span class='lbracket'>[</span><span class='symbol'>:signer</span><span class='rbracket'>]</span> <span class='rbrace'>}</span>
+  <span class='ivar'>@pubkey_account_map</span><span class='period'>.</span><span class='id identifier rubyid_dig'>dig</span><span class='lparen'>(</span><span class='id identifier rubyid_pubkey'>pubkey</span><span class='comma'>,</span> <span class='symbol'>:signer</span><span class='rparen'>)</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -2136,7 +2136,7 @@ are handled by this utility.</p>
       <pre class="code"><span class="info file"># File 'lib/solace/utils/account_context.rb', line 123</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_writable?'>writable?</span><span class='lparen'>(</span><span class='id identifier rubyid_pubkey'>pubkey</span><span class='rparen'>)</span>
-  <span class='ivar'>@pubkey_account_map</span><span class='lbracket'>[</span><span class='id identifier rubyid_pubkey'>pubkey</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_try'>try</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_acc'>acc</span><span class='op'>|</span> <span class='id identifier rubyid_acc'>acc</span><span class='lbracket'>[</span><span class='symbol'>:writable</span><span class='rbracket'>]</span> <span class='rbrace'>}</span>
+  <span class='ivar'>@pubkey_account_map</span><span class='period'>.</span><span class='id identifier rubyid_dig'>dig</span><span class='lparen'>(</span><span class='id identifier rubyid_pubkey'>pubkey</span><span class='comma'>,</span> <span class='symbol'>:writable</span><span class='rparen'>)</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -2227,7 +2227,7 @@ are handled by this utility.</p>
       <pre class="code"><span class="info file"># File 'lib/solace/utils/account_context.rb', line 139</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_writable_nonsigner?'>writable_nonsigner?</span><span class='lparen'>(</span><span class='id identifier rubyid_pubkey'>pubkey</span><span class='rparen'>)</span>
-  <span class='ivar'>@pubkey_account_map</span><span class='lbracket'>[</span><span class='id identifier rubyid_pubkey'>pubkey</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_try'>try</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_acc'>acc</span><span class='op'>|</span> <span class='op'>!</span><span class='id identifier rubyid_acc'>acc</span><span class='lbracket'>[</span><span class='symbol'>:signer</span><span class='rbracket'>]</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_acc'>acc</span><span class='lbracket'>[</span><span class='symbol'>:writable</span><span class='rbracket'>]</span> <span class='rbrace'>}</span>
+  <span class='lparen'>(</span><span class='id identifier rubyid_acc'>acc</span> <span class='op'>=</span> <span class='ivar'>@pubkey_account_map</span><span class='lbracket'>[</span><span class='id identifier rubyid_pubkey'>pubkey</span><span class='rbracket'>]</span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='id identifier rubyid_acc'>acc</span><span class='lbracket'>[</span><span class='symbol'>:signer</span><span class='rbracket'>]</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_acc'>acc</span><span class='lbracket'>[</span><span class='symbol'>:writable</span><span class='rbracket'>]</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -2318,7 +2318,7 @@ are handled by this utility.</p>
       <pre class="code"><span class="info file"># File 'lib/solace/utils/account_context.rb', line 131</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_writable_signer?'>writable_signer?</span><span class='lparen'>(</span><span class='id identifier rubyid_pubkey'>pubkey</span><span class='rparen'>)</span>
-  <span class='ivar'>@pubkey_account_map</span><span class='lbracket'>[</span><span class='id identifier rubyid_pubkey'>pubkey</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_try'>try</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_acc'>acc</span><span class='op'>|</span> <span class='id identifier rubyid_acc'>acc</span><span class='lbracket'>[</span><span class='symbol'>:signer</span><span class='rbracket'>]</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_acc'>acc</span><span class='lbracket'>[</span><span class='symbol'>:writable</span><span class='rbracket'>]</span> <span class='rbrace'>}</span>
+  <span class='lparen'>(</span><span class='id identifier rubyid_acc'>acc</span> <span class='op'>=</span> <span class='ivar'>@pubkey_account_map</span><span class='lbracket'>[</span><span class='id identifier rubyid_pubkey'>pubkey</span><span class='rbracket'>]</span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_acc'>acc</span><span class='lbracket'>[</span><span class='symbol'>:signer</span><span class='rbracket'>]</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_acc'>acc</span><span class='lbracket'>[</span><span class='symbol'>:writable</span><span class='rbracket'>]</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -2330,7 +2330,7 @@ are handled by this utility.</p>
 </div>
 
       <div id="footer">
-  Generated on Sun Aug 10 20:31:43 2025 by
+  Generated on Sat Aug 16 21:22:39 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.4).
 </div>

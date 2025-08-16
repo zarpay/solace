@@ -392,12 +392,12 @@ managing associated token accounts.</p>
       <pre class="lines">
 
 
-48
-49
-50</pre>
+57
+58
+59</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/solace/programs/associated_token_account.rb', line 48</span>
+      <pre class="code"><span class="info file"># File 'lib/solace/programs/associated_token_account.rb', line 57</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='label'>connection:</span><span class='rparen'>)</span>
   <span class='kw'>super</span><span class='lparen'>(</span><span class='label'>connection:</span> <span class='id identifier rubyid_connection'>connection</span><span class='comma'>,</span> <span class='label'>program_id:</span> <span class='const'><span class='object_link'><a href="../../Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Constants.html" title="Solace::Constants (module)">Constants</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Constants.html#ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID-constant" title="Solace::Constants::ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID (constant)">ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID</a></span></span><span class='rparen'>)</span>
@@ -505,19 +505,19 @@ managing associated token accounts.</p>
       <pre class="lines">
 
 
-33
-34
-35
-36
-37
-38
-39
-40
-41
-42</pre>
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/solace/programs/associated_token_account.rb', line 33</span>
+      <pre class="code"><span class="info file"># File 'lib/solace/programs/associated_token_account.rb', line 42</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_get_address'>get_address</span><span class='lparen'>(</span><span class='label'>owner:</span><span class='comma'>,</span> <span class='label'>mint:</span><span class='rparen'>)</span>
   <span class='const'><span class='object_link'><a href="../../Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Utils.html" title="Solace::Utils (module)">Utils</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Utils/PDA.html" title="Solace::Utils::PDA (module)">PDA</a></span></span><span class='period'>.</span><span class='id identifier rubyid_find_program_address'><span class='object_link'><a href="../Utils/PDA.html#find_program_address-class_method" title="Solace::Utils::PDA.find_program_address (method)">find_program_address</a></span></span><span class='lparen'>(</span>
@@ -616,16 +616,16 @@ managing associated token accounts.</p>
       <pre class="lines">
 
 
-87
-88
-89
-90
-91
-92
-93</pre>
+96
+97
+98
+99
+100
+101
+102</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/solace/programs/associated_token_account.rb', line 87</span>
+      <pre class="code"><span class="info file"># File 'lib/solace/programs/associated_token_account.rb', line 96</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_create_associated_token_account'>create_associated_token_account</span><span class='lparen'>(</span><span class='op'>**</span><span class='id identifier rubyid_options'>options</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_tx'>tx</span> <span class='op'>=</span> <span class='id identifier rubyid_prepare_create_associated_token_account'>prepare_create_associated_token_account</span><span class='lparen'>(</span><span class='op'>**</span><span class='id identifier rubyid_options'>options</span><span class='rparen'>)</span>
@@ -715,12 +715,12 @@ managing associated token accounts.</p>
       <pre class="lines">
 
 
-56
-57
-58</pre>
+65
+66
+67</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/solace/programs/associated_token_account.rb', line 56</span>
+      <pre class="code"><span class="info file"># File 'lib/solace/programs/associated_token_account.rb', line 65</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_get_address'>get_address</span><span class='lparen'>(</span><span class='op'>**</span><span class='id identifier rubyid_options'>options</span><span class='rparen'>)</span>
   <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='period'>.</span><span class='id identifier rubyid_get_address'>get_address</span><span class='lparen'>(</span><span class='op'>**</span><span class='id identifier rubyid_options'>options</span><span class='rparen'>)</span>
@@ -853,24 +853,24 @@ managing associated token accounts.</p>
       <pre class="lines">
 
 
-67
-68
-69
-70
-71
-72
-73
-74
-75
 76
 77
 78
 79
 80
-81</pre>
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/solace/programs/associated_token_account.rb', line 67</span>
+      <pre class="code"><span class="info file"># File 'lib/solace/programs/associated_token_account.rb', line 76</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_get_or_create_address'>get_or_create_address</span><span class='lparen'>(</span><span class='label'>payer:</span><span class='comma'>,</span> <span class='label'>owner:</span><span class='comma'>,</span> <span class='label'>mint:</span><span class='comma'>,</span> <span class='label'>commitment:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>confirmed</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
   <span class='id identifier rubyid_ata_address'>ata_address</span><span class='comma'>,</span> <span class='id identifier rubyid__bump'>_bump</span> <span class='op'>=</span> <span class='id identifier rubyid_get_address'>get_address</span><span class='lparen'>(</span><span class='label'>owner:</span> <span class='id identifier rubyid_owner'>owner</span><span class='comma'>,</span> <span class='label'>mint:</span> <span class='id identifier rubyid_mint'>mint</span><span class='rparen'>)</span>
@@ -998,15 +998,6 @@ managing associated token accounts.</p>
       <pre class="lines">
 
 
-102
-103
-104
-105
-106
-107
-108
-109
-110
 111
 112
 113
@@ -1019,10 +1010,17 @@ managing associated token accounts.</p>
 120
 121
 122
-123</pre>
+123
+124
+125
+126
+127
+128
+129
+130</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/solace/programs/associated_token_account.rb', line 102</span>
+      <pre class="code"><span class="info file"># File 'lib/solace/programs/associated_token_account.rb', line 111</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_prepare_create_associated_token_account'>prepare_create_associated_token_account</span><span class='lparen'>(</span>
   <span class='label'>payer:</span><span class='comma'>,</span>
@@ -1031,20 +1029,18 @@ managing associated token accounts.</p>
 <span class='rparen'>)</span>
   <span class='id identifier rubyid_ata_address'>ata_address</span><span class='comma'>,</span> <span class='op'>=</span> <span class='id identifier rubyid_get_address'>get_address</span><span class='lparen'>(</span><span class='label'>owner:</span> <span class='id identifier rubyid_owner'>owner</span><span class='comma'>,</span> <span class='label'>mint:</span> <span class='id identifier rubyid_mint'>mint</span><span class='rparen'>)</span>
 
-  <span class='const'><span class='object_link'><a href="../TransactionComposer.html" title="Solace::TransactionComposer (class)">TransactionComposer</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="../TransactionComposer.html#initialize-instance_method" title="Solace::TransactionComposer#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='label'>connection:</span> <span class='id identifier rubyid_connection'>connection</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_try'>try</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_tx_composer'>tx_composer</span><span class='op'>|</span>
-    <span class='id identifier rubyid_tx_composer'>tx_composer</span><span class='period'>.</span><span class='id identifier rubyid_set_fee_payer'>set_fee_payer</span><span class='lparen'>(</span><span class='id identifier rubyid_payer'>payer</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_ix'>ix</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Composers.html" title="Solace::Composers (module)">Composers</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Composers/AssociatedTokenAccountProgramCreateAccountComposer.html" title="Solace::Composers::AssociatedTokenAccountProgramCreateAccountComposer (class)">AssociatedTokenAccountProgramCreateAccountComposer</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="../Composers/Base.html#initialize-instance_method" title="Solace::Composers::Base#initialize (method)">new</a></span></span><span class='lparen'>(</span>
+    <span class='label'>mint:</span> <span class='id identifier rubyid_mint'>mint</span><span class='comma'>,</span>
+    <span class='label'>owner:</span> <span class='id identifier rubyid_owner'>owner</span><span class='comma'>,</span>
+    <span class='label'>funder:</span> <span class='id identifier rubyid_payer'>payer</span><span class='comma'>,</span>
+    <span class='label'>ata_address:</span> <span class='id identifier rubyid_ata_address'>ata_address</span>
+  <span class='rparen'>)</span>
 
-    <span class='id identifier rubyid_tx_composer'>tx_composer</span><span class='period'>.</span><span class='id identifier rubyid_add_instruction'>add_instruction</span><span class='lparen'>(</span>
-      <span class='const'><span class='object_link'><a href="../../Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Composers.html" title="Solace::Composers (module)">Composers</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Composers/AssociatedTokenAccountProgramCreateAccountComposer.html" title="Solace::Composers::AssociatedTokenAccountProgramCreateAccountComposer (class)">AssociatedTokenAccountProgramCreateAccountComposer</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="../Composers/Base.html#initialize-instance_method" title="Solace::Composers::Base#initialize (method)">new</a></span></span><span class='lparen'>(</span>
-        <span class='label'>mint:</span> <span class='id identifier rubyid_mint'>mint</span><span class='comma'>,</span>
-        <span class='label'>owner:</span> <span class='id identifier rubyid_owner'>owner</span><span class='comma'>,</span>
-        <span class='label'>funder:</span> <span class='id identifier rubyid_payer'>payer</span><span class='comma'>,</span>
-        <span class='label'>ata_address:</span> <span class='id identifier rubyid_ata_address'>ata_address</span>
-      <span class='rparen'>)</span>
-    <span class='rparen'>)</span>
-
-    <span class='id identifier rubyid_tx_composer'>tx_composer</span><span class='period'>.</span><span class='id identifier rubyid_compose_transaction'>compose_transaction</span>
-  <span class='kw'>end</span>
+  <span class='const'><span class='object_link'><a href="../TransactionComposer.html" title="Solace::TransactionComposer (class)">TransactionComposer</a></span></span>
+    <span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='label'>connection:</span> <span class='id identifier rubyid_connection'>connection</span><span class='rparen'>)</span>
+    <span class='period'>.</span><span class='id identifier rubyid_set_fee_payer'>set_fee_payer</span><span class='lparen'>(</span><span class='id identifier rubyid_payer'>payer</span><span class='rparen'>)</span>
+    <span class='period'>.</span><span class='id identifier rubyid_add_instruction'>add_instruction</span><span class='lparen'>(</span><span class='id identifier rubyid_ix'>ix</span><span class='rparen'>)</span>
+    <span class='period'>.</span><span class='id identifier rubyid_compose_transaction'>compose_transaction</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -1056,7 +1052,7 @@ managing associated token accounts.</p>
 </div>
 
       <div id="footer">
-  Generated on Sun Aug 10 20:31:43 2025 by
+  Generated on Sat Aug 16 21:22:40 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.4).
 </div>
