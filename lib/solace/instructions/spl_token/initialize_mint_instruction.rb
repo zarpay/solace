@@ -18,7 +18,6 @@ module Solace
       #     program_index: 3
       #   )
       #
-      # @see Solace::Instructions::SystemProgram::CreateAccountInstruction
       # @since 0.0.2
       class InitializeMintInstruction
         # Instruction index for Initialize Mint

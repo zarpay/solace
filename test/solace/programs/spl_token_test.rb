@@ -21,7 +21,7 @@ describe Solace::Programs::SplToken do
     let(:decimals) { 6 }
     let(:payer) { Fixtures.load_keypair('payer') }
 
-    let(:mint_keypair) { Solace::Keypair.generate }
+    let(:mint_account) { Solace::Keypair.generate }
     let(:mint_authority) { Solace::Keypair.generate }
     let(:freeze_authority) { Solace::Keypair.generate }
 
@@ -30,7 +30,7 @@ describe Solace::Programs::SplToken do
         program.prepare_create_mint(
           payer: payer,
           decimals: decimals,
-          mint_keypair: mint_keypair,
+          mint_account: mint_account,
           mint_authority: mint_authority,
           freeze_authority: freeze_authority
         )
@@ -40,32 +40,14 @@ describe Solace::Programs::SplToken do
         assert_kind_of Solace::Transaction, tx
       end
 
-      it 'should sign the transaction with the payer and mint authority' do
-        assert_equal tx.signatures.length, 2
+      it 'should return the unsigned transaction' do
+        assert_equal tx.signatures.length, 0
+      end
 
-        # First account is payer
+      it 'should set the correct fee payer' do
         assert_equal tx.message.accounts[0], payer.address
-
-        # Second account is mint keypair
-        assert_equal tx.message.accounts[1], mint_keypair.address
       end
 
-      it 'should set the correct header' do
-        assert_equal tx.message.header, [2, 0, 3]
-      end
-
-      it 'should order the accounts correctly' do
-        assert_equal(
-          tx.message.accounts,
-          [
-            payer.address,
-            mint_keypair.address,
-            Solace::Constants::SYSVAR_RENT_PROGRAM_ID,
-            Solace::Constants::TOKEN_PROGRAM_ID,
-            Solace::Constants::SYSTEM_PROGRAM_ID
-          ]
-        )
-      end
       it 'should create two instructions (CreateAccountInstruction and InitializeMintInstruction)' do
         assert_equal tx.message.instructions.length, 2
       end
@@ -78,7 +60,7 @@ describe Solace::Programs::SplToken do
           response = program.create_mint(
             payer: payer,
             decimals: decimals,
-            mint_keypair: mint_keypair,
+            mint_account: mint_account,
             mint_authority: mint_authority,
             freeze_authority: freeze_authority
           )
@@ -87,7 +69,7 @@ describe Solace::Programs::SplToken do
         end
 
         # 5. Get account info
-        @account_info = connection.get_account_info(mint_keypair.address)
+        @account_info = connection.get_account_info(mint_account.address)
       end
 
       it 'account should not be executable' do
@@ -133,8 +115,7 @@ describe Solace::Programs::SplToken do
       end
 
       describe 'when the mint authority is not the payer' do
-        it 'should sign the transaction with the payer and mint authority' do
-          assert_equal tx.signatures.length, 2
+        it 'should have both the payer and mint authority as first accounts' do
           assert_equal tx.message.accounts[0], payer.address
           assert_equal tx.message.accounts[1], mint_authority.address
         end
@@ -143,15 +124,16 @@ describe Solace::Programs::SplToken do
       describe 'when the mint authority is the payer' do
         let(:mint_authority) { payer }
 
-        it 'should sign the transaction with the payer' do
-          assert_equal tx.signatures.length, 1
-          assert_equal tx.message.accounts[0], payer.address
+        it 'should have the mint authority as the first account' do
+          assert_equal tx.message.accounts[0], mint_authority.address
         end
       end
     end
 
     describe '#mint_to' do
       before(:all) do
+        @account_starting_balance = connection.get_token_account_balance(destination)['amount'].to_i
+
         connection.wait_for_confirmed_signature do
           @result = program.mint_to(
             amount: amount,
@@ -167,6 +149,12 @@ describe Solace::Programs::SplToken do
 
       it 'should return a valid signature' do
         assert_includes 84..88, @result['result'].length
+      end
+
+      it 'should increase the destination account balance' do
+        account_info = connection.get_token_account_balance(destination)
+
+        assert_equal account_info['amount'].to_i, amount + @account_starting_balance
       end
     end
   end
@@ -202,6 +190,11 @@ describe Solace::Programs::SplToken do
 
     describe '#transfer' do
       before(:all) do
+        # Get initial balances
+        @source_initial_balance      = connection.get_token_account_balance(source)['amount'].to_i
+        @destination_initial_balance = connection.get_token_account_balance(destination)['amount'].to_i
+
+        # Transfer tokens
         @response = program.transfer(
           amount: amount,
           payer: payer,
@@ -211,10 +204,19 @@ describe Solace::Programs::SplToken do
         )
 
         connection.wait_for_confirmed_signature { @response['result'] }
+
+        # Final balances
+        @source_final_balance      = connection.get_token_account_balance(source)['amount'].to_i
+        @destination_final_balance = connection.get_token_account_balance(destination)['amount'].to_i
       end
 
       it 'should return a valid signature' do
         assert_includes 84..88, @response['result'].length
+      end
+
+      it 'should transfer tokens between accounts' do
+        assert_equal @source_final_balance, @source_initial_balance - amount
+        assert_equal @destination_final_balance, @destination_initial_balance + amount
       end
     end
   end

@@ -42,6 +42,12 @@ module Solace
     #   The default options for RPC requests
     attr_reader :default_options
 
+    # Last fetched blockhash
+    attr_reader :last_fetched_blockhash
+
+    # Last fetched blockhash timestamp
+    attr_reader :last_fetched_block_height
+
     # Initialize the connection with a default or custom RPC URL
     #
     # @param rpc_url [String] The URL of the Solana RPC node
@@ -97,12 +103,34 @@ module Solace
 
     # Get the latest blockhash from the Solana node
     #
+    # Stores the last fetched blockhash and last valid block height in the connection, as
+    # different clients may need to access these values.
+    #
+    # @example
+    #  # Initialize the connection
+    #  connection = Solace::Connection.new('http://localhost:8899', commitment: 'confirmed')
+    #
+    #  # Get the latest blockhash
+    #  blockhash, last_valid_block_height = connection.get_latest_blockhash
+    #
+    #  puts "Latest blockhash: #{blockhash}"
+    #  puts "Last valid block height: #{last_valid_block_height}"
+    #
+    #  # Access the last fetched blockhash and height from the connection
+    #  puts "Stored blockhash: #{connection.last_fetched_blockhash}"
+    #  puts "Stored last valid block height: #{connection.last_fetched_block_height}"
+    #
     # @return [Array<String, Integer>] The latest blockhash and lastValidBlockHeight
     def get_latest_blockhash
-      @rpc_client
-        .rpc_request('getLatestBlockhash', [build_get_latest_blockhash_options])
-        .dig('result', 'value')
-        .values_at('blockhash', 'lastValidBlockHeight')
+      result = @rpc_client
+               .rpc_request('getLatestBlockhash', [build_get_latest_blockhash_options])
+               .dig('result', 'value')
+
+      # Set the last fetched blockhash and last valid block height in the connection
+      @last_fetched_blockhash, @last_fetched_block_height = result.values_at('blockhash', 'lastValidBlockHeight')
+
+      # Return the blockhash and last valid block height
+      [@last_fetched_blockhash, @last_fetched_block_height]
     end
 
     # Get the minimum required lamports for rent exemption

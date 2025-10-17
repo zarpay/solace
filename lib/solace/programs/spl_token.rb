@@ -26,7 +26,6 @@ module Solace
     #
     # @since 0.0.2
     #
-    # rubocop:disable Metrics/ClassLength
     class SplToken < Base
       # Initializes a new SPL Token client.
       #
@@ -42,16 +41,21 @@ module Solace
       def create_mint(**options)
         tx = prepare_create_mint(**options)
 
+        tx.sign(
+          options[:payer],
+          options[:mint_account]
+        )
+
         @connection.send_transaction(tx.serialize)
       end
 
-      # Prepares a new SPL Token mint and returns the signed transaction.
+      # Prepares a new SPL Token mint transaction.
       #
-      # @param payer [Solace::Keypair] The keypair that will pay for fees and rent.
+      # @param payer [#to_s, Solace::PublicKey] The payer that will pay for fees and rent.
       # @param decimals [Integer] The number of decimal places for the token.
-      # @param mint_authority [String] The base58 public key for the mint authority.
-      # @param freeze_authority [String] (Optional) The base58 public key for the freeze authority.
-      # @param mint_keypair [Solace::Keypair] (Optional) The keypair for the new mint.
+      # @param mint_authority [#to_s, Solace::PublicKey] The base58 public key for the mint authority.
+      # @param freeze_authority [#to_s, Solace::PublicKey] (Optional) The base58 public key for the freeze authority.
+      # @param mint_account [#to_s, Solace::PublicKey] (Optional) The keypair for the new mint.
       # @return [Solace::Transaction] The signed transaction.
       #
       # rubocop:disable Metrics/MethodLength
@@ -60,49 +64,34 @@ module Solace
         decimals:,
         mint_authority:,
         freeze_authority:,
-        mint_keypair: Solace::Keypair.generate
+        mint_account: Solace::Keypair.generate
       )
-        accounts = [
-          payer.to_s,
-          mint_keypair.to_s,
-          Solace::Constants::SYSVAR_RENT_PROGRAM_ID,
-          Solace::Constants::TOKEN_PROGRAM_ID,
-          Solace::Constants::SYSTEM_PROGRAM_ID
-        ]
-
+        # Mint accounts need 82 bytes of space, and we need to fund it with enough lamports to be rent-exempt
         rent_lamports = @connection.get_minimum_lamports_for_rent_exemption(82)
 
-        create_account_ix = Solace::Instructions::SystemProgram::CreateAccountInstruction.build(
-          from_index: 0,
-          new_account_index: 1,
-          system_program_index: 4,
+        # Build the account for the mint
+        create_account_ix = Composers::SystemProgramCreateAccountComposer.new(
+          from: payer,
+          new_account: mint_account,
+          owner: program_id,
           lamports: rent_lamports,
-          space: 82,
-          owner: program_id
+          space: 82
         )
 
-        freeze_authority = freeze_authority.to_s unless freeze_authority.nil?
-
-        initialize_mint_ix = Solace::Instructions::SplToken::InitializeMintInstruction.build(
-          mint_account_index: 1,
-          rent_sysvar_index: 2,
-          program_index: 3,
+        # Build the initialize mint composer
+        initialize_mint_ix = Composers::SplTokenProgramInitializeMintComposer.new(
           decimals: decimals,
-          mint_authority: mint_authority.to_s,
+          mint_account: mint_account,
+          mint_authority: mint_authority,
           freeze_authority: freeze_authority
         )
 
-        message = Message.new(
-          header: [2, 0, 3],
-          accounts: accounts,
-          recent_blockhash: @connection.get_latest_blockhash[0],
-          instructions: [create_account_ix, initialize_mint_ix]
-        )
-
-        tx = Transaction.new(message: message)
-        tx.sign(payer, mint_keypair)
-
-        tx
+        TransactionComposer
+          .new(connection: @connection)
+          .add_instruction(create_account_ix)
+          .add_instruction(initialize_mint_ix)
+          .set_fee_payer(payer)
+          .compose_transaction
       end
       # rubocop:enable Metrics/MethodLength
 
@@ -113,55 +102,44 @@ module Solace
       def mint_to(**options)
         tx = prepare_mint_to(**options)
 
+        tx.sign(
+          options[:payer],
+          options[:mint_authority]
+        )
+
         @connection.send_transaction(tx.serialize)
       end
 
       # Prepares a mint to instruction and returns the signed transaction.
       #
       # @param [Integer] amount The amount of tokens to mint.
-      # @param [PublicKey, Keypair, String] payer The payer of the transaction.
-      # @param [PublicKey, Keypair, String] mint The mint of the token.
-      # @param [PublicKey, Keypair, String] destination The destination of the token.
-      # @param [PublicKey, Keypair, String] mint_authority The mint authority of the token.
+      # @param [#to_s, PublicKey] payer The payer of the transaction.
+      # @param [#to_s, PublicKey] mint The mint of the token.
+      # @param [#to_s, PublicKey] destination The destination of the token.
+      # @param [#to_s, PublicKey] mint_authority The mint authority of the token.
       # @return [Solace::Transaction] The signed transaction.
       #
-      # rubocop:disable Metrics/MethodLength
+      # @param [Boolean] ensure_account
       def prepare_mint_to(
         payer:,
         mint:,
-        destination:,
         amount:,
+        destination:,
         mint_authority:
       )
-        accounts = [
-          payer.to_s,
-          mint_authority.to_s,
-          mint.to_s,
-          destination.to_s,
-          Solace::Constants::TOKEN_PROGRAM_ID.to_s
-        ]
-
-        ix = Solace::Instructions::SplToken::MintToInstruction.build(
+        ix = Solace::Composers::SplTokenProgramMintToComposer.new(
           amount: amount,
-          mint_authority_index: 1,
-          mint_index: 2,
-          destination_index: 3,
-          program_index: 4
+          mint: mint,
+          destination: destination,
+          mint_authority: mint_authority
         )
 
-        message = Solace::Message.new(
-          header: [2, 0, 1],
-          accounts: accounts,
-          instructions: [ix],
-          recent_blockhash: connection.get_latest_blockhash[0]
-        )
-
-        tx = Solace::Transaction.new(message: message)
-        tx.sign(payer, mint_authority)
-
-        tx
+        TransactionComposer
+          .new(connection: connection)
+          .add_instruction(ix)
+          .set_fee_payer(payer)
+          .compose_transaction
       end
-      # rubocop:enable Metrics/MethodLength
 
       # Transfers tokens from one account to another
       #
@@ -170,19 +148,23 @@ module Solace
       def transfer(**options)
         tx = prepare_transfer(**options)
 
+        tx.sign(
+          options[:payer],
+          options[:owner]
+        )
+
         @connection.send_transaction(tx.serialize)
       end
 
       # Prepares a transfer instruction and returns the signed transaction.
       #
-      # @param payer [Solace::Keypair] The keypair that will pay for fees and rent.
+      # @param payer [#to_s, Solace::PublicKey] The keypair that will pay for fees and rent.
       # @param source [String] The source token account address.
       # @param destination [String] The destination token account address.
       # @param amount [Integer] The number of tokens to transfer.
-      # @param owner [Solace::Keypair] The keypair of the owner of the source account.
+      # @param owner [#to_s, Solace::PublicKey] The keypair of the owner of the source account.
       # @return [Solace::Transaction] The signed transaction.
       #
-      # rubocop:disable Metrics/MethodLength
       def prepare_transfer(
         amount:,
         payer:,
@@ -190,36 +172,19 @@ module Solace
         destination:,
         owner:
       )
-        accounts = [
-          payer.to_s,
-          owner.to_s,
-          source.to_s,
-          destination.to_s,
-          Solace::Constants::TOKEN_PROGRAM_ID.to_s
-        ]
-
-        ix = Solace::Instructions::SplToken::TransferInstruction.build(
+        ix = Solace::Composers::SplTokenProgramTransferComposer.new(
           amount: amount,
-          owner_index: 1,
-          source_index: 2,
-          destination_index: 3,
-          program_index: 4
+          owner: owner,
+          source: source,
+          destination: destination
         )
 
-        message = Solace::Message.new(
-          header: [2, 0, 1],
-          accounts: accounts,
-          instructions: [ix],
-          recent_blockhash: connection.get_latest_blockhash[0]
-        )
-
-        tx = Solace::Transaction.new(message: message)
-        tx.sign(payer, owner)
-
-        tx
+        TransactionComposer
+          .new(connection: connection)
+          .add_instruction(ix)
+          .set_fee_payer(payer)
+          .compose_transaction
       end
-      # rubocop:enable Metrics/MethodLength
     end
-    # rubocop:enable Metrics/ClassLength
   end
 end

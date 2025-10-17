@@ -18,6 +18,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [0.1.0] - yyyy-mm-dd
 
+NOTE: This release has breaking changes. Please read changelog.
+
 ### Added
 
 1. Introduced **`Solace::Tokens`** — a structured registry and lookup system for Solana token metadata.
@@ -35,13 +37,54 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
    * Provides flexible querying via `where` and a clean interface for accessing token metadata.
    * Includes safety improvements to preserve internal constants (`Token`) when reloading.
 
+2. Added **`SystemProgramCreateAccountComposer`** — a composer for building account creation flows via the Solana System Program.
+
+   * Wraps `SystemProgram::CreateAccountInstruction`.
+   * Handles lamport allocation, rent-exemption, and account ownership assignment.
+   * Simplifies creation of system-owned and program-owned accounts for on-chain operations.
+
+3. Added **`SplTokenProgramInitializeMintComposer`** — a composer for initializing new SPL Token mints.
+
+   * Wraps `SplToken::InitializeMintInstruction`.
+   * Supports configuration of decimals, mint authority, and optional freeze authority.
+   * Designed to pair with `SystemProgramCreateAccountComposer` for one-transaction mint creation.
+
+4. Added **`SplTokenProgramMintToComposer`** — a composer for minting tokens to an ata.
+
+   * Wraps `SplToken::MintToInstruction`.
+   * Supports minting of tokens to a desitination ata given.
+
+5. Added **`SplTokenProgramTransferComposer`** — a composer for transfering tokens
+
+   * Wraps `SplToken::TransferInstruction`.
+   * Supports sending of spl-tokens.
+
+6. Enhanced **`Solace::Connection`** with cached blockhash accessors.
+
+   * Added `last_fetched_blockhash` and `last_fetched_block_height` reader attributes.
+   * These store the most recently retrieved blockhash and corresponding `lastValidBlockHeight` from the network.
+   * Enables efficient reuse of recent blockhash data without re-fetching between sequential transactions.
+   * Updated `get_latest_blockhash` to set these values automatically upon retrieval.
+
 ### Changed
 
-2. Updated `build_instructions` method on `TransactionComposer` to flatten the array, allowing composers to return multiple instructions when relevant (i.e. creating an account and then writing to it).
-3. Changed `get_latest_blockhash` to use the expected commitment level by the connection or passed options and return an array (`[blockhash, lastValidBlockheight]`).
-4. Changed default commitment level to `processed` in `Solace::Connection`.
+1. Updated `build_instructions` method on `TransactionComposer` to flatten the array, allowing composers to return multiple instructions when relevant (e.g. creating an account and then initializing it).
+
+2. Changed `get_latest_blockhash` to use the expected commitment level from the connection or provided options and to return an array (`[blockhash, lastValidBlockheight]`).
+
+3. Changed the default commitment level to `processed` in `Solace::Connection`.
+
+4. Changed kwarg names in SPL Program for `prepare_create_mint` and moved signing logic to `create_mint`.
+
+5. Changed SPL Program for `prepare_mint_to` to move signing logic to `mint_to`.
+
+6. Changed SPL Program for `prepare_transfer` to move signing logic to `transfer`.
+
 
 ### Fixed
+
+* Improved token loading safety in `Solace::Tokens` to prevent internal constant removal during reloads.
+
 
 ## [0.0.9] - 2025-08-12
 

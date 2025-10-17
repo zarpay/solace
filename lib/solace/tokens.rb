@@ -21,7 +21,7 @@ module Solace
   #
   # @since 0.1.0
   module Tokens
-    autoload :Token, 'solace/tokens/token'
+    autoload :Token, File.expand_path('tokens/token', __dir__)
 
     # Load tokens from a YAML file for a specific network
     #
@@ -50,8 +50,7 @@ module Solace
     #
     # @return [void]
     def self.clear!
-      protected_constants = %i[Token VERSION]
-      (constants - protected_constants).each { |c| remove_const(c) }
+      (constants - [:Token]).each { |c| remove_const(c) }
       @registry = {}
     end
 
