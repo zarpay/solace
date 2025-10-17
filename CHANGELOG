@@ -1,45 +1,60 @@
 # Change Log
 All notable changes to this project will be documented in this file.
- 
+
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Template
 
 ```markdown
 ## [VERSION] - yyyy-mm-dd
-  
+
 ### Added
-1. 
+1.
 
 ### Changed
- 
+
 ### Fixed
 ```
 
-## [0.0.10] - yyyy-mm-dd
-  
+## [0.1.0] - yyyy-mm-dd
+
 ### Added
-1. 
+
+1. Introduced **`Solace::Tokens`** — a structured registry and lookup system for Solana token metadata.
+
+   * Developers can define token details via a YAML configuration file scoped by network (e.g. `mainnet`, `devnet`).
+   * Supports programmatic access to tokens and metadata:
+
+     ```ruby
+     Solace::Tokens.load(path: 'tokens.yml', network: :devnet)
+     Solace::Tokens::USDC.decimals  # => 6
+     Solace::Tokens.fetch('USDC')   # => <Solace::Tokens::Token ...>
+     Solace::Tokens.where(decimals: 6)
+     ```
+   * Implements dynamic constant registration for each token symbol (`USDC`, `SOL`, etc.).
+   * Provides flexible querying via `where` and a clean interface for accessing token metadata.
+   * Includes safety improvements to preserve internal constants (`Token`) when reloading.
 
 ### Changed
+
 2. Updated `build_instructions` method on `TransactionComposer` to flatten the array, allowing composers to return multiple instructions when relevant (i.e. creating an account and then writing to it).
-3. Changed get_latest_blockhash to use the expected comittment level by the connection or passed options and return array (blockhash and lastValidBlockheight)
+3. Changed `get_latest_blockhash` to use the expected commitment level by the connection or passed options and return an array (`[blockhash, lastValidBlockheight]`).
 4. Changed default commitment level to `processed` in `Solace::Connection`.
 
 ### Fixed
 
 ## [0.0.9] - 2025-08-12
-  
+
 ### Added
 1. Added `get_program_accounts` to `Solace::Connection`.
 
 ### Changed
- 
+
 ### Fixed
 1. Removed use of the `try` method for supporting non-rails environments.
 
 ## [0.0.8] - 2025-08-11
-  
+
 ### Added
 1. Added `load` method to `Solace::Constants` to load constants from a YAML file. This method allows for loading constants from a YAML file (i.e. custom program addresses and mint accounts).
 2. Added `to_s` and `address` method to `Solace::Keypair` and `Solace::PublicKey` to return the public key as a Base58 string.
@@ -50,22 +65,22 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ### Changed
 1. All methods that take a `Solace::Keypair` or `Solace::Pubkey` where an address is needed now also accept a plain string address. This prevents the need of creating instances of the classes when all that is needed is the address. This is with the exception of the low-level instruction builders, which only expect the correct data and indicies with no required casting.
 2. Changed `wait_for_confirmed_signature` method to accept a `timeout`, `interval`, and `commitment` arguments.
- 
+
 ### Fixed
 1. Fixed `get_or_create_address` method in `Solace::Programs::AssociatedTokenAccount` to return the address of the associated token account if it already exists by checking if there is any data at the address.
 
 ## [0.0.7] - 2025-08-09
-  
+
 ### Added
 1. Added `AssociatedTokenAccountProgramCreateAccountComposer` with tests.
 
 ### Changed
 1. Updated `AssociatedTokenAccount` to use `AssociatedTokenAccountProgramCreateAccountComposer` and sign the transaction in the `create_associated_token_account` method instead of the `prepare_create_associated_token_account` method.
- 
+
 ### Fixed
 
 ## [0.0.6] - 2025-08-07
-  
+
 ### Added
 1. Added `from_address` method to `Solace::PublicKey`.
 2. Change docs on most methods to include an `@example` section.
@@ -73,13 +88,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ### Changed
 1. Change `private_key` method on Keypair to `pivate_key_bytes`
 2. Change README to include a practical example of using composers.
- 
+
 ### Fixed
 1. Fix `encode_signatures` method in `Solace::Serializers::TransactionSerializer` to correctly count the number of signatures using the `num_required_signatures` field in the message.
 
 
 ## [0.0.3] - 2025-07-30
-  
+
 ### Added
 1. Moved `TransferCheckedInstruction` and `TransferInstruction` to `Solace::Instructions::SystemProgram` namespace.
 2. Added `get_token_account_balance` to `Solace::Connection`.
@@ -94,14 +109,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ### Changed
 
-THESE ARE BREAKING CHANGES FROM 0.0.2 TO 0.0.3. Solice is still in alpha and the API is subject to change. 
+THESE ARE BREAKING CHANGES FROM 0.0.2 TO 0.0.3. Solice is still in alpha and the API is subject to change.
 
 There was a bit of a refactoring of the codebase to make it more maintainable and to make it easier to add new features. Additonally, the SDK now has `Composers` for handling accounts and instructions in a higher level abstraction. These composers are used in the tests and can be used in your own code as well.
 
-Soon, YARD documentation will be added to the SDK and published to https://solace-rb.github.io/solace/. 
+Soon, YARD documentation will be added to the SDK and published to https://solace-rb.github.io/solace/.
 
 Stay tuned.
- 
+
 ### Fixed
 
 N/A

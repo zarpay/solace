@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'bundler'
 require 'test_helper'
 
 describe Solace::Constants do

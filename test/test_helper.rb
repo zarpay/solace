@@ -3,7 +3,7 @@
 # test/test_helper.rb
 
 # Loads the environment and runs all Minitest tests in the test directory
-
+require 'bundler'
 require 'minitest/mock'
 require 'minitest/autorun'
 require 'minitest/hooks/default'

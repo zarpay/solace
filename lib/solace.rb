@@ -13,6 +13,9 @@ require_relative 'solace/utils/account_context'
 require_relative 'solace/utils/curve25519_dalek'
 require_relative 'solace/concerns/binary_serializable'
 
+# 🪙 Tokens
+require_relative 'solace/tokens'
+
 # ✨ Serializers
 require_relative 'solace/serializers/base_serializer'
 require_relative 'solace/serializers/base_deserializer'

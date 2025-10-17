@@ -1,0 +1,29 @@
+# Devnet
+devnet:
+  USDC:
+    mint: usdc_address_devnet
+    decimals: 6
+    type: stablecoin
+  USDT:
+    mint: usdt_address_devnet
+    decimals: 6
+    type: stablecoin
+  SOL:
+    mint: sol_address_devnet
+    decimals: 9
+    type: native
+
+# Mainnet
+mainnet:
+  USDC:
+    mint: usdc_address_mainnet
+    decimals: 6
+    type: stablecoin
+  USDT:
+    mint: usdt_address_mainnet
+    decimals: 6
+    type: stablecoin
+  SOL:
+    mint: sol_address_mainnet
+    decimals: 9
+    type: native
