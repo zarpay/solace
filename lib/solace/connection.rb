@@ -75,6 +75,27 @@ module Solace
       }
     end
 
+    # Gets the version of the Solana node
+    #
+    # @return [Hash] The version information
+    def get_version
+      @rpc_client.rpc_request('getVersion')['result']
+    end
+
+    # Get the health status of the Solana node
+    #
+    # @return [String] The health status
+    def get_health
+      @rpc_client.rpc_request('getHealth')['result']
+    end
+
+    # Get the genesis hash of the Solana node
+    #
+    # @return [String] The genesis hash
+    def get_genesis_hash
+      @rpc_client.rpc_request('getGenesisHash')['result']
+    end
+
     # Request an airdrop of lamports to a given address
     #
     # @param pubkey [String] The public key of the account to receive the airdrop
@@ -149,6 +170,14 @@ module Solace
       @rpc_client.rpc_request('getAccountInfo', [pubkey, default_options]).dig('result', 'value')
     end
 
+    # Get multiple accounts information from the Solana node
+    #
+    # @param pubkeys [Array<String>] The public keys of the accounts
+    # @return [Array<Object>] The accounts information
+    def get_multiple_accounts(pubkeys)
+      @rpc_client.rpc_request('getMultipleAccounts', [pubkeys, default_options]).dig('result', 'value')
+    end
+
     # Get the balance of a specific account
     #
     # @param pubkey [String] The public key of the account
@@ -163,6 +192,15 @@ module Solace
     # @return [Hash] Token account balance information with amount and decimals
     def get_token_account_balance(token_account)
       @rpc_client.rpc_request('getTokenAccountBalance', [token_account, default_options]).dig('result', 'value')
+    end
+
+    # Gets the token accounts by owner
+    #
+    # @param owner [String] The public key of the owner
+    # @return [Array<Hash>] The token accounts owned by the owner for the specified mint
+    def get_token_accounts_by_owner(owner)
+      params = [owner, { programId: Constants::TOKEN_PROGRAM_ID }, default_options]
+      @rpc_client.rpc_request('getTokenAccountsByOwner', params).dig('result', 'value')
     end
 
     # Get the transaction by signature
@@ -223,6 +261,15 @@ module Solace
       @rpc_client.rpc_request('sendTransaction', [transaction, build_send_transaction_options(overrides)])
     end
 
+    # Simulate a transaction on the Solana node
+    #
+    # @param transaction [Transaction] The transaction to simulate
+    # @param [Hash{Symbol => Object}] overrides
+    # @return [Object] The result of the simulation
+    def simulate_transaction(transaction, overrides = {})
+      @rpc_client.rpc_request('simulateTransaction', [transaction, build_send_transaction_options(overrides)])
+    end
+
     # Wait until the yielded signature reaches the desired commitment or timeout.
     #
     # @param commitment [String] One of "processed", "confirmed", "finalized"
@@ -242,7 +289,7 @@ module Solace
       deadline = monotonic_deadline(timeout)
 
       # Wait for confirmation
-      until dealine_passed?(deadline)
+      until deadline_passed?(deadline)
         return signature if commitment_reached?(signature, commitment)
 
         sleep interval

@@ -8,8 +8,6 @@ require 'test_helper'
 bob = JSON.load_file(File.expand_path('../fixtures/bob.json', __dir__))
 anna = JSON.load_file(File.expand_path('../fixtures/anna.json', __dir__))
 
-puts bob
-
 # 1. Generate sender and recipient keypairs
 sender = Solace::Keypair.from_secret_key(bob.pack('C*'))
 recipient = Solace::Keypair.from_secret_key(anna.pack('C*'))
@@ -51,10 +49,22 @@ message = Solace::Message.new(
 # 6. Build transaction
 transaction = Solace::Transaction.new(message: message)
 
-# 7. Sign transaction
+# 8. Sign transaction
 transaction.sign(sender)
 
-# 8. Send transaction
+# 7. Simulate transaction (before signing)
+simulation_result = conn.simulate_transaction(transaction.serialize)
+puts "Simulation result: #{simulation_result}"
+
+# Ask user to confirm
+puts 'Do you want to proceed with the transaction? (yes/no)'
+answer = STDIN.gets.chomp.downcase
+unless answer == 'yes'
+  puts 'Transaction aborted by user.'
+  exit
+end
+
+# 9. Send transaction
 result = conn.send_transaction(transaction.serialize)
 
 puts "Transaction sent: #{result}"
