@@ -105,12 +105,107 @@ describe Solace::TransactionComposer do
     end
   end
 
+  describe '#prepend_instruction' do
+    it 'prepends instruction composer and returns self for chaining' do
+      result = composer
+               .add_instruction(transfer_composer2)
+               .prepend_instruction(transfer_composer1)
+
+      assert_equal composer, result
+      assert_equal 2, composer.instruction_composers.length
+      assert_equal transfer_composer1, composer.instruction_composers.first
+      assert_equal transfer_composer2, composer.instruction_composers.last
+    end
+  end
+
+  describe '#insert_instruction' do
+    let(:transfer_composer_middle) do
+      Solace::Composers::SystemProgramTransferComposer.new(
+        from: payer_keypair,
+        to: random_keypair,
+        lamports: 500
+      )
+    end
+
+    it 'inserts instruction composer at index and returns self for chaining' do
+      result = composer
+               .add_instruction(transfer_composer1)
+               .add_instruction(transfer_composer2)
+               .insert_instruction(1, transfer_composer_middle)
+
+      assert_equal composer, result
+
+      assert_equal 3, composer.instruction_composers.length
+      assert_equal transfer_composer1, composer.instruction_composers.first
+      assert_equal transfer_composer_middle, composer.instruction_composers.at(1)
+      assert_equal transfer_composer2, composer.instruction_composers.last
+    end
+  end
+
   describe '#set_fee_payer' do
     it 'sets fee payer and returns self for chaining' do
       result = composer.set_fee_payer(payer_keypair)
 
       assert_equal composer, result
       assert composer.context.fee_payer?(payer_keypair.address)
+    end
+  end
+
+  describe '#merge' do
+    let(:other_composer) { Solace::TransactionComposer.new(connection: connection) }
+
+    let(:another_instruction_composer) do
+      Solace::Composers::SystemProgramTransferComposer.new(
+        from: bob_keypair,
+        to: anna_keypair,
+        lamports: 1500
+      )
+    end
+
+    before do
+      # Set up main composer
+      composer
+        .add_instruction(transfer_composer1)
+        .add_instruction(transfer_composer2)
+
+      # Set up other composer
+      other_composer.add_instruction(another_instruction_composer)
+    end
+
+    it 'merges another composer into current composer using default :add placement' do
+      result = composer.merge(other_composer)
+
+      assert_equal composer, result
+      assert_equal composer.instruction_composers.length, 3
+
+      # Verify order: original two followed by the merged one
+      assert_equal transfer_composer1, composer.instruction_composers.first
+      assert_equal transfer_composer2, composer.instruction_composers[1]
+      assert_equal another_instruction_composer, composer.instruction_composers.last
+    end
+
+    it 'merges another composer into current composer using :prepend placement' do
+      result = composer.merge(other_composer, placement: :prepend)
+
+      assert_equal composer, result
+      assert_equal composer.instruction_composers.length, 3
+
+      # Verify order: merged one followed by the original two
+      assert_equal another_instruction_composer, composer.instruction_composers.first
+      assert_equal transfer_composer1, composer.instruction_composers[1]
+      assert_equal transfer_composer2, composer.instruction_composers.last
+    end
+
+    it 'merges another composer into current composer using :insert placement at index' do
+      result = composer.merge(other_composer, placement: :insert, index: 1)
+
+      assert_equal composer, result
+      assert_equal composer.instruction_composers.length, 3
+
+      # Verify order: first original, then merged, then second original
+      assert_equal transfer_composer1, composer.instruction_composers.first
+      assert_equal another_instruction_composer, composer.instruction_composers[1]
+      assert_equal transfer_composer2, composer.instruction_composers.last
     end
   end
 

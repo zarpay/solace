@@ -56,7 +56,7 @@ module Solace
       # Deserialize a base64 encoded transaction into a Solace::Transaction object
       #
       # @param base64_tx [String] The base64 encoded transaction
-      # @return [Solace::Transaction] The deserialized transaction
+      # @return [Transaction] The deserialized transaction
       def from(base64_tx)
         DESERIALIZER.new(Solace::Utils::Codecs.base64_to_bytestream(base64_tx)).call
       end
@@ -64,7 +64,7 @@ module Solace
 
     # Initialize a new transaction
     #
-    # @return [Solace::Transaction] The new transaction object
+    # @return [Transaction] The new transaction object
     def initialize(
       signatures: [],
       message: Solace::Message.new
@@ -72,6 +72,13 @@ module Solace
       super()
       @signatures = signatures
       @message = message
+    end
+
+    # Returns the first signature of the transaction (signature of the transaction fee payer)
+    #
+    # @return [String, nil] The first signature of the transaction or nil if there are no signatures
+    def signature
+      Utils::Codecs.binary_to_base58(signatures.first) unless signatures.empty?
     end
 
     # Sign the transaction

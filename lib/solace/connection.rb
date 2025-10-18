@@ -168,7 +168,7 @@ module Solace
     # Get the transaction by signature
     #
     # @param signature [String] The signature of the transaction
-    # @return [Solace::Transaction] The transaction object
+    # @return [Transaction] The transaction object
     # @param [Hash{Symbol => Object}] options
     def get_transaction(signature, options = { maxSupportedTransactionVersion: 0 })
       @rpc_client.rpc_request('getTransaction', [signature, default_options.merge(options)])['result']
@@ -216,7 +216,7 @@ module Solace
 
     # Send a transaction to the Solana node
     #
-    # @param transaction [Solace::Transaction] The transaction to send
+    # @param transaction [Transaction] The transaction to send
     # @param [Hash{Symbol => Object}] overrides
     # @return [String] The signature of the transaction
     def send_transaction(transaction, overrides = {})

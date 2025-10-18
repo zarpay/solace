@@ -23,11 +23,11 @@ describe Solace::Composers::AssociatedTokenAccountProgramCreateAccountComposer d
       )
     end
 
-    before(:all) do
+    it 'creates the a funded associated token account' do
       # Get starting balances and data
-      @account_starting_data = connection.get_account_info(owner_ata)
-      @payer_starting_balance = connection.get_balance(payer.address)
-      @funder_starting_balance = connection.get_balance(funder.address)
+      account_starting_data = connection.get_account_info(owner_ata)
+      payer_starting_balance = connection.get_balance(payer.address)
+      funder_starting_balance = connection.get_balance(funder.address)
 
       # Set fee payer and add instruction
       transaction_composer.add_instruction(composer)
@@ -38,26 +38,22 @@ describe Solace::Composers::AssociatedTokenAccountProgramCreateAccountComposer d
       tx.sign(payer, funder)
 
       # Send transaction and wait for confirmation
-      @signature = connection.send_transaction(tx.serialize)
-      connection.wait_for_confirmed_signature { @signature['result'] }
+      signature = connection.send_transaction(tx.serialize)
+      connection.wait_for_confirmed_signature { signature['result'] }
 
       # Get ending balances
-      @account_ending_data = connection.get_account_info(owner_ata)
-      @payer_ending_balance = connection.get_balance(payer.address)
-      @funder_ending_balance = connection.get_balance(funder.address)
-    end
+      account_ending_data = connection.get_account_info(owner_ata)
+      payer_ending_balance = connection.get_balance(payer.address)
+      funder_ending_balance = connection.get_balance(funder.address)
 
-    it 'creates the account' do
-      assert_nil @account_starting_data
-      assert_operator @account_ending_data, :!=, nil
-    end
+      assert_nil account_starting_data
+      assert_operator account_ending_data, :!=, nil
 
-    it 'funds account using funder balance' do
-      assert_operator @funder_starting_balance, :>, @funder_ending_balance
-    end
+      # Funder balance decreased
+      assert_operator funder_starting_balance, :>, funder_ending_balance
 
-    it 'deducts fees from payer' do
-      assert_equal @payer_ending_balance, @payer_starting_balance - (2 * 5000)
+      # Funder pays for the account creation rent exemption
+      assert_equal payer_ending_balance, payer_starting_balance - (2 * 5000)
     end
   end
 
@@ -83,9 +79,9 @@ describe Solace::Composers::AssociatedTokenAccountProgramCreateAccountComposer d
       )
     end
 
-    before(:all) do
+    it 'creates the account with funding from the owner' do
       # Get starting balances and data
-      @account_starting_data = connection.get_account_info(owner_ata)
+      account_starting_data = connection.get_account_info(owner_ata)
 
       # Set fee payer and add instructions
       #   The payer will first transfer SOL to the owener so that the owner
@@ -103,17 +99,13 @@ describe Solace::Composers::AssociatedTokenAccountProgramCreateAccountComposer d
       connection.wait_for_confirmed_signature { response['result'] }
 
       # Get ending balances
-      @account_ending_balance = connection.get_balance(owner_ata)
-      @owner_ending_balance = connection.get_balance(owner.address)
-    end
+      account_ending_balance = connection.get_balance(owner_ata)
+      owner_ending_balance = connection.get_balance(owner.address)
 
-    it 'creates the account with funding' do
-      assert_nil @account_starting_data
-      assert_operator @account_ending_balance, :>, 0
-    end
+      assert_nil account_starting_data
+      assert_operator account_ending_balance, :>, 0
 
-    it 'deducts funding from owner' do
-      assert_equal @owner_ending_balance, owner_starting_balance - @account_ending_balance
+      assert_equal owner_ending_balance, owner_starting_balance - account_ending_balance
     end
   end
 end

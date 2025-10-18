@@ -53,15 +53,15 @@ describe Solace::Instructions::SplToken::TransferInstruction do
       # @destination = associated_token_account_program.create_associated_token_account(owner: destination_owner, mint:, payer:)
 
       # Create mint, source ATA, and mint tokens
-      connection.wait_for_confirmed_signature do
-        spl_token_program.mint_to(
-          amount: amount,
-          payer: payer,
-          mint: mint,
-          destination: source,
-          mint_authority: mint_authority
-        )['result']
-      end
+      tx = spl_token_program.mint_to(
+        amount: amount,
+        payer: payer,
+        mint: mint,
+        destination: source,
+        mint_authority: mint_authority
+      )
+
+      connection.wait_for_confirmed_signature { tx.signature }
 
       # Accounts
       accounts = [

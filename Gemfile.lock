@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    solace (0.0.10)
+    solace (0.1.0)
       base58 (~> 0.2)
       ffi (~> 1.15)
       rbnacl (~> 7.0)
@@ -85,6 +85,9 @@ GEM
     ruby-progressbar (1.13.0)
     securerandom (0.4.1)
     tsort (0.2.0)
+    tty-cursor (0.7.1)
+    tty-spinner (0.9.3)
+      tty-cursor (~> 0.7)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
     unicode-display_width (3.1.4)
@@ -116,6 +119,7 @@ DEPENDENCIES
   rubocop
   rubocop-yard
   solace!
+  tty-spinner
   yard
   yardstick
 

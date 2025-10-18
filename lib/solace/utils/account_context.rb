@@ -199,7 +199,7 @@ module Solace
 
       # Add or merge an account into the context
       #
-      # @param pubkey [String, Solace::PublicKey, Solace::Keypair] The public key of the account
+      # @param pubkey [#to_s, PublicKey] The public key of the account
       # @param signer [Boolean] Whether the account is a signer
       # @param writable [Boolean] Whether the account is writable
       # @param [Boolean] fee_payer

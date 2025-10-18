@@ -71,9 +71,60 @@ module Solace
       self
     end
 
+    # Prepend an instruction composer to the transaction
+    #
+    # @param composer [Composers::Base] The instruction composer
+    # @return [TransactionComposer] Self for chaining
+    #
+    # @since 0.1.0
+    def prepend_instruction(composer)
+      merge_accounts(composer.account_context)
+      instruction_composers.unshift(composer)
+      self
+    end
+
+    # Insert an instruction composer at a specific index
+    #
+    # @param index [Integer] The index to insert at
+    # @param composer [Composers::Base] The instruction composer
+    # @return [TransactionComposer] Self for chaining
+    #
+    # @since 0.1.0
+    def insert_instruction(index, composer)
+      merge_accounts(composer.account_context)
+      instruction_composers.insert(index, composer)
+      self
+    end
+
+    # Merge another TransactionComposer into this one
+    #
+    # @param other [TransactionComposer] The other composer to merge
+    # @param placement [Symbol] :add to append, :prepend to prepend
+    # @param index [Integer, nil] The index to insert at if placement is :insert
+    # @return [TransactionComposer] Self for chaining
+    def merge(other, placement: :add, index: nil)
+      merge_accounts(other.context)
+
+      case placement
+      when :add
+        # Appends the other's instruction composers to this one's list
+        instruction_composers.concat(other.instruction_composers)
+      when :insert
+        # Inserts the other's instruction composers at the specified index
+        instruction_composers.insert(index, *other.instruction_composers)
+      when :prepend
+        # Prepends the other's instruction composers to this one's list
+        instruction_composers.unshift(*other.instruction_composers)
+      else
+        raise ArgumentError, "Invalid placement option: #{placement}"
+      end
+
+      self
+    end
+
     # Set the fee payer for the transaction
     #
-    # @param pubkey [String, Solace::PublicKey, Solace::Keypair] The fee payer pubkey
+    # @param pubkey [#to_s, PublicKey] The fee payer pubkey
     # @return [TransactionComposer] Self for chaining
     def set_fee_payer(pubkey)
       context.set_fee_payer(pubkey.to_s)
@@ -82,7 +133,7 @@ module Solace
 
     # Compose the final transaction
     #
-    # @return [Solace::Transaction] The composed transaction (unsigned)
+    # @return [Transaction] The composed transaction (unsigned)
     def compose_transaction
       context.compile
 

@@ -27,6 +27,21 @@ describe Solace::Transaction do
     end
   end
 
+  describe '#signature' do
+    let(:tx) { build(:transaction, :with_legacy_transfer) }
+
+    it 'returns the first signature of the transaction as base58' do
+      tx.signatures.push(Solace::Transaction::SIGNATURE_PLACEHOLDER)
+      tx.signatures.push(Solace::Transaction::SIGNATURE_PLACEHOLDER * 2)
+
+      assert_equal Solace::Utils::Codecs.binary_to_base58(tx.signatures.first), tx.signature
+    end
+
+    it 'returns nil when there are no signatures' do
+      assert_nil tx.signature
+    end
+  end
+
   describe 'Multiple Signatures' do
     # Make sure keypairs are loaded
     let(:bob) { Fixtures.load_keypair('bob') }

@@ -34,7 +34,7 @@ The Solace SDK is organized into several key layers:
 - **Codecs**: Base58/Base64 encoding, compact integers, little-endian encoding
 - **PDA**: Program Derived Address generation
 - **Curve25519**: Native curve operations via FFI
-- **More...**: Checkout `lib/solace/utils` 
+- **More...**: Checkout `lib/solace/utils`
 
 ## Core Components
 
@@ -199,7 +199,7 @@ For more control, use "prepare" methods that return signed transactions without 
 
 ```ruby
 # Prepare transaction without sending
-transaction = spl_token.prepare_create_mint(
+transaction = spl_token.compose_create_mint(
   payer: payer_keypair,
   decimals: 6,
   mint_authority: authority_keypair,
@@ -317,10 +317,10 @@ Composers are intended to be extended by developers with custom instruction comp
 class MyProgramComposer < Solace::Composers::Base
   # All keyword arguments are passed to the constructor and available
   # as a `params` hash.
-  # 
+  #
   # The setup_accounts method is called automatically by the transaction composer
-  # during compilation and should be used to add accounts to the account_context 
-  # with the appropriate access permissions. Conditional logic is fine here given 
+  # during compilation and should be used to add accounts to the account_context
+  # with the appropriate access permissions. Conditional logic is fine here given
   # and available params to determine the access permissions.
   def setup_accounts
     account_context.add_writable_signer(params[:from])
@@ -330,7 +330,7 @@ class MyProgramComposer < Solace::Composers::Base
 
   # The build_instruction method is called automatically by the transaction composer
   # during compilation and should be used to build the instruction using an instruction builder.
-  # 
+  #
   # The passed context to the build_instruction method provides the indices of all accounts
   # that were added to the account_context in the setup_accounts method. These are accessible
   # by the index_of method of the context using the account address as a parameter.

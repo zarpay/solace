@@ -29,15 +29,15 @@ module Solace
     #   )
     #
     #   # Wait for the transaction to be finalized
-    #   @connection.wait_for_confirmed_signature('finalized') { result['result'] }
+    #   connection.wait_for_confirmed_signature('finalized') { result['result'] }
     #
     # @since 0.0.2
     class AssociatedTokenAccount < Base
       class << self
         # Gets the address of an associated token account.
         #
-        # @param owner [Solace::Keypair, Solace::PublicKey] The keypair of the owner.
-        # @param mint [Solace::Keypair, Solace::PublicKey] The keypair of the mint.
+        # @param owner [Keypair, PublicKey] The keypair of the owner.
+        # @param mint [Keypair, PublicKey] The keypair of the mint.
         # @return [String] The address of the associated token account.
         def get_address(owner:, mint:)
           Solace::Utils::PDA.find_program_address(
@@ -68,48 +68,76 @@ module Solace
 
       # Gets the address of an associated token account, creating it if it doesn't exist.
       #
-      # @param payer [Solace::Keypair] The keypair that will pay for fees and rent.
-      # @param owner [Solace::Keypair, Solace::PublicKey] The keypair of the owner.
-      # @param mint [Solace::Keypair, Solace::PublicKey] The keypair of the mint.
-      # @param commitment [String] The commitment level for the get_account_info call.
+      # @param payer [Keypair] The keypair that will pay for fees and rent.
+      # @param funder [Keypair] The keypair that will pay for rent of the new associated token account.
+      # @param owner [Keypair, PublicKey] The keypair of the owner.
+      # @param mint [Keypair, PublicKey] The keypair of the mint.
       # @return [String] The address of the associated token account
-      def get_or_create_address(payer:, owner:, mint:, commitment: 'confirmed')
-        ata_address, _bump = get_address(owner: owner, mint: mint)
+      def get_or_create_address(
+        payer:,
+        funder:,
+        owner:,
+        mint:
+      )
+        ata_address, = get_address(owner: owner, mint: mint)
 
-        account_balance = @connection.get_account_info(ata_address)
+        account_balance = connection.get_account_info(ata_address)
 
         return ata_address unless account_balance.nil?
 
-        response = create_associated_token_account(payer: payer, owner: owner, mint: mint)
+        tx = create_associated_token_account(
+          payer: payer,
+          funder: funder,
+          owner: owner,
+          mint: mint
+        )
 
-        raise 'Failed to create associated token account' unless response['result']
-
-        @connection.wait_for_confirmed_signature(commitment) { response }
+        connection.wait_for_confirmed_signature { tx.signature }
 
         ata_address
       end
 
       # Creates a new associated token account.
       #
-      # @param options [Hash] Options for calling the prepare_create_associated_token_account method.
-      # @return [String] The signature of the transaction.
-      def create_associated_token_account(**options)
-        tx = prepare_create_associated_token_account(**options)
+      # @param payer [#to_s, Keypair] The keypair that will pay for fees and rent.
+      # @param sign [Boolean] Whether to sign the transaction before sending it.
+      # @param execute [Boolean] Whether to send the transaction to the cluster.
+      # @param composer_opts [Hash] Options for calling the compose_create_associated_token_account method.
+      # @return [Transaction] The created or sent transaction.
+      def create_associated_token_account(
+        payer:,
+        sign: true,
+        execute: true,
+        **composer_opts
+      )
+        composer = compose_create_associated_token_account(**composer_opts)
 
-        tx.sign(options[:payer])
+        yield composer if block_given?
 
-        @connection.send_transaction(tx.serialize)
+        tx = composer
+             .set_fee_payer(payer)
+             .compose_transaction
+
+        if sign
+          tx.sign(
+            payer,
+            composer_opts[:funder]
+          )
+
+          connection.send_transaction(tx.serialize) if execute
+        end
+
+        tx
       end
 
       # Prepares a new associated token account and returns the signed transaction.
       #
-      # @param owner [Solace::Keypair, Solace::PublicKey] The keypair of the owner.
-      # @param mint [Solace::Keypair, Solace::PublicKey] The keypair of the mint.
-      # @param payer [Solace::Keypair] The keypair that will pay for fees and rent.
-      # @return [Solace::Transaction] The signed transaction.
-      #
-      def prepare_create_associated_token_account(
-        payer:,
+      # @param owner [#to_s, PublicKey] The keypair of the owner.
+      # @param mint [#to_s, PublicKey] The keypair of the mint.
+      # @param funder [#to_s, PublicKey] The keypair that will pay for rent of the new associated token account.
+      # @return [Transaction] The signed transaction.
+      def compose_create_associated_token_account(
+        funder:,
         owner:,
         mint:
       )
@@ -118,15 +146,13 @@ module Solace
         ix = Solace::Composers::AssociatedTokenAccountProgramCreateAccountComposer.new(
           mint: mint,
           owner: owner,
-          funder: payer,
+          funder: funder,
           ata_address: ata_address
         )
 
         TransactionComposer
           .new(connection: connection)
-          .set_fee_payer(payer)
           .add_instruction(ix)
-          .compose_transaction
       end
     end
   end

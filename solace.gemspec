@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |spec|
   spec.name          = 'solace'
-  spec.version       = '0.0.10'
+  spec.version       = '0.1.0'
   spec.authors       = ['Sebastian Scholl']
   spec.email         = ['sebscholl@gmail.com']
   spec.summary       = 'Solana ruby library'
@@ -26,6 +26,7 @@ Gem::Specification.new do |spec|
   # Development dependencies
   spec.add_development_dependency 'minitest', '~> 5.0'
   spec.add_development_dependency 'rake', '~> 13.0'
+  spec.add_development_dependency 'tty-spinner'
 
   # Required Ruby version
   spec.required_ruby_version = '>= 3.0'

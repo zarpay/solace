@@ -23,7 +23,7 @@ describe Solace::Programs::AssociatedTokenAccount do
     let(:payer) { Fixtures.load_keypair('payer') }
 
     let(:ata_address) { program.get_address(owner: owner, mint: mint).first }
-    let(:address_result) { program.get_or_create_address(payer: payer, owner: owner, mint: mint) }
+    let(:address_result) { program.get_or_create_address(payer: payer, funder: payer, owner: owner, mint: mint) }
 
     describe "when the owner doesn't have a token account" do
       it 'creates a new token account at the expected address' do
@@ -45,6 +45,140 @@ describe Solace::Programs::AssociatedTokenAccount do
 
         # The token account should still exist
         assert connection.get_balance(address_result)
+      end
+    end
+  end
+
+  describe '#get_address' do
+    let(:owner) { Solace::Keypair.generate }
+    let(:mint) { Fixtures.load_keypair('mint') }
+
+    it 'returns the expected associated token account address' do
+      ata_address, _bump = program.get_address(owner: owner, mint: mint)
+
+      expected_ata_address, _expected_bump = Solace::Utils::PDA.find_program_address(
+        [
+          owner.to_s,
+          Solace::Constants::TOKEN_PROGRAM_ID,
+          mint.to_s
+        ],
+        Solace::Constants::ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID
+      )
+
+      assert_equal ata_address, expected_ata_address
+    end
+  end
+
+  describe '#get_or_create_address' do
+    let(:owner) { Solace::Keypair.generate }
+
+    let(:bob) { Fixtures.load_keypair('bob') }
+    let(:mint) { Fixtures.load_keypair('mint') }
+    let(:payer) { Fixtures.load_keypair('payer') }
+
+    it 'creates the rent exempt associated token account' do
+      ata_address = program.get_or_create_address(
+        payer: payer,
+        funder: payer,
+        owner: owner,
+        mint: mint
+      )
+
+      assert connection.get_balance(ata_address).positive?
+    end
+
+    it 'does not create a new associated token account if one already exists' do
+      def connection.send_transaction
+        raise("send_transaction shouldn't be called")
+      end
+
+      ata_address = program.get_or_create_address(
+        payer: payer,
+        funder: payer,
+        owner: bob,
+        mint: mint
+      )
+
+      assert ata_address.is_a?(String)
+    end
+  end
+
+  describe 'creating an associated token account' do
+    let(:owner) { Solace::Keypair.generate }
+
+    let(:mint) { Fixtures.load_keypair('mint') }
+    let(:payer) { Fixtures.load_keypair('payer') }
+
+    let(:ata_address) { program.get_address(owner: owner, mint: mint).first }
+
+    describe '#compose_create_associated_token_account' do
+      let(:composer) do
+        program.compose_create_associated_token_account(
+          owner: owner,
+          mint: mint,
+          funder: payer
+        )
+      end
+
+      it 'composes a create associated token account instruction' do
+        assert_kind_of Solace::Composers::AssociatedTokenAccountProgramCreateAccountComposer, composer.instruction_composers.first
+      end
+    end
+
+    describe '#create_associated_token_account' do
+      it 'creates and sends the associated token account creation transaction' do
+        tx = program.create_associated_token_account(
+          payer: payer,
+          owner: owner,
+          mint: mint,
+          funder: payer
+        )
+
+        connection.wait_for_confirmed_signature { tx.signature }
+
+        assert_equal connection.get_token_account_balance(ata_address)['uiAmount'], 0.0
+      end
+
+      it 'creates but does not sign the transaction' do
+        tx = program.create_associated_token_account(
+          payer: payer,
+          sign: false,
+          owner: owner,
+          mint: mint,
+          funder: payer
+        )
+
+        assert_equal tx.signatures.count, 0
+      end
+
+      it 'creates but does not send the transaction' do
+        tx = program.create_associated_token_account(
+          payer: payer,
+          execute: false,
+          owner: owner,
+          mint: mint,
+          funder: payer
+        )
+
+        assert tx.signature.is_a?(String)
+        assert_equal connection.get_signature_status(tx.signature)['value'], [nil]
+      end
+
+      it 'yeilds the composer for customization' do
+        yielded = false
+
+        program.create_associated_token_account(
+          payer: payer,
+          execute: false,
+          owner: owner,
+          mint: mint,
+          funder: payer
+        ) do |composer|
+          yielded = true
+          assert_kind_of Solace::Composers::AssociatedTokenAccountProgramCreateAccountComposer, composer.instruction_composers.first
+        end
+
+        assert yielded
       end
     end
   end
