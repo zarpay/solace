@@ -201,9 +201,9 @@ module Solace
       get_signature_statuses([signature])
     end
 
-    # Builds send_tranaction options
+    # Builds send_transaction options
     #
-    # @params [Hash] The overrides for the options
+    # @param overrides[Hash] The overrides for the options
     # @return [Hash] The options for the send_transaction call
     def build_send_transaction_options(overrides)
       {
@@ -272,15 +272,15 @@ module Solace
 
     # Checks if a timeout deadline has been reached
     #
-    # @params deadline [Integer] The deadline for the timeout
-    # @return [boolean] whether the dealine has passed
-    def dealine_passed?(deadline)
+    # @param deadline [Integer] The deadline for the timeout
+    # @return [Boolean] whether the deadline has passed
+    def deadline_passed?(deadline)
       Process.clock_gettime(Process::CLOCK_MONOTONIC) >= deadline
     end
 
     # Sets a deadline given a timeout in seconds
     #
-    # @params seconds [Integer] The seconds for the deadline
+    # @param seconds [Integer] The seconds for the deadline
     # @return [Integer] The deadline in seconds
     def monotonic_deadline(seconds)
       Process.clock_gettime(Process::CLOCK_MONOTONIC) + seconds

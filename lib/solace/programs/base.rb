@@ -3,6 +3,29 @@
 # lib/solace/programs/base.rb
 
 module Solace
+  # The Programs module contains high-level interfaces to Solana on-chain programs.
+  #
+  # Programs in this module provide convenient methods for interacting with
+  # on-chain programs without needing to manually construct instructions or
+  # manage account ordering. They serve as a bridge between the low-level
+  # instruction builders and high-level application code.
+  #
+  # Each program class corresponds to a specific on-chain program:
+  # - {Solace::Programs::SplToken} - SPL Token Program
+  # - {Solace::Programs::AssociatedTokenAccount} - Associated Token Account Program
+  #
+  # @example Using a program interface
+  #   token_program = Solace::Programs::SplToken.new(connection)
+  #   token_program.transfer(
+  #     to:,
+  #     from:,
+  #     owner:,
+  #     amount:
+  #   )
+  #
+  # @see Solace::Programs::SplToken
+  # @see Solace::Programs::AssociatedTokenAccount
+  # @since 0.0.2
   module Programs
     # Base class for program-specific clients.
     #

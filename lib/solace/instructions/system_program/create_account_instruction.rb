@@ -1,6 +1,36 @@
 # frozen_string_literal: true
 
 module Solace
+  # The Instructions module contains low-level instruction builders for Solana programs.
+  #
+  # Instructions are the fundamental building blocks of Solana transactions. Each
+  # instruction represents a single operation to be executed by an on-chain program.
+  # The classes in this module build the binary instruction data and specify the
+  # accounts required for each operation.
+  #
+  # Instructions are organized by program:
+  # - {Solace::Instructions::SystemProgram} - System Program instructions
+  # - {Solace::Instructions::SplToken} - SPL Token Program instructions
+  # - {Solace::Instructions::AssociatedTokenAccount} - Associated Token Account Program instructions
+  #
+  # Being a low-level primitive, you must build instructions manually.
+  #
+  # @example Building a system transfer instruction
+  #
+  #   # Assuming the transaction's accounts are ordered as follows:
+  #   accounts = %w[from_address to_address system_program_id]
+  #
+  #   # Build the instruction by specifying the account indices directly
+  #   instruction = Solace::Instructions::SystemProgram::TransferInstruction.build(
+  #     from_index: 0,
+  #     to_index: 1,
+  #     program_index: 2,
+  #     lamports: 1_000_000
+  #   )
+  #
+  # @see Solace::Instruction
+  # @see Solace::Composers
+  # @since 0.0.1
   module Instructions
     module SystemProgram
       # Instruction for creating a new account.

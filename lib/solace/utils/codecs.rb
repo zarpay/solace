@@ -6,6 +6,23 @@ require 'base58'
 require 'stringio'
 
 module Solace
+  # The Utils module contains utility classes and helper methods used throughout
+  # the Solace gem.
+  #
+  # This module provides foundational utilities that support the core functionality
+  # of the gem, including:
+  # - {Solace::Utils::AccountContext} - Account management for transactions
+  # - {Solace::Utils::Codecs} - Encoding and decoding utilities
+  # - {Solace::Utils::Curve25519Dalek} - Cryptographic operations via FFI
+  # - {Solace::Utils::PDA} - Program Derived Address generation
+  # - {Solace::Utils::RPCClient} - Low-level RPC communication
+  #
+  # These utilities are primarily used internally by other parts of the gem, but
+  # can also be used directly for advanced use cases.
+  #
+  # @see Solace::Connection
+  # @see Solace::Keypair
+  # @since 0.0.1
   module Utils
     # Module for encoding and decoding data
     #

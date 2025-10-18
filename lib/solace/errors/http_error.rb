@@ -2,7 +2,22 @@
 
 module Solace
   module Errors
-    # Non-2xx HTTP or low-level network issues
+    # Raised when an HTTP request to the RPC node fails.
+    #
+    # This error is raised for network-level failures when communicating with the
+    # Solana RPC node, including connection timeouts, DNS resolution failures,
+    # and HTTP protocol errors. This is distinct from RPC-level errors, which are
+    # raised as {Solace::Errors::RPCError}.
+    #
+    # @example Handling HTTP errors
+    #   begin
+    #     connection.get_account_info(address)
+    #   rescue Solace::Errors::HTTPError => e
+    #     puts "Network error: #{e.message}"
+    #   end
+    #
+    # @see Solace::Errors::RPCError
+    # @since 0.0.1
     class HTTPError < StandardError
       attr_reader :code, :body
 

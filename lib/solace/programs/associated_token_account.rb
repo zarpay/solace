@@ -24,6 +24,7 @@ module Solace
     #   # Create an associated token account
     #   result = program.create_associated_token_account(
     #     payer: payer,
+    #     funder: funder,
     #     owner: owner,
     #     mint: mint
     #   )

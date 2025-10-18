@@ -1,4 +1,5 @@
 # Solace Ruby SDK Documentation
+
 A Ruby SDK for the Solana blockchain.
 
 ## Overview
@@ -10,9 +11,9 @@ Solace is a comprehensive Ruby SDK for interacting with the Solana blockchain. I
 The Solace SDK is organized into several key layers:
 
 ### 1. **Core Classes** (Low-Level)
-- **Keypair/PublicKey**: Ed25519 cryptographic operations
+- **Keypair, PublicKey**: Ed25519 cryptographic operations
 - **Connection**: RPC client for Solana nodes
-- **Transaction/Message/Instruction/AddressLookupTable**: Transaction building blocks
+- **Transaction, Message, Instruction, AddressLookupTable**: Transaction building blocks
 - **Serializers**: Binary serialization/deserialization system
 
 ### 2. **Instruction Builders** (Low-Level)
@@ -34,6 +35,7 @@ The Solace SDK is organized into several key layers:
 - **Codecs**: Base58/Base64 encoding, compact integers, little-endian encoding
 - **PDA**: Program Derived Address generation
 - **Curve25519**: Native curve operations via FFI
+- **Token**: Classes for loading and accessing token data
 - **More...**: Checkout `lib/solace/utils`
 
 ## Core Components

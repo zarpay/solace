@@ -2,6 +2,17 @@
 
 module Solace
   module Instructions
+    # The SystemProgram module contains instruction builders for the System Program.
+    #
+    # The System Program is Solana's native program for fundamental operations like
+    # creating accounts, transferring SOL, and allocating account data. It is the
+    # only program that can create new accounts and assign them to other programs.
+    #
+    # This module contains classes that build the low-level instruction data required
+    # to interact with the System Program.
+    #
+    # @see https://docs.solana.com/developing/runtime-facilities/programs#system-program
+    # @since 0.0.1
     module SystemProgram
       # Instruction for transferring SOL.
       #

@@ -1,11 +1,16 @@
 # frozen_string_literal: true
 
 module Solace
-  # Error handling module
+  # The Errors module contains custom exception classes for the Solace gem.
   #
-  # This module provides error classes for handling different types of errors that may occur during
-  # Solana RPC requests and processing transactions.
+  # These exceptions provide specific error handling for various failure scenarios
+  # when interacting with the Solana blockchain, including:
+  # - {Solace::Errors::HTTPError} - HTTP communication failures
+  # - {Solace::Errors::RPCError} - RPC method errors returned by the node
+  # - {Solace::Errors::ParseError} - Data parsing and deserialization errors
+  # - {Solace::Errors::ConfirmationTimeout} - Transaction confirmation timeouts
   #
+  # @see Solace::Connection
   # @since 0.0.8
   module Errors
     # JSON-RPC Errors

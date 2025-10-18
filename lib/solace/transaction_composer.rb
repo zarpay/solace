@@ -2,7 +2,16 @@
 
 # lib/solace/transaction_composer.rb
 module Solace
-  # Composes multi-instruction transactions with automatic account management
+  # Composes transactions with automatic account management and instruction building.
+  #
+  # This class allows you to add multiple instruction composers, manage account contexts,
+  # and build a complete transaction in a flexible way. It is a high-level abstraction over
+  # the process of creating Solana transactions, making it easier to work with complex
+  # transaction scenarios.
+  #
+  # For most use cases, you will create an instance of this class, add instruction composers,
+  # and then call the `compose_transaction` method to build the final transaction. That said,
+  # all of the individual pieces are also accessible for more advanced use cases.
   #
   # @example
   #   # Initialize a transaction composer
@@ -38,6 +47,18 @@ module Solace
   #   # Sign the transaction with all required signers
   #   tx.sign(*required_signers)
   #
+  # @example
+  #   # Chaining methods will return the composer itself for further modifications. The add, prepend,
+  #   # and insert methods allow for dynamic insertion of instruction composers at required positions.
+  #   transaction_composer = Solace::TransactionComposer
+  #     .new(connection: connection)
+  #     .add_instruction(instruction_composer_1)
+  #     .prepend_instruction(instruction_composer_2)
+  #     .insert_instruction(1, instruction_composer_3)
+  #     .set_fee_payer(fee_payer_pubkey)
+  #     .compose_transaction
+  #
+  # @see Solace::Composers::Base
   # @since 0.0.6
   class TransactionComposer
     # @!attribute connection
@@ -102,6 +123,8 @@ module Solace
     # @param placement [Symbol] :add to append, :prepend to prepend
     # @param index [Integer, nil] The index to insert at if placement is :insert
     # @return [TransactionComposer] Self for chaining
+    #
+    # @since 0.1.0
     def merge(other, placement: :add, index: nil)
       merge_accounts(other.context)
 

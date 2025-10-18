@@ -6,17 +6,17 @@ module Solace
   #
   # Transactions are the basic building blocks of Solana. They contain a message and an array of signatures. The
   # message contains the instructions to be executed and the accounts that are used by the instructions. The signatures
-  # are the signatures of the accounts that are used by the instructions. This class provides methods for signing,
-  # serializing, and deserializing transactions.
+  # are the required signatures of the accounts that are used by the instructions. This class provides methods for
+  # signing, serializing, and deserializing transactions.
   #
   # The BufferLayout is:
-  #   - [Signatures (variable length)]
-  #   - [Version (1 byte)] (if versioned)
-  #   - [Message header (3 bytes)]
-  #   - [Account keys (variable length)]
-  #   - [Recent blockhash (32 bytes)]
-  #   - [Instructions (variable length)]
-  #   - [Address lookup table (variable length)] (if versioned)
+  #   - Signatures (variable length)
+  #   - Version (1 byte if versioned)
+  #   - Message header (3 bytes)
+  #   - Account keys (variable length)
+  #   - Recent blockhash (32 bytes)
+  #   - Instructions (variable length)
+  #   - Address lookup table (variable length if versioned)
   #
   # @example
   #   # Create a new transaction
@@ -32,24 +32,19 @@ module Solace
   class Transaction
     include Solace::Concerns::BinarySerializable
 
-    # @!attribute SERIALIZER
-    #   @return [Solace::Serializers::TransactionSerializer] The serializer for the transaction
+    # The serializer for the transaction
     SERIALIZER = Solace::Serializers::TransactionSerializer
 
-    # @!attribute DESERIALIZER
-    #   @return [Solace::Serializers::TransactionDeserializer] The deserializer for the transaction
+    # The deserializer for the transaction
     DESERIALIZER = Solace::Serializers::TransactionDeserializer
 
-    # @!attribute SIGNATURE_PLACEHOLDER
-    #   @return [String] Placeholder for a signature in the transaction
+    # Placeholder for a signature in the transaction
     SIGNATURE_PLACEHOLDER = Solace::Utils::Codecs.base58_to_binary('1' * 64)
 
-    # @!attribute  [rw] signatures
-    #   @return [Array<String>] Signatures of the transaction (binary)
+    # @return [Array<String>] Signatures of the transaction (binary)
     attr_accessor :signatures
 
-    # @!attribute  [rw] message
-    #   @return [Solace::Message] Message of the transaction
+    # @return [Solace::Message] Message of the transaction
     attr_accessor :message
 
     class << self
@@ -77,6 +72,7 @@ module Solace
     # Returns the first signature of the transaction (signature of the transaction fee payer)
     #
     # @return [String, nil] The first signature of the transaction or nil if there are no signatures
+    # @since 0.1.0
     def signature
       Utils::Codecs.binary_to_base58(signatures.first) unless signatures.empty?
     end

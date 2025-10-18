@@ -2,6 +2,27 @@
 
 module Solace
   module Instructions
+    # The SplToken module contains instruction builders for the SPL Token Program.
+    #
+    # The SPL Token Program is Solana's standard for fungible and non-fungible tokens.
+    # It provides instructions for creating token mints, creating token accounts,
+    # minting tokens, transferring tokens, and managing token authorities.
+    #
+    # This module contains classes that build the low-level instruction data required
+    # to interact with the SPL Token Program. Each class corresponds to a specific
+    # instruction in the program.
+    #
+    # @example Building a transfer instruction
+    #   instruction = Solace::Instructions::SplToken::TransferInstruction.build(
+    #     source_index: 0,
+    #     destination_index: 1,
+    #     owner_index: 2,
+    #     program_index: 3,
+    #     amount: 1_000_000
+    #   )
+    #
+    # @see https://spl.solana.com/token
+    # @since 0.0.2
     module SplToken
       # Instruction for transferring SPL tokens.
       #

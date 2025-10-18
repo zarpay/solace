@@ -1,7 +1,35 @@
 # frozen_string_literal: true
 
 module Solace
-  # Serializers module
+  # The Serializers module contains classes for converting data structures to and
+  # from the binary format required by the Solana runtime.
+  #
+  # Solana transactions, messages, and instructions use a compact binary encoding
+  # for efficiency. The serializers in this module handle the conversion between
+  # Ruby objects and this binary format, including proper handling of:
+  # - Compact array encoding
+  # - Account key serialization
+  # - Instruction data packing
+  # - Message header construction
+  #
+  # Each serializer corresponds to a specific data structure:
+  # - {Solace::Serializers::TransactionSerializer} - Complete transactions
+  # - {Solace::Serializers::MessageSerializer} - Transaction messages
+  # - {Solace::Serializers::InstructionSerializer} - Individual instructions
+  # - {Solace::Serializers::AddressLookupTableSerializer} - Address lookup tables
+  #
+  # Each deserializer handles the inverse operation, converting binary data:
+  # - {Solace::Serializers::TransactionDeserializer}
+  # - {Solace::Serializers::MessageDeserializer}
+  # - {Solace::Serializers::InstructionDeserializer}
+  # - {Solace::Serializers::AddressLookupTableDeserializer}
+  #
+  # These utilities are primarily used internally by other parts of the gem, but
+  # can also be used directly for advanced use cases.
+  #
+  # @see Solace::Serializers::BaseSerializer
+  # @see Solace::Serializers::BaseDeserializer
+  # @since 0.0.1
   module Serializers
     # Autoload serializers
     autoload :TransactionSerializer, 'solace/serializers/transaction_serializer'

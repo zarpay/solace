@@ -129,13 +129,6 @@ instruction to create and initialize a new mint account.</p>
     
   </div>
 
-
-  <p class="tag_title">See Also:</p>
-  <ul class="see">
-    
-      <li><span class='object_link'><a href="../SystemProgram/CreateAccountInstruction.html" title="Solace::Instructions::SystemProgram::CreateAccountInstruction (class)">Solace::Instructions::SystemProgram::CreateAccountInstruction</a></span></li>
-    
-  </ul>
 <p class="tag_title">Since:</p>
 <ul class="since">
   
@@ -424,6 +417,7 @@ instruction to create and initialize a new mint account.</p>
       <pre class="lines">
 
 
+42
 43
 44
 45
@@ -436,11 +430,10 @@ instruction to create and initialize a new mint account.</p>
 52
 53
 54
-55
-56</pre>
+55</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/solace/instructions/spl_token/initialize_mint_instruction.rb', line 43</span>
+      <pre class="code"><span class="info file"># File 'lib/solace/instructions/spl_token/initialize_mint_instruction.rb', line 42</span>
 
 <span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_build'>build</span><span class='lparen'>(</span>
   <span class='label'>decimals:</span><span class='comma'>,</span>
@@ -576,6 +569,7 @@ instruction to create and initialize a new mint account.</p>
       <pre class="lines">
 
 
+69
 70
 71
 72
@@ -586,11 +580,10 @@ instruction to create and initialize a new mint account.</p>
 77
 78
 79
-80
-81</pre>
+80</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/solace/instructions/spl_token/initialize_mint_instruction.rb', line 70</span>
+      <pre class="code"><span class="info file"># File 'lib/solace/instructions/spl_token/initialize_mint_instruction.rb', line 69</span>
 
 <span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_data'>data</span><span class='lparen'>(</span><span class='id identifier rubyid_decimals'>decimals</span><span class='comma'>,</span> <span class='id identifier rubyid_mint_authority'>mint_authority</span><span class='comma'>,</span> <span class='id identifier rubyid_freeze_authority'>freeze_authority</span><span class='rparen'>)</span>
   <span class='const'><span class='object_link'><a href="#INSTRUCTION_INDEX-constant" title="Solace::Instructions::SplToken::InitializeMintInstruction::INSTRUCTION_INDEX (constant)">INSTRUCTION_INDEX</a></span></span> <span class='op'>+</span>
@@ -614,7 +607,7 @@ instruction to create and initialize a new mint account.</p>
 </div>
 
       <div id="footer">
-  Generated on Thu Jul 31 12:29:03 2025 by
+  Generated on Sat Oct 18 17:41:28 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.4).
 </div>

@@ -2,6 +2,15 @@
 
 module Solace
   module Instructions
+    # The AssociatedTokenAccount module contains instruction builders for the
+    # Associated Token Account Program.
+    #
+    # The Associated Token Account (ATA) Program provides a deterministic way to
+    # derive token account addresses for a given wallet and mint. This ensures that
+    # each wallet has a single, predictable token account for each token type.
+    #
+    # @see https://spl.solana.com/associated-token-account
+    # @since 0.0.2
     module AssociatedTokenAccount
       # Instruction for creating an Associated Token Account.
       #
@@ -18,8 +27,6 @@ module Solace
       #     token_program_index: 5,
       #     program_index: 6
       #   )
-      #
-      # @since 0.0.2
       class CreateAssociatedTokenAccountInstruction
         # !@const INSTRUCTION_INDEX
         #   Instruction index for CreateAssociatedTokenAccount

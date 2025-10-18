@@ -5,13 +5,21 @@ require 'digest'
 
 module Solace
   module Utils
-    # Module for generating program addresses
+    # Raised when Program Derived Address (PDA) generation fails.
     #
-    # This module provides methods for generating program addresses from seeds and program IDs. It interfaces
-    # with the Curve25519 Dalek library to check if a point is on the curve. It also provides a method for
-    # converting seeds to bytes and a method for checking if a string looks like a base58 address.
+    # This error is raised when attempting to derive a PDA that is invalid, typically
+    # because the seeds and program ID combination results in a point that lies on
+    # the Ed25519 curve (PDAs must be off-curve). This is a rare occurrence but can
+    # happen with certain seed combinations.
     #
-    # @see Solace::Utils::Curve25519Dalek
+    # @example Handling invalid PDA
+    #   begin
+    #     pda = Solace::Utils::PDA.find_program_address(seeds, program_id)
+    #   rescue Solace::Utils::PDA::InvalidPDAError => e
+    #     puts "Failed to derive PDA: #{e.message}"
+    #   end
+    #
+    # @see Solace::Utils::PDA
     # @since 0.0.1
     module PDA
       # InvalidPDAError is an error raised when an invalid PDA is generated

@@ -2,7 +2,21 @@
 
 module Solace
   module Errors
-    # JSON parsing failed
+    # Raised when parsing or deserializing data fails.
+    #
+    # This error is raised when the gem encounters data that cannot be properly
+    # parsed or deserialized, such as malformed JSON responses from the RPC node,
+    # invalid binary data, or unexpected data structures. This typically indicates
+    # either a bug in the gem or an incompatibility with the RPC node's response format.
+    #
+    # @example Handling parse errors
+    #   begin
+    #     transaction = Solace::Transaction.deserialize(binary_data)
+    #   rescue Solace::Errors::ParseError => e
+    #     puts "Failed to parse transaction: #{e.message}"
+    #   end
+    #
+    # @since 0.0.1
     class ParseError < StandardError
       attr_reader :body
 

@@ -15,6 +15,7 @@ module Solace
     #   # Create an SPL Token mint
     #   result = program.create_mint(
     #     payer: payer,
+    #     funder: funder,
     #     decimals: 6,
     #     mint_keypair: mint_keypair,
     #     mint_authority: mint_authority,
@@ -75,7 +76,6 @@ module Solace
       # @param freeze_authority [#to_s, PublicKey] (Optional) The base58 public key for the freeze authority.
       # @param mint_account [#to_s, PublicKey] (Optional) The keypair for the new mint.
       # @return [TransactionComposer] A composer with required instructions.
-      #
       # rubocop:disable Metrics/MethodLength
       def compose_create_mint(
         funder:,
@@ -228,11 +228,6 @@ module Solace
           .new(connection: connection)
           .add_instruction(ix)
       end
-
-      # Additionally, we can implement a way to add additional instructions to the composer
-      # from the actual program methods by yielding the composer before signing and composing
-      # the final transaction. The sign and send methods may also allow for a option to disable
-      # sending, and simply return the signed transaction instead.
 
       # Transfers tokens with decimal precision and validation checks
       #

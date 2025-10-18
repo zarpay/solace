@@ -2,7 +2,23 @@
 
 module Solace
   module Errors
-    # JSON-RPC returned an "error" object
+    # Raised when the RPC node returns an error response.
+    #
+    # This error is raised when the Solana RPC node successfully processes the HTTP
+    # request but returns an error in the JSON-RPC response. This includes errors
+    # like invalid parameters, insufficient funds, blockhash not found, and other
+    # RPC method-specific errors. The error message and code from the RPC response
+    # are included in the exception.
+    #
+    # @example Handling RPC errors
+    #   begin
+    #     connection.send_transaction(transaction)
+    #   rescue Solace::Errors::RPCError => e
+    #     puts "RPC error (code #{e.code}): #{e.message}"
+    #   end
+    #
+    # @see Solace::Errors::HTTPError
+    # @since 0.0.1
     class RPCError < StandardError
       attr_reader :rpc_code, :rpc_message, :rpc_data
 

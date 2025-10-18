@@ -1,6 +1,41 @@
 # frozen_string_literal: true
 
 module Solace
+  # The Composers module contains classes responsible for building and ordering
+  # the accounts and instructions required for common Solana operations.
+  #
+  # Composers abstract away the complexity of account ordering, permission management,
+  # and instruction data construction. They provide a high-level interface for
+  # creating instructions that interact with on-chain programs. Each composer
+  # corresponds to a specific program instruction (e.g., transferring SOL,
+  # minting tokens, creating accounts).
+  #
+  # Composers handle:
+  # - Account resolution and ordering
+  # - Permission flags (signer, writable)
+  # - Account deduplication
+  # - Instruction data formatting
+  #
+  # @example Using a composer
+  #   # Initialize a transaction composer
+  #   composer = TransactionComposer.new(connection: connection)
+  #
+  #   # Create a transfer instruction composer
+  #   ix = Solace::Composers::SystemProgramTransferComposer.new(
+  #     from: sender.public_key,
+  #     to: recipient.public_key,
+  #     lamports: 1_000_000
+  #   )
+  #
+  #   # Add the instruction to the transaction composer and compose the transaction
+  #   tx = composer
+  #     .add_instruction(ix)
+  #     .set_fee_payer(sender.public_key)
+  #     .compose_transaction
+  #
+  # @see Solace::TransactionComposer
+  # @see Solace::Composers::Base
+  # @since 0.0.3
   module Composers
     # A Base class for all composers
     #
