@@ -11,24 +11,28 @@ BUILDS_DIR = 'builds'
 
 PLATFORMS = {
   linux: {
+    build_tool: 'cross',
     target: 'x86_64-unknown-linux-gnu',
     ext: 'so',
     rustlib: 'libcurve25519_dalek.so',
     path: 'lib/solace/utils/linux/libcurve25519_dalek.so'
   },
   windows: {
+    build_tool: 'cross',
     target: 'x86_64-pc-windows-gnu',
     ext: 'dll',
     rustlib: 'curve25519_dalek.dll',
     path: 'lib/solace/utils/windows/curve25519_dalek.dll'
   },
   macos: {
+    build_tool: 'cargo',
     target: 'x86_64-apple-darwin',
     ext: 'dylib',
     rustlib: 'libcurve25519_dalek.dylib',
     path: 'lib/solace/utils/macos/libcurve25519_dalek.dylib'
   }
 }.freeze
+
 
 # Run all Minitest tests
 # rake test [test_file]
@@ -86,11 +90,7 @@ task :compile do
   PLATFORMS.each do |name, cfg|
     puts "Building for #{name}..."
 
-    if name == :macos
-      sh "cargo build --manifest-path=ext/curve25519_dalek/Cargo.toml --release --target=#{cfg[:target]}"
-    else
-      sh "cross build --manifest-path=ext/curve25519_dalek/Cargo.toml --release --target=#{cfg[:target]}"
-    end
+    sh "#{cfg[:build_tool]} build --manifest-path=ext/curve25519_dalek/Cargo.toml --release --target=#{cfg[:target]}"
 
     src = File.join('ext', 'curve25519_dalek', 'target', cfg[:target], 'release', cfg[:rustlib])
     dest = File.join(cfg[:path])
