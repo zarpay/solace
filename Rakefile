@@ -85,7 +85,12 @@ end
 task :compile do
   PLATFORMS.each do |name, cfg|
     puts "Building for #{name}..."
-    sh "cargo build --manifest-path=ext/curve25519_dalek/Cargo.toml --release --target=#{cfg[:target]}"
+
+    if name == :macos
+      sh "cargo build --manifest-path=ext/curve25519_dalek/Cargo.toml --release --target=#{cfg[:target]}"
+    else
+      sh "cross build --manifest-path=ext/curve25519_dalek/Cargo.toml --release --target=#{cfg[:target]}"
+    end
 
     src = File.join('ext', 'curve25519_dalek', 'target', cfg[:target], 'release', cfg[:rustlib])
     dest = File.join(cfg[:path])
