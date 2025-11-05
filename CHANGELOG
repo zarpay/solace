@@ -22,6 +22,14 @@ Got it — here’s your changelog tidied up for clarity and consistency without
 
 ---
 
+## [0.1.2] - 2025-05-11
+
+### Added
+
+1. Added support for closing SPL token accounts with:
+  - `Solace::Composers::SystemProgramCreateAccountComposer`
+  - `Solace::Instructions::SystemProgram::CreateAccountInstruction`
+
 ## [0.1.1] - 2025-05-11
 
 ### Added
