@@ -55,11 +55,13 @@ module Solace
     # @return [Solace::Connection] The connection object
     # @param [Integer] http_open_timeout The timeout for opening an HTTP connection
     # @param [Integer] http_read_timeout The timeout for reading an HTTP response
+    # @param [String] encoding The encoding for the RPC requests
     def initialize(
       rpc_url = 'http://localhost:8899',
       commitment: 'processed',
       http_open_timeout: 30,
-      http_read_timeout: 60
+      http_read_timeout: 60,
+      encoding: 'base64'
     )
       # Initialize the RPC client
       @rpc_client = Utils::RPCClient.new(
@@ -71,7 +73,7 @@ module Solace
       # Set default options for rpc requests
       @default_options = {
         commitment: commitment,
-        encoding: 'base64'
+        encoding: encoding
       }
     end
 
