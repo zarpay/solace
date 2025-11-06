@@ -2,10 +2,10 @@
 
 require 'test_helper'
 
-describe Solace::Instructions::AssociatedTokenAccount::CreateAssociatedTokenAccountInstruction do
+describe Solace::Instructions::AssociatedTokenAccount::CreateAccountInstruction do
   describe '.build' do
     let(:ix) do
-      Solace::Instructions::AssociatedTokenAccount::CreateAssociatedTokenAccountInstruction.build(
+      Solace::Instructions::AssociatedTokenAccount::CreateAccountInstruction.build(
         funder_index: 0,
         associated_token_account_index: 1,
         owner_index: 2,
@@ -66,7 +66,7 @@ describe Solace::Instructions::AssociatedTokenAccount::CreateAssociatedTokenAcco
       ]
 
       # 3. Build the instruction, providing the index of each required account.
-      instruction = Solace::Instructions::AssociatedTokenAccount::CreateAssociatedTokenAccountInstruction.build(
+      instruction = Solace::Instructions::AssociatedTokenAccount::CreateAccountInstruction.build(
         funder_index: 0,
         associated_token_account_index: 1,
         owner_index: 2,

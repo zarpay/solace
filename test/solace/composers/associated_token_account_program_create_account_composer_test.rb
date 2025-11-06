@@ -3,9 +3,11 @@
 require 'test_helper'
 
 describe Solace::Composers::AssociatedTokenAccountProgramCreateAccountComposer do
-  let(:mint) { Fixtures.load_keypair('mint') }
+  let(:mint)           { Fixtures.load_keypair('mint') }
+  let(:mint_authority) { Fixtures.load_keypair('mint-authority') }
+
   let(:funder) { Fixtures.load_keypair('bob') }
-  let(:payer) { Fixtures.load_keypair('payer') }
+  let(:payer)  { Fixtures.load_keypair('payer') }
 
   let(:connection) { Solace::Connection.new }
   let(:transaction_composer) { Solace::TransactionComposer.new(connection: connection) }

@@ -18,7 +18,18 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ### Fixed
 ```
 
-Got it — here’s your changelog tidied up for clarity and consistency without changing any of the substance. I only fixed grammar/typos and tightened phrasing.
+---
+
+## 0.1.3 - 2025-06-11
+
+### Added
+
+1. Added `Solace::Instructions::AssociatedTokenAccount::CreateIdempotentAccountInstruction`
+2. Added `Solace::Composers::AssociatedTokenAccountCreateIdempotentAccountComposer`
+
+### Changed
+
+1. Renamed `Solace::Instructions::AssociatedTokenAccount::CreateAssociatedTokenAccountInstruction` to `Solace::Instructions::AssociatedTokenAccount::CreateAccountInstruction` with backwards compatibility
 
 ---
 

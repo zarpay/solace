@@ -6,7 +6,7 @@ module Solace
     #
     # This composer resolves and orders the required accounts for a `CreateAssociatedTokenAccount` instruction,
     # sets up their access permissions, and delegates construction to the appropriate
-    # instruction builder (`Instructions::AssociatedTokenAccount::CreateAssociatedTokenAccountInstruction`).
+    # instruction builder (`Instructions::AssociatedTokenAccount::CreateAccountInstruction`).
     #
     # Required accounts:
     # - **Funder**: the account that will pay for fees and rent.
@@ -25,7 +25,7 @@ module Solace
     #     mint: mint_address
     #   )
     #
-    # @see Instructions::AssociatedTokenAccount::CreateAssociatedTokenAccountInstruction
+    # @see Instructions::AssociatedTokenAccount::CreateAccountInstruction
     # @since 0.0.7
     class AssociatedTokenAccountProgramCreateAccountComposer < Base
       # Extracts the owner address from the params
@@ -96,7 +96,7 @@ module Solace
       # @param account_context [Utils::AccountContext] The account context
       # @return [Solace::Instruction] The instruction
       def build_instruction(account_context)
-        Instructions::AssociatedTokenAccount::CreateAssociatedTokenAccountInstruction.build(
+        Instructions::AssociatedTokenAccount::CreateAccountInstruction.build(
           funder_index: account_context.index_of(funder),
           owner_index: account_context.index_of(owner),
           mint_index: account_context.index_of(mint),

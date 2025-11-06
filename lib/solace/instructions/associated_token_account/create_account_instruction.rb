@@ -2,7 +2,7 @@
 
 module Solace
   module Instructions
-    # The AssociatedTokenAccount module contains instruction builders for the
+    # The Account module contains instruction builders for the
     # Associated Token Account Program.
     #
     # The Associated Token Account (ATA) Program provides a deterministic way to
@@ -17,8 +17,8 @@ module Solace
       # This is a special "all-in-one" instruction that creates and initializes the account. It
       # is used to create an Associated Token Account (ATA) for a given mint and owner.
       #
-      # @example Build a CreateAssociatedTokenAccount instruction
-      #   instruction = Solace::Instructions::AssociatedTokenAccount::CreateAssociatedTokenAccountInstruction.build(
+      # @example Build a CreateAccount instruction
+      #   instruction = Solace::Instructions::AssociatedTokenAccount::CreateAccountInstruction.build(
       #     funder_index: 0,
       #     associated_token_account_index: 1,
       #     owner_index: 2,
@@ -27,14 +27,14 @@ module Solace
       #     token_program_index: 5,
       #     program_index: 6
       #   )
-      class CreateAssociatedTokenAccountInstruction
+      class CreateAccountInstruction
         # !@const INSTRUCTION_INDEX
-        #   Instruction index for CreateAssociatedTokenAccount
+        #   Instruction index for CreateAccount
         #
         # @return [Array<Integer>]
         INSTRUCTION_INDEX = [0].freeze
 
-        # Builds a CreateAssociatedTokenAccount instruction.
+        # Builds a CreateAccount instruction.
         #
         # The on-chain program requires accounts in a specific order:
         # 1. [writable, signer] Funder: The account paying for the rent.
@@ -75,7 +75,7 @@ module Solace
           end
         end
 
-        # Data for a CreateAssociatedTokenAccount instruction
+        # Data for a CreateAccount instruction
         #
         # The BufferLayout is:
         #   - [Instruction Index (1 byte)]
@@ -85,6 +85,9 @@ module Solace
           INSTRUCTION_INDEX
         end
       end
+
+      # Alias for CreateAccountInstruction for backward compatibility
+      CreateAssociatedTokenAccountInstruction = CreateAccountInstruction
     end
   end
 end

@@ -9,7 +9,7 @@ module Solace
       #
       # This instruction is used to initialize a new token account for a given mint and owner. It
       # is used in conjunction with the CreateAccount instruction to create and initialize a new
-      # token account. Note that the AssociatedTokenAccount::CreateAssociatedTokenAccountInstruction
+      # token account. Note that the AssociatedTokenAccount::CreateAccountInstruction
       # is a special "all-in-one" instruction that creates and initializes the account in a single
       # instruction.
       #
@@ -22,7 +22,7 @@ module Solace
       #     program_index: 4
       #   )
       #
-      # @see Solace::Instructions::AssociatedTokenAccount::CreateAssociatedTokenAccountInstruction
+      # @see Solace::Instructions::AssociatedTokenAccount::CreateAccountInstruction
       # @see Solace::Instructions::SystemProgram::CreateAccountInstruction
       # @since 0.0.2
       class InitializeAccountInstruction
