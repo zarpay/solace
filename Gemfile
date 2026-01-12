@@ -6,6 +6,7 @@ source 'https://rubygems.org'
 gem 'factory_bot'
 gem 'minitest'
 gem 'minitest-hooks'
+gem 'rake'
 
 # Local gem
 gem 'solace', path: '.'
