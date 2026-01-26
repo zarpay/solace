@@ -25,7 +25,12 @@ module Solace
       # @raise [RuntimeError] If the platform is not supported
       libfile = case RUBY_PLATFORM
                 when /linux/ then 'libcurve25519_dalek-linux/libcurve25519_dalek.so'
-                when /darwin/ then 'libcurve25519_dalek-macos/libcurve25519_dalek.dylib'
+                when /darwin/
+                  if RUBY_PLATFORM =~ /arm64|aarch64/
+                    'libcurve25519_dalek-macos-arm64/libcurve25519_dalek.dylib'
+                  else
+                    'libcurve25519_dalek-macos/libcurve25519_dalek.dylib'
+                  end
                 when /mingw|mswin/ then 'libcurve25519_dalek-windows/curve25519_dalek.dll'
                 else raise 'Unsupported platform'
                 end
