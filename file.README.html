@@ -72,9 +72,9 @@
 <h3 id="1-core-classes-low-level">1. <strong>Core Classes</strong> (Low-Level)</h3>
 
 <ul>
-<li><strong>Keypair/PublicKey</strong>: Ed25519 cryptographic operations</li>
+<li><strong>Keypair, PublicKey</strong>: Ed25519 cryptographic operations</li>
 <li><strong>Connection</strong>: RPC client for Solana nodes</li>
-<li><strong>Transaction/Message/Instruction/AddressLookupTable</strong>: Transaction building blocks</li>
+<li><strong>Transaction, Message, Instruction, AddressLookupTable</strong>: Transaction building blocks</li>
 <li><strong>Serializers</strong>: Binary serialization/deserialization system</li>
 </ul>
 
@@ -108,7 +108,8 @@
 <li><strong>Codecs</strong>: Base58/Base64 encoding, compact integers, little-endian encoding</li>
 <li><strong>PDA</strong>: Program Derived Address generation</li>
 <li><strong>Curve25519</strong>: Native curve operations via FFI</li>
-<li><strong>More...</strong>: Checkout <code>lib/solace/utils</code> </li>
+<li><strong>Token</strong>: Classes for loading and accessing token data</li>
+<li><strong>More...</strong>: Checkout <code>lib/solace/utils</code></li>
 </ul>
 
 <h2 id="core-components">Core Components</h2>
@@ -287,7 +288,7 @@
 <p>For more control, use &quot;prepare&quot; methods that return signed transactions without sending it on the program:</p>
 
 <pre class="code ruby"><code class="ruby"><span class='comment'># Prepare transaction without sending
-</span><span class='id identifier rubyid_transaction'>transaction</span> <span class='op'>=</span> <span class='id identifier rubyid_spl_token'>spl_token</span><span class='period'>.</span><span class='id identifier rubyid_prepare_create_mint'>prepare_create_mint</span><span class='lparen'>(</span>
+</span><span class='id identifier rubyid_transaction'>transaction</span> <span class='op'>=</span> <span class='id identifier rubyid_spl_token'>spl_token</span><span class='period'>.</span><span class='id identifier rubyid_compose_create_mint'>compose_create_mint</span><span class='lparen'>(</span>
   <span class='label'>payer:</span> <span class='id identifier rubyid_payer_keypair'>payer_keypair</span><span class='comma'>,</span>
   <span class='label'>decimals:</span> <span class='int'>6</span><span class='comma'>,</span>
   <span class='label'>mint_authority:</span> <span class='id identifier rubyid_authority_keypair'>authority_keypair</span><span class='comma'>,</span>
@@ -402,10 +403,10 @@ on_curve = Solace::Utils::Curve25519Dalek.on_curve?(32_byte_point)
 <pre class="code ruby"><code class="ruby"><span class='kw'>class</span> <span class='const'>MyProgramComposer</span> <span class='op'>&lt;</span> <span class='const'><span class='object_link'><a href="Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Composers.html" title="Solace::Composers (module)">Composers</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Solace/Composers/Base.html" title="Solace::Composers::Base (class)">Base</a></span></span>
   <span class='comment'># All keyword arguments are passed to the constructor and available
 </span>  <span class='comment'># as a `params` hash.
-</span>  <span class='comment'># 
+</span>  <span class='comment'>#
 </span>  <span class='comment'># The setup_accounts method is called automatically by the transaction composer
-</span>  <span class='comment'># during compilation and should be used to add accounts to the account_context 
-</span>  <span class='comment'># with the appropriate access permissions. Conditional logic is fine here given 
+</span>  <span class='comment'># during compilation and should be used to add accounts to the account_context
+</span>  <span class='comment'># with the appropriate access permissions. Conditional logic is fine here given
 </span>  <span class='comment'># and available params to determine the access permissions.
 </span>  <span class='kw'>def</span> <span class='id identifier rubyid_setup_accounts'>setup_accounts</span>
     <span class='id identifier rubyid_account_context'>account_context</span><span class='period'>.</span><span class='id identifier rubyid_add_writable_signer'>add_writable_signer</span><span class='lparen'>(</span><span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='symbol'>:from</span><span class='rbracket'>]</span><span class='rparen'>)</span>
@@ -415,7 +416,7 @@ on_curve = Solace::Utils::Curve25519Dalek.on_curve?(32_byte_point)
 
   <span class='comment'># The build_instruction method is called automatically by the transaction composer
 </span>  <span class='comment'># during compilation and should be used to build the instruction using an instruction builder.
-</span>  <span class='comment'># 
+</span>  <span class='comment'>#
 </span>  <span class='comment'># The passed context to the build_instruction method provides the indices of all accounts
 </span>  <span class='comment'># that were added to the account_context in the setup_accounts method. These are accessible
 </span>  <span class='comment'># by the index_of method of the context using the account address as a parameter.
@@ -633,7 +634,7 @@ on_curve = Solace::Utils::Curve25519Dalek.on_curve?(32_byte_point)
 </div></div>
 
       <div id="footer">
-  Generated on Sat Aug 16 21:22:39 2025 by
+  Generated on Mon Jan 26 09:03:26 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.4).
 </div>

@@ -101,7 +101,16 @@
 
 <h2>Overview</h2><div class="docstring">
   <div class="discussion">
-    <p>Composes multi-instruction transactions with automatic account management</p>
+    <p>Composes transactions with automatic account management and instruction building.</p>
+
+<p>This class allows you to add multiple instruction composers, manage account contexts,
+and build a complete transaction in a flexible way. It is a high-level abstraction over
+the process of creating Solana transactions, making it easier to work with complex
+transaction scenarios.</p>
+
+<p>For most use cases, you will create an instance of this class, add instruction composers,
+and then call the <code>compose_transaction</code> method to build the final transaction. That said,
+all of the individual pieces are also accessible for more advanced use cases.</p>
 
 
   </div>
@@ -145,8 +154,26 @@
 <span class='comment'># Sign the transaction with all required signers
 </span><span class='id identifier rubyid_tx'>tx</span><span class='period'>.</span><span class='id identifier rubyid_sign'>sign</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_required_signers'>required_signers</span><span class='rparen'>)</span></code></pre>
     
+      
+      <pre class="example code"><code><span class='comment'># Chaining methods will return the composer itself for further modifications. The add, prepend,
+</span><span class='comment'># and insert methods allow for dynamic insertion of instruction composers at required positions.
+</span><span class='id identifier rubyid_transaction_composer'>transaction_composer</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'>TransactionComposer</span>
+  <span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='label'>connection:</span> <span class='id identifier rubyid_connection'>connection</span><span class='rparen'>)</span>
+  <span class='period'>.</span><span class='id identifier rubyid_add_instruction'>add_instruction</span><span class='lparen'>(</span><span class='id identifier rubyid_instruction_composer_1'>instruction_composer_1</span><span class='rparen'>)</span>
+  <span class='period'>.</span><span class='id identifier rubyid_prepend_instruction'>prepend_instruction</span><span class='lparen'>(</span><span class='id identifier rubyid_instruction_composer_2'>instruction_composer_2</span><span class='rparen'>)</span>
+  <span class='period'>.</span><span class='id identifier rubyid_insert_instruction'>insert_instruction</span><span class='lparen'>(</span><span class='int'>1</span><span class='comma'>,</span> <span class='id identifier rubyid_instruction_composer_3'>instruction_composer_3</span><span class='rparen'>)</span>
+  <span class='period'>.</span><span class='id identifier rubyid_set_fee_payer'>set_fee_payer</span><span class='lparen'>(</span><span class='id identifier rubyid_fee_payer_pubkey'>fee_payer_pubkey</span><span class='rparen'>)</span>
+  <span class='period'>.</span><span class='id identifier rubyid_compose_transaction'>compose_transaction</span></code></pre>
+    
   </div>
 
+
+  <p class="tag_title">See Also:</p>
+  <ul class="see">
+    
+      <li><span class='object_link'><a href="Composers/Base.html" title="Solace::Composers::Base (class)">Composers::Base</a></span></li>
+    
+  </ul>
 <p class="tag_title">Since:</p>
 <ul class="since">
   
@@ -284,7 +311,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#compose_transaction-instance_method" title="#compose_transaction (instance method)">#<strong>compose_transaction</strong>  &#x21d2; Solace::Transaction </a>
+      <a href="#compose_transaction-instance_method" title="#compose_transaction (instance method)">#<strong>compose_transaction</strong>  &#x21d2; Transaction </a>
     
 
     
@@ -324,6 +351,75 @@
 
   
     <span class="summary_desc"><div class='inline'><p>Initialize the composer.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#insert_instruction-instance_method" title="#insert_instruction (instance method)">#<strong>insert_instruction</strong>(index, composer)  &#x21d2; TransactionComposer </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Insert an instruction composer at a specific index.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#merge-instance_method" title="#merge (instance method)">#<strong>merge</strong>(other, placement: :add, index: nil)  &#x21d2; TransactionComposer </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Merge another TransactionComposer into this one.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#prepend_instruction-instance_method" title="#prepend_instruction (instance method)">#<strong>prepend_instruction</strong>(composer)  &#x21d2; TransactionComposer </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Prepend an instruction composer to the transaction.</p>
 </div></span>
   
 </li>
@@ -417,14 +513,14 @@
       <pre class="lines">
 
 
-58
-59
-60
-61
-62</pre>
+79
+80
+81
+82
+83</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/solace/transaction_composer.rb', line 58</span>
+      <pre class="code"><span class="info file"># File 'lib/solace/transaction_composer.rb', line 79</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='label'>connection:</span><span class='rparen'>)</span>
   <span class='ivar'>@connection</span> <span class='op'>=</span> <span class='id identifier rubyid_connection'>connection</span>
@@ -482,12 +578,12 @@
       <pre class="lines">
 
 
-45
-46
-47</pre>
+66
+67
+68</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/solace/transaction_composer.rb', line 45</span>
+      <pre class="code"><span class="info file"># File 'lib/solace/transaction_composer.rb', line 66</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_connection'>connection</span>
   <span class='ivar'>@connection</span>
@@ -538,12 +634,12 @@
       <pre class="lines">
 
 
-49
-50
-51</pre>
+70
+71
+72</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/solace/transaction_composer.rb', line 49</span>
+      <pre class="code"><span class="info file"># File 'lib/solace/transaction_composer.rb', line 70</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_context'>context</span>
   <span class='ivar'>@context</span>
@@ -594,12 +690,12 @@
       <pre class="lines">
 
 
-53
-54
-55</pre>
+74
+75
+76</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/solace/transaction_composer.rb', line 53</span>
+      <pre class="code"><span class="info file"># File 'lib/solace/transaction_composer.rb', line 74</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_instruction_composers'>instruction_composers</span>
   <span class='ivar'>@instruction_composers</span>
@@ -692,14 +788,14 @@
       <pre class="lines">
 
 
-68
-69
-70
-71
-72</pre>
+89
+90
+91
+92
+93</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/solace/transaction_composer.rb', line 68</span>
+      <pre class="code"><span class="info file"># File 'lib/solace/transaction_composer.rb', line 89</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_add_instruction'>add_instruction</span><span class='lparen'>(</span><span class='id identifier rubyid_composer'>composer</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_merge_accounts'>merge_accounts</span><span class='lparen'>(</span><span class='id identifier rubyid_composer'>composer</span><span class='period'>.</span><span class='id identifier rubyid_account_context'>account_context</span><span class='rparen'>)</span>
@@ -714,7 +810,7 @@
       <div class="method_details ">
   <h3 class="signature " id="compose_transaction-instance_method">
   
-    #<strong>compose_transaction</strong>  &#x21d2; <tt><span class='object_link'><a href="Transaction.html" title="Solace::Transaction (class)">Solace::Transaction</a></span></tt> 
+    #<strong>compose_transaction</strong>  &#x21d2; <tt><span class='object_link'><a href="Transaction.html" title="Solace::Transaction (class)">Transaction</a></span></tt> 
   
 
   
@@ -735,7 +831,7 @@
     <li>
       
       
-        <span class='type'>(<tt><span class='object_link'><a href="Transaction.html" title="Solace::Transaction (class)">Solace::Transaction</a></span></tt>)</span>
+        <span class='type'>(<tt><span class='object_link'><a href="Transaction.html" title="Solace::Transaction (class)">Transaction</a></span></tt>)</span>
       
       
       
@@ -768,21 +864,21 @@
       <pre class="lines">
 
 
-86
-87
-88
-89
-90
-91
-92
-93
-94
-95
-96
-97</pre>
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/solace/transaction_composer.rb', line 86</span>
+      <pre class="code"><span class="info file"># File 'lib/solace/transaction_composer.rb', line 160</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_compose_transaction'>compose_transaction</span>
   <span class='id identifier rubyid_context'>context</span><span class='period'>.</span><span class='id identifier rubyid_compile'>compile</span>
@@ -795,6 +891,368 @@
   <span class='rparen'>)</span>
 
   <span class='const'><span class='object_link'><a href="../Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Transaction.html" title="Solace::Transaction (class)">Transaction</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Transaction.html#initialize-instance_method" title="Solace::Transaction#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='label'>message:</span> <span class='id identifier rubyid_message'>message</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="insert_instruction-instance_method">
+  
+    #<strong>insert_instruction</strong>(index, composer)  &#x21d2; <tt><span class='object_link'><a href="" title="Solace::TransactionComposer (class)">TransactionComposer</a></span></tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Insert an instruction composer at a specific index</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>index</span>
+      
+      
+        <span class='type'>(<tt>Integer</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>The index to insert at</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>composer</span>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="Composers/Base.html" title="Solace::Composers::Base (class)">Composers::Base</a></span></tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>The instruction composer</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="" title="Solace::TransactionComposer (class)">TransactionComposer</a></span></tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>Self for chaining</p>
+</div>
+      
+    </li>
+  
+</ul>
+<p class="tag_title">Since:</p>
+<ul class="since">
+  
+    <li>
+      
+      
+      
+      
+        
+        <div class='inline'><p>0.1.0</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+114
+115
+116
+117
+118</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/solace/transaction_composer.rb', line 114</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_insert_instruction'>insert_instruction</span><span class='lparen'>(</span><span class='id identifier rubyid_index'>index</span><span class='comma'>,</span> <span class='id identifier rubyid_composer'>composer</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_merge_accounts'>merge_accounts</span><span class='lparen'>(</span><span class='id identifier rubyid_composer'>composer</span><span class='period'>.</span><span class='id identifier rubyid_account_context'>account_context</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_instruction_composers'>instruction_composers</span><span class='period'>.</span><span class='id identifier rubyid_insert'>insert</span><span class='lparen'>(</span><span class='id identifier rubyid_index'>index</span><span class='comma'>,</span> <span class='id identifier rubyid_composer'>composer</span><span class='rparen'>)</span>
+  <span class='kw'>self</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="merge-instance_method">
+  
+    #<strong>merge</strong>(other, placement: :add, index: nil)  &#x21d2; <tt><span class='object_link'><a href="" title="Solace::TransactionComposer (class)">TransactionComposer</a></span></tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Merge another TransactionComposer into this one</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>other</span>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="" title="Solace::TransactionComposer (class)">TransactionComposer</a></span></tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>The other composer to merge</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>placement</span>
+      
+      
+        <span class='type'>(<tt>Symbol</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>:add</tt>)</em>
+      
+      
+        &mdash;
+        <div class='inline'><p>:add to append, :prepend to prepend</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>index</span>
+      
+      
+        <span class='type'>(<tt>Integer</tt>, <tt>nil</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>nil</tt>)</em>
+      
+      
+        &mdash;
+        <div class='inline'><p>The index to insert at if placement is :insert</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="" title="Solace::TransactionComposer (class)">TransactionComposer</a></span></tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>Self for chaining</p>
+</div>
+      
+    </li>
+  
+</ul>
+<p class="tag_title">Since:</p>
+<ul class="since">
+  
+    <li>
+      
+      
+      
+      
+        
+        <div class='inline'><p>0.1.0</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/solace/transaction_composer.rb', line 128</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_merge'>merge</span><span class='lparen'>(</span><span class='id identifier rubyid_other'>other</span><span class='comma'>,</span> <span class='label'>placement:</span> <span class='symbol'>:add</span><span class='comma'>,</span> <span class='label'>index:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_merge_accounts'>merge_accounts</span><span class='lparen'>(</span><span class='id identifier rubyid_other'>other</span><span class='period'>.</span><span class='id identifier rubyid_context'>context</span><span class='rparen'>)</span>
+
+  <span class='kw'>case</span> <span class='id identifier rubyid_placement'>placement</span>
+  <span class='kw'>when</span> <span class='symbol'>:add</span>
+    <span class='comment'># Appends the other&#39;s instruction composers to this one&#39;s list
+</span>    <span class='id identifier rubyid_instruction_composers'>instruction_composers</span><span class='period'>.</span><span class='id identifier rubyid_concat'>concat</span><span class='lparen'>(</span><span class='id identifier rubyid_other'>other</span><span class='period'>.</span><span class='id identifier rubyid_instruction_composers'>instruction_composers</span><span class='rparen'>)</span>
+  <span class='kw'>when</span> <span class='symbol'>:insert</span>
+    <span class='comment'># Inserts the other&#39;s instruction composers at the specified index
+</span>    <span class='id identifier rubyid_instruction_composers'>instruction_composers</span><span class='period'>.</span><span class='id identifier rubyid_insert'>insert</span><span class='lparen'>(</span><span class='id identifier rubyid_index'>index</span><span class='comma'>,</span> <span class='op'>*</span><span class='id identifier rubyid_other'>other</span><span class='period'>.</span><span class='id identifier rubyid_instruction_composers'>instruction_composers</span><span class='rparen'>)</span>
+  <span class='kw'>when</span> <span class='symbol'>:prepend</span>
+    <span class='comment'># Prepends the other&#39;s instruction composers to this one&#39;s list
+</span>    <span class='id identifier rubyid_instruction_composers'>instruction_composers</span><span class='period'>.</span><span class='id identifier rubyid_unshift'>unshift</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_other'>other</span><span class='period'>.</span><span class='id identifier rubyid_instruction_composers'>instruction_composers</span><span class='rparen'>)</span>
+  <span class='kw'>else</span>
+    <span class='id identifier rubyid_raise'>raise</span> <span class='const'>ArgumentError</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Invalid placement option: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_placement'>placement</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
+  <span class='kw'>end</span>
+
+  <span class='kw'>self</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="prepend_instruction-instance_method">
+  
+    #<strong>prepend_instruction</strong>(composer)  &#x21d2; <tt><span class='object_link'><a href="" title="Solace::TransactionComposer (class)">TransactionComposer</a></span></tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Prepend an instruction composer to the transaction</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>composer</span>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="Composers/Base.html" title="Solace::Composers::Base (class)">Composers::Base</a></span></tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>The instruction composer</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="" title="Solace::TransactionComposer (class)">TransactionComposer</a></span></tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>Self for chaining</p>
+</div>
+      
+    </li>
+  
+</ul>
+<p class="tag_title">Since:</p>
+<ul class="since">
+  
+    <li>
+      
+      
+      
+      
+        
+        <div class='inline'><p>0.1.0</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+101
+102
+103
+104
+105</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/solace/transaction_composer.rb', line 101</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_prepend_instruction'>prepend_instruction</span><span class='lparen'>(</span><span class='id identifier rubyid_composer'>composer</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_merge_accounts'>merge_accounts</span><span class='lparen'>(</span><span class='id identifier rubyid_composer'>composer</span><span class='period'>.</span><span class='id identifier rubyid_account_context'>account_context</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_instruction_composers'>instruction_composers</span><span class='period'>.</span><span class='id identifier rubyid_unshift'>unshift</span><span class='lparen'>(</span><span class='id identifier rubyid_composer'>composer</span><span class='rparen'>)</span>
+  <span class='kw'>self</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -826,7 +1284,7 @@
         <span class='name'>pubkey</span>
       
       
-        <span class='type'>(<tt>String</tt>, <tt><span class='object_link'><a href="PublicKey.html" title="Solace::PublicKey (class)">Solace::PublicKey</a></span></tt>, <tt><span class='object_link'><a href="Keypair.html" title="Solace::Keypair (class)">Solace::Keypair</a></span></tt>)</span>
+        <span class='type'>(<tt>#to_s</tt>, <tt><span class='object_link'><a href="PublicKey.html" title="Solace::PublicKey (class)">PublicKey</a></span></tt>)</span>
       
       
       
@@ -877,13 +1335,13 @@
       <pre class="lines">
 
 
-78
-79
-80
-81</pre>
+152
+153
+154
+155</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/solace/transaction_composer.rb', line 78</span>
+      <pre class="code"><span class="info file"># File 'lib/solace/transaction_composer.rb', line 152</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_set_fee_payer'>set_fee_payer</span><span class='lparen'>(</span><span class='id identifier rubyid_pubkey'>pubkey</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_context'>context</span><span class='period'>.</span><span class='id identifier rubyid_set_fee_payer'>set_fee_payer</span><span class='lparen'>(</span><span class='id identifier rubyid_pubkey'>pubkey</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='rparen'>)</span>
@@ -899,7 +1357,7 @@
 </div>
 
       <div id="footer">
-  Generated on Sat Aug 16 21:22:39 2025 by
+  Generated on Mon Jan 26 09:03:27 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.4).
 </div>

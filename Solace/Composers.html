@@ -79,7 +79,7 @@
   <dl>
     <dt>Defined in:</dt>
     <dd>lib/solace/composers/base.rb<span class="defines">,<br />
-  lib/solace/composers/system_program_transfer_composer.rb,<br /> lib/solace/composers/spl_token_program_transfer_checked_composer.rb,<br /> lib/solace/composers/associated_token_account_program_create_account_composer.rb</span>
+  lib/solace/composers/system_program_transfer_composer.rb,<br /> lib/solace/composers/spl_token_program_mint_to_composer.rb,<br /> lib/solace/composers/spl_token_program_transfer_composer.rb,<br /> lib/solace/composers/system_program_create_account_composer.rb,<br /> lib/solace/composers/spl_token_program_close_account_composer.rb,<br /> lib/solace/composers/spl_token_program_initialize_mint_composer.rb,<br /> lib/solace/composers/spl_token_program_transfer_checked_composer.rb,<br /> lib/solace/composers/associated_token_account_program_create_account_composer.rb,<br /> lib/solace/composers/associated_token_account_program_create_idempotent_account_composer.rb</span>
 </dd>
   </dl>
   
@@ -87,12 +87,63 @@
 
 <h2>Overview</h2><div class="docstring">
   <div class="discussion">
-    
+    <p>The Composers module contains classes responsible for building and ordering
+the accounts and instructions required for common Solana operations.</p>
+
+<p>Composers abstract away the complexity of account ordering, permission management,
+and instruction data construction. They provide a high-level interface for
+creating instructions that interact with on-chain programs. Each composer
+corresponds to a specific program instruction (e.g., transferring SOL,
+minting tokens, creating accounts).</p>
+
+<p>Composers handle:</p>
+
+<ul>
+<li>Account resolution and ordering</li>
+<li>Permission flags (signer, writable)</li>
+<li>Account deduplication</li>
+<li>Instruction data formatting</li>
+</ul>
+
 
   </div>
 </div>
 <div class="tags">
   
+  <div class="examples">
+    <h4 class="tag_title">Examples:</h4>
+    
+      
+        <h5 class="example_title"><div class='inline'><p>Using a composer</p>
+</div></h5>
+      
+      <pre class="example code"><code><span class='comment'># Initialize a transaction composer
+</span><span class='id identifier rubyid_composer'>composer</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="TransactionComposer.html" title="Solace::TransactionComposer (class)">TransactionComposer</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="TransactionComposer.html#initialize-instance_method" title="Solace::TransactionComposer#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='label'>connection:</span> <span class='id identifier rubyid_connection'>connection</span><span class='rparen'>)</span>
+
+<span class='comment'># Create a transfer instruction composer
+</span><span class='id identifier rubyid_ix'>ix</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'>Composers</span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Composers/SystemProgramTransferComposer.html" title="Solace::Composers::SystemProgramTransferComposer (class)">SystemProgramTransferComposer</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Composers/Base.html#initialize-instance_method" title="Solace::Composers::Base#initialize (method)">new</a></span></span><span class='lparen'>(</span>
+  <span class='label'>from:</span> <span class='id identifier rubyid_sender'>sender</span><span class='period'>.</span><span class='id identifier rubyid_public_key'>public_key</span><span class='comma'>,</span>
+  <span class='label'>to:</span> <span class='id identifier rubyid_recipient'>recipient</span><span class='period'>.</span><span class='id identifier rubyid_public_key'>public_key</span><span class='comma'>,</span>
+  <span class='label'>lamports:</span> <span class='int'>1_000_000</span>
+<span class='rparen'>)</span>
+
+<span class='comment'># Add the instruction to the transaction composer and compose the transaction
+</span><span class='id identifier rubyid_tx'>tx</span> <span class='op'>=</span> <span class='id identifier rubyid_composer'>composer</span>
+  <span class='period'>.</span><span class='id identifier rubyid_add_instruction'>add_instruction</span><span class='lparen'>(</span><span class='id identifier rubyid_ix'>ix</span><span class='rparen'>)</span>
+  <span class='period'>.</span><span class='id identifier rubyid_set_fee_payer'>set_fee_payer</span><span class='lparen'>(</span><span class='id identifier rubyid_sender'>sender</span><span class='period'>.</span><span class='id identifier rubyid_public_key'>public_key</span><span class='rparen'>)</span>
+  <span class='period'>.</span><span class='id identifier rubyid_compose_transaction'>compose_transaction</span></code></pre>
+    
+  </div>
+
+
+  <p class="tag_title">See Also:</p>
+  <ul class="see">
+    
+      <li><span class='object_link'><a href="TransactionComposer.html" title="Solace::TransactionComposer (class)">TransactionComposer</a></span></li>
+    
+      <li><span class='object_link'><a href="Composers/Base.html" title="Solace::Composers::Base (class)">Base</a></span></li>
+    
+  </ul>
 <p class="tag_title">Since:</p>
 <ul class="since">
   
@@ -102,7 +153,7 @@
       
       
         
-        <div class='inline'><p>0.1.0</p>
+        <div class='inline'><p>0.0.3</p>
 </div>
       
     </li>
@@ -115,7 +166,7 @@
     
   
     
-      <strong class="classes">Classes:</strong> <span class='object_link'><a href="Composers/AssociatedTokenAccountProgramCreateAccountComposer.html" title="Solace::Composers::AssociatedTokenAccountProgramCreateAccountComposer (class)">AssociatedTokenAccountProgramCreateAccountComposer</a></span>, <span class='object_link'><a href="Composers/Base.html" title="Solace::Composers::Base (class)">Base</a></span>, <span class='object_link'><a href="Composers/SplTokenProgramTransferCheckedComposer.html" title="Solace::Composers::SplTokenProgramTransferCheckedComposer (class)">SplTokenProgramTransferCheckedComposer</a></span>, <span class='object_link'><a href="Composers/SystemProgramTransferComposer.html" title="Solace::Composers::SystemProgramTransferComposer (class)">SystemProgramTransferComposer</a></span>
+      <strong class="classes">Classes:</strong> <span class='object_link'><a href="Composers/AssociatedTokenAccountProgramCreateAccountComposer.html" title="Solace::Composers::AssociatedTokenAccountProgramCreateAccountComposer (class)">AssociatedTokenAccountProgramCreateAccountComposer</a></span>, <span class='object_link'><a href="Composers/AssociatedTokenAccountProgramCreateIdempotentAccountComposer.html" title="Solace::Composers::AssociatedTokenAccountProgramCreateIdempotentAccountComposer (class)">AssociatedTokenAccountProgramCreateIdempotentAccountComposer</a></span>, <span class='object_link'><a href="Composers/Base.html" title="Solace::Composers::Base (class)">Base</a></span>, <span class='object_link'><a href="Composers/SplTokenProgramCloseAccountComposer.html" title="Solace::Composers::SplTokenProgramCloseAccountComposer (class)">SplTokenProgramCloseAccountComposer</a></span>, <span class='object_link'><a href="Composers/SplTokenProgramInitializeMintComposer.html" title="Solace::Composers::SplTokenProgramInitializeMintComposer (class)">SplTokenProgramInitializeMintComposer</a></span>, <span class='object_link'><a href="Composers/SplTokenProgramMintToComposer.html" title="Solace::Composers::SplTokenProgramMintToComposer (class)">SplTokenProgramMintToComposer</a></span>, <span class='object_link'><a href="Composers/SplTokenProgramTransferCheckedComposer.html" title="Solace::Composers::SplTokenProgramTransferCheckedComposer (class)">SplTokenProgramTransferCheckedComposer</a></span>, <span class='object_link'><a href="Composers/SplTokenProgramTransferComposer.html" title="Solace::Composers::SplTokenProgramTransferComposer (class)">SplTokenProgramTransferComposer</a></span>, <span class='object_link'><a href="Composers/SystemProgramCreateAccountComposer.html" title="Solace::Composers::SystemProgramCreateAccountComposer (class)">SystemProgramCreateAccountComposer</a></span>, <span class='object_link'><a href="Composers/SystemProgramTransferComposer.html" title="Solace::Composers::SystemProgramTransferComposer (class)">SystemProgramTransferComposer</a></span>
     
   
 </p>
@@ -131,7 +182,7 @@
 </div>
 
       <div id="footer">
-  Generated on Sat Aug 16 21:22:39 2025 by
+  Generated on Mon Jan 26 09:03:26 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.4).
 </div>

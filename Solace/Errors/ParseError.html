@@ -103,13 +103,33 @@
 
 <h2>Overview</h2><div class="docstring">
   <div class="discussion">
-    <p>JSON parsing failed</p>
+    <p>Raised when parsing or deserializing data fails.</p>
+
+<p>This error is raised when the gem encounters data that cannot be properly
+parsed or deserialized, such as malformed JSON responses from the RPC node,
+invalid binary data, or unexpected data structures. This typically indicates
+either a bug in the gem or an incompatibility with the RPC node&#39;s response format.</p>
 
 
   </div>
 </div>
 <div class="tags">
   
+  <div class="examples">
+    <h4 class="tag_title">Examples:</h4>
+    
+      
+        <h5 class="example_title"><div class='inline'><p>Handling parse errors</p>
+</div></h5>
+      
+      <pre class="example code"><code><span class='kw'>begin</span>
+  <span class='id identifier rubyid_transaction'>transaction</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Transaction.html" title="Solace::Transaction (class)">Transaction</a></span></span><span class='period'>.</span><span class='id identifier rubyid_deserialize'>deserialize</span><span class='lparen'>(</span><span class='id identifier rubyid_binary_data'>binary_data</span><span class='rparen'>)</span>
+<span class='kw'>rescue</span> <span class='const'><span class='object_link'><a href="../../Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Errors.html" title="Solace::Errors (module)">Errors</a></span></span><span class='op'>::</span><span class='const'>ParseError</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+  <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Failed to parse transaction: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_message'>message</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
+<span class='kw'>end</span></code></pre>
+    
+  </div>
+
 <p class="tag_title">Since:</p>
 <ul class="since">
   
@@ -119,7 +139,7 @@
       
       
         
-        <div class='inline'><p>0.0.8</p>
+        <div class='inline'><p>0.0.1</p>
 </div>
       
     </li>
@@ -298,7 +318,7 @@
       
       
         
-        <div class='inline'><p>0.0.8</p>
+        <div class='inline'><p>0.0.1</p>
 </div>
       
     </li>
@@ -311,13 +331,13 @@
       <pre class="lines">
 
 
-11
-12
-13
-14</pre>
+25
+26
+27
+28</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/solace/errors/parse_error.rb', line 11</span>
+      <pre class="code"><span class="info file"># File 'lib/solace/errors/parse_error.rb', line 25</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='id identifier rubyid_message'>message</span><span class='comma'>,</span> <span class='label'>body:</span><span class='rparen'>)</span>
   <span class='kw'>super</span><span class='lparen'>(</span><span class='id identifier rubyid_message'>message</span><span class='rparen'>)</span>
@@ -361,7 +381,7 @@
       
       
         
-        <div class='inline'><p>0.0.8</p>
+        <div class='inline'><p>0.0.1</p>
 </div>
       
     </li>
@@ -374,12 +394,12 @@
       <pre class="lines">
 
 
-7
-8
-9</pre>
+21
+22
+23</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/solace/errors/parse_error.rb', line 7</span>
+      <pre class="code"><span class="info file"># File 'lib/solace/errors/parse_error.rb', line 21</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_body'>body</span>
   <span class='ivar'>@body</span>
@@ -474,7 +494,7 @@
       
       
         
-        <div class='inline'><p>0.0.8</p>
+        <div class='inline'><p>0.0.1</p>
 </div>
       
     </li>
@@ -487,12 +507,12 @@
       <pre class="lines">
 
 
-21
-22
-23</pre>
+35
+36
+37</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/solace/errors/parse_error.rb', line 21</span>
+      <pre class="code"><span class="info file"># File 'lib/solace/errors/parse_error.rb', line 35</span>
 
 <span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_format_response'>format_response</span><span class='lparen'>(</span><span class='id identifier rubyid_error'>error</span><span class='comma'>,</span> <span class='id identifier rubyid_response'>response</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Invalid JSON from RPC: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_error'>error</span><span class='period'>.</span><span class='id identifier rubyid_message'>message</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='label'>body:</span> <span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span><span class='rparen'>)</span>
@@ -507,7 +527,7 @@
 </div>
 
       <div id="footer">
-  Generated on Sat Aug 16 21:22:39 2025 by
+  Generated on Mon Jan 26 09:03:27 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.4).
 </div>

@@ -107,7 +107,7 @@
 
 <p>This composer resolves and orders the required accounts for a <code>CreateAssociatedTokenAccount</code> instruction,
 sets up their access permissions, and delegates construction to the appropriate
-instruction builder (<code>Instructions::AssociatedTokenAccount::CreateAssociatedTokenAccountInstruction</code>).</p>
+instruction builder (<code>Instructions::AssociatedTokenAccount::CreateAccountInstruction</code>).</p>
 
 <p>Required accounts:</p>
 
@@ -146,7 +146,7 @@ instruction builder (<code>Instructions::AssociatedTokenAccount::CreateAssociate
   <p class="tag_title">See Also:</p>
   <ul class="see">
     
-      <li><span class='object_link'><a href="../Instructions/AssociatedTokenAccount/CreateAssociatedTokenAccountInstruction.html" title="Solace::Instructions::AssociatedTokenAccount::CreateAssociatedTokenAccountInstruction (class)">Instructions::AssociatedTokenAccount::CreateAssociatedTokenAccountInstruction</a></span></li>
+      <li><span class='object_link'><a href="../Instructions/AssociatedTokenAccount/CreateAccountInstruction.html" title="Solace::Instructions::AssociatedTokenAccount::CreateAccountInstruction (class)">Instructions::AssociatedTokenAccount::CreateAccountInstruction</a></span></li>
     
   </ul>
 <p class="tag_title">Since:</p>
@@ -165,7 +165,11 @@ instruction builder (<code>Instructions::AssociatedTokenAccount::CreateAssociate
   
 </ul>
 
+</div><div id="subclasses">
+  <h2>Direct Known Subclasses</h2>
+  <p class="children"><span class='object_link'><a href="AssociatedTokenAccountProgramCreateIdempotentAccountComposer.html" title="Solace::Composers::AssociatedTokenAccountProgramCreateIdempotentAccountComposer (class)">AssociatedTokenAccountProgramCreateIdempotentAccountComposer</a></span></p>
 </div>
+
 
 
 
@@ -654,7 +658,7 @@ instruction builder (<code>Instructions::AssociatedTokenAccount::CreateAssociate
       <pre class="code"><span class="info file"># File 'lib/solace/composers/associated_token_account_program_create_account_composer.rb', line 98</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_build_instruction'>build_instruction</span><span class='lparen'>(</span><span class='id identifier rubyid_account_context'>account_context</span><span class='rparen'>)</span>
-  <span class='const'><span class='object_link'><a href="../Instructions.html" title="Solace::Instructions (module)">Instructions</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Instructions/AssociatedTokenAccount.html" title="Solace::Instructions::AssociatedTokenAccount (module)">AssociatedTokenAccount</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Instructions/AssociatedTokenAccount/CreateAssociatedTokenAccountInstruction.html" title="Solace::Instructions::AssociatedTokenAccount::CreateAssociatedTokenAccountInstruction (class)">CreateAssociatedTokenAccountInstruction</a></span></span><span class='period'>.</span><span class='id identifier rubyid_build'><span class='object_link'><a href="../Instructions/AssociatedTokenAccount/CreateAssociatedTokenAccountInstruction.html#build-class_method" title="Solace::Instructions::AssociatedTokenAccount::CreateAssociatedTokenAccountInstruction.build (method)">build</a></span></span><span class='lparen'>(</span>
+  <span class='const'><span class='object_link'><a href="../Instructions.html" title="Solace::Instructions (module)">Instructions</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Instructions/AssociatedTokenAccount.html" title="Solace::Instructions::AssociatedTokenAccount (module)">AssociatedTokenAccount</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Instructions/AssociatedTokenAccount/CreateAccountInstruction.html" title="Solace::Instructions::AssociatedTokenAccount::CreateAccountInstruction (class)">CreateAccountInstruction</a></span></span><span class='period'>.</span><span class='id identifier rubyid_build'><span class='object_link'><a href="../Instructions/AssociatedTokenAccount/CreateAccountInstruction.html#build-class_method" title="Solace::Instructions::AssociatedTokenAccount::CreateAccountInstruction.build (method)">build</a></span></span><span class='lparen'>(</span>
     <span class='label'>funder_index:</span> <span class='id identifier rubyid_account_context'>account_context</span><span class='period'>.</span><span class='id identifier rubyid_index_of'>index_of</span><span class='lparen'>(</span><span class='id identifier rubyid_funder'>funder</span><span class='rparen'>)</span><span class='comma'>,</span>
     <span class='label'>owner_index:</span> <span class='id identifier rubyid_account_context'>account_context</span><span class='period'>.</span><span class='id identifier rubyid_index_of'>index_of</span><span class='lparen'>(</span><span class='id identifier rubyid_owner'>owner</span><span class='rparen'>)</span><span class='comma'>,</span>
     <span class='label'>mint_index:</span> <span class='id identifier rubyid_account_context'>account_context</span><span class='period'>.</span><span class='id identifier rubyid_index_of'>index_of</span><span class='lparen'>(</span><span class='id identifier rubyid_mint'>mint</span><span class='rparen'>)</span><span class='comma'>,</span>
@@ -1102,7 +1106,7 @@ Called automatically during initialization</p>
 </div>
 
       <div id="footer">
-  Generated on Sat Aug 16 21:22:40 2025 by
+  Generated on Mon Jan 26 09:03:28 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.4).
 </div>

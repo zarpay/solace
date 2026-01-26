@@ -109,8 +109,6 @@
 the SPL Token Program and provides a more convenient interface for creating and managing SPL
 Token mints and accounts.</p>
 
-<p>rubocop:disable Metrics/ClassLength</p>
-
 
   </div>
 </div>
@@ -129,6 +127,7 @@ Token mints and accounts.</p>
 <span class='comment'># Create an SPL Token mint
 </span><span class='id identifier rubyid_result'>result</span> <span class='op'>=</span> <span class='id identifier rubyid_program'>program</span><span class='period'>.</span><span class='id identifier rubyid_create_mint'>create_mint</span><span class='lparen'>(</span>
   <span class='label'>payer:</span> <span class='id identifier rubyid_payer'>payer</span><span class='comma'>,</span>
+  <span class='label'>funder:</span> <span class='id identifier rubyid_funder'>funder</span><span class='comma'>,</span>
   <span class='label'>decimals:</span> <span class='int'>6</span><span class='comma'>,</span>
   <span class='label'>mint_keypair:</span> <span class='id identifier rubyid_mint_keypair'>mint_keypair</span><span class='comma'>,</span>
   <span class='label'>mint_authority:</span> <span class='id identifier rubyid_mint_authority'>mint_authority</span><span class='comma'>,</span>
@@ -136,7 +135,7 @@ Token mints and accounts.</p>
 <span class='rparen'>)</span>
 
 <span class='comment'># Wait for the transaction to be finalized
-</span><span class='ivar'>@connection</span><span class='period'>.</span><span class='id identifier rubyid_wait_for_confirmed_signature'>wait_for_confirmed_signature</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>finalized</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span> <span class='lbrace'>{</span> <span class='id identifier rubyid_result'>result</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>result</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span> <span class='rbrace'>}</span></code></pre>
+</span><span class='id identifier rubyid_connection'>connection</span><span class='period'>.</span><span class='id identifier rubyid_wait_for_confirmed_signature'>wait_for_confirmed_signature</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>finalized</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span> <span class='lbrace'>{</span> <span class='id identifier rubyid_result'>result</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>result</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span> <span class='rbrace'>}</span></code></pre>
     
   </div>
 
@@ -179,7 +178,99 @@ Token mints and accounts.</p>
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#create_mint-instance_method" title="#create_mint (instance method)">#<strong>create_mint</strong>(**options)  &#x21d2; String </a>
+      <a href="#compose_create_mint-instance_method" title="#compose_create_mint (instance method)">#<strong>compose_create_mint</strong>(funder:, decimals:, mint_authority:, freeze_authority: nil, mint_account: Solace::Keypair.generate)  &#x21d2; TransactionComposer </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Prepares a new SPL Token mint transaction.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#compose_mint_to-instance_method" title="#compose_mint_to (instance method)">#<strong>compose_mint_to</strong>(mint:, amount:, destination:, mint_authority:)  &#x21d2; TransactionComposer </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Prepares a mint to instruction and returns the signed transaction.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#compose_transfer-instance_method" title="#compose_transfer (instance method)">#<strong>compose_transfer</strong>(amount:, source:, destination:, owner:)  &#x21d2; TransactionComposer </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Prepares a transfer instruction and returns the signed transaction.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#compose_transfer_checked-instance_method" title="#compose_transfer_checked (instance method)">#<strong>compose_transfer_checked</strong>(to:, from:, mint:, authority:, amount:, decimals:)  &#x21d2; TransactionComposer </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Prepares a transfer checked instruction and returns the signed transaction.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#create_mint-instance_method" title="#create_mint (instance method)">#<strong>create_mint</strong>(payer:, sign: true, execute: true, **composer_opts) {|composer| ... } &#x21d2; String </a>
     
 
     
@@ -227,7 +318,7 @@ Token mints and accounts.</p>
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#mint_to-instance_method" title="#mint_to (instance method)">#<strong>mint_to</strong>(**options)  &#x21d2; String </a>
+      <a href="#mint_to-instance_method" title="#mint_to (instance method)">#<strong>mint_to</strong>(payer:, sign: true, execute: true, **composer_opts) {|composer| ... } &#x21d2; String </a>
     
 
     
@@ -250,76 +341,7 @@ Token mints and accounts.</p>
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#prepare_create_mint-instance_method" title="#prepare_create_mint (instance method)">#<strong>prepare_create_mint</strong>(payer:, decimals:, mint_authority:, freeze_authority:, mint_keypair: Solace::Keypair.generate)  &#x21d2; Solace::Transaction </a>
-    
-
-    
-  </span>
-  
-  
-  
-  
-  
-  
-  
-
-  
-    <span class="summary_desc"><div class='inline'><p>Prepares a new SPL Token mint and returns the signed transaction.</p>
-</div></span>
-  
-</li>
-
-      
-        <li class="public ">
-  <span class="summary_signature">
-    
-      <a href="#prepare_mint_to-instance_method" title="#prepare_mint_to (instance method)">#<strong>prepare_mint_to</strong>(payer:, mint:, destination:, amount:, mint_authority:)  &#x21d2; Solace::Transaction </a>
-    
-
-    
-  </span>
-  
-  
-  
-  
-  
-  
-  
-
-  
-    <span class="summary_desc"><div class='inline'><p>Prepares a mint to instruction and returns the signed transaction.</p>
-</div></span>
-  
-</li>
-
-      
-        <li class="public ">
-  <span class="summary_signature">
-    
-      <a href="#prepare_transfer-instance_method" title="#prepare_transfer (instance method)">#<strong>prepare_transfer</strong>(amount:, payer:, source:, destination:, owner:)  &#x21d2; Solace::Transaction </a>
-    
-
-    
-  </span>
-  
-  
-  
-  
-  
-  
-  
-
-  
-    <span class="summary_desc"><div class='inline'><p>Prepares a transfer instruction and returns the signed transaction.</p>
-</div></span>
-  
-</li>
-
-      
-        <li class="public ">
-  <span class="summary_signature">
-    
-      <a href="#transfer-instance_method" title="#transfer (instance method)">#<strong>transfer</strong>(**options)  &#x21d2; String </a>
+      <a href="#transfer-instance_method" title="#transfer (instance method)">#<strong>transfer</strong>(payer:, sign: true, execute: true, **composer_opts) {|composer| ... } &#x21d2; String </a>
     
 
     
@@ -334,6 +356,29 @@ Token mints and accounts.</p>
 
   
     <span class="summary_desc"><div class='inline'><p>Transfers tokens from one account to another.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#transfer_checked-instance_method" title="#transfer_checked (instance method)">#<strong>transfer_checked</strong>(payer:, sign: true, execute: true, **composer_opts) {|composer| ... } &#x21d2; String </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Transfers tokens with decimal precision and validation checks.</p>
 </div></span>
   
 </li>
@@ -410,12 +455,12 @@ Token mints and accounts.</p>
       <pre class="lines">
 
 
+33
 34
-35
-36</pre>
+35</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/solace/programs/spl_token.rb', line 34</span>
+      <pre class="code"><span class="info file"># File 'lib/solace/programs/spl_token.rb', line 33</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='label'>connection:</span><span class='rparen'>)</span>
   <span class='kw'>super</span><span class='lparen'>(</span><span class='label'>connection:</span> <span class='id identifier rubyid_connection'>connection</span><span class='comma'>,</span> <span class='label'>program_id:</span> <span class='const'><span class='object_link'><a href="../../Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Constants.html" title="Solace::Constants (module)">Constants</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Constants.html#TOKEN_PROGRAM_ID-constant" title="Solace::Constants::TOKEN_PROGRAM_ID (constant)">TOKEN_PROGRAM_ID</a></span></span><span class='rparen'>)</span>
@@ -433,104 +478,9 @@ Token mints and accounts.</p>
 
     
       <div class="method_details first">
-  <h3 class="signature first" id="create_mint-instance_method">
+  <h3 class="signature first" id="compose_create_mint-instance_method">
   
-    #<strong>create_mint</strong>(**options)  &#x21d2; <tt>String</tt> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    <p>Creates a new SPL Token mint.</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  <p class="tag_title">Parameters:</p>
-<ul class="param">
-  
-    <li>
-      
-        <span class='name'>options</span>
-      
-      
-        <span class='type'>(<tt>Hash</tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'><p>Options for calling the prepare_create_mint method.</p>
-</div>
-      
-    </li>
-  
-</ul>
-
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>String</tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'><p>The signature of the transaction.</p>
-</div>
-      
-    </li>
-  
-</ul>
-<p class="tag_title">Since:</p>
-<ul class="since">
-  
-    <li>
-      
-      
-      
-      
-        
-        <div class='inline'><p>0.0.2</p>
-</div>
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-42
-43
-44
-45
-46</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/solace/programs/spl_token.rb', line 42</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_create_mint'>create_mint</span><span class='lparen'>(</span><span class='op'>**</span><span class='id identifier rubyid_options'>options</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_tx'>tx</span> <span class='op'>=</span> <span class='id identifier rubyid_prepare_create_mint'>prepare_create_mint</span><span class='lparen'>(</span><span class='op'>**</span><span class='id identifier rubyid_options'>options</span><span class='rparen'>)</span>
-
-  <span class='ivar'>@connection</span><span class='period'>.</span><span class='id identifier rubyid_send_transaction'>send_transaction</span><span class='lparen'>(</span><span class='id identifier rubyid_tx'>tx</span><span class='period'>.</span><span class='id identifier rubyid_serialize'>serialize</span><span class='rparen'>)</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="mint_to-instance_method">
-  
-    #<strong>mint_to</strong>(**options)  &#x21d2; <tt>String</tt> 
+    #<strong>compose_create_mint</strong>(funder:, decimals:, mint_authority:, freeze_authority: nil, mint_account: Solace::Keypair.generate)  &#x21d2; <tt><span class='object_link'><a href="../TransactionComposer.html" title="Solace::TransactionComposer (class)">TransactionComposer</a></span></tt> 
   
 
   
@@ -538,102 +488,7 @@ Token mints and accounts.</p>
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Mint tokens to a token account</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  <p class="tag_title">Parameters:</p>
-<ul class="param">
-  
-    <li>
-      
-        <span class='name'>options</span>
-      
-      
-        <span class='type'>(<tt>Hash</tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'><p>Options for calling the prepare_mint_to method.</p>
-</div>
-      
-    </li>
-  
-</ul>
-
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>String</tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'><p>The signature of the transaction.</p>
-</div>
-      
-    </li>
-  
-</ul>
-<p class="tag_title">Since:</p>
-<ul class="since">
-  
-    <li>
-      
-      
-      
-      
-        
-        <div class='inline'><p>0.0.2</p>
-</div>
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-113
-114
-115
-116
-117</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/solace/programs/spl_token.rb', line 113</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_mint_to'>mint_to</span><span class='lparen'>(</span><span class='op'>**</span><span class='id identifier rubyid_options'>options</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_tx'>tx</span> <span class='op'>=</span> <span class='id identifier rubyid_prepare_mint_to'>prepare_mint_to</span><span class='lparen'>(</span><span class='op'>**</span><span class='id identifier rubyid_options'>options</span><span class='rparen'>)</span>
-
-  <span class='ivar'>@connection</span><span class='period'>.</span><span class='id identifier rubyid_send_transaction'>send_transaction</span><span class='lparen'>(</span><span class='id identifier rubyid_tx'>tx</span><span class='period'>.</span><span class='id identifier rubyid_serialize'>serialize</span><span class='rparen'>)</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="prepare_create_mint-instance_method">
-  
-    #<strong>prepare_create_mint</strong>(payer:, decimals:, mint_authority:, freeze_authority:, mint_keypair: Solace::Keypair.generate)  &#x21d2; <tt><span class='object_link'><a href="../Transaction.html" title="Solace::Transaction (class)">Solace::Transaction</a></span></tt> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    <p>Prepares a new SPL Token mint and returns the signed transaction.</p>
+    <p>Prepares a new SPL Token mint transaction.</p>
 
 <p>rubocop:disable Metrics/MethodLength</p>
 
@@ -646,15 +501,15 @@ Token mints and accounts.</p>
   
     <li>
       
-        <span class='name'>payer</span>
+        <span class='name'>funder</span>
       
       
-        <span class='type'>(<tt><span class='object_link'><a href="../Keypair.html" title="Solace::Keypair (class)">Solace::Keypair</a></span></tt>)</span>
+        <span class='type'>(<tt>#to_s</tt>, <tt><span class='object_link'><a href="../PublicKey.html" title="Solace::PublicKey (class)">PublicKey</a></span></tt>)</span>
       
       
       
         &mdash;
-        <div class='inline'><p>The keypair that will pay for fees and rent.</p>
+        <div class='inline'><p>The keypair that will pay for rent of the new mint account.</p>
 </div>
       
     </li>
@@ -679,7 +534,7 @@ Token mints and accounts.</p>
         <span class='name'>mint_authority</span>
       
       
-        <span class='type'>(<tt>String</tt>)</span>
+        <span class='type'>(<tt>#to_s</tt>, <tt><span class='object_link'><a href="../PublicKey.html" title="Solace::PublicKey (class)">PublicKey</a></span></tt>)</span>
       
       
       
@@ -694,8 +549,10 @@ Token mints and accounts.</p>
         <span class='name'>freeze_authority</span>
       
       
-        <span class='type'>(<tt>String</tt>)</span>
+        <span class='type'>(<tt>#to_s</tt>, <tt><span class='object_link'><a href="../PublicKey.html" title="Solace::PublicKey (class)">PublicKey</a></span></tt>)</span>
       
+      
+        <em class="default">(defaults to: <tt>nil</tt>)</em>
       
       
         &mdash;
@@ -706,10 +563,10 @@ Token mints and accounts.</p>
   
     <li>
       
-        <span class='name'>mint_keypair</span>
+        <span class='name'>mint_account</span>
       
       
-        <span class='type'>(<tt><span class='object_link'><a href="../Keypair.html" title="Solace::Keypair (class)">Solace::Keypair</a></span></tt>)</span>
+        <span class='type'>(<tt>#to_s</tt>, <tt><span class='object_link'><a href="../PublicKey.html" title="Solace::PublicKey (class)">PublicKey</a></span></tt>)</span>
       
       
         <em class="default">(defaults to: <tt>Solace::Keypair.generate</tt>)</em>
@@ -729,12 +586,12 @@ Token mints and accounts.</p>
     <li>
       
       
-        <span class='type'>(<tt><span class='object_link'><a href="../Transaction.html" title="Solace::Transaction (class)">Solace::Transaction</a></span></tt>)</span>
+        <span class='type'>(<tt><span class='object_link'><a href="../TransactionComposer.html" title="Solace::TransactionComposer (class)">TransactionComposer</a></span></tt>)</span>
       
       
       
         &mdash;
-        <div class='inline'><p>The signed transaction.</p>
+        <div class='inline'><p>A composer with required instructions.</p>
 </div>
       
     </li>
@@ -762,28 +619,6 @@ Token mints and accounts.</p>
       <pre class="lines">
 
 
-58
-59
-60
-61
-62
-63
-64
-65
-66
-67
-68
-69
-70
-71
-72
-73
-74
-75
-76
-77
-78
-79
 80
 81
 82
@@ -810,59 +645,47 @@ Token mints and accounts.</p>
 103
 104
 105
-106</pre>
+106
+107
+108
+109
+110
+111</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/solace/programs/spl_token.rb', line 58</span>
+      <pre class="code"><span class="info file"># File 'lib/solace/programs/spl_token.rb', line 80</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_prepare_create_mint'>prepare_create_mint</span><span class='lparen'>(</span>
-  <span class='label'>payer:</span><span class='comma'>,</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_compose_create_mint'>compose_create_mint</span><span class='lparen'>(</span>
+  <span class='label'>funder:</span><span class='comma'>,</span>
   <span class='label'>decimals:</span><span class='comma'>,</span>
   <span class='label'>mint_authority:</span><span class='comma'>,</span>
-  <span class='label'>freeze_authority:</span><span class='comma'>,</span>
-  <span class='label'>mint_keypair:</span> <span class='const'><span class='object_link'><a href="../../Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Keypair.html" title="Solace::Keypair (class)">Keypair</a></span></span><span class='period'>.</span><span class='id identifier rubyid_generate'><span class='object_link'><a href="../Keypair.html#generate-class_method" title="Solace::Keypair.generate (method)">generate</a></span></span>
+  <span class='label'>freeze_authority:</span> <span class='kw'>nil</span><span class='comma'>,</span>
+  <span class='label'>mint_account:</span> <span class='const'><span class='object_link'><a href="../../Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Keypair.html" title="Solace::Keypair (class)">Keypair</a></span></span><span class='period'>.</span><span class='id identifier rubyid_generate'><span class='object_link'><a href="../Keypair.html#generate-class_method" title="Solace::Keypair.generate (method)">generate</a></span></span>
 <span class='rparen'>)</span>
-  <span class='id identifier rubyid_accounts'>accounts</span> <span class='op'>=</span> <span class='lbracket'>[</span>
-    <span class='id identifier rubyid_payer'>payer</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='comma'>,</span>
-    <span class='id identifier rubyid_mint_keypair'>mint_keypair</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='comma'>,</span>
-    <span class='const'><span class='object_link'><a href="../../Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Constants.html" title="Solace::Constants (module)">Constants</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Constants.html#SYSVAR_RENT_PROGRAM_ID-constant" title="Solace::Constants::SYSVAR_RENT_PROGRAM_ID (constant)">SYSVAR_RENT_PROGRAM_ID</a></span></span><span class='comma'>,</span>
-    <span class='const'><span class='object_link'><a href="../../Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Constants.html" title="Solace::Constants (module)">Constants</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Constants.html#TOKEN_PROGRAM_ID-constant" title="Solace::Constants::TOKEN_PROGRAM_ID (constant)">TOKEN_PROGRAM_ID</a></span></span><span class='comma'>,</span>
-    <span class='const'><span class='object_link'><a href="../../Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Constants.html" title="Solace::Constants (module)">Constants</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Constants.html#SYSTEM_PROGRAM_ID-constant" title="Solace::Constants::SYSTEM_PROGRAM_ID (constant)">SYSTEM_PROGRAM_ID</a></span></span>
-  <span class='rbracket'>]</span>
+  <span class='comment'># Mint accounts need 82 bytes of space, and we need to fund it with enough lamports to be rent-exempt
+</span>  <span class='id identifier rubyid_rent_lamports'>rent_lamports</span> <span class='op'>=</span> <span class='id identifier rubyid_connection'>connection</span><span class='period'>.</span><span class='id identifier rubyid_get_minimum_lamports_for_rent_exemption'>get_minimum_lamports_for_rent_exemption</span><span class='lparen'>(</span><span class='int'>82</span><span class='rparen'>)</span>
 
-  <span class='id identifier rubyid_rent_lamports'>rent_lamports</span> <span class='op'>=</span> <span class='ivar'>@connection</span><span class='period'>.</span><span class='id identifier rubyid_get_minimum_lamports_for_rent_exemption'>get_minimum_lamports_for_rent_exemption</span><span class='lparen'>(</span><span class='int'>82</span><span class='rparen'>)</span>
-
-  <span class='id identifier rubyid_create_account_ix'>create_account_ix</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Instructions.html" title="Solace::Instructions (module)">Instructions</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Instructions/SystemProgram.html" title="Solace::Instructions::SystemProgram (module)">SystemProgram</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Instructions/SystemProgram/CreateAccountInstruction.html" title="Solace::Instructions::SystemProgram::CreateAccountInstruction (class)">CreateAccountInstruction</a></span></span><span class='period'>.</span><span class='id identifier rubyid_build'><span class='object_link'><a href="../Instructions/SystemProgram/CreateAccountInstruction.html#build-class_method" title="Solace::Instructions::SystemProgram::CreateAccountInstruction.build (method)">build</a></span></span><span class='lparen'>(</span>
-    <span class='label'>from_index:</span> <span class='int'>0</span><span class='comma'>,</span>
-    <span class='label'>new_account_index:</span> <span class='int'>1</span><span class='comma'>,</span>
-    <span class='label'>system_program_index:</span> <span class='int'>4</span><span class='comma'>,</span>
+  <span class='comment'># Build the account for the mint
+</span>  <span class='id identifier rubyid_create_account_ix'>create_account_ix</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../Composers.html" title="Solace::Composers (module)">Composers</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Composers/SystemProgramCreateAccountComposer.html" title="Solace::Composers::SystemProgramCreateAccountComposer (class)">SystemProgramCreateAccountComposer</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="../Composers/Base.html#initialize-instance_method" title="Solace::Composers::Base#initialize (method)">new</a></span></span><span class='lparen'>(</span>
+    <span class='label'>from:</span> <span class='id identifier rubyid_funder'>funder</span><span class='comma'>,</span>
+    <span class='label'>new_account:</span> <span class='id identifier rubyid_mint_account'>mint_account</span><span class='comma'>,</span>
+    <span class='label'>owner:</span> <span class='id identifier rubyid_program_id'>program_id</span><span class='comma'>,</span>
     <span class='label'>lamports:</span> <span class='id identifier rubyid_rent_lamports'>rent_lamports</span><span class='comma'>,</span>
-    <span class='label'>space:</span> <span class='int'>82</span><span class='comma'>,</span>
-    <span class='label'>owner:</span> <span class='id identifier rubyid_program_id'>program_id</span>
+    <span class='label'>space:</span> <span class='int'>82</span>
   <span class='rparen'>)</span>
 
-  <span class='id identifier rubyid_freeze_authority'>freeze_authority</span> <span class='op'>=</span> <span class='id identifier rubyid_freeze_authority'>freeze_authority</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span> <span class='kw'>unless</span> <span class='id identifier rubyid_freeze_authority'>freeze_authority</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
-
-  <span class='id identifier rubyid_initialize_mint_ix'>initialize_mint_ix</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Instructions.html" title="Solace::Instructions (module)">Instructions</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Instructions/SplToken.html" title="Solace::Instructions::SplToken (module)">SplToken</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Instructions/SplToken/InitializeMintInstruction.html" title="Solace::Instructions::SplToken::InitializeMintInstruction (class)">InitializeMintInstruction</a></span></span><span class='period'>.</span><span class='id identifier rubyid_build'><span class='object_link'><a href="../Instructions/SplToken/InitializeMintInstruction.html#build-class_method" title="Solace::Instructions::SplToken::InitializeMintInstruction.build (method)">build</a></span></span><span class='lparen'>(</span>
-    <span class='label'>mint_account_index:</span> <span class='int'>1</span><span class='comma'>,</span>
-    <span class='label'>rent_sysvar_index:</span> <span class='int'>2</span><span class='comma'>,</span>
-    <span class='label'>program_index:</span> <span class='int'>3</span><span class='comma'>,</span>
+  <span class='comment'># Build the initialize mint composer
+</span>  <span class='id identifier rubyid_initialize_mint_ix'>initialize_mint_ix</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../Composers.html" title="Solace::Composers (module)">Composers</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Composers/SplTokenProgramInitializeMintComposer.html" title="Solace::Composers::SplTokenProgramInitializeMintComposer (class)">SplTokenProgramInitializeMintComposer</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="../Composers/Base.html#initialize-instance_method" title="Solace::Composers::Base#initialize (method)">new</a></span></span><span class='lparen'>(</span>
     <span class='label'>decimals:</span> <span class='id identifier rubyid_decimals'>decimals</span><span class='comma'>,</span>
-    <span class='label'>mint_authority:</span> <span class='id identifier rubyid_mint_authority'>mint_authority</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='comma'>,</span>
+    <span class='label'>mint_account:</span> <span class='id identifier rubyid_mint_account'>mint_account</span><span class='comma'>,</span>
+    <span class='label'>mint_authority:</span> <span class='id identifier rubyid_mint_authority'>mint_authority</span><span class='comma'>,</span>
     <span class='label'>freeze_authority:</span> <span class='id identifier rubyid_freeze_authority'>freeze_authority</span>
   <span class='rparen'>)</span>
 
-  <span class='id identifier rubyid_message'>message</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../Message.html" title="Solace::Message (class)">Message</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="../Message.html#initialize-instance_method" title="Solace::Message#initialize (method)">new</a></span></span><span class='lparen'>(</span>
-    <span class='label'>header:</span> <span class='lbracket'>[</span><span class='int'>2</span><span class='comma'>,</span> <span class='int'>0</span><span class='comma'>,</span> <span class='int'>3</span><span class='rbracket'>]</span><span class='comma'>,</span>
-    <span class='label'>accounts:</span> <span class='id identifier rubyid_accounts'>accounts</span><span class='comma'>,</span>
-    <span class='label'>recent_blockhash:</span> <span class='ivar'>@connection</span><span class='period'>.</span><span class='id identifier rubyid_get_latest_blockhash'>get_latest_blockhash</span><span class='lbracket'>[</span><span class='int'>0</span><span class='rbracket'>]</span><span class='comma'>,</span>
-    <span class='label'>instructions:</span> <span class='lbracket'>[</span><span class='id identifier rubyid_create_account_ix'>create_account_ix</span><span class='comma'>,</span> <span class='id identifier rubyid_initialize_mint_ix'>initialize_mint_ix</span><span class='rbracket'>]</span>
-  <span class='rparen'>)</span>
-
-  <span class='id identifier rubyid_tx'>tx</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../Transaction.html" title="Solace::Transaction (class)">Transaction</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="../Transaction.html#initialize-instance_method" title="Solace::Transaction#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='label'>message:</span> <span class='id identifier rubyid_message'>message</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_tx'>tx</span><span class='period'>.</span><span class='id identifier rubyid_sign'>sign</span><span class='lparen'>(</span><span class='id identifier rubyid_payer'>payer</span><span class='comma'>,</span> <span class='id identifier rubyid_mint_keypair'>mint_keypair</span><span class='rparen'>)</span>
-
-  <span class='id identifier rubyid_tx'>tx</span>
+  <span class='const'><span class='object_link'><a href="../TransactionComposer.html" title="Solace::TransactionComposer (class)">TransactionComposer</a></span></span>
+    <span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='label'>connection:</span> <span class='ivar'>@connection</span><span class='rparen'>)</span>
+    <span class='period'>.</span><span class='id identifier rubyid_add_instruction'>add_instruction</span><span class='lparen'>(</span><span class='id identifier rubyid_create_account_ix'>create_account_ix</span><span class='rparen'>)</span>
+    <span class='period'>.</span><span class='id identifier rubyid_add_instruction'>add_instruction</span><span class='lparen'>(</span><span class='id identifier rubyid_initialize_mint_ix'>initialize_mint_ix</span><span class='rparen'>)</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -870,9 +693,9 @@ Token mints and accounts.</p>
 </div>
     
       <div class="method_details ">
-  <h3 class="signature " id="prepare_mint_to-instance_method">
+  <h3 class="signature " id="compose_mint_to-instance_method">
   
-    #<strong>prepare_mint_to</strong>(payer:, mint:, destination:, amount:, mint_authority:)  &#x21d2; <tt><span class='object_link'><a href="../Transaction.html" title="Solace::Transaction (class)">Solace::Transaction</a></span></tt> 
+    #<strong>compose_mint_to</strong>(mint:, amount:, destination:, mint_authority:)  &#x21d2; <tt><span class='object_link'><a href="../TransactionComposer.html" title="Solace::TransactionComposer (class)">TransactionComposer</a></span></tt> 
   
 
   
@@ -881,8 +704,6 @@ Token mints and accounts.</p>
 </h3><div class="docstring">
   <div class="discussion">
     <p>Prepares a mint to instruction and returns the signed transaction.</p>
-
-<p>rubocop:disable Metrics/MethodLength</p>
 
 
   </div>
@@ -908,25 +729,10 @@ Token mints and accounts.</p>
   
     <li>
       
-        <span class='name'>payer</span>
-      
-      
-        <span class='type'>(<tt><span class='object_link'><a href="../PublicKey.html" title="Solace::PublicKey (class)">PublicKey</a></span></tt>, <tt><span class='object_link'><a href="../Keypair.html" title="Solace::Keypair (class)">Keypair</a></span></tt>, <tt>String</tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'><p>The payer of the transaction.</p>
-</div>
-      
-    </li>
-  
-    <li>
-      
         <span class='name'>mint</span>
       
       
-        <span class='type'>(<tt><span class='object_link'><a href="../PublicKey.html" title="Solace::PublicKey (class)">PublicKey</a></span></tt>, <tt><span class='object_link'><a href="../Keypair.html" title="Solace::Keypair (class)">Keypair</a></span></tt>, <tt>String</tt>)</span>
+        <span class='type'>(<tt>#to_s</tt>, <tt><span class='object_link'><a href="../PublicKey.html" title="Solace::PublicKey (class)">PublicKey</a></span></tt>)</span>
       
       
       
@@ -941,7 +747,7 @@ Token mints and accounts.</p>
         <span class='name'>destination</span>
       
       
-        <span class='type'>(<tt><span class='object_link'><a href="../PublicKey.html" title="Solace::PublicKey (class)">PublicKey</a></span></tt>, <tt><span class='object_link'><a href="../Keypair.html" title="Solace::Keypair (class)">Keypair</a></span></tt>, <tt>String</tt>)</span>
+        <span class='type'>(<tt>#to_s</tt>, <tt><span class='object_link'><a href="../PublicKey.html" title="Solace::PublicKey (class)">PublicKey</a></span></tt>)</span>
       
       
       
@@ -956,13 +762,24 @@ Token mints and accounts.</p>
         <span class='name'>mint_authority</span>
       
       
-        <span class='type'>(<tt><span class='object_link'><a href="../PublicKey.html" title="Solace::PublicKey (class)">PublicKey</a></span></tt>, <tt><span class='object_link'><a href="../Keypair.html" title="Solace::Keypair (class)">Keypair</a></span></tt>, <tt>String</tt>)</span>
+        <span class='type'>(<tt>#to_s</tt>, <tt><span class='object_link'><a href="../PublicKey.html" title="Solace::PublicKey (class)">PublicKey</a></span></tt>)</span>
       
       
       
         &mdash;
         <div class='inline'><p>The mint authority of the token.</p>
 </div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>ensure_account</span>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
       
     </li>
   
@@ -974,12 +791,12 @@ Token mints and accounts.</p>
     <li>
       
       
-        <span class='type'>(<tt><span class='object_link'><a href="../Transaction.html" title="Solace::Transaction (class)">Solace::Transaction</a></span></tt>)</span>
+        <span class='type'>(<tt><span class='object_link'><a href="../TransactionComposer.html" title="Solace::TransactionComposer (class)">TransactionComposer</a></span></tt>)</span>
       
       
       
         &mdash;
-        <div class='inline'><p>The signed transaction.</p>
+        <div class='inline'><p>A composer with required instructions.</p>
 </div>
       
     </li>
@@ -1007,33 +824,6 @@ Token mints and accounts.</p>
       <pre class="lines">
 
 
-129
-130
-131
-132
-133
-134
-135
-136
-137
-138
-139
-140
-141
-142
-143
-144
-145
-146
-147
-148
-149
-150
-151
-152
-153
-154
-155
 156
 157
 158
@@ -1041,45 +831,36 @@ Token mints and accounts.</p>
 160
 161
 162
-163</pre>
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/solace/programs/spl_token.rb', line 129</span>
+      <pre class="code"><span class="info file"># File 'lib/solace/programs/spl_token.rb', line 156</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_prepare_mint_to'>prepare_mint_to</span><span class='lparen'>(</span>
-  <span class='label'>payer:</span><span class='comma'>,</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_compose_mint_to'>compose_mint_to</span><span class='lparen'>(</span>
   <span class='label'>mint:</span><span class='comma'>,</span>
-  <span class='label'>destination:</span><span class='comma'>,</span>
   <span class='label'>amount:</span><span class='comma'>,</span>
+  <span class='label'>destination:</span><span class='comma'>,</span>
   <span class='label'>mint_authority:</span>
 <span class='rparen'>)</span>
-  <span class='id identifier rubyid_accounts'>accounts</span> <span class='op'>=</span> <span class='lbracket'>[</span>
-    <span class='id identifier rubyid_payer'>payer</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='comma'>,</span>
-    <span class='id identifier rubyid_mint_authority'>mint_authority</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='comma'>,</span>
-    <span class='id identifier rubyid_mint'>mint</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='comma'>,</span>
-    <span class='id identifier rubyid_destination'>destination</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='comma'>,</span>
-    <span class='const'><span class='object_link'><a href="../../Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Constants.html" title="Solace::Constants (module)">Constants</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Constants.html#TOKEN_PROGRAM_ID-constant" title="Solace::Constants::TOKEN_PROGRAM_ID (constant)">TOKEN_PROGRAM_ID</a></span></span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
-  <span class='rbracket'>]</span>
-
-  <span class='id identifier rubyid_ix'>ix</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Instructions.html" title="Solace::Instructions (module)">Instructions</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Instructions/SplToken.html" title="Solace::Instructions::SplToken (module)">SplToken</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Instructions/SplToken/MintToInstruction.html" title="Solace::Instructions::SplToken::MintToInstruction (class)">MintToInstruction</a></span></span><span class='period'>.</span><span class='id identifier rubyid_build'><span class='object_link'><a href="../Instructions/SplToken/MintToInstruction.html#build-class_method" title="Solace::Instructions::SplToken::MintToInstruction.build (method)">build</a></span></span><span class='lparen'>(</span>
+  <span class='id identifier rubyid_ix'>ix</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../Composers.html" title="Solace::Composers (module)">Composers</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Composers/SplTokenProgramMintToComposer.html" title="Solace::Composers::SplTokenProgramMintToComposer (class)">SplTokenProgramMintToComposer</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="../Composers/Base.html#initialize-instance_method" title="Solace::Composers::Base#initialize (method)">new</a></span></span><span class='lparen'>(</span>
     <span class='label'>amount:</span> <span class='id identifier rubyid_amount'>amount</span><span class='comma'>,</span>
-    <span class='label'>mint_authority_index:</span> <span class='int'>1</span><span class='comma'>,</span>
-    <span class='label'>mint_index:</span> <span class='int'>2</span><span class='comma'>,</span>
-    <span class='label'>destination_index:</span> <span class='int'>3</span><span class='comma'>,</span>
-    <span class='label'>program_index:</span> <span class='int'>4</span>
+    <span class='label'>mint:</span> <span class='id identifier rubyid_mint'>mint</span><span class='comma'>,</span>
+    <span class='label'>destination:</span> <span class='id identifier rubyid_destination'>destination</span><span class='comma'>,</span>
+    <span class='label'>mint_authority:</span> <span class='id identifier rubyid_mint_authority'>mint_authority</span>
   <span class='rparen'>)</span>
 
-  <span class='id identifier rubyid_message'>message</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Message.html" title="Solace::Message (class)">Message</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="../Message.html#initialize-instance_method" title="Solace::Message#initialize (method)">new</a></span></span><span class='lparen'>(</span>
-    <span class='label'>header:</span> <span class='lbracket'>[</span><span class='int'>2</span><span class='comma'>,</span> <span class='int'>0</span><span class='comma'>,</span> <span class='int'>1</span><span class='rbracket'>]</span><span class='comma'>,</span>
-    <span class='label'>accounts:</span> <span class='id identifier rubyid_accounts'>accounts</span><span class='comma'>,</span>
-    <span class='label'>instructions:</span> <span class='lbracket'>[</span><span class='id identifier rubyid_ix'>ix</span><span class='rbracket'>]</span><span class='comma'>,</span>
-    <span class='label'>recent_blockhash:</span> <span class='id identifier rubyid_connection'>connection</span><span class='period'>.</span><span class='id identifier rubyid_get_latest_blockhash'>get_latest_blockhash</span><span class='lbracket'>[</span><span class='int'>0</span><span class='rbracket'>]</span>
-  <span class='rparen'>)</span>
-
-  <span class='id identifier rubyid_tx'>tx</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Transaction.html" title="Solace::Transaction (class)">Transaction</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="../Transaction.html#initialize-instance_method" title="Solace::Transaction#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='label'>message:</span> <span class='id identifier rubyid_message'>message</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_tx'>tx</span><span class='period'>.</span><span class='id identifier rubyid_sign'>sign</span><span class='lparen'>(</span><span class='id identifier rubyid_payer'>payer</span><span class='comma'>,</span> <span class='id identifier rubyid_mint_authority'>mint_authority</span><span class='rparen'>)</span>
-
-  <span class='id identifier rubyid_tx'>tx</span>
+  <span class='const'><span class='object_link'><a href="../TransactionComposer.html" title="Solace::TransactionComposer (class)">TransactionComposer</a></span></span>
+    <span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='label'>connection:</span> <span class='id identifier rubyid_connection'>connection</span><span class='rparen'>)</span>
+    <span class='period'>.</span><span class='id identifier rubyid_add_instruction'>add_instruction</span><span class='lparen'>(</span><span class='id identifier rubyid_ix'>ix</span><span class='rparen'>)</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -1087,9 +868,9 @@ Token mints and accounts.</p>
 </div>
     
       <div class="method_details ">
-  <h3 class="signature " id="prepare_transfer-instance_method">
+  <h3 class="signature " id="compose_transfer-instance_method">
   
-    #<strong>prepare_transfer</strong>(amount:, payer:, source:, destination:, owner:)  &#x21d2; <tt><span class='object_link'><a href="../Transaction.html" title="Solace::Transaction (class)">Solace::Transaction</a></span></tt> 
+    #<strong>compose_transfer</strong>(amount:, source:, destination:, owner:)  &#x21d2; <tt><span class='object_link'><a href="../TransactionComposer.html" title="Solace::TransactionComposer (class)">TransactionComposer</a></span></tt> 
   
 
   
@@ -1098,8 +879,6 @@ Token mints and accounts.</p>
 </h3><div class="docstring">
   <div class="discussion">
     <p>Prepares a transfer instruction and returns the signed transaction.</p>
-
-<p>rubocop:disable Metrics/MethodLength</p>
 
 
   </div>
@@ -1110,25 +889,10 @@ Token mints and accounts.</p>
   
     <li>
       
-        <span class='name'>payer</span>
-      
-      
-        <span class='type'>(<tt><span class='object_link'><a href="../Keypair.html" title="Solace::Keypair (class)">Solace::Keypair</a></span></tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'><p>The keypair that will pay for fees and rent.</p>
-</div>
-      
-    </li>
-  
-    <li>
-      
         <span class='name'>source</span>
       
       
-        <span class='type'>(<tt>String</tt>)</span>
+        <span class='type'>(<tt>#to_s</tt>, <tt><span class='object_link'><a href="../PublicKey.html" title="Solace::PublicKey (class)">PublicKey</a></span></tt>)</span>
       
       
       
@@ -1143,7 +907,7 @@ Token mints and accounts.</p>
         <span class='name'>destination</span>
       
       
-        <span class='type'>(<tt>String</tt>)</span>
+        <span class='type'>(<tt>#to_s</tt>, <tt><span class='object_link'><a href="../PublicKey.html" title="Solace::PublicKey (class)">PublicKey</a></span></tt>)</span>
       
       
       
@@ -1173,7 +937,7 @@ Token mints and accounts.</p>
         <span class='name'>owner</span>
       
       
-        <span class='type'>(<tt><span class='object_link'><a href="../Keypair.html" title="Solace::Keypair (class)">Solace::Keypair</a></span></tt>)</span>
+        <span class='type'>(<tt>#to_s</tt>, <tt><span class='object_link'><a href="../PublicKey.html" title="Solace::PublicKey (class)">PublicKey</a></span></tt>)</span>
       
       
       
@@ -1191,12 +955,12 @@ Token mints and accounts.</p>
     <li>
       
       
-        <span class='type'>(<tt><span class='object_link'><a href="../Transaction.html" title="Solace::Transaction (class)">Solace::Transaction</a></span></tt>)</span>
+        <span class='type'>(<tt><span class='object_link'><a href="../TransactionComposer.html" title="Solace::TransactionComposer (class)">TransactionComposer</a></span></tt>)</span>
       
       
       
         &mdash;
-        <div class='inline'><p>The signed transaction.</p>
+        <div class='inline'><p>A composer with required instructions.</p>
 </div>
       
     </li>
@@ -1224,79 +988,43 @@ Token mints and accounts.</p>
       <pre class="lines">
 
 
-186
-187
-188
-189
-190
-191
-192
-193
-194
-195
-196
-197
-198
-199
-200
-201
-202
-203
-204
-205
-206
-207
-208
-209
-210
-211
-212
-213
 214
 215
 216
 217
 218
 219
-220</pre>
+220
+221
+222
+223
+224
+225
+226
+227
+228
+229
+230</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/solace/programs/spl_token.rb', line 186</span>
+      <pre class="code"><span class="info file"># File 'lib/solace/programs/spl_token.rb', line 214</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_prepare_transfer'>prepare_transfer</span><span class='lparen'>(</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_compose_transfer'>compose_transfer</span><span class='lparen'>(</span>
   <span class='label'>amount:</span><span class='comma'>,</span>
-  <span class='label'>payer:</span><span class='comma'>,</span>
   <span class='label'>source:</span><span class='comma'>,</span>
   <span class='label'>destination:</span><span class='comma'>,</span>
   <span class='label'>owner:</span>
 <span class='rparen'>)</span>
-  <span class='id identifier rubyid_accounts'>accounts</span> <span class='op'>=</span> <span class='lbracket'>[</span>
-    <span class='id identifier rubyid_payer'>payer</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='comma'>,</span>
-    <span class='id identifier rubyid_owner'>owner</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='comma'>,</span>
-    <span class='id identifier rubyid_source'>source</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='comma'>,</span>
-    <span class='id identifier rubyid_destination'>destination</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='comma'>,</span>
-    <span class='const'><span class='object_link'><a href="../../Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Constants.html" title="Solace::Constants (module)">Constants</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Constants.html#TOKEN_PROGRAM_ID-constant" title="Solace::Constants::TOKEN_PROGRAM_ID (constant)">TOKEN_PROGRAM_ID</a></span></span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
-  <span class='rbracket'>]</span>
-
-  <span class='id identifier rubyid_ix'>ix</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Instructions.html" title="Solace::Instructions (module)">Instructions</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Instructions/SplToken.html" title="Solace::Instructions::SplToken (module)">SplToken</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Instructions/SplToken/TransferInstruction.html" title="Solace::Instructions::SplToken::TransferInstruction (class)">TransferInstruction</a></span></span><span class='period'>.</span><span class='id identifier rubyid_build'><span class='object_link'><a href="../Instructions/SplToken/TransferInstruction.html#build-class_method" title="Solace::Instructions::SplToken::TransferInstruction.build (method)">build</a></span></span><span class='lparen'>(</span>
+  <span class='id identifier rubyid_ix'>ix</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../Composers.html" title="Solace::Composers (module)">Composers</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Composers/SplTokenProgramTransferComposer.html" title="Solace::Composers::SplTokenProgramTransferComposer (class)">SplTokenProgramTransferComposer</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="../Composers/Base.html#initialize-instance_method" title="Solace::Composers::Base#initialize (method)">new</a></span></span><span class='lparen'>(</span>
     <span class='label'>amount:</span> <span class='id identifier rubyid_amount'>amount</span><span class='comma'>,</span>
-    <span class='label'>owner_index:</span> <span class='int'>1</span><span class='comma'>,</span>
-    <span class='label'>source_index:</span> <span class='int'>2</span><span class='comma'>,</span>
-    <span class='label'>destination_index:</span> <span class='int'>3</span><span class='comma'>,</span>
-    <span class='label'>program_index:</span> <span class='int'>4</span>
+    <span class='label'>owner:</span> <span class='id identifier rubyid_owner'>owner</span><span class='comma'>,</span>
+    <span class='label'>source:</span> <span class='id identifier rubyid_source'>source</span><span class='comma'>,</span>
+    <span class='label'>destination:</span> <span class='id identifier rubyid_destination'>destination</span>
   <span class='rparen'>)</span>
 
-  <span class='id identifier rubyid_message'>message</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Message.html" title="Solace::Message (class)">Message</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="../Message.html#initialize-instance_method" title="Solace::Message#initialize (method)">new</a></span></span><span class='lparen'>(</span>
-    <span class='label'>header:</span> <span class='lbracket'>[</span><span class='int'>2</span><span class='comma'>,</span> <span class='int'>0</span><span class='comma'>,</span> <span class='int'>1</span><span class='rbracket'>]</span><span class='comma'>,</span>
-    <span class='label'>accounts:</span> <span class='id identifier rubyid_accounts'>accounts</span><span class='comma'>,</span>
-    <span class='label'>instructions:</span> <span class='lbracket'>[</span><span class='id identifier rubyid_ix'>ix</span><span class='rbracket'>]</span><span class='comma'>,</span>
-    <span class='label'>recent_blockhash:</span> <span class='id identifier rubyid_connection'>connection</span><span class='period'>.</span><span class='id identifier rubyid_get_latest_blockhash'>get_latest_blockhash</span><span class='lbracket'>[</span><span class='int'>0</span><span class='rbracket'>]</span>
-  <span class='rparen'>)</span>
-
-  <span class='id identifier rubyid_tx'>tx</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Transaction.html" title="Solace::Transaction (class)">Transaction</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="../Transaction.html#initialize-instance_method" title="Solace::Transaction#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='label'>message:</span> <span class='id identifier rubyid_message'>message</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_tx'>tx</span><span class='period'>.</span><span class='id identifier rubyid_sign'>sign</span><span class='lparen'>(</span><span class='id identifier rubyid_payer'>payer</span><span class='comma'>,</span> <span class='id identifier rubyid_owner'>owner</span><span class='rparen'>)</span>
-
-  <span class='id identifier rubyid_tx'>tx</span>
+  <span class='const'><span class='object_link'><a href="../TransactionComposer.html" title="Solace::TransactionComposer (class)">TransactionComposer</a></span></span>
+    <span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='label'>connection:</span> <span class='id identifier rubyid_connection'>connection</span><span class='rparen'>)</span>
+    <span class='period'>.</span><span class='id identifier rubyid_add_instruction'>add_instruction</span><span class='lparen'>(</span><span class='id identifier rubyid_ix'>ix</span><span class='rparen'>)</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -1304,9 +1032,9 @@ Token mints and accounts.</p>
 </div>
     
       <div class="method_details ">
-  <h3 class="signature " id="transfer-instance_method">
+  <h3 class="signature " id="compose_transfer_checked-instance_method">
   
-    #<strong>transfer</strong>(**options)  &#x21d2; <tt>String</tt> 
+    #<strong>compose_transfer_checked</strong>(to:, from:, mint:, authority:, amount:, decimals:)  &#x21d2; <tt><span class='object_link'><a href="../TransactionComposer.html" title="Solace::TransactionComposer (class)">TransactionComposer</a></span></tt> 
   
 
   
@@ -1314,7 +1042,7 @@ Token mints and accounts.</p>
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Transfers tokens from one account to another</p>
+    <p>Prepares a transfer checked instruction and returns the signed transaction.</p>
 
 
   </div>
@@ -1325,7 +1053,258 @@ Token mints and accounts.</p>
   
     <li>
       
-        <span class='name'>options</span>
+        <span class='name'>amount</span>
+      
+      
+        <span class='type'>(<tt>Integer</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>The number of tokens to transfer.</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>decimals</span>
+      
+      
+        <span class='type'>(<tt>Integer</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>The number of decimals for the token.</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>from</span>
+      
+      
+        <span class='type'>(<tt>#to_s</tt>, <tt><span class='object_link'><a href="../PublicKey.html" title="Solace::PublicKey (class)">PublicKey</a></span></tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>The source token account address.</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>to</span>
+      
+      
+        <span class='type'>(<tt>#to_s</tt>, <tt><span class='object_link'><a href="../PublicKey.html" title="Solace::PublicKey (class)">PublicKey</a></span></tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>The destination token account address.</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>mint</span>
+      
+      
+        <span class='type'>(<tt>#to_s</tt>, <tt><span class='object_link'><a href="../PublicKey.html" title="Solace::PublicKey (class)">PublicKey</a></span></tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>The mint address</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>authority</span>
+      
+      
+        <span class='type'>(<tt>#to_s</tt>, <tt><span class='object_link'><a href="../PublicKey.html" title="Solace::PublicKey (class)">PublicKey</a></span></tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>The keypair of the owner of the source account.</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="../TransactionComposer.html" title="Solace::TransactionComposer (class)">TransactionComposer</a></span></tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>A composer with required instructions.</p>
+</div>
+      
+    </li>
+  
+</ul>
+<p class="tag_title">Since:</p>
+<ul class="since">
+  
+    <li>
+      
+      
+      
+      
+        
+        <div class='inline'><p>0.0.2</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+274
+275
+276
+277
+278
+279
+280
+281
+282
+283
+284
+285
+286
+287
+288
+289
+290
+291
+292
+293
+294</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/solace/programs/spl_token.rb', line 274</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_compose_transfer_checked'>compose_transfer_checked</span><span class='lparen'>(</span>
+  <span class='label'>to:</span><span class='comma'>,</span>
+  <span class='label'>from:</span><span class='comma'>,</span>
+  <span class='label'>mint:</span><span class='comma'>,</span>
+  <span class='label'>authority:</span><span class='comma'>,</span>
+  <span class='label'>amount:</span><span class='comma'>,</span>
+  <span class='label'>decimals:</span>
+<span class='rparen'>)</span>
+  <span class='id identifier rubyid_ix'>ix</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../Composers.html" title="Solace::Composers (module)">Composers</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Composers/SplTokenProgramTransferCheckedComposer.html" title="Solace::Composers::SplTokenProgramTransferCheckedComposer (class)">SplTokenProgramTransferCheckedComposer</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="../Composers/Base.html#initialize-instance_method" title="Solace::Composers::Base#initialize (method)">new</a></span></span><span class='lparen'>(</span>
+    <span class='label'>to:</span> <span class='id identifier rubyid_to'>to</span><span class='comma'>,</span>
+    <span class='label'>from:</span> <span class='id identifier rubyid_from'>from</span><span class='comma'>,</span>
+    <span class='label'>mint:</span> <span class='id identifier rubyid_mint'>mint</span><span class='comma'>,</span>
+    <span class='label'>authority:</span> <span class='id identifier rubyid_authority'>authority</span><span class='comma'>,</span>
+    <span class='label'>amount:</span> <span class='id identifier rubyid_amount'>amount</span><span class='comma'>,</span>
+    <span class='label'>decimals:</span> <span class='id identifier rubyid_decimals'>decimals</span>
+  <span class='rparen'>)</span>
+
+  <span class='const'><span class='object_link'><a href="../TransactionComposer.html" title="Solace::TransactionComposer (class)">TransactionComposer</a></span></span>
+    <span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='label'>connection:</span> <span class='id identifier rubyid_connection'>connection</span><span class='rparen'>)</span>
+    <span class='period'>.</span><span class='id identifier rubyid_add_instruction'>add_instruction</span><span class='lparen'>(</span><span class='id identifier rubyid_ix'>ix</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="create_mint-instance_method">
+  
+    #<strong>create_mint</strong>(payer:, sign: true, execute: true, **composer_opts) {|composer| ... } &#x21d2; <tt>String</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Creates a new SPL Token mint.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>payer</span>
+      
+      
+        <span class='type'>(<tt>#to_s</tt>, <tt><span class='object_link'><a href="../PublicKey.html" title="Solace::PublicKey (class)">PublicKey</a></span></tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>The keypair that will pay for fees and rent.</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>sign</span>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>true</tt>)</em>
+      
+      
+        &mdash;
+        <div class='inline'><p>Whether to sign the transaction.</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>execute</span>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>true</tt>)</em>
+      
+      
+        &mdash;
+        <div class='inline'><p>Whether to execute the transaction.</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>composer_opts</span>
       
       
         <span class='type'>(<tt>Hash</tt>)</span>
@@ -1333,13 +1312,26 @@ Token mints and accounts.</p>
       
       
         &mdash;
-        <div class='inline'><p>Options for calling the prepare_transfer method.</p>
+        <div class='inline'><p>Options for calling the compose_create_mint method.</p>
 </div>
       
     </li>
   
 </ul>
 
+<p class="tag_title">Yields:</p>
+<ul class="yield">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>composer</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
 <p class="tag_title">Returns:</p>
 <ul class="return">
   
@@ -1379,19 +1371,650 @@ Token mints and accounts.</p>
       <pre class="lines">
 
 
-170
-171
-172
-173
-174</pre>
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/solace/programs/spl_token.rb', line 170</span>
+      <pre class="code"><span class="info file"># File 'lib/solace/programs/spl_token.rb', line 44</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_transfer'>transfer</span><span class='lparen'>(</span><span class='op'>**</span><span class='id identifier rubyid_options'>options</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_tx'>tx</span> <span class='op'>=</span> <span class='id identifier rubyid_prepare_transfer'>prepare_transfer</span><span class='lparen'>(</span><span class='op'>**</span><span class='id identifier rubyid_options'>options</span><span class='rparen'>)</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_create_mint'>create_mint</span><span class='lparen'>(</span>
+  <span class='label'>payer:</span><span class='comma'>,</span>
+  <span class='label'>sign:</span> <span class='kw'>true</span><span class='comma'>,</span>
+  <span class='label'>execute:</span> <span class='kw'>true</span><span class='comma'>,</span>
+  <span class='op'>**</span><span class='id identifier rubyid_composer_opts'>composer_opts</span>
+<span class='rparen'>)</span>
+  <span class='id identifier rubyid_composer'>composer</span> <span class='op'>=</span> <span class='id identifier rubyid_compose_create_mint'>compose_create_mint</span><span class='lparen'>(</span><span class='op'>**</span><span class='id identifier rubyid_composer_opts'>composer_opts</span><span class='rparen'>)</span>
 
-  <span class='ivar'>@connection</span><span class='period'>.</span><span class='id identifier rubyid_send_transaction'>send_transaction</span><span class='lparen'>(</span><span class='id identifier rubyid_tx'>tx</span><span class='period'>.</span><span class='id identifier rubyid_serialize'>serialize</span><span class='rparen'>)</span>
+  <span class='kw'>yield</span> <span class='id identifier rubyid_composer'>composer</span> <span class='kw'>if</span> <span class='id identifier rubyid_block_given?'>block_given?</span>
+
+  <span class='id identifier rubyid_tx'>tx</span> <span class='op'>=</span> <span class='id identifier rubyid_composer'>composer</span>
+       <span class='period'>.</span><span class='id identifier rubyid_set_fee_payer'>set_fee_payer</span><span class='lparen'>(</span><span class='id identifier rubyid_payer'>payer</span><span class='rparen'>)</span>
+       <span class='period'>.</span><span class='id identifier rubyid_compose_transaction'>compose_transaction</span>
+
+  <span class='kw'>if</span> <span class='id identifier rubyid_sign'>sign</span>
+    <span class='id identifier rubyid_tx'>tx</span><span class='period'>.</span><span class='id identifier rubyid_sign'>sign</span><span class='lparen'>(</span>
+      <span class='id identifier rubyid_payer'>payer</span><span class='comma'>,</span>
+      <span class='id identifier rubyid_composer_opts'>composer_opts</span><span class='lbracket'>[</span><span class='symbol'>:funder</span><span class='rbracket'>]</span><span class='comma'>,</span>
+      <span class='id identifier rubyid_composer_opts'>composer_opts</span><span class='lbracket'>[</span><span class='symbol'>:mint_account</span><span class='rbracket'>]</span>
+    <span class='rparen'>)</span>
+
+    <span class='id identifier rubyid_connection'>connection</span><span class='period'>.</span><span class='id identifier rubyid_send_transaction'>send_transaction</span><span class='lparen'>(</span><span class='id identifier rubyid_tx'>tx</span><span class='period'>.</span><span class='id identifier rubyid_serialize'>serialize</span><span class='rparen'>)</span> <span class='kw'>if</span> <span class='id identifier rubyid_execute'>execute</span>
+  <span class='kw'>end</span>
+
+  <span class='id identifier rubyid_tx'>tx</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="mint_to-instance_method">
+  
+    #<strong>mint_to</strong>(payer:, sign: true, execute: true, **composer_opts) {|composer| ... } &#x21d2; <tt>String</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Mint tokens to a token account</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>payer</span>
+      
+      
+        <span class='type'>(<tt>#to_s</tt>, <tt><span class='object_link'><a href="../PublicKey.html" title="Solace::PublicKey (class)">PublicKey</a></span></tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>The keypair that will pay for fees and rent.</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>sign</span>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>true</tt>)</em>
+      
+      
+        &mdash;
+        <div class='inline'><p>Whether to sign the transaction.</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>execute</span>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>true</tt>)</em>
+      
+      
+        &mdash;
+        <div class='inline'><p>Whether to execute the transaction.</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>composer_opts</span>
+      
+      
+        <span class='type'>(<tt>Hash</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>Options for calling the compose_mint_to method.</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Yields:</p>
+<ul class="yield">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>composer</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>The signature of the transaction.</p>
+</div>
+      
+    </li>
+  
+</ul>
+<p class="tag_title">Since:</p>
+<ul class="since">
+  
+    <li>
+      
+      
+      
+      
+        
+        <div class='inline'><p>0.0.2</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/solace/programs/spl_token.rb', line 121</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_mint_to'>mint_to</span><span class='lparen'>(</span>
+  <span class='label'>payer:</span><span class='comma'>,</span>
+  <span class='label'>sign:</span> <span class='kw'>true</span><span class='comma'>,</span>
+  <span class='label'>execute:</span> <span class='kw'>true</span><span class='comma'>,</span>
+  <span class='op'>**</span><span class='id identifier rubyid_composer_opts'>composer_opts</span>
+<span class='rparen'>)</span>
+  <span class='id identifier rubyid_composer'>composer</span> <span class='op'>=</span> <span class='id identifier rubyid_compose_mint_to'>compose_mint_to</span><span class='lparen'>(</span><span class='op'>**</span><span class='id identifier rubyid_composer_opts'>composer_opts</span><span class='rparen'>)</span>
+
+  <span class='kw'>yield</span> <span class='id identifier rubyid_composer'>composer</span> <span class='kw'>if</span> <span class='id identifier rubyid_block_given?'>block_given?</span>
+
+  <span class='id identifier rubyid_tx'>tx</span> <span class='op'>=</span> <span class='id identifier rubyid_composer'>composer</span>
+       <span class='period'>.</span><span class='id identifier rubyid_set_fee_payer'>set_fee_payer</span><span class='lparen'>(</span><span class='id identifier rubyid_payer'>payer</span><span class='rparen'>)</span>
+       <span class='period'>.</span><span class='id identifier rubyid_compose_transaction'>compose_transaction</span>
+
+  <span class='kw'>if</span> <span class='id identifier rubyid_sign'>sign</span>
+    <span class='id identifier rubyid_tx'>tx</span><span class='period'>.</span><span class='id identifier rubyid_sign'>sign</span><span class='lparen'>(</span>
+      <span class='id identifier rubyid_payer'>payer</span><span class='comma'>,</span>
+      <span class='id identifier rubyid_composer_opts'>composer_opts</span><span class='lbracket'>[</span><span class='symbol'>:mint_authority</span><span class='rbracket'>]</span>
+    <span class='rparen'>)</span>
+
+    <span class='id identifier rubyid_connection'>connection</span><span class='period'>.</span><span class='id identifier rubyid_send_transaction'>send_transaction</span><span class='lparen'>(</span><span class='id identifier rubyid_tx'>tx</span><span class='period'>.</span><span class='id identifier rubyid_serialize'>serialize</span><span class='rparen'>)</span> <span class='kw'>if</span> <span class='id identifier rubyid_execute'>execute</span>
+  <span class='kw'>end</span>
+
+  <span class='id identifier rubyid_tx'>tx</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="transfer-instance_method">
+  
+    #<strong>transfer</strong>(payer:, sign: true, execute: true, **composer_opts) {|composer| ... } &#x21d2; <tt>String</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Transfers tokens from one account to another</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>payer</span>
+      
+      
+        <span class='type'>(<tt>#to_s</tt>, <tt><span class='object_link'><a href="../PublicKey.html" title="Solace::PublicKey (class)">PublicKey</a></span></tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>The keypair that will pay for fees and rent.</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>sign</span>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>true</tt>)</em>
+      
+      
+        &mdash;
+        <div class='inline'><p>Whether to sign the transaction.</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>execute</span>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>true</tt>)</em>
+      
+      
+        &mdash;
+        <div class='inline'><p>Whether to execute the transaction.</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>composer_opts</span>
+      
+      
+        <span class='type'>(<tt>Hash</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>Options for calling the compose_transfer method.</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Yields:</p>
+<ul class="yield">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>composer</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>The signature of the transaction.</p>
+</div>
+      
+    </li>
+  
+</ul>
+<p class="tag_title">Since:</p>
+<ul class="since">
+  
+    <li>
+      
+      
+      
+      
+        
+        <div class='inline'><p>0.0.2</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193
+194
+195
+196
+197
+198
+199
+200
+201
+202
+203
+204</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/solace/programs/spl_token.rb', line 181</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_transfer'>transfer</span><span class='lparen'>(</span>
+  <span class='label'>payer:</span><span class='comma'>,</span>
+  <span class='label'>sign:</span> <span class='kw'>true</span><span class='comma'>,</span>
+  <span class='label'>execute:</span> <span class='kw'>true</span><span class='comma'>,</span>
+  <span class='op'>**</span><span class='id identifier rubyid_composer_opts'>composer_opts</span>
+<span class='rparen'>)</span>
+  <span class='id identifier rubyid_composer'>composer</span> <span class='op'>=</span> <span class='id identifier rubyid_compose_transfer'>compose_transfer</span><span class='lparen'>(</span><span class='op'>**</span><span class='id identifier rubyid_composer_opts'>composer_opts</span><span class='rparen'>)</span>
+
+  <span class='kw'>yield</span> <span class='id identifier rubyid_composer'>composer</span> <span class='kw'>if</span> <span class='id identifier rubyid_block_given?'>block_given?</span>
+
+  <span class='id identifier rubyid_tx'>tx</span> <span class='op'>=</span> <span class='id identifier rubyid_composer'>composer</span>
+       <span class='period'>.</span><span class='id identifier rubyid_set_fee_payer'>set_fee_payer</span><span class='lparen'>(</span><span class='id identifier rubyid_payer'>payer</span><span class='rparen'>)</span>
+       <span class='period'>.</span><span class='id identifier rubyid_compose_transaction'>compose_transaction</span>
+
+  <span class='kw'>if</span> <span class='id identifier rubyid_sign'>sign</span>
+    <span class='id identifier rubyid_tx'>tx</span><span class='period'>.</span><span class='id identifier rubyid_sign'>sign</span><span class='lparen'>(</span>
+      <span class='id identifier rubyid_payer'>payer</span><span class='comma'>,</span>
+      <span class='id identifier rubyid_composer_opts'>composer_opts</span><span class='lbracket'>[</span><span class='symbol'>:owner</span><span class='rbracket'>]</span>
+    <span class='rparen'>)</span>
+
+    <span class='id identifier rubyid_connection'>connection</span><span class='period'>.</span><span class='id identifier rubyid_send_transaction'>send_transaction</span><span class='lparen'>(</span><span class='id identifier rubyid_tx'>tx</span><span class='period'>.</span><span class='id identifier rubyid_serialize'>serialize</span><span class='rparen'>)</span> <span class='kw'>if</span> <span class='id identifier rubyid_execute'>execute</span>
+  <span class='kw'>end</span>
+  <span class='id identifier rubyid_tx'>tx</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="transfer_checked-instance_method">
+  
+    #<strong>transfer_checked</strong>(payer:, sign: true, execute: true, **composer_opts) {|composer| ... } &#x21d2; <tt>String</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Transfers tokens with decimal precision and validation checks</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>payer</span>
+      
+      
+        <span class='type'>(<tt>#to_s</tt>, <tt><span class='object_link'><a href="../PublicKey.html" title="Solace::PublicKey (class)">PublicKey</a></span></tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>The keypair that will pay for fees and rent.</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>sign</span>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>true</tt>)</em>
+      
+      
+        &mdash;
+        <div class='inline'><p>Whether to sign the transaction.</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>execute</span>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>true</tt>)</em>
+      
+      
+        &mdash;
+        <div class='inline'><p>Whether to execute the transaction.</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>composer_opts</span>
+      
+      
+        <span class='type'>(<tt>Hash</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>Options for calling the compose_transfer_checked method.</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Yields:</p>
+<ul class="yield">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>composer</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>The signature of the transaction.</p>
+</div>
+      
+    </li>
+  
+</ul>
+<p class="tag_title">Since:</p>
+<ul class="since">
+  
+    <li>
+      
+      
+      
+      
+        
+        <div class='inline'><p>0.0.2</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+239
+240
+241
+242
+243
+244
+245
+246
+247
+248
+249
+250
+251
+252
+253
+254
+255
+256
+257
+258
+259
+260
+261
+262
+263</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/solace/programs/spl_token.rb', line 239</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_transfer_checked'>transfer_checked</span><span class='lparen'>(</span>
+  <span class='label'>payer:</span><span class='comma'>,</span>
+  <span class='label'>sign:</span> <span class='kw'>true</span><span class='comma'>,</span>
+  <span class='label'>execute:</span> <span class='kw'>true</span><span class='comma'>,</span>
+  <span class='op'>**</span><span class='id identifier rubyid_composer_opts'>composer_opts</span>
+<span class='rparen'>)</span>
+  <span class='id identifier rubyid_composer'>composer</span> <span class='op'>=</span> <span class='id identifier rubyid_compose_transfer_checked'>compose_transfer_checked</span><span class='lparen'>(</span><span class='op'>**</span><span class='id identifier rubyid_composer_opts'>composer_opts</span><span class='rparen'>)</span>
+
+  <span class='kw'>yield</span> <span class='id identifier rubyid_composer'>composer</span> <span class='kw'>if</span> <span class='id identifier rubyid_block_given?'>block_given?</span>
+
+  <span class='id identifier rubyid_tx'>tx</span> <span class='op'>=</span> <span class='id identifier rubyid_composer'>composer</span>
+       <span class='period'>.</span><span class='id identifier rubyid_set_fee_payer'>set_fee_payer</span><span class='lparen'>(</span><span class='id identifier rubyid_payer'>payer</span><span class='rparen'>)</span>
+       <span class='period'>.</span><span class='id identifier rubyid_compose_transaction'>compose_transaction</span>
+
+  <span class='kw'>if</span> <span class='id identifier rubyid_sign'>sign</span>
+    <span class='id identifier rubyid_tx'>tx</span><span class='period'>.</span><span class='id identifier rubyid_sign'>sign</span><span class='lparen'>(</span>
+      <span class='id identifier rubyid_payer'>payer</span><span class='comma'>,</span>
+      <span class='id identifier rubyid_composer_opts'>composer_opts</span><span class='lbracket'>[</span><span class='symbol'>:authority</span><span class='rbracket'>]</span>
+    <span class='rparen'>)</span>
+
+    <span class='id identifier rubyid_connection'>connection</span><span class='period'>.</span><span class='id identifier rubyid_send_transaction'>send_transaction</span><span class='lparen'>(</span><span class='id identifier rubyid_tx'>tx</span><span class='period'>.</span><span class='id identifier rubyid_serialize'>serialize</span><span class='rparen'>)</span> <span class='kw'>if</span> <span class='id identifier rubyid_execute'>execute</span>
+  <span class='kw'>end</span>
+
+  <span class='id identifier rubyid_tx'>tx</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -1403,7 +2026,7 @@ Token mints and accounts.</p>
 </div>
 
       <div id="footer">
-  Generated on Sat Aug 16 21:22:39 2025 by
+  Generated on Mon Jan 26 09:03:27 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.4).
 </div>

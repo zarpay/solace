@@ -87,16 +87,30 @@
 
 <h2>Overview</h2><div class="docstring">
   <div class="discussion">
-    <p>Error handling module</p>
+    <p>The Errors module contains custom exception classes for the Solace gem.</p>
 
-<p>This module provides error classes for handling different types of errors that may occur during
-Solana RPC requests and processing transactions.</p>
+<p>These exceptions provide specific error handling for various failure scenarios
+when interacting with the Solana blockchain, including:</p>
+
+<ul>
+<li><span class='object_link'><a href="Errors/HTTPError.html" title="Solace::Errors::HTTPError (class)">HTTPError</a></span> - HTTP communication failures</li>
+<li><span class='object_link'><a href="Errors/RPCError.html" title="Solace::Errors::RPCError (class)">RPCError</a></span> - RPC method errors returned by the node</li>
+<li><span class='object_link'><a href="Errors/ParseError.html" title="Solace::Errors::ParseError (class)">ParseError</a></span> - Data parsing and deserialization errors</li>
+<li><span class='object_link'><a href="Errors/ConfirmationTimeout.html" title="Solace::Errors::ConfirmationTimeout (class)">ConfirmationTimeout</a></span> - Transaction confirmation timeouts</li>
+</ul>
 
 
   </div>
 </div>
 <div class="tags">
   
+
+  <p class="tag_title">See Also:</p>
+  <ul class="see">
+    
+      <li><span class='object_link'><a href="Connection.html" title="Solace::Connection (class)">Connection</a></span></li>
+    
+  </ul>
 <p class="tag_title">Since:</p>
 <ul class="since">
   
@@ -135,7 +149,7 @@ Solana RPC requests and processing transactions.</p>
 </div>
 
       <div id="footer">
-  Generated on Sat Aug 16 21:22:39 2025 by
+  Generated on Mon Jan 26 09:03:26 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.4).
 </div>

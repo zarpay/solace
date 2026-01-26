@@ -78,8 +78,8 @@
   
   <dl>
     <dt>Defined in:</dt>
-    <dd>lib/solace/instructions/spl_token/mint_to_instruction.rb<span class="defines">,<br />
-  lib/solace/instructions/spl_token/transfer_instruction.rb,<br /> lib/solace/instructions/spl_token/initialize_mint_instruction.rb,<br /> lib/solace/instructions/spl_token/transfer_checked_instruction.rb,<br /> lib/solace/instructions/spl_token/initialize_account_instruction.rb</span>
+    <dd>lib/solace/instructions/spl_token/transfer_instruction.rb<span class="defines">,<br />
+  lib/solace/instructions/spl_token/mint_to_instruction.rb,<br /> lib/solace/instructions/spl_token/close_account_instruction.rb,<br /> lib/solace/instructions/spl_token/initialize_mint_instruction.rb,<br /> lib/solace/instructions/spl_token/transfer_checked_instruction.rb,<br /> lib/solace/instructions/spl_token/initialize_account_instruction.rb</span>
 </dd>
   </dl>
   
@@ -87,12 +87,45 @@
 
 <h2>Overview</h2><div class="docstring">
   <div class="discussion">
-    
+    <p>The SplToken module contains instruction builders for the SPL Token Program.</p>
+
+<p>The SPL Token Program is Solana&#39;s standard for fungible and non-fungible tokens.
+It provides instructions for creating token mints, creating token accounts,
+minting tokens, transferring tokens, and managing token authorities.</p>
+
+<p>This module contains classes that build the low-level instruction data required
+to interact with the SPL Token Program. Each class corresponds to a specific
+instruction in the program.</p>
+
 
   </div>
 </div>
 <div class="tags">
   
+  <div class="examples">
+    <h4 class="tag_title">Examples:</h4>
+    
+      
+        <h5 class="example_title"><div class='inline'><p>Building a transfer instruction</p>
+</div></h5>
+      
+      <pre class="example code"><code><span class='id identifier rubyid_instruction'>instruction</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Instructions.html" title="Solace::Instructions (module)">Instructions</a></span></span><span class='op'>::</span><span class='const'>SplToken</span><span class='op'>::</span><span class='const'><span class='object_link'><a href="SplToken/TransferInstruction.html" title="Solace::Instructions::SplToken::TransferInstruction (class)">TransferInstruction</a></span></span><span class='period'>.</span><span class='id identifier rubyid_build'><span class='object_link'><a href="SplToken/TransferInstruction.html#build-class_method" title="Solace::Instructions::SplToken::TransferInstruction.build (method)">build</a></span></span><span class='lparen'>(</span>
+  <span class='label'>source_index:</span> <span class='int'>0</span><span class='comma'>,</span>
+  <span class='label'>destination_index:</span> <span class='int'>1</span><span class='comma'>,</span>
+  <span class='label'>owner_index:</span> <span class='int'>2</span><span class='comma'>,</span>
+  <span class='label'>program_index:</span> <span class='int'>3</span><span class='comma'>,</span>
+  <span class='label'>amount:</span> <span class='int'>1_000_000</span>
+<span class='rparen'>)</span></code></pre>
+    
+  </div>
+
+
+  <p class="tag_title">See Also:</p>
+  <ul class="see">
+    
+      <li><a href="https://spl.solana.com/token" target="_parent" title="https://spl.solana.com/token">https://spl.solana.com/token</a></li>
+    
+  </ul>
 <p class="tag_title">Since:</p>
 <ul class="since">
   
@@ -102,7 +135,7 @@
       
       
         
-        <div class='inline'><p>0.1.0</p>
+        <div class='inline'><p>0.0.2</p>
 </div>
       
     </li>
@@ -115,7 +148,7 @@
     
   
     
-      <strong class="classes">Classes:</strong> <span class='object_link'><a href="SplToken/InitializeAccountInstruction.html" title="Solace::Instructions::SplToken::InitializeAccountInstruction (class)">InitializeAccountInstruction</a></span>, <span class='object_link'><a href="SplToken/InitializeMintInstruction.html" title="Solace::Instructions::SplToken::InitializeMintInstruction (class)">InitializeMintInstruction</a></span>, <span class='object_link'><a href="SplToken/MintToInstruction.html" title="Solace::Instructions::SplToken::MintToInstruction (class)">MintToInstruction</a></span>, <span class='object_link'><a href="SplToken/TransferCheckedInstruction.html" title="Solace::Instructions::SplToken::TransferCheckedInstruction (class)">TransferCheckedInstruction</a></span>, <span class='object_link'><a href="SplToken/TransferInstruction.html" title="Solace::Instructions::SplToken::TransferInstruction (class)">TransferInstruction</a></span>
+      <strong class="classes">Classes:</strong> <span class='object_link'><a href="SplToken/CloseAccountInstruction.html" title="Solace::Instructions::SplToken::CloseAccountInstruction (class)">CloseAccountInstruction</a></span>, <span class='object_link'><a href="SplToken/InitializeAccountInstruction.html" title="Solace::Instructions::SplToken::InitializeAccountInstruction (class)">InitializeAccountInstruction</a></span>, <span class='object_link'><a href="SplToken/InitializeMintInstruction.html" title="Solace::Instructions::SplToken::InitializeMintInstruction (class)">InitializeMintInstruction</a></span>, <span class='object_link'><a href="SplToken/MintToInstruction.html" title="Solace::Instructions::SplToken::MintToInstruction (class)">MintToInstruction</a></span>, <span class='object_link'><a href="SplToken/TransferCheckedInstruction.html" title="Solace::Instructions::SplToken::TransferCheckedInstruction (class)">TransferCheckedInstruction</a></span>, <span class='object_link'><a href="SplToken/TransferInstruction.html" title="Solace::Instructions::SplToken::TransferInstruction (class)">TransferInstruction</a></span>
     
   
 </p>
@@ -131,7 +164,7 @@
 </div>
 
       <div id="footer">
-  Generated on Sat Aug 16 21:22:39 2025 by
+  Generated on Mon Jan 26 09:03:26 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.4).
 </div>

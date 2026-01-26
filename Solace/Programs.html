@@ -87,12 +87,51 @@
 
 <h2>Overview</h2><div class="docstring">
   <div class="discussion">
-    
+    <p>The Programs module contains high-level interfaces to Solana on-chain programs.</p>
+
+<p>Programs in this module provide convenient methods for interacting with
+on-chain programs without needing to manually construct instructions or
+manage account ordering. They serve as a bridge between the low-level
+instruction builders and high-level application code.</p>
+
+<p>Each program class corresponds to a specific on-chain program:</p>
+
+<ul>
+<li><span class='object_link'><a href="Programs/SplToken.html" title="Solace::Programs::SplToken (class)">SplToken</a></span> - SPL Token Program</li>
+<li><span class='object_link'><a href="Programs/AssociatedTokenAccount.html" title="Solace::Programs::AssociatedTokenAccount (class)">AssociatedTokenAccount</a></span> - Associated Token Account Program</li>
+</ul>
+
 
   </div>
 </div>
 <div class="tags">
   
+  <div class="examples">
+    <h4 class="tag_title">Examples:</h4>
+    
+      
+        <h5 class="example_title"><div class='inline'><p>Using a program interface</p>
+</div></h5>
+      
+      <pre class="example code"><code><span class='id identifier rubyid_token_program'>token_program</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'>Programs</span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Programs/SplToken.html" title="Solace::Programs::SplToken (class)">SplToken</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Programs/SplToken.html#initialize-instance_method" title="Solace::Programs::SplToken#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_connection'>connection</span><span class='rparen'>)</span>
+<span class='id identifier rubyid_token_program'>token_program</span><span class='period'>.</span><span class='id identifier rubyid_transfer'>transfer</span><span class='lparen'>(</span>
+  <span class='label'>to:</span><span class='comma'>,</span>
+  <span class='label'>from:</span><span class='comma'>,</span>
+  <span class='label'>owner:</span><span class='comma'>,</span>
+  <span class='label'>amount:</span>
+<span class='rparen'>)</span></code></pre>
+    
+  </div>
+
+
+  <p class="tag_title">See Also:</p>
+  <ul class="see">
+    
+      <li><span class='object_link'><a href="Programs/SplToken.html" title="Solace::Programs::SplToken (class)">SplToken</a></span></li>
+    
+      <li><span class='object_link'><a href="Programs/AssociatedTokenAccount.html" title="Solace::Programs::AssociatedTokenAccount (class)">AssociatedTokenAccount</a></span></li>
+    
+  </ul>
 <p class="tag_title">Since:</p>
 <ul class="since">
   
@@ -102,7 +141,7 @@
       
       
         
-        <div class='inline'><p>0.1.0</p>
+        <div class='inline'><p>0.0.2</p>
 </div>
       
     </li>
@@ -131,7 +170,7 @@
 </div>
 
       <div id="footer">
-  Generated on Sat Aug 16 21:22:39 2025 by
+  Generated on Mon Jan 26 09:03:26 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.4).
 </div>

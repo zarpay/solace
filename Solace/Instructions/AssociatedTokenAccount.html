@@ -78,14 +78,74 @@
   
   <dl>
     <dt>Defined in:</dt>
-    <dd>lib/solace/instructions/associated_token_account/create_associated_token_account_instruction.rb</dd>
+    <dd>lib/solace/instructions/associated_token_account/create_account_instruction.rb<span class="defines">,<br />
+  lib/solace/instructions/associated_token_account/create_idempotent_account_instruction.rb</span>
+</dd>
   </dl>
   
 </div>
 
 <h2>Overview</h2><div class="docstring">
   <div class="discussion">
+    <p>The AssociatedTokenAccount module contains instruction builders for the
+Associated Token Account Program.</p>
+
+<p>The Associated Token Account (ATA) Program provides a deterministic way to
+derive token account addresses for a given wallet and mint. This ensures that
+each wallet has a single, predictable token account for each token type.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+  <p class="tag_title">See Also:</p>
+  <ul class="see">
     
+      <li><a href="https://spl.solana.com/associated-token-account" target="_parent" title="https://spl.solana.com/associated-token-account">https://spl.solana.com/associated-token-account</a></li>
+    
+  </ul>
+<p class="tag_title">Since:</p>
+<ul class="since">
+  
+    <li>
+      
+      
+      
+      
+        
+        <div class='inline'><p>0.1.3</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><h2>Defined Under Namespace</h2>
+<p class="children">
+  
+    
+  
+    
+      <strong class="classes">Classes:</strong> <span class='object_link'><a href="AssociatedTokenAccount/CreateAccountInstruction.html" title="Solace::Instructions::AssociatedTokenAccount::CreateAccountInstruction (class)">CreateAccountInstruction</a></span>, <span class='object_link'><a href="AssociatedTokenAccount/CreateIdempotentAccountInstruction.html" title="Solace::Instructions::AssociatedTokenAccount::CreateIdempotentAccountInstruction (class)">CreateIdempotentAccountInstruction</a></span>
+    
+  
+</p>
+
+  
+    <h2>
+      Constant Summary
+      <small><a href="#" class="constants_summary_toggle">collapse</a></small>
+    </h2>
+
+    <dl class="constants">
+      
+        <dt id="CreateAssociatedTokenAccountInstruction-constant" class="">CreateAssociatedTokenAccountInstruction =
+          <div class="docstring">
+  <div class="discussion">
+    <p>Alias for CreateAccountInstruction for backward compatibility</p>
+
 
   </div>
 </div>
@@ -100,23 +160,19 @@
       
       
         
-        <div class='inline'><p>0.1.0</p>
+        <div class='inline'><p>0.0.2</p>
 </div>
       
     </li>
   
 </ul>
 
-</div><h2>Defined Under Namespace</h2>
-<p class="children">
+</div>
+        </dt>
+        <dd><pre class="code"><span class='const'><span class='object_link'><a href="AssociatedTokenAccount/CreateAccountInstruction.html" title="Solace::Instructions::AssociatedTokenAccount::CreateAccountInstruction (class)">CreateAccountInstruction</a></span></span></pre></dd>
+      
+    </dl>
   
-    
-  
-    
-      <strong class="classes">Classes:</strong> <span class='object_link'><a href="AssociatedTokenAccount/CreateAssociatedTokenAccountInstruction.html" title="Solace::Instructions::AssociatedTokenAccount::CreateAssociatedTokenAccountInstruction (class)">CreateAssociatedTokenAccountInstruction</a></span>
-    
-  
-</p>
 
 
 
@@ -129,7 +185,7 @@
 </div>
 
       <div id="footer">
-  Generated on Sat Aug 16 21:22:39 2025 by
+  Generated on Mon Jan 26 09:03:26 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.4).
 </div>
