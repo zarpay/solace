@@ -24,7 +24,12 @@ module Solace
       # @return [String] The path to the native library
       # @raise [RuntimeError] If the platform is not supported
       libfile = case RUBY_PLATFORM
-                when /linux/ then 'libcurve25519_dalek-linux/libcurve25519_dalek.so'
+                when /linux/
+                  if RUBY_PLATFORM =~ /arm|aarch64/
+                    'libcurve25519_dalek-linux-arm64/libcurve25519_dalek.so'
+                  else
+                    'libcurve25519_dalek-linux/libcurve25519_dalek.so'
+                  end
                 when /darwin/
                   if RUBY_PLATFORM =~ /arm64|aarch64/
                     'libcurve25519_dalek-macos-arm64/libcurve25519_dalek.dylib'
