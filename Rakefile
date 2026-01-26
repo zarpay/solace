@@ -14,19 +14,31 @@ PLATFORMS = {
     target: 'x86_64-unknown-linux-gnu',
     ext: 'so',
     rustlib: 'libcurve25519_dalek.so',
-    path: 'lib/solace/utils/linux/libcurve25519_dalek.so'
+    path: 'lib/solace/utils/libcurve25519_dalek-linux/libcurve25519_dalek.so'
   },
   windows: {
     target: 'x86_64-pc-windows-gnu',
     ext: 'dll',
     rustlib: 'curve25519_dalek.dll',
-    path: 'lib/solace/utils/windows/curve25519_dalek.dll'
+    path: 'lib/solace/utils/libcurve25519_dalek-windows/curve25519_dalek.dll'
   },
   macos: {
     target: 'x86_64-apple-darwin',
     ext: 'dylib',
     rustlib: 'libcurve25519_dalek.dylib',
-    path: 'lib/solace/utils/macos/libcurve25519_dalek.dylib'
+    path: 'lib/solace/utils/libcurve25519_dalek-macos/libcurve25519_dalek.dylib'
+  },
+  macos_arm64: {
+    target: 'aarch64-apple-darwin',
+    ext: 'dylib',
+    rustlib: 'libcurve25519_dalek.dylib',
+    path: 'lib/solace/utils/libcurve25519_dalek-macos-arm64/libcurve25519_dalek.dylib'
+  },
+  linux_arm64: {
+    target: 'aarch64-unknown-linux-gnu',
+    ext: 'so',
+    rustlib: 'libcurve25519_dalek.so',
+    path: 'lib/solace/utils/libcurve25519_dalek-linux-arm64/libcurve25519_dalek.so'
   }
 }.freeze
 
