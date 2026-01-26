@@ -33,6 +33,12 @@ PLATFORMS = {
     ext: 'dylib',
     rustlib: 'libcurve25519_dalek.dylib',
     path: 'lib/solace/utils/libcurve25519_dalek-macos-arm64/libcurve25519_dalek.dylib'
+  },
+  linux_arm64: {
+    target: 'aarch64-unknown-linux-gnu',
+    ext: 'so',
+    rustlib: 'libcurve25519_dalek.so',
+    path: 'lib/solace/utils/libcurve25519_dalek-linux-arm64/libcurve25519_dalek.so'
   }
 }.freeze
 
