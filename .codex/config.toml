@@ -1,0 +1,27 @@
+# Project-local Nexus integration for Codex:
+# - push a transcript snapshot to Nexus after each completed turn
+# - MCP is intentionally disabled for now; Nexus's streamable HTTP transport
+#   still needs a server-side compatibility fix for Codex
+# - resolve the repo-local notify script from the event's cwd so the config
+#   remains portable across machines and checkouts
+notify = [
+  "python3",
+  "-c",
+  """
+import json
+import os
+from pathlib import Path
+import sys
+
+notification = json.loads(sys.argv[1])
+cwd = notification.get("cwd")
+if not isinstance(cwd, str) or not cwd:
+    raise SystemExit(0)
+
+script = Path(cwd) / ".codex" / "scripts" / "nexus_notify.py"
+if not script.exists():
+    raise SystemExit(0)
+
+os.execv(sys.executable, [sys.executable, str(script), sys.argv[1]])
+""",
+]
