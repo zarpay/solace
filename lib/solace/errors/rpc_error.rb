@@ -40,24 +40,30 @@ module Solace
       CODE_MAP = {
         # Standard JSON-RPC 2.0 errors
         -32_700 => :ServerParseError,
-        -32_600 => :InvalidRequestError,
-        -32_601 => :MethodNotFoundError,
-        -32_602 => :InvalidParamsError,
         -32_603 => :InternalError,
-        # Solana-specific errors
-        -32_001 => :BlockNotAvailableError,
-        -32_002 => :NodeUnhealthyError,
-        -32_003 => :TransactionPrecompileVerificationFailureError,
-        -32_004 => :SlotSkippedError,
-        -32_005 => :NoSnapshotError,
-        -32_006 => :LongTermStorageSlotSkippedError,
-        -32_007 => :KeyExcludedFromSecondaryIndexError,
-        -32_008 => :TransactionHistoryNotAvailableError,
-        -32_009 => :ScanError,
-        -32_010 => :TransactionSignatureLengthMismatchError,
-        -32_011 => :BlockStatusNotAvailableError,
-        -32_012 => :UnsupportedTransactionVersionError,
-        -32_013 => :MinContextSlotNotReachedError
+        -32_602 => :InvalidParamsError,
+        -32_601 => :MethodNotFoundError,
+        -32_600 => :InvalidRequestError,
+        # Solana-specific server errors (from anza-xyz/kit)
+        -32_001 => :BlockCleanedUpError,
+        -32_002 => :SendTransactionPreflightFailureError,
+        -32_003 => :TransactionSignatureVerificationFailureError,
+        -32_004 => :BlockNotAvailableError,
+        -32_005 => :NodeUnhealthyError,
+        -32_006 => :TransactionPrecompileVerificationFailureError,
+        -32_007 => :SlotSkippedError,
+        -32_008 => :NoSnapshotError,
+        -32_009 => :LongTermStorageSlotSkippedError,
+        -32_010 => :KeyExcludedFromSecondaryIndexError,
+        -32_011 => :TransactionHistoryNotAvailableError,
+        -32_012 => :ScanError,
+        -32_013 => :TransactionSignatureLengthMismatchError,
+        -32_014 => :BlockStatusNotAvailableYetError,
+        -32_015 => :UnsupportedTransactionVersionError,
+        -32_016 => :MinContextSlotNotReachedError,
+        -32_017 => :EpochRewardsPeriodActiveError,
+        -32_018 => :SlotNotEpochBoundaryError,
+        -32_019 => :LongTermStorageUnreachableError
       }.freeze
 
       # Formats a response to an error, returning the most specific subclass

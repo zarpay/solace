@@ -3,6 +3,7 @@
 module Solace
   module Errors
     # Specific RPC error subclasses mapped to JSON-RPC and Solana error codes.
+    # Code assignments follow anza-xyz/kit (packages/errors/src/codes.ts).
     #
     # These allow consumers to rescue specific RPC failures:
     #
@@ -23,74 +24,98 @@ module Solace
     # @since 0.1.4
     class ServerParseError < RPCError; end
 
-    # Raised when the JSON sent is not a valid JSON-RPC request (-32600).
+    # Raised when an internal JSON-RPC error occurs (-32603).
     # @since 0.1.4
-    class InvalidRequestError < RPCError; end
-
-    # Raised when the requested RPC method does not exist (-32601).
-    # @since 0.1.4
-    class MethodNotFoundError < RPCError; end
+    class InternalError < RPCError; end
 
     # Raised when invalid method parameters are provided (-32602).
     # @since 0.1.4
     class InvalidParamsError < RPCError; end
 
-    # Raised when an internal JSON-RPC error occurs (-32603).
+    # Raised when the requested RPC method does not exist (-32601).
     # @since 0.1.4
-    class InternalError < RPCError; end
+    class MethodNotFoundError < RPCError; end
 
-    # ── Solana-specific RPC errors ────────────────────────────────────────
+    # Raised when the JSON sent is not a valid JSON-RPC request (-32600).
+    # @since 0.1.4
+    class InvalidRequestError < RPCError; end
 
-    # Raised when the requested block/slot is not available (-32001).
+    # ── Solana-specific server errors ───────────────────────────────────
+
+    # Raised when the requested block has been cleaned up from the ledger (-32001).
+    # @since 0.1.4
+    class BlockCleanedUpError < RPCError; end
+
+    # Raised when transaction preflight simulation fails (-32002).
+    # @since 0.1.4
+    class SendTransactionPreflightFailureError < RPCError; end
+
+    # Raised when transaction signature verification fails (-32003).
+    # @since 0.1.4
+    class TransactionSignatureVerificationFailureError < RPCError; end
+
+    # Raised when the requested block is not available (-32004).
     # @since 0.1.4
     class BlockNotAvailableError < RPCError; end
 
-    # Raised when the node is behind or not fully synced (-32002).
+    # Raised when the node is behind or not fully synced (-32005).
     # @since 0.1.4
     class NodeUnhealthyError < RPCError; end
 
-    # Raised when transaction signature verification or precompile check fails (-32003).
+    # Raised when transaction precompile verification fails (-32006).
     # @since 0.1.4
     class TransactionPrecompileVerificationFailureError < RPCError; end
 
-    # Raised when the requested slot was skipped (-32004).
+    # Raised when the requested slot was skipped (-32007).
     # @since 0.1.4
     class SlotSkippedError < RPCError; end
 
-    # Raised when no snapshot is available (-32005).
+    # Raised when no snapshot is available (-32008).
     # @since 0.1.4
     class NoSnapshotError < RPCError; end
 
-    # Raised when a slot was skipped in long-term storage (-32006).
+    # Raised when a slot was skipped in long-term storage (-32009).
     # @since 0.1.4
     class LongTermStorageSlotSkippedError < RPCError; end
 
-    # Raised when the requested key was excluded from the secondary index (-32007).
+    # Raised when the requested key was excluded from the secondary index (-32010).
     # @since 0.1.4
     class KeyExcludedFromSecondaryIndexError < RPCError; end
 
-    # Raised when transaction history is not available for the requested range (-32008).
+    # Raised when transaction history is not available for the requested range (-32011).
     # @since 0.1.4
     class TransactionHistoryNotAvailableError < RPCError; end
 
-    # Raised when a scan/iteration error occurs (-32009).
+    # Raised when a scan/iteration error occurs (-32012).
     # @since 0.1.4
     class ScanError < RPCError; end
 
-    # Raised when the number of transaction signatures doesn't match expected (-32010).
+    # Raised when the number of transaction signatures doesn't match expected (-32013).
     # @since 0.1.4
     class TransactionSignatureLengthMismatchError < RPCError; end
 
-    # Raised when the block's confirmation status is not yet available (-32011).
+    # Raised when the block's confirmation status is not yet available (-32014).
     # @since 0.1.4
-    class BlockStatusNotAvailableError < RPCError; end
+    class BlockStatusNotAvailableYetError < RPCError; end
 
-    # Raised when the transaction uses an unsupported version (-32012).
+    # Raised when the transaction uses an unsupported version (-32015).
     # @since 0.1.4
     class UnsupportedTransactionVersionError < RPCError; end
 
-    # Raised when the minimum context slot has not yet been reached (-32013).
+    # Raised when the minimum context slot has not yet been reached (-32016).
     # @since 0.1.4
     class MinContextSlotNotReachedError < RPCError; end
+
+    # Raised when the epoch rewards period is still active (-32017).
+    # @since 0.1.4
+    class EpochRewardsPeriodActiveError < RPCError; end
+
+    # Raised when the requested slot is not an epoch boundary (-32018).
+    # @since 0.1.4
+    class SlotNotEpochBoundaryError < RPCError; end
+
+    # Raised when long-term storage is unreachable (-32019).
+    # @since 0.1.4
+    class LongTermStorageUnreachableError < RPCError; end
   end
 end
