@@ -17,7 +17,7 @@ module Solace
     #
     # @see Solace::Errors::HTTPError
     # @see Solace::Errors::RPCError
-    # @since 0.1.0
+    # @since 0.1.4
     class ConnectionError < Error; end
   end
 end

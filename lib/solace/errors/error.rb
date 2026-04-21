@@ -14,7 +14,7 @@ module Solace
     #     puts "Solace error: #{e.message}"
     #   end
     #
-    # @since 0.1.0
+    # @since 0.1.4
     class Error < StandardError; end
   end
 end
