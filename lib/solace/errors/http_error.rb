@@ -18,7 +18,7 @@ module Solace
     #
     # @see Solace::Errors::RPCError
     # @since 0.0.1
-    class HTTPError < StandardError
+    class HTTPError < ConnectionError
       attr_reader :code, :body
 
       # @param [String] message The error message

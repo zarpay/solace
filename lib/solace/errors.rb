@@ -5,6 +5,8 @@ module Solace
   #
   # These exceptions provide specific error handling for various failure scenarios
   # when interacting with the Solana blockchain, including:
+  # - {Solace::Errors::Error} - Base class for all Solace errors
+  # - {Solace::Errors::ConnectionError} - Base class for connection-related errors
   # - {Solace::Errors::HTTPError} - HTTP communication failures
   # - {Solace::Errors::RPCError} - RPC method errors returned by the node
   # - {Solace::Errors::ParseError} - Data parsing and deserialization errors
@@ -13,7 +15,8 @@ module Solace
   # @see Solace::Connection
   # @since 0.0.8
   module Errors
-    # JSON-RPC Errors
+    require 'solace/errors/error'
+    require 'solace/errors/connection_error'
     require 'solace/errors/rpc_error'
     require 'solace/errors/http_error'
     require 'solace/errors/parse_error'
