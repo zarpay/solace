@@ -33,16 +33,50 @@ module Solace
         @rpc_data = rpc_data
       end
 
-      # Formats a response to an error
+      # Maps JSON-RPC error codes to specific error subclasses.
+      # Codes not in this map will raise a generic {RPCError}.
+      #
+      # @return [Hash{Integer => Class}]
+      CODE_MAP = {
+        # Standard JSON-RPC 2.0 errors
+        -32_700 => :ServerParseError,
+        -32_600 => :InvalidRequestError,
+        -32_601 => :MethodNotFoundError,
+        -32_602 => :InvalidParamsError,
+        -32_603 => :InternalError,
+        # Solana-specific errors
+        -32_001 => :BlockNotAvailableError,
+        -32_002 => :NodeUnhealthyError,
+        -32_003 => :TransactionPrecompileVerificationFailureError,
+        -32_004 => :SlotSkippedError,
+        -32_005 => :NoSnapshotError,
+        -32_006 => :LongTermStorageSlotSkippedError,
+        -32_007 => :KeyExcludedFromSecondaryIndexError,
+        -32_008 => :TransactionHistoryNotAvailableError,
+        -32_009 => :ScanError,
+        -32_010 => :TransactionSignatureLengthMismatchError,
+        -32_011 => :BlockStatusNotAvailableError,
+        -32_012 => :UnsupportedTransactionVersionError,
+        -32_013 => :MinContextSlotNotReachedError
+      }.freeze
+
+      # Formats a response to an error, returning the most specific subclass
+      # when the error code is recognized.
       #
       # @param response [Hash] The JSON-RPC response
       # @return [Solace::Errors::RPCError] The formatted error
       def self.format_response(response)
-        new(
-          "RPC error #{response['error']['code']}: #{response['error']['message']}",
-          rpc_data: response['error']['data'],
-          rpc_code: response['error']['code'],
-          rpc_message: response['error']['message']
+        code = response['error']['code']
+        message = response['error']['message']
+        data = response['error']['data']
+
+        klass = CODE_MAP[code] ? Errors.const_get(CODE_MAP[code]) : self
+
+        klass.new(
+          "RPC error #{code}: #{message}",
+          rpc_data: data,
+          rpc_code: code,
+          rpc_message: message
         )
       end
 
