@@ -79,7 +79,7 @@
   <dl>
     <dt>Defined in:</dt>
     <dd>lib/solace/errors.rb<span class="defines">,<br />
-  lib/solace/errors/rpc_error.rb,<br /> lib/solace/errors/http_error.rb,<br /> lib/solace/errors/parse_error.rb,<br /> lib/solace/errors/confirmation_timeout.rb</span>
+  lib/solace/errors/error.rb,<br /> lib/solace/errors/rpc_error.rb,<br /> lib/solace/errors/http_error.rb,<br /> lib/solace/errors/parse_error.rb,<br /> lib/solace/errors/connection_error.rb,<br /> lib/solace/errors/confirmation_timeout.rb</span>
 </dd>
   </dl>
   
@@ -93,6 +93,8 @@
 when interacting with the Solana blockchain, including:</p>
 
 <ul>
+<li><span class='object_link'><a href="Errors/Error.html" title="Solace::Errors::Error (class)">Error</a></span> - Base class for all Solace errors</li>
+<li><span class='object_link'><a href="Errors/ConnectionError.html" title="Solace::Errors::ConnectionError (class)">ConnectionError</a></span> - Base class for connection-related errors</li>
 <li><span class='object_link'><a href="Errors/HTTPError.html" title="Solace::Errors::HTTPError (class)">HTTPError</a></span> - HTTP communication failures</li>
 <li><span class='object_link'><a href="Errors/RPCError.html" title="Solace::Errors::RPCError (class)">RPCError</a></span> - RPC method errors returned by the node</li>
 <li><span class='object_link'><a href="Errors/ParseError.html" title="Solace::Errors::ParseError (class)">ParseError</a></span> - Data parsing and deserialization errors</li>
@@ -133,7 +135,7 @@ when interacting with the Solana blockchain, including:</p>
     
   
     
-      <strong class="classes">Classes:</strong> <span class='object_link'><a href="Errors/ConfirmationTimeout.html" title="Solace::Errors::ConfirmationTimeout (class)">ConfirmationTimeout</a></span>, <span class='object_link'><a href="Errors/HTTPError.html" title="Solace::Errors::HTTPError (class)">HTTPError</a></span>, <span class='object_link'><a href="Errors/ParseError.html" title="Solace::Errors::ParseError (class)">ParseError</a></span>, <span class='object_link'><a href="Errors/RPCError.html" title="Solace::Errors::RPCError (class)">RPCError</a></span>
+      <strong class="classes">Classes:</strong> <span class='object_link'><a href="Errors/ConfirmationTimeout.html" title="Solace::Errors::ConfirmationTimeout (class)">ConfirmationTimeout</a></span>, <span class='object_link'><a href="Errors/ConnectionError.html" title="Solace::Errors::ConnectionError (class)">ConnectionError</a></span>, <span class='object_link'><a href="Errors/Error.html" title="Solace::Errors::Error (class)">Error</a></span>, <span class='object_link'><a href="Errors/HTTPError.html" title="Solace::Errors::HTTPError (class)">HTTPError</a></span>, <span class='object_link'><a href="Errors/ParseError.html" title="Solace::Errors::ParseError (class)">ParseError</a></span>, <span class='object_link'><a href="Errors/RPCError.html" title="Solace::Errors::RPCError (class)">RPCError</a></span>
     
   
 </p>
@@ -149,7 +151,7 @@ when interacting with the Solana blockchain, including:</p>
 </div>
 
       <div id="footer">
-  Generated on Mon Mar 23 06:45:46 2026 by
+  Generated on Tue Apr 21 16:30:50 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.4).
 </div>
