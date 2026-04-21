@@ -18,7 +18,6 @@ module Solace
     require 'solace/errors/error'
     require 'solace/errors/connection_error'
     require 'solace/errors/rpc_error'
-    require 'solace/errors/rpc_errors'
     require 'solace/errors/http_error'
     require 'solace/errors/parse_error'
     require 'solace/errors/confirmation_timeout'
