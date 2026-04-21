@@ -63,7 +63,8 @@ module Solace
         -32_016 => :MinContextSlotNotReachedError,
         -32_017 => :EpochRewardsPeriodActiveError,
         -32_018 => :SlotNotEpochBoundaryError,
-        -32_019 => :LongTermStorageUnreachableError
+        -32_019 => :LongTermStorageUnreachableError,
+        -32_020 => :FilterTransactionNotFoundError
       }.freeze
 
       # Formats a response to an error, returning the most specific subclass

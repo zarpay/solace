@@ -117,5 +117,9 @@ module Solace
     # Raised when long-term storage is unreachable (-32019).
     # @since 0.1.4
     class LongTermStorageUnreachableError < RPCError; end
+
+    # Raised when a filtered transaction is not found (-32020).
+    # @since 0.1.4
+    class FilterTransactionNotFoundError < RPCError; end
   end
 end
