@@ -17,7 +17,7 @@ module Solace
     #   end
     #
     # @since 0.0.1
-    class ConfirmationTimeout < StandardError
+    class ConfirmationTimeout < Error
       attr_reader :signature, :commitment, :timeout
 
       # @param [String] message The error message

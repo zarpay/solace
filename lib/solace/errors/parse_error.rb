@@ -17,7 +17,7 @@ module Solace
     #   end
     #
     # @since 0.0.1
-    class ParseError < StandardError
+    class ParseError < Error
       attr_reader :body
 
       # @param [String] message The error message

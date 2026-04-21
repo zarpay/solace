@@ -19,7 +19,7 @@ module Solace
     #
     # @see Solace::Errors::HTTPError
     # @since 0.0.1
-    class RPCError < StandardError
+    class RPCError < ConnectionError
       attr_reader :rpc_code, :rpc_message, :rpc_data
 
       # @param [String] message The error message
