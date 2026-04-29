@@ -7,6 +7,9 @@ on:
 jobs:
   yard-docs:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: gem
     steps:
       - uses: actions/checkout@v4
 
@@ -25,4 +28,4 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GH_PAT }}
-          publish_dir: ./doc
+          publish_dir: ./gem/doc

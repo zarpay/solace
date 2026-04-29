@@ -1,12 +1,10 @@
-# Test ledger
-test-ledger
+# Gem
+gem/test-ledger
+gem/test/output
+gem/test/snapshot
+gem/.ruby-lsp
 
-# Test fixtures
-test/fixtures
-
-# Test outputs
-test/output
-
-# Test snapshots
-test/snapshot
-
+# Site
+site/node_modules/
+site/.vitepress/cache/
+site/.vitepress/dist/

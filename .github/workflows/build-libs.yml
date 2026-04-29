@@ -19,14 +19,14 @@ jobs:
 
       - name: Build Linux shared lib
         run: |
-          cargo build --manifest-path=ext/curve25519_dalek/Cargo.toml --release --target=x86_64-unknown-linux-gnu
-          mkdir -p lib/solace/utils/linux
-          cp ext/curve25519_dalek/target/x86_64-unknown-linux-gnu/release/libcurve25519_dalek.so lib/solace/utils/linux/
+          cargo build --manifest-path=gem/ext/curve25519_dalek/Cargo.toml --release --target=x86_64-unknown-linux-gnu
+          mkdir -p gem/lib/solace/utils/linux
+          cp gem/ext/curve25519_dalek/target/x86_64-unknown-linux-gnu/release/libcurve25519_dalek.so gem/lib/solace/utils/linux/
 
       - uses: actions/upload-artifact@v4
         with:
           name: libcurve25519_dalek-linux
-          path: lib/solace/utils/linux/libcurve25519_dalek.so
+          path: gem/lib/solace/utils/linux/libcurve25519_dalek.so
 
   build-windows:
     name: Build on Windows
@@ -43,14 +43,14 @@ jobs:
 
       - name: Build Windows shared lib
         run: |
-          cargo build --manifest-path=ext/curve25519_dalek/Cargo.toml --release --target=x86_64-pc-windows-msvc
-          mkdir -p lib/solace/utils/windows
-          copy ext\curve25519_dalek\target\x86_64-pc-windows-msvc\release\curve25519_dalek.dll lib\solace\utils\windows\
+          cargo build --manifest-path=gem/ext/curve25519_dalek/Cargo.toml --release --target=x86_64-pc-windows-msvc
+          mkdir -p gem/lib/solace/utils/windows
+          copy gem\ext\curve25519_dalek\target\x86_64-pc-windows-msvc\release\curve25519_dalek.dll gem\lib\solace\utils\windows\
 
       - uses: actions/upload-artifact@v4
         with:
           name: libcurve25519_dalek-windows
-          path: lib/solace/utils/windows/curve25519_dalek.dll
+          path: gem/lib/solace/utils/windows/curve25519_dalek.dll
 
   build-macos:
     name: Build on macOS
@@ -68,14 +68,14 @@ jobs:
       - name: Build macOS shared lib
         shell: bash
         run: |
-          cargo build --manifest-path=ext/curve25519_dalek/Cargo.toml --release --target=x86_64-apple-darwin
-          mkdir -p lib/solace/utils/macos
-          cp ext/curve25519_dalek/target/x86_64-apple-darwin/release/libcurve25519_dalek.dylib lib/solace/utils/macos/
+          cargo build --manifest-path=gem/ext/curve25519_dalek/Cargo.toml --release --target=x86_64-apple-darwin
+          mkdir -p gem/lib/solace/utils/macos
+          cp gem/ext/curve25519_dalek/target/x86_64-apple-darwin/release/libcurve25519_dalek.dylib gem/lib/solace/utils/macos/
 
       - uses: actions/upload-artifact@v4
         with:
           name: libcurve25519_dalek-macos
-          path: lib/solace/utils/macos/libcurve25519_dalek.dylib
+          path: gem/lib/solace/utils/macos/libcurve25519_dalek.dylib
 
   build-macos-arm64:
     name: Build on macOS ARM64
@@ -93,14 +93,14 @@ jobs:
       - name: Build macOS ARM64 shared lib
         shell: bash
         run: |
-          cargo build --manifest-path=ext/curve25519_dalek/Cargo.toml --release --target=aarch64-apple-darwin
-          mkdir -p lib/solace/utils/macos-arm64
-          cp ext/curve25519_dalek/target/aarch64-apple-darwin/release/libcurve25519_dalek.dylib lib/solace/utils/macos-arm64/
+          cargo build --manifest-path=gem/ext/curve25519_dalek/Cargo.toml --release --target=aarch64-apple-darwin
+          mkdir -p gem/lib/solace/utils/macos-arm64
+          cp gem/ext/curve25519_dalek/target/aarch64-apple-darwin/release/libcurve25519_dalek.dylib gem/lib/solace/utils/macos-arm64/
 
       - uses: actions/upload-artifact@v4
         with:
           name: libcurve25519_dalek-macos-arm64
-          path: lib/solace/utils/macos-arm64/libcurve25519_dalek.dylib
+          path: gem/lib/solace/utils/macos-arm64/libcurve25519_dalek.dylib
 
   build-linux-arm64:
     name: Build on Linux ARM64
@@ -117,14 +117,14 @@ jobs:
 
       - name: Build Linux ARM64 shared lib
         run: |
-          cargo build --manifest-path=ext/curve25519_dalek/Cargo.toml --release --target=aarch64-unknown-linux-gnu
-          mkdir -p lib/solace/utils/linux-arm64
-          cp ext/curve25519_dalek/target/aarch64-unknown-linux-gnu/release/libcurve25519_dalek.so lib/solace/utils/linux-arm64/
+          cargo build --manifest-path=gem/ext/curve25519_dalek/Cargo.toml --release --target=aarch64-unknown-linux-gnu
+          mkdir -p gem/lib/solace/utils/linux-arm64
+          cp gem/ext/curve25519_dalek/target/aarch64-unknown-linux-gnu/release/libcurve25519_dalek.so gem/lib/solace/utils/linux-arm64/
 
       - uses: actions/upload-artifact@v4
         with:
           name: libcurve25519_dalek-linux-arm64
-          path: lib/solace/utils/linux-arm64/libcurve25519_dalek.so
+          path: gem/lib/solace/utils/linux-arm64/libcurve25519_dalek.so
 
   commit-artifacts:
     name: Commit built binaries
@@ -138,14 +138,14 @@ jobs:
       - name: Download all artifacts
         uses: actions/download-artifact@v4
         with:
-          path: lib/solace/utils/
+          path: gem/lib/solace/utils/
 
       - name: Commit and push
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          git add lib/solace/utils/
+          git add gem/lib/solace/utils/
 
           # Only commit if there are changes
           if ! git diff --cached --quiet; then

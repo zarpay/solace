@@ -6,6 +6,20 @@ SOLANA_VALIDATOR_CMD = 'solana-test-validator'
 SOLANA_VALIDATOR_LOG = '/tmp/solana-test-validator.log'
 SOLANA_VALIDATOR_ERR = '/tmp/solana-test-validator.err.log'
 
+# Abort early if the binary isn't installed
+unless system("which #{SOLANA_VALIDATOR_CMD} > /dev/null 2>&1")
+  abort <<~MSG
+
+    [SolanaTestValidator] solana-test-validator not found.
+
+    Install the Solana CLI to run tests:
+      sh -c "$(curl -sSfL https://release.anza.xyz/stable/install)"
+
+    Then restart your shell and try again.
+
+  MSG
+end
+
 # If the validator is already running, return. This check will not
 # work on certain systems, but it's better than nothing.
 @validator_pid = `ps | grep 'solana-test-val'`.strip

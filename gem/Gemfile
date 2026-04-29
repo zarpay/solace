@@ -2,10 +2,11 @@
 
 source 'https://rubygems.org'
 
-# Minitest
+# Test
 gem 'factory_bot'
-gem 'minitest'
+gem 'minitest', '~> 5.0'
 gem 'minitest-hooks'
+gem 'rake'
 
 # Local gem
 gem 'solace', path: '.'
