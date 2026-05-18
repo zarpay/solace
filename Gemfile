@@ -2,6 +2,9 @@
 
 source 'https://rubygems.org'
 
+# Build tools
+gem 'rake'
+
 # Minitest
 gem 'factory_bot'
 gem 'minitest', '~> 5.0'
