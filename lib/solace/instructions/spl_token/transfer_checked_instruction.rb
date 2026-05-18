@@ -29,7 +29,7 @@ module Solace
         # SPL Token Program transfer instruction layout:
         #   - 1 byte: instruction index (12 for transfer checked)
         #   - 8 bytes: amount (u64, little-endian)
-        #   - 8 bytes: decimals (u64, little-endian)
+        #   - 1 byte: decimals (u8)
         #
         # @param amount [Integer] Amount to transfer (in tokens, according to mint's decimals)
         # @param decimals [Integer] Number of decimals for the token
