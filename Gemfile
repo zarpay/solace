@@ -2,9 +2,12 @@
 
 source 'https://rubygems.org'
 
+# Build tools
+gem 'rake'
+
 # Minitest
 gem 'factory_bot'
-gem 'minitest'
+gem 'minitest', '~> 5.0'
 gem 'minitest-hooks'
 
 # Local gem

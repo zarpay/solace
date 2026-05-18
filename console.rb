@@ -2,8 +2,8 @@
 
 require 'irb'
 
-# Autoload all Ruby files in utils and other directories as needed
-require_relative 'lib/solace'
+$LOAD_PATH.unshift(File.expand_path('lib', __dir__))
+require 'solace'
 
 require 'minitest/autorun'
 require 'minitest/hooks/default'
