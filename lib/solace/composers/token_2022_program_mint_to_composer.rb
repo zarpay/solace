@@ -2,10 +2,10 @@
 
 module Solace
   module Composers
-    # Composer for creating a MintTo instruction for the SPL Token Program.
+    # Composer for creating a MintTo instruction for the Token-2022 Program.
     #
     # This composer builds a MintTo instruction that can be added to a transaction to mint tokens
-    # to a specified token account. It is used to mint new tokens for a given mint and destination account.
+    # to a specified token account.
     #
     # Required accounts:
     #  - **Mint**: The mint account (writable, non-signer)
@@ -13,15 +13,15 @@ module Solace
     #  - **Mint Authority**: The mint authority account (readonly, signer)
     #
     # @example Build a MintTo instruction
-    #   composer = Solace::Composers::SplTokenProgramMintToComposer.new(
+    #   composer = Solace::Composers::Token2022ProgramMintToComposer.new(
     #     mint: mint,
     #     destination: destination,
     #     mint_authority: mint_authority,
     #     amount: 100
     #   )
     #
-    # @since 0.1.0
-    class SplTokenProgramMintToComposer < Base
+    # @since 0.1.5
+    class Token2022ProgramMintToComposer < Base
       # Extracts the mint address from the params
       #
       # @return [String] The mint address
@@ -43,11 +43,9 @@ module Solace
         params[:mint_authority].to_s
       end
 
-      # Returns the spl token program id
-      #
-      # @return [String] The spl token program id
-      def spl_token_program
-        Constants::TOKEN_PROGRAM_ID.to_s
+      # @return [String] The Token-2022 program id.
+      def token_2022_program
+        Constants::TOKEN_2022_PROGRAM_ID.to_s
       end
 
       # Extracts the amount from the params
@@ -65,7 +63,7 @@ module Solace
         account_context.add_writable_nonsigner(mint)
         account_context.add_writable_nonsigner(destination)
         account_context.add_readonly_signer(mint_authority)
-        account_context.add_readonly_nonsigner(spl_token_program)
+        account_context.add_readonly_nonsigner(token_2022_program)
       end
 
       # Build instruction with resolved account indices
@@ -73,12 +71,12 @@ module Solace
       # @param account_context [Utils::AccountContext] The account context
       # @return [Solace::Instruction]
       def build_instruction(account_context)
-        Instructions::SplToken::MintToInstruction.build(
+        Instructions::Token2022::MintToInstruction.build(
           amount: amount,
           mint_index: account_context.index_of(mint),
           destination_index: account_context.index_of(destination),
           mint_authority_index: account_context.index_of(mint_authority),
-          program_index: account_context.index_of(spl_token_program)
+          program_index: account_context.index_of(token_2022_program)
         )
       end
     end

@@ -2,13 +2,11 @@
 
 module Solace
   module Composers
-    # Composer for creating a SPL Token Program Transfer instruction.
+    # Composer for creating a Token-2022 Program Transfer instruction.
     #
     # This composer resolves and orders the required accounts for a `Transfer` instruction,
     # sets up their access permissions, and delegates construction to the appropriate
-    # instruction builder (`Instructions::SplToken::TransferInstruction`).
-    #
-    # It is used for transferring SPL tokens with decimal precision and validation checks.
+    # instruction builder (`Instructions::Token2022::TransferInstruction`).
     #
     # Required accounts:
     # - **Owner**: token account owner (writable, signer)
@@ -16,16 +14,16 @@ module Solace
     # - **Destination**: destination token account (writable, non-signer)
     #
     # @example Compose and build a transfer instruction
-    #   composer = SplTokenProgramTransferComposer.new(
+    #   composer = Token2022ProgramTransferComposer.new(
     #     amount: 1_000_000,
     #     owner: owner_address,
     #     source: source_address,
     #     destination: destination_address,
     #   )
     #
-    # @see Instructions::SplToken::TransferInstruction
-    # @since 0.1.0
-    class SplTokenProgramTransferComposer < Base
+    # @see Instructions::Token2022::TransferInstruction
+    # @since 0.1.5
+    class Token2022ProgramTransferComposer < Base
       # Extracts the owner address from the params
       #
       # @return [String] The owner address
@@ -47,11 +45,9 @@ module Solace
         params[:destination].to_s
       end
 
-      # Returns the spl token program id
-      #
-      # @return [String] The spl token program id
-      def spl_token_program
-        Constants::TOKEN_PROGRAM_ID.to_s
+      # @return [String] The Token-2022 program id.
+      def token_2022_program
+        Constants::TOKEN_2022_PROGRAM_ID.to_s
       end
 
       # Returns the lamports to transfer
@@ -69,7 +65,7 @@ module Solace
         account_context.add_writable_signer(owner)
         account_context.add_writable_nonsigner(source)
         account_context.add_writable_nonsigner(destination)
-        account_context.add_readonly_nonsigner(spl_token_program)
+        account_context.add_readonly_nonsigner(token_2022_program)
       end
 
       # Build instruction with resolved account indices
@@ -77,12 +73,12 @@ module Solace
       # @param account_context [Utils::AccountContext] The account context
       # @return [Solace::Instruction]
       def build_instruction(account_context)
-        Instructions::SplToken::TransferInstruction.build(
+        Instructions::Token2022::TransferInstruction.build(
           amount: amount,
           owner_index: account_context.index_of(owner),
           source_index: account_context.index_of(source),
           destination_index: account_context.index_of(destination),
-          program_index: account_context.index_of(spl_token_program)
+          program_index: account_context.index_of(token_2022_program)
         )
       end
     end

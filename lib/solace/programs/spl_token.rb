@@ -6,8 +6,9 @@ module Solace
     #
     # This client provides methods for creating mints, minting tokens, and
     # transferring tokens via the legacy SPL Token program
-    # (+TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA+). The implementation lives
-    # in {TokenProgramBase}, which {Programs::Token2022} also extends.
+    # (+TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA+). The shared method shape
+    # comes from {TokenProgramInterface}; this class supplies the SPL-bound
+    # composer classes.
     #
     # @example Create an SPL Token mint
     #   # Initialize the program with a connection
@@ -28,12 +29,32 @@ module Solace
     #
     # @see Solace::Programs::Token2022 for the Token-2022 successor program.
     # @since 0.0.2
-    class SplToken < TokenProgramBase
+    class SplToken < Base
+      include TokenProgramInterface
+
       # Initializes a new SPL Token client.
       #
       # @param connection [Solace::Connection] The connection to the Solana cluster.
       def initialize(connection:)
         super(connection: connection, program_id: Solace::Constants::TOKEN_PROGRAM_ID)
+      end
+
+      private
+
+      def initialize_mint_composer_class
+        Composers::SplTokenProgramInitializeMintComposer
+      end
+
+      def mint_to_composer_class
+        Composers::SplTokenProgramMintToComposer
+      end
+
+      def transfer_composer_class
+        Composers::SplTokenProgramTransferComposer
+      end
+
+      def transfer_checked_composer_class
+        Composers::SplTokenProgramTransferCheckedComposer
       end
     end
   end

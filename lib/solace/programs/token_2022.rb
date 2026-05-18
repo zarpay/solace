@@ -6,10 +6,12 @@ module Solace
     #
     # Token-2022 is the successor to the legacy SPL Token program
     # (+TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb+). Its base instructions —
-    # Transfer, TransferChecked, CloseAccount, MintTo, InitializeMint —
-    # are wire-compatible with the legacy program; only the program account
-    # they target is different. This class shares its implementation with
-    # {Programs::SplToken} via {Programs::TokenProgramBase}.
+    # Transfer, TransferChecked, CloseAccount, MintTo, InitializeMint — are
+    # wire-compatible with the legacy program; only the program account they
+    # target is different. The shared method shape comes from
+    # {TokenProgramInterface}; this class supplies the Token-2022-bound
+    # composer classes. Branching between SPL Token and Token-2022 belongs at
+    # the call site, where the developer already knows which mint they hold.
     #
     # Important: mints owned by Token-2022 (e.g. PYUSD on Solana) derive
     # their Associated Token Accounts with this program ID in the seed.
@@ -36,12 +38,32 @@ module Solace
     #
     # @see Solace::Programs::SplToken
     # @since 0.1.5
-    class Token2022 < TokenProgramBase
+    class Token2022 < Base
+      include TokenProgramInterface
+
       # Initializes a new Token-2022 client.
       #
       # @param connection [Solace::Connection] The connection to the Solana cluster.
       def initialize(connection:)
         super(connection: connection, program_id: Solace::Constants::TOKEN_2022_PROGRAM_ID)
+      end
+
+      private
+
+      def initialize_mint_composer_class
+        Composers::Token2022ProgramInitializeMintComposer
+      end
+
+      def mint_to_composer_class
+        Composers::Token2022ProgramMintToComposer
+      end
+
+      def transfer_composer_class
+        Composers::Token2022ProgramTransferComposer
+      end
+
+      def transfer_checked_composer_class
+        Composers::Token2022ProgramTransferCheckedComposer
       end
     end
   end

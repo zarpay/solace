@@ -2,23 +2,21 @@
 
 module Solace
   module Composers
-    # Composer for creating a SPL Token Program `TransferChecked` instruction.
+    # Composer for creating a Token-2022 Program `TransferChecked` instruction.
     #
     # This composer resolves and orders the required accounts for a `TransferChecked` instruction,
     # sets up their access permissions, and delegates construction to the appropriate
-    # instruction builder (`Instructions::SplToken::TransferCheckedInstruction`).
-    #
-    # It is used for transferring SPL tokens with decimal precision and validation checks.
+    # instruction builder (`Instructions::Token2022::TransferCheckedInstruction`).
     #
     # Required accounts:
     # - **From**: source token account (writable, non-signer)
     # - **To**: destination token account (writable, non-signer)
     # - **Mint**: mint address (readonly, non-signer)
     # - **Authority**: token owner (writable, signer)
-    # - **Program**: SPL Token program (readonly, non-signer)
+    # - **Program**: Token-2022 program (readonly, non-signer)
     #
     # @example Compose and build a transfer_checked instruction
-    #   composer = SplTokenProgramTransferCheckedComposer.new(
+    #   composer = Token2022ProgramTransferCheckedComposer.new(
     #     from: from_address,
     #     to: to_address,
     #     mint: mint_address,
@@ -27,9 +25,9 @@ module Solace
     #     decimals: 6
     #   )
     #
-    # @see Instructions::SplToken::TransferCheckedInstruction
-    # @since 0.0.3
-    class SplTokenProgramTransferCheckedComposer < Base
+    # @see Instructions::Token2022::TransferCheckedInstruction
+    # @since 0.1.5
+    class Token2022ProgramTransferCheckedComposer < Base
       # Extracts the to address from the params
       #
       # @return [String] The to address
@@ -60,16 +58,14 @@ module Solace
         params[:mint].to_s
       end
 
-      # Returns the spl token program id
-      #
-      # @return [String] The spl token program id
-      def spl_token_program
-        Constants::TOKEN_PROGRAM_ID.to_s
+      # @return [String] The Token-2022 program id.
+      def token_2022_program
+        Constants::TOKEN_2022_PROGRAM_ID.to_s
       end
 
-      # Returns the lamports to transfer
+      # Returns the amount to transfer
       #
-      # @return [Integer] The lamports to transfer
+      # @return [Integer] The amount to transfer
       def amount
         params[:amount]
       end
@@ -90,7 +86,7 @@ module Solace
         account_context.add_writable_nonsigner(to)
         account_context.add_writable_nonsigner(from)
         account_context.add_readonly_nonsigner(mint)
-        account_context.add_readonly_nonsigner(spl_token_program)
+        account_context.add_readonly_nonsigner(token_2022_program)
       end
 
       # Build instruction with resolved account indices
@@ -98,14 +94,14 @@ module Solace
       # @param account_context [Utils::AccountContext] The account context
       # @return [Solace::Instruction]
       def build_instruction(account_context)
-        Instructions::SplToken::TransferCheckedInstruction.build(
+        Instructions::Token2022::TransferCheckedInstruction.build(
           amount: amount,
           decimals: decimals,
           to_index: account_context.index_of(to),
           from_index: account_context.index_of(from),
           mint_index: account_context.index_of(mint),
           authority_index: account_context.index_of(authority),
-          program_index: account_context.index_of(spl_token_program)
+          program_index: account_context.index_of(token_2022_program)
         )
       end
     end

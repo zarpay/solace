@@ -2,10 +2,11 @@
 
 require 'test_helper'
 
-# Pure-unit tests for the Token-2022 program client. Integration tests against
-# a Token-2022 mint live in spl_token_test.rb (shared validator setup); the
-# tests here verify the wiring — that Token2022 reaches the shared
-# TokenProgramBase methods with the right program id baked into each composer.
+# Pure-unit tests for the Token-2022 program client. The base instruction
+# surface (Transfer, TransferChecked, MintTo, InitializeMint, CloseAccount)
+# is shared in shape with the legacy SPL Token program but each Token-2022
+# composer is its own class, bound to TOKEN_2022_PROGRAM_ID. These tests
+# verify the wiring — that Token2022 reaches the right composer class.
 describe Solace::Programs::Token2022 do
   let(:klass) { Solace::Programs::Token2022 }
   let(:connection) { Solace::Connection.new }
@@ -20,8 +21,8 @@ describe Solace::Programs::Token2022 do
       assert_equal program.program_id, Solace::Constants::TOKEN_2022_PROGRAM_ID
     end
 
-    it 'inherits the shared TokenProgramBase implementation' do
-      assert_kind_of Solace::Programs::TokenProgramBase, program
+    it 'mixes in the shared TokenProgramInterface' do
+      assert_includes klass.included_modules, Solace::Programs::TokenProgramInterface
     end
   end
 
@@ -41,12 +42,12 @@ describe Solace::Programs::Token2022 do
 
     let(:transfer_ix) { composer.instruction_composers.first }
 
-    it 'builds an SplTokenProgramTransferComposer' do
-      assert_kind_of Solace::Composers::SplTokenProgramTransferComposer, transfer_ix
+    it 'builds a Token2022ProgramTransferComposer' do
+      assert_kind_of Solace::Composers::Token2022ProgramTransferComposer, transfer_ix
     end
 
-    it 'threads the Token-2022 program id into the composer' do
-      assert_equal Solace::Constants::TOKEN_2022_PROGRAM_ID, transfer_ix.spl_token_program
+    it 'binds the composer to the Token-2022 program id' do
+      assert_equal Solace::Constants::TOKEN_2022_PROGRAM_ID, transfer_ix.token_2022_program
     end
   end
 
@@ -74,12 +75,12 @@ describe Solace::Programs::Token2022 do
 
     let(:init_mint_ix) { composer.instruction_composers.last }
 
-    it 'builds an SplTokenProgramInitializeMintComposer' do
-      assert_kind_of Solace::Composers::SplTokenProgramInitializeMintComposer, init_mint_ix
+    it 'builds a Token2022ProgramInitializeMintComposer' do
+      assert_kind_of Solace::Composers::Token2022ProgramInitializeMintComposer, init_mint_ix
     end
 
-    it 'threads the Token-2022 program id into the initialize-mint instruction' do
-      assert_equal Solace::Constants::TOKEN_2022_PROGRAM_ID, init_mint_ix.spl_token_program
+    it 'binds the initialize-mint composer to the Token-2022 program id' do
+      assert_equal Solace::Constants::TOKEN_2022_PROGRAM_ID, init_mint_ix.token_2022_program
     end
 
     it 'sets the new mint account owner to the Token-2022 program' do

@@ -2,14 +2,10 @@
 
 module Solace
   module Composers
-    # Composer for creating a SPL Token Program CloseAccount instruction.
+    # Composer for creating a Token-2022 Program CloseAccount instruction.
     #
-    # This composer resolves and orders the required accounts for a `CloseAccount` instruction,
-    # sets up their access permissions, and delegates construction to the appropriate
-    # instruction builder.
-    #
-    # The CloseAccount instruction closes a token account and transfers remaining lamports
-    # to a destination account. The account must have a balance of zero tokens.
+    # The CloseAccount instruction closes a token account and transfers remaining
+    # lamports to a destination account. The account must have a balance of zero tokens.
     #
     # Required accounts:
     # - **Account**: token account to close (writable, non-signer)
@@ -17,14 +13,14 @@ module Solace
     # - **Authority**: account authority (non-writable, signer)
     #
     # @example Compose and build a close account instruction
-    #   composer = SplTokenProgramCloseAccountComposer.new(
+    #   composer = Token2022ProgramCloseAccountComposer.new(
     #     account: token_account_address,
     #     destination: destination_address,
     #     authority: authority_address
     #   )
     #
-    # @since 0.1.2
-    class SplTokenProgramCloseAccountComposer < Base
+    # @since 0.1.5
+    class Token2022ProgramCloseAccountComposer < Base
       # Extracts the token account address from the params
       #
       # @return [String] The token account address
@@ -46,11 +42,9 @@ module Solace
         params[:authority].to_s
       end
 
-      # Returns the spl token program id
-      #
-      # @return [String] The spl token program id
-      def spl_token_program
-        Constants::TOKEN_PROGRAM_ID.to_s
+      # @return [String] The Token-2022 program id.
+      def token_2022_program
+        Constants::TOKEN_2022_PROGRAM_ID.to_s
       end
 
       # Setup accounts required for close account instruction
@@ -61,7 +55,7 @@ module Solace
         account_context.add_writable_nonsigner(account)
         account_context.add_writable_nonsigner(destination)
         account_context.add_readonly_signer(authority)
-        account_context.add_readonly_nonsigner(spl_token_program)
+        account_context.add_readonly_nonsigner(token_2022_program)
       end
 
       # Build instruction with resolved account indices
@@ -69,11 +63,11 @@ module Solace
       # @param account_context [Utils::AccountContext] The account context
       # @return [Solace::Instruction]
       def build_instruction(account_context)
-        Instructions::SplToken::CloseAccountInstruction.build(
+        Instructions::Token2022::CloseAccountInstruction.build(
           account_index: account_context.index_of(account),
           authority_index: account_context.index_of(authority),
           destination_index: account_context.index_of(destination),
-          program_index: account_context.index_of(spl_token_program)
+          program_index: account_context.index_of(token_2022_program)
         )
       end
     end

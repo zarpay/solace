@@ -2,22 +2,33 @@
 
 module Solace
   module Programs
-    # Abstract base for token-program clients (SPL Token and Token-2022).
+    # Mixin describing the common surface of a token-program client.
     #
-    # Token-2022 is a successor to the legacy SPL Token program whose base
-    # instructions (Transfer, TransferChecked, CloseAccount, MintTo,
-    # InitializeMint, etc.) are wire-compatible with the legacy program;
-    # only the program account each instruction targets is different.
-    # This base class captures that shared surface area and threads its
-    # {#program_id} through to the composers — usable directly with any
-    # SPL-compatible program ID, or via the {Programs::SplToken} /
-    # {Programs::Token2022} subclasses which pin sensible defaults.
+    # The legacy SPL Token program and Token-2022 expose a wire-compatible
+    # base instruction set (Transfer, TransferChecked, CloseAccount, MintTo,
+    # InitializeMint). This module captures the *shape* of a client that
+    # speaks that surface — the public methods +create_mint+, +mint_to+,
+    # +transfer+, +transfer_checked+ and their +compose_*+ pairs — without
+    # binding to either program.
+    #
+    # State (connection, program_id) lives on {Programs::Base}; this module
+    # is purely behavior. Including classes must implement four private
+    # readers that name the composer class for each operation:
+    #
+    # - {#initialize_mint_composer_class}
+    # - {#mint_to_composer_class}
+    # - {#transfer_composer_class}
+    # - {#transfer_checked_composer_class}
+    #
+    # Each composer returned by those readers is itself bound to a single
+    # on-chain program, which is how this mixin keeps the boundary clean:
+    # +SplToken+ and +Token2022+ share *methods* but never share a composer.
     #
     # @see Solace::Programs::SplToken
     # @see Solace::Programs::Token2022
     # @since 0.1.5
-    # rubocop:disable Metrics/ClassLength
-    class TokenProgramBase < Base
+    # rubocop:disable Metrics/ModuleLength
+    module TokenProgramInterface
       # Creates a new mint, signs it, and (optionally) sends it.
       #
       # @param payer [#to_s, PublicKey] The keypair that will pay for fees and rent.
@@ -80,17 +91,16 @@ module Solace
           space: 82
         )
 
-        # Build the initialize mint composer
-        initialize_mint_ix = Composers::SplTokenProgramInitializeMintComposer.new(
+        # Build the initialize mint composer (per-program class supplied by includer)
+        initialize_mint_ix = initialize_mint_composer_class.new(
           decimals: decimals,
           mint_account: mint_account,
           mint_authority: mint_authority,
-          freeze_authority: freeze_authority,
-          token_program_id: program_id
+          freeze_authority: freeze_authority
         )
 
         TransactionComposer
-          .new(connection: @connection)
+          .new(connection: connection)
           .add_instruction(create_account_ix)
           .add_instruction(initialize_mint_ix)
       end
@@ -142,12 +152,11 @@ module Solace
         destination:,
         mint_authority:
       )
-        ix = Composers::SplTokenProgramMintToComposer.new(
+        ix = mint_to_composer_class.new(
           amount: amount,
           mint: mint,
           destination: destination,
-          mint_authority: mint_authority,
-          token_program_id: program_id
+          mint_authority: mint_authority
         )
 
         TransactionComposer
@@ -200,12 +209,11 @@ module Solace
         destination:,
         owner:
       )
-        ix = Composers::SplTokenProgramTransferComposer.new(
+        ix = transfer_composer_class.new(
           amount: amount,
           owner: owner,
           source: source,
-          destination: destination,
-          token_program_id: program_id
+          destination: destination
         )
 
         TransactionComposer
@@ -263,21 +271,42 @@ module Solace
         amount:,
         decimals:
       )
-        ix = Composers::SplTokenProgramTransferCheckedComposer.new(
+        ix = transfer_checked_composer_class.new(
           to: to,
           from: from,
           mint: mint,
           authority: authority,
           amount: amount,
-          decimals: decimals,
-          token_program_id: program_id
+          decimals: decimals
         )
 
         TransactionComposer
           .new(connection: connection)
           .add_instruction(ix)
       end
+
+      private
+
+      # @return [Class] Composer class used by {#compose_create_mint}.
+      def initialize_mint_composer_class
+        raise NotImplementedError, "#{self.class} must implement #initialize_mint_composer_class"
+      end
+
+      # @return [Class] Composer class used by {#compose_mint_to}.
+      def mint_to_composer_class
+        raise NotImplementedError, "#{self.class} must implement #mint_to_composer_class"
+      end
+
+      # @return [Class] Composer class used by {#compose_transfer}.
+      def transfer_composer_class
+        raise NotImplementedError, "#{self.class} must implement #transfer_composer_class"
+      end
+
+      # @return [Class] Composer class used by {#compose_transfer_checked}.
+      def transfer_checked_composer_class
+        raise NotImplementedError, "#{self.class} must implement #transfer_checked_composer_class"
+      end
     end
-    # rubocop:enable Metrics/ClassLength
+    # rubocop:enable Metrics/ModuleLength
   end
 end
