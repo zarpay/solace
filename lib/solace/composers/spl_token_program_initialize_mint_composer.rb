@@ -38,11 +38,10 @@ module Solace
         Constants::SYSVAR_RENT_PROGRAM_ID.to_s
       end
 
-      # Returns the spl token program id
-      #
-      # @return [String] The spl token program id
+      # @return [String] The token program id (defaults to legacy SPL Token;
+      #   pass +params[:token_program_id]+ to target Token-2022).
       def spl_token_program
-        Constants::TOKEN_PROGRAM_ID.to_s
+        (params[:token_program_id] || Constants::TOKEN_PROGRAM_ID).to_s
       end
 
       # Extracts the mint authority address from the params

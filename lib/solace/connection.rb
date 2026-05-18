@@ -33,6 +33,7 @@ module Solace
   #   Solace::Errors::ConfirmationTimeout
   # ]
   # @since 0.0.1
+  # rubocop:disable Metrics/ClassLength
   class Connection
     # @!attribute [r] rpc_url
     #   The URL of the Solana RPC node
@@ -196,13 +197,31 @@ module Solace
       @rpc_client.rpc_request('getTokenAccountBalance', [token_account, default_options]).dig('result', 'value')
     end
 
-    # Gets the token accounts by owner
+    # Gets the token accounts by owner.
+    #
+    # Defaults to the legacy SPL Token program; pass
+    # +token_program_id: Solace::Constants::TOKEN_2022_PROGRAM_ID+ for Token-2022.
     #
     # @param owner [String] The public key of the owner
-    # @return [Array<Hash>] The token accounts owned by the owner for the specified mint
-    def get_token_accounts_by_owner(owner)
-      params = [owner, { programId: Constants::TOKEN_PROGRAM_ID }, default_options]
+    # @param token_program_id [String] The token program to filter by (defaults to legacy SPL Token)
+    # @return [Array<Hash>] The token accounts owned by the owner under the given token program
+    def get_token_accounts_by_owner(owner, token_program_id: Constants::TOKEN_PROGRAM_ID)
+      params = [owner, { programId: token_program_id }, default_options]
       @rpc_client.rpc_request('getTokenAccountsByOwner', params).dig('result', 'value')
+    end
+
+    # Discovery-only helper: returns the program ID that owns a given mint.
+    #
+    # Use this to dispatch between {Constants::TOKEN_PROGRAM_ID} and
+    # {Constants::TOKEN_2022_PROGRAM_ID} when the mint's program is not known
+    # ahead of time. If you also need the rest of the mint's account data
+    # (decimals, supply, ...), call {#get_account_info} directly and read
+    # +'owner'+ yourself — calling both would cost two RPC roundtrips.
+    #
+    # @param mint [String] The mint address
+    # @return [String, nil] The program ID that owns the mint, or +nil+ if the account does not exist
+    def get_mint_program_id(mint)
+      get_account_info(mint)&.dig('owner')
     end
 
     # Get the transaction by signature
@@ -335,4 +354,5 @@ module Solace
       Process.clock_gettime(Process::CLOCK_MONOTONIC) + seconds
     end
   end
+  # rubocop:enable Metrics/ClassLength
 end
