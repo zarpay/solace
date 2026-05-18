@@ -467,10 +467,10 @@ connection.wait_for_confirmed_signature { response['result'] }
 # Install Ruby dependencies
 bundle install
 
-# Generate the six keypair fixtures the test suite expects.
+# Generate the seven keypair fixtures the test suite expects.
 # test/fixtures/ is gitignored — each developer generates their own.
 mkdir -p test/fixtures
-for name in bob anna payer mint mint-authority fee-collector; do
+for name in bob anna payer mint mint-2022 mint-authority fee-collector; do
   solana-keygen new --no-bip39-passphrase --silent --force -o "test/fixtures/${name}.json"
 done
 
