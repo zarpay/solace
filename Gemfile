@@ -4,7 +4,7 @@ source 'https://rubygems.org'
 
 # Minitest
 gem 'factory_bot'
-gem 'minitest'
+gem 'minitest', '~> 5.0'
 gem 'minitest-hooks'
 
 # Local gem

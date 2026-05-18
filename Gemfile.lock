@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    solace (0.1.2)
+    solace (0.1.4)
       base58 (~> 0.2)
       ffi (~> 1.15)
       rbnacl (~> 7.0)
@@ -49,14 +49,14 @@ GEM
     language_server-protocol (3.17.0.5)
     lint_roller (1.1.0)
     logger (1.7.0)
-    minitest (5.25.5)
+    minitest (5.27.0)
     minitest-hooks (1.5.2)
       minitest (> 5.3)
     parallel (1.27.0)
     parser (3.3.9.0)
       ast (~> 2.4.1)
       racc
-    prism (1.4.0)
+    prism (1.9.0)
     racc (1.8.1)
     rainbow (3.1.1)
     rbnacl (7.1.2)
@@ -92,7 +92,7 @@ GEM
       concurrent-ruby (~> 1.0)
     unicode-display_width (3.1.4)
       unicode-emoji (~> 4.0, >= 4.0.4)
-    unicode-emoji (4.0.4)
+    unicode-emoji (4.2.0)
     uri (1.0.3)
     yard (0.9.37)
     yardstick (0.9.9)
@@ -113,7 +113,7 @@ PLATFORMS
 
 DEPENDENCIES
   factory_bot
-  minitest
+  minitest (~> 5.0)
   minitest-hooks
   redcarpet
   rubocop
