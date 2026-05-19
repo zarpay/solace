@@ -63,11 +63,12 @@ module Solace
         Constants::SYSTEM_PROGRAM_ID.to_s
       end
 
-      # Extracts the token program id from the constants
-      #
-      # @return [String] The token program id
+      # @return [String] The token program id baked into the ATA's create-account
+      #   instruction (defaults to legacy SPL Token; pass +params[:token_program_id]+
+      #   to create a Token-2022 ATA — note the derived ATA address differs too,
+      #   see {Programs::AssociatedTokenAccount.get_address}).
       def token_program_id
-        Constants::TOKEN_PROGRAM_ID.to_s
+        (params[:token_program_id] || Constants::TOKEN_PROGRAM_ID).to_s
       end
 
       # Extracts the associated token account program id from the constants

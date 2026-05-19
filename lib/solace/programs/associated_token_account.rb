@@ -37,14 +37,25 @@ module Solace
       class << self
         # Gets the address of an associated token account.
         #
+        # The token program ID is part of the ATA derivation seed. For mints
+        # owned by the legacy SPL Token program this is {Constants::TOKEN_PROGRAM_ID}
+        # (the default). For mints owned by the Token-2022 program (e.g. PYUSD on
+        # Solana), pass +token_program_id: Solace::Constants::TOKEN_2022_PROGRAM_ID+
+        # to derive the correct address. Deriving with the wrong program ID
+        # returns an address that does not exist on chain.
+        #
+        # Use {Connection#get_mint_program_id} to discover which token program
+        # owns a given mint at runtime.
+        #
         # @param owner [Keypair, PublicKey] The keypair of the owner.
         # @param mint [Keypair, PublicKey] The keypair of the mint.
-        # @return [String] The address of the associated token account.
-        def get_address(owner:, mint:)
+        # @param token_program_id [String] The token program that owns the mint (defaults to legacy SPL Token).
+        # @return [Array<String, Integer>] The associated token account address and bump seed.
+        def get_address(owner:, mint:, token_program_id: Solace::Constants::TOKEN_PROGRAM_ID)
           Solace::Utils::PDA.find_program_address(
             [
               owner.to_s,
-              Solace::Constants::TOKEN_PROGRAM_ID,
+              token_program_id.to_s,
               mint.to_s
             ],
             Solace::Constants::ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID
@@ -73,14 +84,16 @@ module Solace
       # @param funder [Keypair] The keypair that will pay for rent of the new associated token account.
       # @param owner [Keypair, PublicKey] The keypair of the owner.
       # @param mint [Keypair, PublicKey] The keypair of the mint.
+      # @param token_program_id [String] The token program that owns the mint (defaults to legacy SPL Token).
       # @return [String] The address of the associated token account
       def get_or_create_address(
         payer:,
         funder:,
         owner:,
-        mint:
+        mint:,
+        token_program_id: Solace::Constants::TOKEN_PROGRAM_ID
       )
-        ata_address, = get_address(owner: owner, mint: mint)
+        ata_address, = get_address(owner: owner, mint: mint, token_program_id: token_program_id)
 
         account_balance = connection.get_account_info(ata_address)
 
@@ -90,7 +103,8 @@ module Solace
           payer: payer,
           funder: funder,
           owner: owner,
-          mint: mint
+          mint: mint,
+          token_program_id: token_program_id
         )
 
         connection.wait_for_confirmed_signature { tx.signature }
@@ -136,19 +150,22 @@ module Solace
       # @param owner [#to_s, PublicKey] The keypair of the owner.
       # @param mint [#to_s, PublicKey] The keypair of the mint.
       # @param funder [#to_s, PublicKey] The keypair that will pay for rent of the new associated token account.
-      # @return [Transaction] The signed transaction.
+      # @param token_program_id [String] The token program that owns the mint (defaults to legacy SPL Token).
+      # @return [TransactionComposer] A composer with the create-ATA instruction.
       def compose_create_associated_token_account(
         funder:,
         owner:,
-        mint:
+        mint:,
+        token_program_id: Solace::Constants::TOKEN_PROGRAM_ID
       )
-        ata_address, = get_address(owner: owner, mint: mint)
+        ata_address, = get_address(owner: owner, mint: mint, token_program_id: token_program_id)
 
         ix = Solace::Composers::AssociatedTokenAccountProgramCreateAccountComposer.new(
           mint: mint,
           owner: owner,
           funder: funder,
-          ata_address: ata_address
+          ata_address: ata_address,
+          token_program_id: token_program_id
         )
 
         TransactionComposer

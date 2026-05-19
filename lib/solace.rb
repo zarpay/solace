@@ -68,5 +68,7 @@ Dir[File.join(__dir__, 'solace/composers', '**', '*.rb')].each { |file| require 
 Dir[File.join(__dir__, 'solace/instructions', '**', '*.rb')].each { |file| require file }
 
 # Programs
+require_relative 'solace/programs/token_program_interface'
 require_relative 'solace/programs/spl_token'
+require_relative 'solace/programs/token_2022'
 require_relative 'solace/programs/associated_token_account'

@@ -23,9 +23,15 @@ module Solace
     COMPUTE_BUDGET_PROGRAM_ID = 'ComputeBudget111111111111111111111111111111'
 
     # @!attribute TOKEN_PROGRAM_ID
-    #   The public key of the SPL Token Program
-    #   This is the same across all Solana clusters
+    #   The public key of the SPL Token Program (legacy).
+    #   This is the same across all Solana clusters.
     TOKEN_PROGRAM_ID = 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
+
+    # @!attribute TOKEN_2022_PROGRAM_ID
+    #   The public key of the Token-2022 Program (formerly Token Extensions).
+    #   This is the same across all Solana clusters. See {Programs::Token2022}
+    #   for the full description of how it relates to the legacy program.
+    TOKEN_2022_PROGRAM_ID = 'TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb'
 
     # @!attribute ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID
     #   The public key of the Associated Token Account Program

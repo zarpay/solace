@@ -30,6 +30,7 @@ anna = Fixtures.load_keypair('anna')
 payer = Fixtures.load_keypair('payer')
 
 mint = Fixtures.load_keypair('mint')
+mint_2022 = Fixtures.load_keypair('mint-2022')
 mint_authority = Fixtures.load_keypair('mint-authority')
 
 fee_collector = Fixtures.load_keypair('fee-collector')
@@ -39,6 +40,7 @@ rpc_url = 'http://localhost:8899'
 connection = Solace::Connection.new(rpc_url, commitment: 'finalized')
 
 spl_token_program = Solace::Programs::SplToken.new(connection: connection)
+token_2022_program = Solace::Programs::Token2022.new(connection: connection)
 ata_program = Solace::Programs::AssociatedTokenAccount.new(connection: connection)
 
 # Amounts to airdrop
@@ -177,6 +179,95 @@ puts "\n============= Sending Setup Transaction ==============="
 puts "⤷ Transaction Signature: #{tx.signature}"
 with_spinner("Waiting for confirmation #{explorer_url}") do
   connection.wait_for_confirmed_signature('finalized') { tx.signature }
+end
+
+# ============================================================================
+# Token-2022 setup: parallel mint, ATAs, and balances for the fixture accounts.
+# Kept as a separate transaction from the SPL setup to stay under the
+# transaction size limit.
+# ============================================================================
+
+t22_composer = Solace::TransactionComposer.new(connection: connection)
+
+fixture_accounts.each do |account|
+  name, keypair = account.values_at(:name, :keypair)
+
+  t22_ata_address, = ata_program.get_address(
+    owner: keypair,
+    mint: mint_2022,
+    token_program_id: Solace::Constants::TOKEN_2022_PROGRAM_ID
+  )
+  t22_ata_exists = !connection.get_account_info(t22_ata_address).nil?
+
+  puts "\n============= Token-2022 Setup for #{name.capitalize} ==============="
+  puts "⤷ Address: #{keypair.address}"
+  puts "⤷ #{t22_ata_exists ? 'Existing' : 'Creating'} Token-2022 ATA at #{t22_ata_address}"
+  puts "⤷ Minting #{TOKENS_AIRDROP} Token-2022 tokens"
+
+  unless t22_ata_exists
+    t22_composer.add_instruction(
+      Solace::Composers::AssociatedTokenAccountProgramCreateAccountComposer.new(
+        mint: mint_2022,
+        owner: keypair,
+        funder: setup_payer,
+        ata_address: t22_ata_address,
+        token_program_id: Solace::Constants::TOKEN_2022_PROGRAM_ID
+      )
+    )
+  end
+
+  t22_composer.add_instruction(
+    Solace::Composers::Token2022ProgramMintToComposer.new(
+      amount: TOKENS_AIRDROP,
+      mint: mint_2022,
+      destination: t22_ata_address,
+      mint_authority: mint_authority
+    )
+  )
+end
+
+t22_composer.set_fee_payer(setup_payer)
+
+t22_tx = nil
+
+if connection.get_account_info(mint_2022.address).nil?
+  puts "\n============= Creating Token-2022 Mint ==============="
+  puts "⤷ Mint Address: #{mint_2022.address}"
+  puts "⤷ Mint Authority: #{mint_authority.address}"
+
+  create_t22_mint_composer = token_2022_program.compose_create_mint(
+    funder: setup_payer,
+    decimals: 6,
+    mint_account: mint_2022,
+    mint_authority: mint_authority
+  )
+
+  t22_composer.merge(create_t22_mint_composer, placement: :prepend)
+
+  t22_tx = t22_composer.compose_transaction
+  t22_tx.sign(setup_payer, mint_authority, mint_2022)
+else
+  puts "\n============= Token-2022 Mint Already Exists ==============="
+  puts "⤷ Mint Address: #{mint_2022.address}"
+
+  t22_tx = t22_composer.compose_transaction
+  t22_tx.sign(setup_payer, mint_authority)
+end
+
+t22_explorer_url = "https://explorer.solana.com/tx/#{t22_tx.signature}?cluster=custom&customUrl=#{rpc_url}".freeze
+
+begin
+  connection.send_transaction(t22_tx.serialize)
+rescue StandardError => e
+  puts "Error sending Token-2022 setup transaction: #{e.message}"
+  puts "Transaction Details: #{e.rpc_data}"
+  raise e
+end
+
+puts "\n============= Sending Token-2022 Setup Transaction ==============="
+puts "⤷ Transaction Signature: #{t22_tx.signature}"
+with_spinner("Waiting for confirmation #{t22_explorer_url}") do
+  connection.wait_for_confirmed_signature('finalized') { t22_tx.signature }
 end
 
 puts "\nBootstrapping Complete!"

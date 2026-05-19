@@ -2,14 +2,11 @@
 
 module Solace
   module Instructions
-    module SplToken
-      # Instruction for transferring SPL tokens.
-      #
-      # This instruction is used to transfer SPL tokens from one token account to another while checking the decimals
-      # of the token to ensure the transfer amount is correct.
+    module Token2022
+      # Instruction for transferring Token-2022 tokens with decimal validation.
       #
       # @example Build a TransferChecked instruction
-      #   instruction = Solace::Instructions::SplToken::TransferCheckedInstruction.build(
+      #   instruction = Solace::Instructions::Token2022::TransferCheckedInstruction.build(
       #     amount: 100,
       #     decimals: 6,
       #     to_index: 1,
@@ -19,17 +16,17 @@ module Solace
       #     program_index: 5
       #   )
       #
-      # @since 0.0.2
+      # @since 0.1.5
       class TransferCheckedInstruction
-        # SPL Token Program instruction index for Transfer Checked
+        # Token-2022 instruction index for Transfer Checked
         INSTRUCTION_INDEX = [12].freeze
 
-        # Builds a Solace::Instruction for transferring SPL tokens
+        # Builds a Solace::Instruction for transferring Token-2022 tokens.
         #
-        # SPL Token Program transfer instruction layout:
-        #   - 1 byte: instruction index (12 for transfer checked)
-        #   - 8 bytes: amount (u64, little-endian)
-        #   - 1 byte: decimals (u8)
+        # The BufferLayout is:
+        #   - [Instruction Index (1 byte)]
+        #   - [Amount (8 bytes little-endian u64)]
+        #   - [Decimals (1 byte)]
         #
         # @param amount [Integer] Amount to transfer (in tokens, according to mint's decimals)
         # @param decimals [Integer] Number of decimals for the token
@@ -37,7 +34,7 @@ module Solace
         # @param from_index [Integer] Index of the source token account in the transaction's accounts
         # @param mint_index [Integer] Index of the mint in the transaction's accounts
         # @param authority_index [Integer] Index of the authority (owner) in the transaction's accounts
-        # @param program_index [Integer] Index of the SPL Token Program in the transaction's accounts (default: 3)
+        # @param program_index [Integer] Index of the Token-2022 Program in the transaction's accounts
         # @return [Solace::Instruction]
         def self.build(
           amount:,
@@ -55,16 +52,11 @@ module Solace
           end
         end
 
-        # Instruction data for a token transfer instruction
-        #
-        # The BufferLayout is:
-        #   - [Instruction Index (1 byte)]
-        #   - [Amount (8 bytes little-endian u64)]
-        #   - [Decimals (8 bytes little-endian u64)]
+        # Instruction data for a TransferChecked instruction.
         #
         # @param amount [Integer] Amount to transfer
         # @param decimals [Integer] Number of decimals for the token
-        # @return [Array] 1-byte instruction index + 8-byte amount + decimals
+        # @return [Array] 1-byte instruction index + 8-byte amount + 1-byte decimals
         def self.data(amount, decimals)
           INSTRUCTION_INDEX +
             Solace::Utils::Codecs.encode_le_u64(amount).bytes +

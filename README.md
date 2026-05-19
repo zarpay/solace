@@ -450,6 +450,66 @@ response = connection.send_transaction(transaction.serialize)
 connection.wait_for_confirmed_signature { response['result'] }
 ```
 
+## Development
+
+### Prerequisites
+
+- **Ruby** (matching `.ruby-version` / `Gemfile.lock`) and **Bundler**
+- **Solana CLI**, which provides `solana-test-validator` and `solana-keygen`. Install with:
+  ```bash
+  sh -c "$(curl -sSfL https://release.anza.xyz/stable/install)"
+  ```
+  Then add the installer's PATH line to your shell profile (the installer prints the exact `export PATH=...` to use).
+
+### One-time setup
+
+```bash
+# Install Ruby dependencies
+bundle install
+
+# Generate the seven keypair fixtures the test suite expects.
+# test/fixtures/ is gitignored — each developer generates their own.
+mkdir -p test/fixtures
+for name in bob anna payer mint mint-2022 mint-authority fee-collector; do
+  solana-keygen new --no-bip39-passphrase --silent --force -o "test/fixtures/${name}.json"
+done
+
+# Bootstrap the local validator: airdrops SOL to the fixture accounts,
+# creates their ATAs, and creates the test mint. Spins up a
+# solana-test-validator on the side; ledger state persists in ./test-ledger.
+bundle exec rake bootstrap
+```
+
+If you ever need a clean slate, delete `test-ledger/` and re-run `rake bootstrap`.
+
+### Running the tests
+
+```bash
+bundle exec rake test
+```
+
+`rake test` spawns `solana-test-validator` automatically (re-using `./test-ledger`) and tears it down on exit. You can also run a single file:
+
+```bash
+bundle exec rake test test/solace/programs/spl_token_test.rb
+```
+
+To exercise the longer end-to-end flows in `test/usecases/`:
+
+```bash
+bundle exec rake usecases            # all usecases
+bundle exec rake usecases token_mint # a specific one
+```
+
+### Building & installing the gem locally
+
+```bash
+bundle exec rake build      # produces builds/solace-<version>.gem
+bundle exec rake install    # builds and `gem install`s it locally
+```
+
+The native curve25519 library is shipped pre-compiled in `lib/solace/utils/`. You only need `rake compile` (which invokes `cargo`) if you're modifying `ext/curve25519_dalek` — that target cross-builds for every supported platform and requires the corresponding Rust toolchains.
+
 ## Dependencies
 
 - **base58**: Base58 encoding/decoding
