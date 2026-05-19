@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>
+  Class: Solace::Composers::Token2022ProgramTransferComposer
+  
+    &mdash; Solace Ruby SDK Documentation
+  
+</title>
+
+  <link rel="stylesheet" href="../../css/style.css" type="text/css" />
+
+  <link rel="stylesheet" href="../../css/common.css" type="text/css" />
+
+<script type="text/javascript">
+  pathId = "Solace::Composers::Token2022ProgramTransferComposer";
+  relpath = '../../';
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="../../js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="../../js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div class="nav_wrap">
+      <iframe id="nav" src="../../class_list.html?1"></iframe>
+      <div id="resizer"></div>
+    </div>
+
+    <div id="main" tabindex="-1">
+      <div id="header">
+        <div id="menu">
+  
+    <a href="../../_index.html">Index (T)</a> &raquo;
+    <span class='title'><span class='object_link'><a href="../../Solace.html" title="Solace (module)">Solace</a></span></span> &raquo; <span class='title'><span class='object_link'><a href="../Composers.html" title="Solace::Composers (module)">Composers</a></span></span>
+     &raquo; 
+    <span class="title">Token2022ProgramTransferComposer</span>
+  
+</div>
+
+        <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="../../class_list.html">
+
+        <svg width="24" height="24">
+          <rect x="0" y="4" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="12" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
+        </svg>
+    </a>
+  
+</div>
+        <div class="clear"></div>
+      </div>
+
+      <div id="content"><h1>Class: Solace::Composers::Token2022ProgramTransferComposer
+  
+  
+  
+</h1>
+<div class="box_info">
+  
+  <dl>
+    <dt>Inherits:</dt>
+    <dd>
+      <span class="inheritName"><span class='object_link'><a href="Base.html" title="Solace::Composers::Base (class)">Base</a></span></span>
+      
+        <ul class="fullTree">
+          <li>Object</li>
+          
+            <li class="next"><span class='object_link'><a href="Base.html" title="Solace::Composers::Base (class)">Base</a></span></li>
+          
+            <li class="next">Solace::Composers::Token2022ProgramTransferComposer</li>
+          
+        </ul>
+        <a href="#" class="inheritanceTree">show all</a>
+      
+    </dd>
+  </dl>
+  
+
+  
+  
+  
+  
+  
+
+  
+
+  
+  <dl>
+    <dt>Defined in:</dt>
+    <dd>lib/solace/composers/token_2022_program_transfer_composer.rb</dd>
+  </dl>
+  
+</div>
+
+<h2>Overview</h2><div class="docstring">
+  <div class="discussion">
+    <p>Composer for creating a Token-2022 Program Transfer instruction.</p>
+
+<p>This composer resolves and orders the required accounts for a <code>Transfer</code> instruction,
+sets up their access permissions, and delegates construction to the appropriate
+instruction builder (<code>Instructions::Token2022::TransferInstruction</code>).</p>
+
+<p>Required accounts:</p>
+
+<ul>
+<li><strong>Owner</strong>: token account owner (writable, signer)</li>
+<li><strong>Source</strong>: source token account (writable, non-signer)</li>
+<li><strong>Destination</strong>: destination token account (writable, non-signer)</li>
+</ul>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+  <div class="examples">
+    <h4 class="tag_title">Examples:</h4>
+    
+      
+        <h5 class="example_title"><div class='inline'><p>Compose and build a transfer instruction</p>
+</div></h5>
+      
+      <pre class="example code"><code><span class='id identifier rubyid_composer'>composer</span> <span class='op'>=</span> <span class='const'>Token2022ProgramTransferComposer</span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Base.html#initialize-instance_method" title="Solace::Composers::Base#initialize (method)">new</a></span></span><span class='lparen'>(</span>
+  <span class='label'>amount:</span> <span class='int'>1_000_000</span><span class='comma'>,</span>
+  <span class='label'>owner:</span> <span class='id identifier rubyid_owner_address'>owner_address</span><span class='comma'>,</span>
+  <span class='label'>source:</span> <span class='id identifier rubyid_source_address'>source_address</span><span class='comma'>,</span>
+  <span class='label'>destination:</span> <span class='id identifier rubyid_destination_address'>destination_address</span><span class='comma'>,</span>
+<span class='rparen'>)</span></code></pre>
+    
+  </div>
+
+
+  <p class="tag_title">See Also:</p>
+  <ul class="see">
+    
+      <li><span class='object_link'><a href="../Instructions/Token2022/TransferInstruction.html" title="Solace::Instructions::Token2022::TransferInstruction (class)">Instructions::Token2022::TransferInstruction</a></span></li>
+    
+  </ul>
+<p class="tag_title">Since:</p>
+<ul class="since">
+  
+    <li>
+      
+      
+      
+      
+        
+        <div class='inline'><p>0.1.5</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div>
+
+
+
+
+
+  <h2>Instance Attribute Summary</h2>
+  
+  <h3 class="inherited">Attributes inherited from <span class='object_link'><a href="Base.html" title="Solace::Composers::Base (class)">Base</a></span></h3>
+  <p class="inherited"><span class='object_link'><a href="Base.html#account_context-instance_method" title="Solace::Composers::Base#account_context (method)">#account_context</a></span>, <span class='object_link'><a href="Base.html#params-instance_method" title="Solace::Composers::Base#params (method)">#params</a></span></p>
+
+
+  
+    <h2>
+      Instance Method Summary
+      <small><a href="#" class="summary_toggle">collapse</a></small>
+    </h2>
+
+    <ul class="summary">
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#amount-instance_method" title="#amount (instance method)">#<strong>amount</strong>  &#x21d2; Integer </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Returns the lamports to transfer.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#build_instruction-instance_method" title="#build_instruction (instance method)">#<strong>build_instruction</strong>(account_context)  &#x21d2; Solace::Instruction </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Build instruction with resolved account indices.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#destination-instance_method" title="#destination (instance method)">#<strong>destination</strong>  &#x21d2; String </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Extracts the destination associated token address from the params.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#owner-instance_method" title="#owner (instance method)">#<strong>owner</strong>  &#x21d2; String </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Extracts the owner address from the params.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#setup_accounts-instance_method" title="#setup_accounts (instance method)">#<strong>setup_accounts</strong>  &#x21d2; void </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Setup accounts required for transfer instruction Called automatically during initialization.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#source-instance_method" title="#source (instance method)">#<strong>source</strong>  &#x21d2; String </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Extracts the source associated token address from the params.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#token_2022_program-instance_method" title="#token_2022_program (instance method)">#<strong>token_2022_program</strong>  &#x21d2; String </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>The Token-2022 program id.</p>
+</div></span>
+  
+</li>
+
+      
+    </ul>
+  
+
+
+  
+  
+  
+  
+  
+  
+  
+  
+  <h3 class="inherited">Methods inherited from <span class='object_link'><a href="Base.html" title="Solace::Composers::Base (class)">Base</a></span></h3>
+  <p class="inherited"><span class='object_link'><a href="Base.html#initialize-instance_method" title="Solace::Composers::Base#initialize (method)">#initialize</a></span></p>
+<div id="constructor_details" class="method_details_list">
+  <h2>Constructor Details</h2>
+  
+    <p class="notice">This class inherits a constructor from <span class='object_link'><a href="Base.html#initialize-instance_method" title="Solace::Composers::Base#initialize (method)">Solace::Composers::Base</a></span></p>
+  
+</div>
+
+
+  <div id="instance_method_details" class="method_details_list">
+    <h2>Instance Method Details</h2>
+
+    
+      <div class="method_details first">
+  <h3 class="signature first" id="amount-instance_method">
+  
+    #<strong>amount</strong>  &#x21d2; <tt>Integer</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Returns the lamports to transfer</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Integer</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>The lamports to transfer</p>
+</div>
+      
+    </li>
+  
+</ul>
+<p class="tag_title">Since:</p>
+<ul class="since">
+  
+    <li>
+      
+      
+      
+      
+        
+        <div class='inline'><p>0.1.5</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+56
+57
+58</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/solace/composers/token_2022_program_transfer_composer.rb', line 56</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_amount'>amount</span>
+  <span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='symbol'>:amount</span><span class='rbracket'>]</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="build_instruction-instance_method">
+  
+    #<strong>build_instruction</strong>(account_context)  &#x21d2; <tt><span class='object_link'><a href="../Instruction.html" title="Solace::Instruction (class)">Solace::Instruction</a></span></tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Build instruction with resolved account indices</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>account_context</span>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="../Utils/AccountContext.html" title="Solace::Utils::AccountContext (class)">Utils::AccountContext</a></span></tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>The account context</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="../Instruction.html" title="Solace::Instruction (class)">Solace::Instruction</a></span></tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+<p class="tag_title">Since:</p>
+<ul class="since">
+  
+    <li>
+      
+      
+      
+      
+        
+        <div class='inline'><p>0.1.5</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+75
+76
+77
+78
+79
+80
+81
+82
+83</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/solace/composers/token_2022_program_transfer_composer.rb', line 75</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_build_instruction'>build_instruction</span><span class='lparen'>(</span><span class='id identifier rubyid_account_context'>account_context</span><span class='rparen'>)</span>
+  <span class='const'><span class='object_link'><a href="../Instructions.html" title="Solace::Instructions (module)">Instructions</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Instructions/Token2022.html" title="Solace::Instructions::Token2022 (module)">Token2022</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Instructions/Token2022/TransferInstruction.html" title="Solace::Instructions::Token2022::TransferInstruction (class)">TransferInstruction</a></span></span><span class='period'>.</span><span class='id identifier rubyid_build'><span class='object_link'><a href="../Instructions/Token2022/TransferInstruction.html#build-class_method" title="Solace::Instructions::Token2022::TransferInstruction.build (method)">build</a></span></span><span class='lparen'>(</span>
+    <span class='label'>amount:</span> <span class='id identifier rubyid_amount'>amount</span><span class='comma'>,</span>
+    <span class='label'>owner_index:</span> <span class='id identifier rubyid_account_context'>account_context</span><span class='period'>.</span><span class='id identifier rubyid_index_of'>index_of</span><span class='lparen'>(</span><span class='id identifier rubyid_owner'>owner</span><span class='rparen'>)</span><span class='comma'>,</span>
+    <span class='label'>source_index:</span> <span class='id identifier rubyid_account_context'>account_context</span><span class='period'>.</span><span class='id identifier rubyid_index_of'>index_of</span><span class='lparen'>(</span><span class='id identifier rubyid_source'>source</span><span class='rparen'>)</span><span class='comma'>,</span>
+    <span class='label'>destination_index:</span> <span class='id identifier rubyid_account_context'>account_context</span><span class='period'>.</span><span class='id identifier rubyid_index_of'>index_of</span><span class='lparen'>(</span><span class='id identifier rubyid_destination'>destination</span><span class='rparen'>)</span><span class='comma'>,</span>
+    <span class='label'>program_index:</span> <span class='id identifier rubyid_account_context'>account_context</span><span class='period'>.</span><span class='id identifier rubyid_index_of'>index_of</span><span class='lparen'>(</span><span class='id identifier rubyid_token_2022_program'>token_2022_program</span><span class='rparen'>)</span>
+  <span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="destination-instance_method">
+  
+    #<strong>destination</strong>  &#x21d2; <tt>String</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Extracts the destination associated token address from the params</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>The destination associated token address</p>
+</div>
+      
+    </li>
+  
+</ul>
+<p class="tag_title">Since:</p>
+<ul class="since">
+  
+    <li>
+      
+      
+      
+      
+        
+        <div class='inline'><p>0.1.5</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+44
+45
+46</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/solace/composers/token_2022_program_transfer_composer.rb', line 44</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_destination'>destination</span>
+  <span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='symbol'>:destination</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="owner-instance_method">
+  
+    #<strong>owner</strong>  &#x21d2; <tt>String</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Extracts the owner address from the params</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>The owner address</p>
+</div>
+      
+    </li>
+  
+</ul>
+<p class="tag_title">Since:</p>
+<ul class="since">
+  
+    <li>
+      
+      
+      
+      
+        
+        <div class='inline'><p>0.1.5</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+30
+31
+32</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/solace/composers/token_2022_program_transfer_composer.rb', line 30</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_owner'>owner</span>
+  <span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='symbol'>:owner</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="setup_accounts-instance_method">
+  
+    #<strong>setup_accounts</strong>  &#x21d2; <tt>void</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p class="note returns_void">This method returns an undefined value.</p><p>Setup accounts required for transfer instruction
+Called automatically during initialization</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Since:</p>
+<ul class="since">
+  
+    <li>
+      
+      
+      
+      
+        
+        <div class='inline'><p>0.1.5</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+64
+65
+66
+67
+68
+69</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/solace/composers/token_2022_program_transfer_composer.rb', line 64</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_setup_accounts'>setup_accounts</span>
+  <span class='id identifier rubyid_account_context'>account_context</span><span class='period'>.</span><span class='id identifier rubyid_add_writable_signer'>add_writable_signer</span><span class='lparen'>(</span><span class='id identifier rubyid_owner'>owner</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_account_context'>account_context</span><span class='period'>.</span><span class='id identifier rubyid_add_writable_nonsigner'>add_writable_nonsigner</span><span class='lparen'>(</span><span class='id identifier rubyid_source'>source</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_account_context'>account_context</span><span class='period'>.</span><span class='id identifier rubyid_add_writable_nonsigner'>add_writable_nonsigner</span><span class='lparen'>(</span><span class='id identifier rubyid_destination'>destination</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_account_context'>account_context</span><span class='period'>.</span><span class='id identifier rubyid_add_readonly_nonsigner'>add_readonly_nonsigner</span><span class='lparen'>(</span><span class='id identifier rubyid_token_2022_program'>token_2022_program</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="source-instance_method">
+  
+    #<strong>source</strong>  &#x21d2; <tt>String</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Extracts the source associated token address from the params</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>The source associated token address</p>
+</div>
+      
+    </li>
+  
+</ul>
+<p class="tag_title">Since:</p>
+<ul class="since">
+  
+    <li>
+      
+      
+      
+      
+        
+        <div class='inline'><p>0.1.5</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+37
+38
+39</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/solace/composers/token_2022_program_transfer_composer.rb', line 37</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_source'>source</span>
+  <span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='symbol'>:source</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="token_2022_program-instance_method">
+  
+    #<strong>token_2022_program</strong>  &#x21d2; <tt>String</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Returns The Token-2022 program id.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>The Token-2022 program id.</p>
+</div>
+      
+    </li>
+  
+</ul>
+<p class="tag_title">Since:</p>
+<ul class="since">
+  
+    <li>
+      
+      
+      
+      
+        
+        <div class='inline'><p>0.1.5</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+49
+50
+51</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/solace/composers/token_2022_program_transfer_composer.rb', line 49</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_token_2022_program'>token_2022_program</span>
+  <span class='const'><span class='object_link'><a href="../Constants.html" title="Solace::Constants (module)">Constants</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Constants.html#TOKEN_2022_PROGRAM_ID-constant" title="Solace::Constants::TOKEN_2022_PROGRAM_ID (constant)">TOKEN_2022_PROGRAM_ID</a></span></span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+</div>
+
+      <div id="footer">
+  Generated on Tue May 19 16:56:58 2026 by
+  <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.9.37 (ruby-3.4.4).
+</div>
+
+    </div>
+  </body>
+</html>

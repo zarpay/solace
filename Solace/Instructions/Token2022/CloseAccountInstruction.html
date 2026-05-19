@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>
+  Class: Solace::Instructions::Token2022::CloseAccountInstruction
+  
+    &mdash; Solace Ruby SDK Documentation
+  
+</title>
+
+  <link rel="stylesheet" href="../../../css/style.css" type="text/css" />
+
+  <link rel="stylesheet" href="../../../css/common.css" type="text/css" />
+
+<script type="text/javascript">
+  pathId = "Solace::Instructions::Token2022::CloseAccountInstruction";
+  relpath = '../../../';
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="../../../js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="../../../js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div class="nav_wrap">
+      <iframe id="nav" src="../../../class_list.html?1"></iframe>
+      <div id="resizer"></div>
+    </div>
+
+    <div id="main" tabindex="-1">
+      <div id="header">
+        <div id="menu">
+  
+    <a href="../../../_index.html">Index (C)</a> &raquo;
+    <span class='title'><span class='object_link'><a href="../../../Solace.html" title="Solace (module)">Solace</a></span></span> &raquo; <span class='title'><span class='object_link'><a href="../../Instructions.html" title="Solace::Instructions (module)">Instructions</a></span></span> &raquo; <span class='title'><span class='object_link'><a href="../Token2022.html" title="Solace::Instructions::Token2022 (module)">Token2022</a></span></span>
+     &raquo; 
+    <span class="title">CloseAccountInstruction</span>
+  
+</div>
+
+        <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="../../../class_list.html">
+
+        <svg width="24" height="24">
+          <rect x="0" y="4" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="12" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
+        </svg>
+    </a>
+  
+</div>
+        <div class="clear"></div>
+      </div>
+
+      <div id="content"><h1>Class: Solace::Instructions::Token2022::CloseAccountInstruction
+  
+  
+  
+</h1>
+<div class="box_info">
+  
+  <dl>
+    <dt>Inherits:</dt>
+    <dd>
+      <span class="inheritName">Object</span>
+      
+        <ul class="fullTree">
+          <li>Object</li>
+          
+            <li class="next">Solace::Instructions::Token2022::CloseAccountInstruction</li>
+          
+        </ul>
+        <a href="#" class="inheritanceTree">show all</a>
+      
+    </dd>
+  </dl>
+  
+
+  
+  
+  
+  
+  
+
+  
+
+  
+  <dl>
+    <dt>Defined in:</dt>
+    <dd>lib/solace/instructions/token_2022/close_account_instruction.rb</dd>
+  </dl>
+  
+</div>
+
+<h2>Overview</h2><div class="docstring">
+  <div class="discussion">
+    <p>Instruction builder for Token-2022 CloseAccount.</p>
+
+<p>Closes a Token-2022 token account and transfers all remaining lamports
+to a destination account. The token account must have a balance of zero.</p>
+
+<p>Instruction discriminator: 9</p>
+
+<p>Accounts:</p>
+
+<ol>
+<li>[writable] Token account to close</li>
+<li>[writable] Destination account to receive lamports</li>
+<li>[signer]   Account authority</li>
+</ol>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Since:</p>
+<ul class="since">
+  
+    <li>
+      
+      
+      
+      
+        
+        <div class='inline'><p>0.1.5</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div>
+  
+    <h2>
+      Constant Summary
+      <small><a href="#" class="constants_summary_toggle">collapse</a></small>
+    </h2>
+
+    <dl class="constants">
+      
+        <dt id="INSTRUCTION_DISCRIMINATOR-constant" class="">INSTRUCTION_DISCRIMINATOR =
+          <div class="docstring">
+  <div class="discussion">
+    <p>Instruction discriminator for CloseAccount</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Since:</p>
+<ul class="since">
+  
+    <li>
+      
+      
+      
+      
+        
+        <div class='inline'><p>0.1.5</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div>
+        </dt>
+        <dd><pre class="code"><span class='lbracket'>[</span><span class='int'>9</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_freeze'>freeze</span></pre></dd>
+      
+    </dl>
+  
+
+
+
+
+
+
+
+  
+    <h2>
+      Class Method Summary
+      <small><a href="#" class="summary_toggle">collapse</a></small>
+    </h2>
+
+    <ul class="summary">
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#build-class_method" title="build (class method)">.<strong>build</strong>(account_index:, destination_index:, authority_index:, program_index:)  &#x21d2; Solace::Instruction </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Builds a CloseAccount instruction.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#data-class_method" title="data (class method)">.<strong>data</strong>  &#x21d2; Array </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Builds the data for a CloseAccount instruction.</p>
+</div></span>
+  
+</li>
+
+      
+    </ul>
+  
+
+
+
+  <div id="class_method_details" class="method_details_list">
+    <h2>Class Method Details</h2>
+
+    
+      <div class="method_details first">
+  <h3 class="signature first" id="build-class_method">
+  
+    .<strong>build</strong>(account_index:, destination_index:, authority_index:, program_index:)  &#x21d2; <tt><span class='object_link'><a href="../../Instruction.html" title="Solace::Instruction (class)">Solace::Instruction</a></span></tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Builds a CloseAccount instruction.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>account_index</span>
+      
+      
+        <span class='type'>(<tt>Integer</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>Index of the token account to close</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>destination_index</span>
+      
+      
+        <span class='type'>(<tt>Integer</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>Index of the destination account</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>authority_index</span>
+      
+      
+        <span class='type'>(<tt>Integer</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>Index of the account authority</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>program_index</span>
+      
+      
+        <span class='type'>(<tt>Integer</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>Index of the Token-2022 program</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="../../Instruction.html" title="Solace::Instruction (class)">Solace::Instruction</a></span></tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>The constructed instruction</p>
+</div>
+      
+    </li>
+  
+</ul>
+<p class="tag_title">Since:</p>
+<ul class="since">
+  
+    <li>
+      
+      
+      
+      
+        
+        <div class='inline'><p>0.1.5</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+30
+31
+32
+33
+34
+35
+36</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/solace/instructions/token_2022/close_account_instruction.rb', line 30</span>
+
+<span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_build'>build</span><span class='lparen'>(</span><span class='label'>account_index:</span><span class='comma'>,</span> <span class='label'>destination_index:</span><span class='comma'>,</span> <span class='label'>authority_index:</span><span class='comma'>,</span> <span class='label'>program_index:</span><span class='rparen'>)</span>
+  <span class='const'><span class='object_link'><a href="../../../Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../../Instruction.html" title="Solace::Instruction (class)">Instruction</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='period'>.</span><span class='id identifier rubyid_tap'>tap</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_ix'>ix</span><span class='op'>|</span>
+    <span class='id identifier rubyid_ix'>ix</span><span class='period'>.</span><span class='id identifier rubyid_program_index'>program_index</span> <span class='op'>=</span> <span class='id identifier rubyid_program_index'>program_index</span>
+    <span class='id identifier rubyid_ix'>ix</span><span class='period'>.</span><span class='id identifier rubyid_accounts'>accounts</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='id identifier rubyid_account_index'>account_index</span><span class='comma'>,</span> <span class='id identifier rubyid_destination_index'>destination_index</span><span class='comma'>,</span> <span class='id identifier rubyid_authority_index'>authority_index</span><span class='rbracket'>]</span>
+    <span class='id identifier rubyid_ix'>ix</span><span class='period'>.</span><span class='id identifier rubyid_data'>data</span> <span class='op'>=</span> <span class='id identifier rubyid_data'>data</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="data-class_method">
+  
+    .<strong>data</strong>  &#x21d2; <tt>Array</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Builds the data for a CloseAccount instruction.</p>
+
+<p>The BufferLayout is:</p>
+
+<ul>
+<li>[Instruction Index (1 byte)]</li>
+</ul>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Array</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>1-byte instruction index</p>
+</div>
+      
+    </li>
+  
+</ul>
+<p class="tag_title">Since:</p>
+<ul class="since">
+  
+    <li>
+      
+      
+      
+      
+        
+        <div class='inline'><p>0.1.5</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+44
+45
+46</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/solace/instructions/token_2022/close_account_instruction.rb', line 44</span>
+
+<span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_data'>data</span>
+  <span class='const'><span class='object_link'><a href="#INSTRUCTION_DISCRIMINATOR-constant" title="Solace::Instructions::Token2022::CloseAccountInstruction::INSTRUCTION_DISCRIMINATOR (constant)">INSTRUCTION_DISCRIMINATOR</a></span></span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+</div>
+
+      <div id="footer">
+  Generated on Tue May 19 16:56:58 2026 by
+  <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.9.37 (ruby-3.4.4).
+</div>
+
+    </div>
+  </body>
+</html>

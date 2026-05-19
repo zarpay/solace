@@ -390,7 +390,7 @@ instruction builder (<code>Instructions::AssociatedTokenAccount::CreateAccountIn
   
 
   
-    <span class="summary_desc"><div class='inline'><p>Extracts the token program id from the constants.</p>
+    <span class="summary_desc"><div class='inline'><p>The token program id baked into the ATA&#39;s create-account instruction (defaults to legacy SPL Token; pass +params[:token_program_id]+ to create a Token-2022 ATA — note the derived ATA address differs too, see <span class='object_link'><a href="../Programs/AssociatedTokenAccount.html#get_address-class_method" title="Solace::Programs::AssociatedTokenAccount.get_address (method)">Programs::AssociatedTokenAccount.get_address</a></span>).</p>
 </div></span>
   
 </li>
@@ -479,12 +479,12 @@ instruction builder (<code>Instructions::AssociatedTokenAccount::CreateAccountIn
       <pre class="lines">
 
 
-76
 77
-78</pre>
+78
+79</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/solace/composers/associated_token_account_program_create_account_composer.rb', line 76</span>
+      <pre class="code"><span class="info file"># File 'lib/solace/composers/associated_token_account_program_create_account_composer.rb', line 77</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_associated_token_account_program_id'>associated_token_account_program_id</span>
   <span class='const'><span class='object_link'><a href="../Constants.html" title="Solace::Constants (module)">Constants</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Constants.html#ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID-constant" title="Solace::Constants::ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID (constant)">ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID</a></span></span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
@@ -642,7 +642,6 @@ instruction builder (<code>Instructions::AssociatedTokenAccount::CreateAccountIn
       <pre class="lines">
 
 
-98
 99
 100
 101
@@ -652,10 +651,11 @@ instruction builder (<code>Instructions::AssociatedTokenAccount::CreateAccountIn
 105
 106
 107
-108</pre>
+108
+109</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/solace/composers/associated_token_account_program_create_account_composer.rb', line 98</span>
+      <pre class="code"><span class="info file"># File 'lib/solace/composers/associated_token_account_program_create_account_composer.rb', line 99</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_build_instruction'>build_instruction</span><span class='lparen'>(</span><span class='id identifier rubyid_account_context'>account_context</span><span class='rparen'>)</span>
   <span class='const'><span class='object_link'><a href="../Instructions.html" title="Solace::Instructions (module)">Instructions</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Instructions/AssociatedTokenAccount.html" title="Solace::Instructions::AssociatedTokenAccount (module)">AssociatedTokenAccount</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Instructions/AssociatedTokenAccount/CreateAccountInstruction.html" title="Solace::Instructions::AssociatedTokenAccount::CreateAccountInstruction (class)">CreateAccountInstruction</a></span></span><span class='period'>.</span><span class='id identifier rubyid_build'><span class='object_link'><a href="../Instructions/AssociatedTokenAccount/CreateAccountInstruction.html#build-class_method" title="Solace::Instructions::AssociatedTokenAccount::CreateAccountInstruction.build (method)">build</a></span></span><span class='lparen'>(</span>
@@ -930,7 +930,6 @@ Called automatically during initialization</p>
       <pre class="lines">
 
 
-84
 85
 86
 87
@@ -938,10 +937,11 @@ Called automatically during initialization</p>
 89
 90
 91
-92</pre>
+92
+93</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/solace/composers/associated_token_account_program_create_account_composer.rb', line 84</span>
+      <pre class="code"><span class="info file"># File 'lib/solace/composers/associated_token_account_program_create_account_composer.rb', line 85</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_setup_accounts'>setup_accounts</span> <span class='comment'># rubocop:disable Metrics/AbcSize
 </span>  <span class='id identifier rubyid_account_context'>account_context</span><span class='period'>.</span><span class='id identifier rubyid_add_writable_signer'>add_writable_signer</span><span class='lparen'>(</span><span class='id identifier rubyid_funder'>funder</span><span class='rparen'>)</span>
@@ -1040,7 +1040,10 @@ Called automatically during initialization</p>
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Extracts the token program id from the constants</p>
+    <p>Returns The token program id baked into the ATA&#39;s create-account
+instruction (defaults to legacy SPL Token; pass +params[:token_program_id]+
+to create a Token-2022 ATA — note the derived ATA address differs too,
+see <span class='object_link'><a href="../Programs/AssociatedTokenAccount.html#get_address-class_method" title="Solace::Programs::AssociatedTokenAccount.get_address (method)">Programs::AssociatedTokenAccount.get_address</a></span>).</p>
 
 
   </div>
@@ -1058,7 +1061,10 @@ Called automatically during initialization</p>
       
       
         &mdash;
-        <div class='inline'><p>The token program id</p>
+        <div class='inline'><p>The token program id baked into the ATA&#39;s create-account
+instruction (defaults to legacy SPL Token; pass +params[:token_program_id]+
+to create a Token-2022 ATA — note the derived ATA address differs too,
+see <span class='object_link'><a href="../Programs/AssociatedTokenAccount.html#get_address-class_method" title="Solace::Programs::AssociatedTokenAccount.get_address (method)">Programs::AssociatedTokenAccount.get_address</a></span>).</p>
 </div>
       
     </li>
@@ -1086,15 +1092,15 @@ Called automatically during initialization</p>
       <pre class="lines">
 
 
-69
 70
-71</pre>
+71
+72</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/solace/composers/associated_token_account_program_create_account_composer.rb', line 69</span>
+      <pre class="code"><span class="info file"># File 'lib/solace/composers/associated_token_account_program_create_account_composer.rb', line 70</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_token_program_id'>token_program_id</span>
-  <span class='const'><span class='object_link'><a href="../Constants.html" title="Solace::Constants (module)">Constants</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Constants.html#TOKEN_PROGRAM_ID-constant" title="Solace::Constants::TOKEN_PROGRAM_ID (constant)">TOKEN_PROGRAM_ID</a></span></span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
+  <span class='lparen'>(</span><span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='symbol'>:token_program_id</span><span class='rbracket'>]</span> <span class='op'>||</span> <span class='const'><span class='object_link'><a href="../Constants.html" title="Solace::Constants (module)">Constants</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Constants.html#TOKEN_PROGRAM_ID-constant" title="Solace::Constants::TOKEN_PROGRAM_ID (constant)">TOKEN_PROGRAM_ID</a></span></span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -1106,7 +1112,7 @@ Called automatically during initialization</p>
 </div>
 
       <div id="footer">
-  Generated on Mon May 18 14:59:29 2026 by
+  Generated on Tue May 19 16:56:58 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.4).
 </div>

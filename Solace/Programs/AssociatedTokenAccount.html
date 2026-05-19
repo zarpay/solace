@@ -176,7 +176,7 @@ managing associated token accounts.</p>
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#get_address-class_method" title="get_address (class method)">.<strong>get_address</strong>(owner:, mint:)  &#x21d2; String </a>
+      <a href="#get_address-class_method" title="get_address (class method)">.<strong>get_address</strong>(owner:, mint:, token_program_id: Solace::Constants::TOKEN_PROGRAM_ID)  &#x21d2; Array&lt;String, Integer&gt; </a>
     
 
     
@@ -208,7 +208,7 @@ managing associated token accounts.</p>
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#compose_create_associated_token_account-instance_method" title="#compose_create_associated_token_account (instance method)">#<strong>compose_create_associated_token_account</strong>(funder:, owner:, mint:)  &#x21d2; Transaction </a>
+      <a href="#compose_create_associated_token_account-instance_method" title="#compose_create_associated_token_account (instance method)">#<strong>compose_create_associated_token_account</strong>(funder:, owner:, mint:, token_program_id: Solace::Constants::TOKEN_PROGRAM_ID)  &#x21d2; TransactionComposer </a>
     
 
     
@@ -277,7 +277,7 @@ managing associated token accounts.</p>
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#get_or_create_address-instance_method" title="#get_or_create_address (instance method)">#<strong>get_or_create_address</strong>(payer:, funder:, owner:, mint:)  &#x21d2; String </a>
+      <a href="#get_or_create_address-instance_method" title="#get_or_create_address (instance method)">#<strong>get_or_create_address</strong>(payer:, funder:, owner:, mint:, token_program_id: Solace::Constants::TOKEN_PROGRAM_ID)  &#x21d2; String </a>
     
 
     
@@ -393,12 +393,12 @@ managing associated token accounts.</p>
       <pre class="lines">
 
 
-58
-59
-60</pre>
+69
+70
+71</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/solace/programs/associated_token_account.rb', line 58</span>
+      <pre class="code"><span class="info file"># File 'lib/solace/programs/associated_token_account.rb', line 69</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='label'>connection:</span><span class='rparen'>)</span>
   <span class='kw'>super</span><span class='lparen'>(</span><span class='label'>connection:</span> <span class='id identifier rubyid_connection'>connection</span><span class='comma'>,</span> <span class='label'>program_id:</span> <span class='const'><span class='object_link'><a href="../../Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Constants.html" title="Solace::Constants (module)">Constants</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Constants.html#ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID-constant" title="Solace::Constants::ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID (constant)">ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID</a></span></span><span class='rparen'>)</span>
@@ -418,7 +418,7 @@ managing associated token accounts.</p>
       <div class="method_details first">
   <h3 class="signature first" id="get_address-class_method">
   
-    .<strong>get_address</strong>(owner:, mint:)  &#x21d2; <tt>String</tt> 
+    .<strong>get_address</strong>(owner:, mint:, token_program_id: Solace::Constants::TOKEN_PROGRAM_ID)  &#x21d2; <tt>Array&lt;String, Integer&gt;</tt> 
   
 
   
@@ -427,6 +427,16 @@ managing associated token accounts.</p>
 </h3><div class="docstring">
   <div class="discussion">
     <p>Gets the address of an associated token account.</p>
+
+<p>The token program ID is part of the ATA derivation seed. For mints
+owned by the legacy SPL Token program this is <span class='object_link'><a href="../Constants.html#TOKEN_PROGRAM_ID-constant" title="Solace::Constants::TOKEN_PROGRAM_ID (constant)">Constants::TOKEN_PROGRAM_ID</a></span>
+(the default). For mints owned by the Token-2022 program (e.g. PYUSD on
+Solana), pass +token_program_id: Solace::Constants::TOKEN_2022_PROGRAM_ID+
+to derive the correct address. Deriving with the wrong program ID
+returns an address that does not exist on chain.</p>
+
+<p>Use <span class='object_link'><a href="../Connection.html#get_mint_program_id-instance_method" title="Solace::Connection#get_mint_program_id (method)">Connection#get_mint_program_id</a></span> to discover which token program
+owns a given mint at runtime.</p>
 
 
   </div>
@@ -465,6 +475,23 @@ managing associated token accounts.</p>
       
     </li>
   
+    <li>
+      
+        <span class='name'>token_program_id</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>Solace::Constants::TOKEN_PROGRAM_ID</tt>)</em>
+      
+      
+        &mdash;
+        <div class='inline'><p>The token program that owns the mint (defaults to legacy SPL Token).</p>
+</div>
+      
+    </li>
+  
 </ul>
 
 <p class="tag_title">Returns:</p>
@@ -473,12 +500,12 @@ managing associated token accounts.</p>
     <li>
       
       
-        <span class='type'>(<tt>String</tt>)</span>
+        <span class='type'>(<tt>Array&lt;String, Integer&gt;</tt>)</span>
       
       
       
         &mdash;
-        <div class='inline'><p>The address of the associated token account.</p>
+        <div class='inline'><p>The associated token account address and bump seed.</p>
 </div>
       
     </li>
@@ -506,25 +533,25 @@ managing associated token accounts.</p>
       <pre class="lines">
 
 
-43
-44
-45
-46
-47
-48
-49
-50
-51
-52</pre>
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/solace/programs/associated_token_account.rb', line 43</span>
+      <pre class="code"><span class="info file"># File 'lib/solace/programs/associated_token_account.rb', line 54</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_get_address'>get_address</span><span class='lparen'>(</span><span class='label'>owner:</span><span class='comma'>,</span> <span class='label'>mint:</span><span class='rparen'>)</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_get_address'>get_address</span><span class='lparen'>(</span><span class='label'>owner:</span><span class='comma'>,</span> <span class='label'>mint:</span><span class='comma'>,</span> <span class='label'>token_program_id:</span> <span class='const'><span class='object_link'><a href="../../Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Constants.html" title="Solace::Constants (module)">Constants</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Constants.html#TOKEN_PROGRAM_ID-constant" title="Solace::Constants::TOKEN_PROGRAM_ID (constant)">TOKEN_PROGRAM_ID</a></span></span><span class='rparen'>)</span>
   <span class='const'><span class='object_link'><a href="../../Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Utils.html" title="Solace::Utils (module)">Utils</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Utils/PDA.html" title="Solace::Utils::PDA (module)">PDA</a></span></span><span class='period'>.</span><span class='id identifier rubyid_find_program_address'><span class='object_link'><a href="../Utils/PDA.html#find_program_address-class_method" title="Solace::Utils::PDA.find_program_address (method)">find_program_address</a></span></span><span class='lparen'>(</span>
     <span class='lbracket'>[</span>
       <span class='id identifier rubyid_owner'>owner</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='comma'>,</span>
-      <span class='const'><span class='object_link'><a href="../../Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Constants.html" title="Solace::Constants (module)">Constants</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Constants.html#TOKEN_PROGRAM_ID-constant" title="Solace::Constants::TOKEN_PROGRAM_ID (constant)">TOKEN_PROGRAM_ID</a></span></span><span class='comma'>,</span>
+      <span class='id identifier rubyid_token_program_id'>token_program_id</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='comma'>,</span>
       <span class='id identifier rubyid_mint'>mint</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
     <span class='rbracket'>]</span><span class='comma'>,</span>
     <span class='const'><span class='object_link'><a href="../../Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Constants.html" title="Solace::Constants (module)">Constants</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Constants.html#ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID-constant" title="Solace::Constants::ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID (constant)">ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID</a></span></span>
@@ -544,7 +571,7 @@ managing associated token accounts.</p>
       <div class="method_details first">
   <h3 class="signature first" id="compose_create_associated_token_account-instance_method">
   
-    #<strong>compose_create_associated_token_account</strong>(funder:, owner:, mint:)  &#x21d2; <tt><span class='object_link'><a href="../Transaction.html" title="Solace::Transaction (class)">Transaction</a></span></tt> 
+    #<strong>compose_create_associated_token_account</strong>(funder:, owner:, mint:, token_program_id: Solace::Constants::TOKEN_PROGRAM_ID)  &#x21d2; <tt><span class='object_link'><a href="../TransactionComposer.html" title="Solace::TransactionComposer (class)">TransactionComposer</a></span></tt> 
   
 
   
@@ -606,6 +633,23 @@ managing associated token accounts.</p>
       
     </li>
   
+    <li>
+      
+        <span class='name'>token_program_id</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>Solace::Constants::TOKEN_PROGRAM_ID</tt>)</em>
+      
+      
+        &mdash;
+        <div class='inline'><p>The token program that owns the mint (defaults to legacy SPL Token).</p>
+</div>
+      
+    </li>
+  
 </ul>
 
 <p class="tag_title">Returns:</p>
@@ -614,12 +658,12 @@ managing associated token accounts.</p>
     <li>
       
       
-        <span class='type'>(<tt><span class='object_link'><a href="../Transaction.html" title="Solace::Transaction (class)">Transaction</a></span></tt>)</span>
+        <span class='type'>(<tt><span class='object_link'><a href="../TransactionComposer.html" title="Solace::TransactionComposer (class)">TransactionComposer</a></span></tt>)</span>
       
       
       
         &mdash;
-        <div class='inline'><p>The signed transaction.</p>
+        <div class='inline'><p>A composer with the create-ATA instruction.</p>
 </div>
       
     </li>
@@ -647,40 +691,44 @@ managing associated token accounts.</p>
       <pre class="lines">
 
 
-140
-141
-142
-143
-144
-145
-146
-147
-148
-149
-150
-151
-152
-153
-154
 155
 156
-157</pre>
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/solace/programs/associated_token_account.rb', line 140</span>
+      <pre class="code"><span class="info file"># File 'lib/solace/programs/associated_token_account.rb', line 155</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_compose_create_associated_token_account'>compose_create_associated_token_account</span><span class='lparen'>(</span>
   <span class='label'>funder:</span><span class='comma'>,</span>
   <span class='label'>owner:</span><span class='comma'>,</span>
-  <span class='label'>mint:</span>
+  <span class='label'>mint:</span><span class='comma'>,</span>
+  <span class='label'>token_program_id:</span> <span class='const'><span class='object_link'><a href="../../Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Constants.html" title="Solace::Constants (module)">Constants</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Constants.html#TOKEN_PROGRAM_ID-constant" title="Solace::Constants::TOKEN_PROGRAM_ID (constant)">TOKEN_PROGRAM_ID</a></span></span>
 <span class='rparen'>)</span>
-  <span class='id identifier rubyid_ata_address'>ata_address</span><span class='comma'>,</span> <span class='op'>=</span> <span class='id identifier rubyid_get_address'>get_address</span><span class='lparen'>(</span><span class='label'>owner:</span> <span class='id identifier rubyid_owner'>owner</span><span class='comma'>,</span> <span class='label'>mint:</span> <span class='id identifier rubyid_mint'>mint</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_ata_address'>ata_address</span><span class='comma'>,</span> <span class='op'>=</span> <span class='id identifier rubyid_get_address'>get_address</span><span class='lparen'>(</span><span class='label'>owner:</span> <span class='id identifier rubyid_owner'>owner</span><span class='comma'>,</span> <span class='label'>mint:</span> <span class='id identifier rubyid_mint'>mint</span><span class='comma'>,</span> <span class='label'>token_program_id:</span> <span class='id identifier rubyid_token_program_id'>token_program_id</span><span class='rparen'>)</span>
 
   <span class='id identifier rubyid_ix'>ix</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Composers.html" title="Solace::Composers (module)">Composers</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Composers/AssociatedTokenAccountProgramCreateAccountComposer.html" title="Solace::Composers::AssociatedTokenAccountProgramCreateAccountComposer (class)">AssociatedTokenAccountProgramCreateAccountComposer</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="../Composers/Base.html#initialize-instance_method" title="Solace::Composers::Base#initialize (method)">new</a></span></span><span class='lparen'>(</span>
     <span class='label'>mint:</span> <span class='id identifier rubyid_mint'>mint</span><span class='comma'>,</span>
     <span class='label'>owner:</span> <span class='id identifier rubyid_owner'>owner</span><span class='comma'>,</span>
     <span class='label'>funder:</span> <span class='id identifier rubyid_funder'>funder</span><span class='comma'>,</span>
-    <span class='label'>ata_address:</span> <span class='id identifier rubyid_ata_address'>ata_address</span>
+    <span class='label'>ata_address:</span> <span class='id identifier rubyid_ata_address'>ata_address</span><span class='comma'>,</span>
+    <span class='label'>token_program_id:</span> <span class='id identifier rubyid_token_program_id'>token_program_id</span>
   <span class='rparen'>)</span>
 
   <span class='const'><span class='object_link'><a href="../TransactionComposer.html" title="Solace::TransactionComposer (class)">TransactionComposer</a></span></span>
@@ -830,20 +878,6 @@ managing associated token accounts.</p>
       <pre class="lines">
 
 
-108
-109
-110
-111
-112
-113
-114
-115
-116
-117
-118
-119
-120
-121
 122
 123
 124
@@ -854,10 +888,24 @@ managing associated token accounts.</p>
 129
 130
 131
-132</pre>
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/solace/programs/associated_token_account.rb', line 108</span>
+      <pre class="code"><span class="info file"># File 'lib/solace/programs/associated_token_account.rb', line 122</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_create_associated_token_account'>create_associated_token_account</span><span class='lparen'>(</span>
   <span class='label'>payer:</span><span class='comma'>,</span>
@@ -965,12 +1013,12 @@ managing associated token accounts.</p>
       <pre class="lines">
 
 
-66
-67
-68</pre>
+77
+78
+79</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/solace/programs/associated_token_account.rb', line 66</span>
+      <pre class="code"><span class="info file"># File 'lib/solace/programs/associated_token_account.rb', line 77</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_get_address'>get_address</span><span class='lparen'>(</span><span class='op'>**</span><span class='id identifier rubyid_options'>options</span><span class='rparen'>)</span>
   <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='period'>.</span><span class='id identifier rubyid_get_address'>get_address</span><span class='lparen'>(</span><span class='op'>**</span><span class='id identifier rubyid_options'>options</span><span class='rparen'>)</span>
@@ -983,7 +1031,7 @@ managing associated token accounts.</p>
       <div class="method_details ">
   <h3 class="signature " id="get_or_create_address-instance_method">
   
-    #<strong>get_or_create_address</strong>(payer:, funder:, owner:, mint:)  &#x21d2; <tt>String</tt> 
+    #<strong>get_or_create_address</strong>(payer:, funder:, owner:, mint:, token_program_id: Solace::Constants::TOKEN_PROGRAM_ID)  &#x21d2; <tt>String</tt> 
   
 
   
@@ -1060,6 +1108,23 @@ managing associated token accounts.</p>
       
     </li>
   
+    <li>
+      
+        <span class='name'>token_program_id</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>Solace::Constants::TOKEN_PROGRAM_ID</tt>)</em>
+      
+      
+        &mdash;
+        <div class='inline'><p>The token program that owns the mint (defaults to legacy SPL Token).</p>
+</div>
+      
+    </li>
+  
 </ul>
 
 <p class="tag_title">Returns:</p>
@@ -1101,18 +1166,6 @@ managing associated token accounts.</p>
       <pre class="lines">
 
 
-77
-78
-79
-80
-81
-82
-83
-84
-85
-86
-87
-88
 89
 90
 91
@@ -1123,18 +1176,33 @@ managing associated token accounts.</p>
 96
 97
 98
-99</pre>
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/solace/programs/associated_token_account.rb', line 77</span>
+      <pre class="code"><span class="info file"># File 'lib/solace/programs/associated_token_account.rb', line 89</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_get_or_create_address'>get_or_create_address</span><span class='lparen'>(</span>
   <span class='label'>payer:</span><span class='comma'>,</span>
   <span class='label'>funder:</span><span class='comma'>,</span>
   <span class='label'>owner:</span><span class='comma'>,</span>
-  <span class='label'>mint:</span>
+  <span class='label'>mint:</span><span class='comma'>,</span>
+  <span class='label'>token_program_id:</span> <span class='const'><span class='object_link'><a href="../../Solace.html" title="Solace (module)">Solace</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Constants.html" title="Solace::Constants (module)">Constants</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Constants.html#TOKEN_PROGRAM_ID-constant" title="Solace::Constants::TOKEN_PROGRAM_ID (constant)">TOKEN_PROGRAM_ID</a></span></span>
 <span class='rparen'>)</span>
-  <span class='id identifier rubyid_ata_address'>ata_address</span><span class='comma'>,</span> <span class='op'>=</span> <span class='id identifier rubyid_get_address'>get_address</span><span class='lparen'>(</span><span class='label'>owner:</span> <span class='id identifier rubyid_owner'>owner</span><span class='comma'>,</span> <span class='label'>mint:</span> <span class='id identifier rubyid_mint'>mint</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_ata_address'>ata_address</span><span class='comma'>,</span> <span class='op'>=</span> <span class='id identifier rubyid_get_address'>get_address</span><span class='lparen'>(</span><span class='label'>owner:</span> <span class='id identifier rubyid_owner'>owner</span><span class='comma'>,</span> <span class='label'>mint:</span> <span class='id identifier rubyid_mint'>mint</span><span class='comma'>,</span> <span class='label'>token_program_id:</span> <span class='id identifier rubyid_token_program_id'>token_program_id</span><span class='rparen'>)</span>
 
   <span class='id identifier rubyid_account_balance'>account_balance</span> <span class='op'>=</span> <span class='id identifier rubyid_connection'>connection</span><span class='period'>.</span><span class='id identifier rubyid_get_account_info'>get_account_info</span><span class='lparen'>(</span><span class='id identifier rubyid_ata_address'>ata_address</span><span class='rparen'>)</span>
 
@@ -1144,7 +1212,8 @@ managing associated token accounts.</p>
     <span class='label'>payer:</span> <span class='id identifier rubyid_payer'>payer</span><span class='comma'>,</span>
     <span class='label'>funder:</span> <span class='id identifier rubyid_funder'>funder</span><span class='comma'>,</span>
     <span class='label'>owner:</span> <span class='id identifier rubyid_owner'>owner</span><span class='comma'>,</span>
-    <span class='label'>mint:</span> <span class='id identifier rubyid_mint'>mint</span>
+    <span class='label'>mint:</span> <span class='id identifier rubyid_mint'>mint</span><span class='comma'>,</span>
+    <span class='label'>token_program_id:</span> <span class='id identifier rubyid_token_program_id'>token_program_id</span>
   <span class='rparen'>)</span>
 
   <span class='id identifier rubyid_connection'>connection</span><span class='period'>.</span><span class='id identifier rubyid_wait_for_confirmed_signature'>wait_for_confirmed_signature</span> <span class='lbrace'>{</span> <span class='id identifier rubyid_tx'>tx</span><span class='period'>.</span><span class='id identifier rubyid_signature'>signature</span> <span class='rbrace'>}</span>
@@ -1161,7 +1230,7 @@ managing associated token accounts.</p>
 </div>
 
       <div id="footer">
-  Generated on Mon May 18 14:59:29 2026 by
+  Generated on Tue May 19 16:56:57 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.4).
 </div>

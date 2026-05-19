@@ -535,6 +535,63 @@ on_curve = Solace::Utils::Curve25519Dalek.on_curve?(32_byte_point)
 <span class='id identifier rubyid_connection'>connection</span><span class='period'>.</span><span class='id identifier rubyid_wait_for_confirmed_signature'>wait_for_confirmed_signature</span> <span class='lbrace'>{</span> <span class='id identifier rubyid_response'>response</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>result</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span> <span class='rbrace'>}</span>
 </code></pre>
 
+<h2 id="development">Development</h2>
+
+<h3 id="prerequisites">Prerequisites</h3>
+
+<ul>
+<li><strong>Ruby</strong> (matching <code>.ruby-version</code> / <code>Gemfile.lock</code>) and <strong>Bundler</strong></li>
+<li><strong>Solana CLI</strong>, which provides <code>solana-test-validator</code> and <code>solana-keygen</code>. Install with:
+<code>bash
+sh -c &quot;$(curl -sSfL https://release.anza.xyz/stable/install)&quot;
+</code>
+Then add the installer&#39;s PATH line to your shell profile (the installer prints the exact <code>export PATH=...</code> to use).</li>
+</ul>
+
+<h3 id="one-time-setup">One-time setup</h3>
+
+<pre class="code bash"><code class="bash"># Install Ruby dependencies
+bundle install
+
+# Generate the seven keypair fixtures the test suite expects.
+# test/fixtures/ is gitignored — each developer generates their own.
+mkdir -p test/fixtures
+for name in bob anna payer mint mint-2022 mint-authority fee-collector; do
+  solana-keygen new --no-bip39-passphrase --silent --force -o &quot;test/fixtures/${name}.json&quot;
+done
+
+# Bootstrap the local validator: airdrops SOL to the fixture accounts,
+# creates their ATAs, and creates the test mint. Spins up a
+# solana-test-validator on the side; ledger state persists in ./test-ledger.
+bundle exec rake bootstrap
+</code></pre>
+
+<p>If you ever need a clean slate, delete <code>test-ledger/</code> and re-run <code>rake bootstrap</code>.</p>
+
+<h3 id="running-the-tests">Running the tests</h3>
+
+<pre class="code bash"><code class="bash">bundle exec rake test
+</code></pre>
+
+<p><code>rake test</code> spawns <code>solana-test-validator</code> automatically (re-using <code>./test-ledger</code>) and tears it down on exit. You can also run a single file:</p>
+
+<pre class="code bash"><code class="bash">bundle exec rake test test/solace/programs/spl_token_test.rb
+</code></pre>
+
+<p>To exercise the longer end-to-end flows in <code>test/usecases/</code>:</p>
+
+<pre class="code bash"><code class="bash">bundle exec rake usecases            # all usecases
+bundle exec rake usecases token_mint # a specific one
+</code></pre>
+
+<h3 id="building-installing-the-gem-locally">Building &amp; installing the gem locally</h3>
+
+<pre class="code bash"><code class="bash">bundle exec rake build      # produces builds/solace-&lt;version&gt;.gem
+bundle exec rake install    # builds and `gem install`s it locally
+</code></pre>
+
+<p>The native curve25519 library is shipped pre-compiled in <code>lib/solace/utils/</code>. You only need <code>rake compile</code> (which invokes <code>cargo</code>) if you&#39;re modifying <code>ext/curve25519_dalek</code> — that target cross-builds for every supported platform and requires the corresponding Rust toolchains.</p>
+
 <h2 id="dependencies">Dependencies</h2>
 
 <ul>
@@ -634,7 +691,7 @@ on_curve = Solace::Utils::Curve25519Dalek.on_curve?(32_byte_point)
 </div></div>
 
       <div id="footer">
-  Generated on Mon May 18 14:59:28 2026 by
+  Generated on Tue May 19 16:56:56 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.4).
 </div>
