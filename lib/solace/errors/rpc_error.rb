@@ -208,7 +208,7 @@ module Solace
 
         # ── Offchain message errors ──────────────────────────────────────
         5_607_000 => :OffchainMessageMaximumLengthExceededError,         # Maximum length exceeded
-        5_607_001 => :OffchainMessageRestrictedAsciiCharacterOutOfRangeError, # Restricted ASCII body character out of range
+        5_607_001 => :OffchainMessageRestrictedAsciiBodyCharacterOutOfRangeError, # Restricted ASCII body character out of range
         5_607_002 => :OffchainMessageApplicationDomainStringLengthOutOfRangeError, # Application domain string length out of range
         5_607_003 => :OffchainMessageInvalidApplicationDomainByteLengthError, # Invalid application domain byte length
         5_607_004 => :OffchainMessageNumSignaturesMismatchError,         # Num signatures mismatch
@@ -241,7 +241,7 @@ module Solace
         5_663_011 => :TransactionFeePayerMissingError,                   # Fee payer missing
         5_663_012 => :TransactionFeePayerSignatureMissingError,          # Fee payer signature missing
         5_663_013 => :TransactionInvalidNonceInstructionsMissingError,   # Invalid nonce transaction instructions missing
-        5_663_014 => :TransactionInvalidNonceFirstInstructionError,      # First instruction must be advance nonce
+        5_663_014 => :TransactionInvalidNonceTransactionFirstInstructionMustBeAdvanceNonceError, # First instruction must be advance nonce
         5_663_015 => :TransactionAddressesCannotSignError,               # Addresses cannot sign transaction
         5_663_016 => :TransactionCannotEncodeWithEmptySignaturesError,   # Cannot encode with empty signatures
         5_663_017 => :TransactionMessageSignaturesMismatchError,         # Message signatures mismatch
@@ -254,7 +254,7 @@ module Solace
         5_663_024 => :TransactionCannotEncodeWithEmptyMessageBytesError, # Cannot encode with empty message bytes
         5_663_025 => :TransactionCannotDecodeEmptyBytesError,            # Cannot decode empty transaction bytes
         5_663_026 => :TransactionVersionZeroMustBeEncodedWithSignaturesFirstError, # V0 must encode signatures first
-        5_663_027 => :TransactionSignatureCountTooHighError,             # Signature count too high for transaction bytes
+        5_663_027 => :TransactionSignatureCountTooHighForTransactionBytesError, # Signature count too high for transaction bytes
         5_663_028 => :TransactionInvalidConfigMaskPriorityFeeBitsError,  # Invalid config mask priority fee bits
         5_663_029 => :TransactionInvalidNonceAccountIndexError,          # Invalid nonce account index
         5_663_030 => :TransactionInvalidConfigValueKindError,            # Invalid config value kind
@@ -372,7 +372,7 @@ module Solace
 
         # ── Invariant violation errors ───────────────────────────────────
         9_900_000 => :InvariantViolationSubscriptionIteratorStateMissingError, # Subscription iterator state missing
-        9_900_001 => :InvariantViolationSubscriptionIteratorMustNotPollBeforeResolvingError, # Must not poll before resolving existing promise
+        9_900_001 => :InvariantViolationSubscriptionIteratorMustNotPollBeforeResolvingExistingMessagePromiseError, # Must not poll before resolving existing message promise
         9_900_002 => :InvariantViolationCachedAbortableIterableCacheEntryMissingError, # Cached abortable iterable cache entry missing
         9_900_003 => :InvariantViolationSwitchMustBeExhaustiveError,     # Switch must be exhaustive
         9_900_004 => :InvariantViolationDataPublisherChannelUnimplementedError, # Data publisher channel unimplemented
