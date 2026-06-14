@@ -9,6 +9,8 @@ AllCops:
   NewCops: enable
   Exclude:
     - 'solace.gemspec'
+    - 'test-ledger/**/*'
+    - 'vendor/**/*'
 
 Layout/LineLength:
   Max: 120
