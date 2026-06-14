@@ -1,0 +1,35 @@
+plugins:
+  - rubocop-yard
+
+YARD:
+  Enabled: true
+
+AllCops:
+  TargetRubyVersion: 3.0
+  NewCops: enable
+  Exclude:
+    - 'solace.gemspec'
+
+Layout/LineLength:
+  Max: 120
+  Exclude:
+    - 'test/**/*_test.rb'
+    - 'test/usecases/**/*.rb'
+
+Metrics/ParameterLists:
+  Enabled: false
+
+Metrics/MethodLength:
+  Max: 15
+
+Metrics/BlockLength:
+  Exclude:
+    - 'test/**/*'
+
+Naming/AccessorMethodName:
+  Enabled: false
+
+# Numbered locals/ivars (token_2022, transfer #1/#2) read more clearly in the
+# test/bootstrap narratives than the normalcase form this cop wants.
+Naming/VariableNumber:
+  Enabled: false

@@ -3,6 +3,14 @@ name: Build Rust Shared Libraries
 on:
   workflow_dispatch:  # Allow manual runs
 
+# The gem (including the Rust extension and the prebuilt-binary destination under
+# lib/solace/utils/) lives in gem/, so all run steps execute from there. Note that
+# upload/download-artifact `path:` values are resolved from the workspace root, so
+# they carry an explicit gem/ prefix.
+defaults:
+  run:
+    working-directory: gem
+
 jobs:
   build-linux:
     name: Build on Linux
@@ -26,7 +34,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: libcurve25519_dalek-linux
-          path: lib/solace/utils/linux/libcurve25519_dalek.so
+          path: gem/lib/solace/utils/linux/libcurve25519_dalek.so
 
   build-windows:
     name: Build on Windows
@@ -50,7 +58,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: libcurve25519_dalek-windows
-          path: lib/solace/utils/windows/curve25519_dalek.dll
+          path: gem/lib/solace/utils/windows/curve25519_dalek.dll
 
   build-macos:
     name: Build on macOS
@@ -75,7 +83,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: libcurve25519_dalek-macos
-          path: lib/solace/utils/macos/libcurve25519_dalek.dylib
+          path: gem/lib/solace/utils/macos/libcurve25519_dalek.dylib
 
   build-macos-arm64:
     name: Build on macOS ARM64
@@ -100,7 +108,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: libcurve25519_dalek-macos-arm64
-          path: lib/solace/utils/macos-arm64/libcurve25519_dalek.dylib
+          path: gem/lib/solace/utils/macos-arm64/libcurve25519_dalek.dylib
 
   build-linux-arm64:
     name: Build on Linux ARM64
@@ -124,7 +132,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: libcurve25519_dalek-linux-arm64
-          path: lib/solace/utils/linux-arm64/libcurve25519_dalek.so
+          path: gem/lib/solace/utils/linux-arm64/libcurve25519_dalek.so
 
   commit-artifacts:
     name: Commit built binaries
@@ -138,7 +146,7 @@ jobs:
       - name: Download all artifacts
         uses: actions/download-artifact@v4
         with:
-          path: lib/solace/utils/
+          path: gem/lib/solace/utils/
 
       - name: Commit and push
         run: |

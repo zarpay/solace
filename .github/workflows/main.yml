@@ -1,0 +1,27 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+defaults:
+  run:
+    working-directory: gem
+
+jobs:
+  rubocop:
+    name: RuboCop
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+          working-directory: gem
+          bundler-cache: true
+      - run: bundle exec rubocop
+
+  # TODO: minitest job — the suite boots a solana-test-validator and funds fixture
+  # accounts, so it needs the Solana CLI + validator installed on the runner before
+  # it can run here. Deferred for now.
