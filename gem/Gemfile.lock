@@ -95,7 +95,7 @@ GEM
       unicode-emoji (~> 4.0, >= 4.0.4)
     unicode-emoji (4.2.0)
     uri (1.0.3)
-    yard (0.9.37)
+    yard (0.9.44)
     yardstick (0.9.9)
       yard (~> 0.8, >= 0.8.7.2)
 
