@@ -31,7 +31,7 @@ jobs:
           mkdir -p lib/solace/utils/linux
           cp ext/curve25519_dalek/target/x86_64-unknown-linux-gnu/release/libcurve25519_dalek.so lib/solace/utils/linux/
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: libcurve25519_dalek-linux
           path: gem/lib/solace/utils/linux/libcurve25519_dalek.so
@@ -55,7 +55,7 @@ jobs:
           mkdir -p lib/solace/utils/windows
           copy ext\curve25519_dalek\target\x86_64-pc-windows-msvc\release\curve25519_dalek.dll lib\solace\utils\windows\
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: libcurve25519_dalek-windows
           path: gem/lib/solace/utils/windows/curve25519_dalek.dll
@@ -80,7 +80,7 @@ jobs:
           mkdir -p lib/solace/utils/macos
           cp ext/curve25519_dalek/target/x86_64-apple-darwin/release/libcurve25519_dalek.dylib lib/solace/utils/macos/
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: libcurve25519_dalek-macos
           path: gem/lib/solace/utils/macos/libcurve25519_dalek.dylib
@@ -105,7 +105,7 @@ jobs:
           mkdir -p lib/solace/utils/macos-arm64
           cp ext/curve25519_dalek/target/aarch64-apple-darwin/release/libcurve25519_dalek.dylib lib/solace/utils/macos-arm64/
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: libcurve25519_dalek-macos-arm64
           path: gem/lib/solace/utils/macos-arm64/libcurve25519_dalek.dylib
@@ -129,7 +129,7 @@ jobs:
           mkdir -p lib/solace/utils/linux-arm64
           cp ext/curve25519_dalek/target/aarch64-unknown-linux-gnu/release/libcurve25519_dalek.so lib/solace/utils/linux-arm64/
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: libcurve25519_dalek-linux-arm64
           path: gem/lib/solace/utils/linux-arm64/libcurve25519_dalek.so
