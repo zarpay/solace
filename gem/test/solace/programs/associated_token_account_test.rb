@@ -79,8 +79,8 @@ describe Solace::Programs::AssociatedTokenAccount do
 
       it 'derives the Token-2022 ATA address when the program id is provided' do
         ata, _bump = klass.get_address(
-          owner: pyusd_owner,
-          mint: pyusd_mint,
+          owner:            pyusd_owner,
+          mint:             pyusd_mint,
           token_program_id: Solace::Constants::TOKEN_2022_PROGRAM_ID
         )
 
@@ -96,8 +96,8 @@ describe Solace::Programs::AssociatedTokenAccount do
       it 'derives different addresses for the two programs' do
         legacy, = klass.get_address(owner: pyusd_owner, mint: pyusd_mint)
         t22,    = klass.get_address(
-          owner: pyusd_owner,
-          mint: pyusd_mint,
+          owner:            pyusd_owner,
+          mint:             pyusd_mint,
           token_program_id: Solace::Constants::TOKEN_2022_PROGRAM_ID
         )
 
@@ -115,10 +115,10 @@ describe Solace::Programs::AssociatedTokenAccount do
 
     it 'creates the rent exempt associated token account' do
       ata_address = program.get_or_create_address(
-        payer: payer,
+        payer:  payer,
         funder: payer,
-        owner: owner,
-        mint: mint
+        owner:  owner,
+        mint:   mint
       )
 
       assert connection.get_balance(ata_address).positive?
@@ -130,10 +130,10 @@ describe Solace::Programs::AssociatedTokenAccount do
       end
 
       ata_address = program.get_or_create_address(
-        payer: payer,
+        payer:  payer,
         funder: payer,
-        owner: bob,
-        mint: mint
+        owner:  bob,
+        mint:   mint
       )
 
       assert ata_address.is_a?(String)
@@ -151,8 +151,8 @@ describe Solace::Programs::AssociatedTokenAccount do
     describe '#compose_create_associated_token_account' do
       let(:composer) do
         program.compose_create_associated_token_account(
-          owner: owner,
-          mint: mint,
+          owner:  owner,
+          mint:   mint,
           funder: payer
         )
       end
@@ -165,9 +165,9 @@ describe Solace::Programs::AssociatedTokenAccount do
     describe '#create_associated_token_account' do
       it 'creates and sends the associated token account creation transaction' do
         tx = program.create_associated_token_account(
-          payer: payer,
-          owner: owner,
-          mint: mint,
+          payer:  payer,
+          owner:  owner,
+          mint:   mint,
           funder: payer
         )
 
@@ -178,10 +178,10 @@ describe Solace::Programs::AssociatedTokenAccount do
 
       it 'creates but does not sign the transaction' do
         tx = program.create_associated_token_account(
-          payer: payer,
-          sign: false,
-          owner: owner,
-          mint: mint,
+          payer:  payer,
+          sign:   false,
+          owner:  owner,
+          mint:   mint,
           funder: payer
         )
 
@@ -190,11 +190,11 @@ describe Solace::Programs::AssociatedTokenAccount do
 
       it 'creates but does not send the transaction' do
         tx = program.create_associated_token_account(
-          payer: payer,
+          payer:   payer,
           execute: false,
-          owner: owner,
-          mint: mint,
-          funder: payer
+          owner:   owner,
+          mint:    mint,
+          funder:  payer
         )
 
         assert tx.signature.is_a?(String)
@@ -205,11 +205,11 @@ describe Solace::Programs::AssociatedTokenAccount do
         yielded = false
 
         program.create_associated_token_account(
-          payer: payer,
+          payer:   payer,
           execute: false,
-          owner: owner,
-          mint: mint,
-          funder: payer
+          owner:   owner,
+          mint:    mint,
+          funder:  payer
         ) do |composer|
           yielded = true
           assert_kind_of Solace::Composers::AssociatedTokenAccountProgramCreateAccountComposer, composer.instruction_composers.first

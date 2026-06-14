@@ -30,10 +30,10 @@ describe Solace::Programs::SplToken do
       describe '#compose_create_mint' do
         let(:composer) do
           program.compose_create_mint(
-            funder: payer,
-            decimals: decimals,
-            mint_account: mint_account,
-            mint_authority: mint_authority,
+            funder:           payer,
+            decimals:         decimals,
+            mint_account:     mint_account,
+            mint_authority:   mint_authority,
             freeze_authority: freeze_authority
           )
         end
@@ -48,11 +48,11 @@ describe Solace::Programs::SplToken do
         it 'should return a valid signature and create the mint account' do
           # Create the mint
           tx = program.create_mint(
-            payer: payer,
-            funder: payer,
-            decimals: decimals,
-            mint_account: mint_account,
-            mint_authority: mint_authority,
+            payer:            payer,
+            funder:           payer,
+            decimals:         decimals,
+            mint_account:     mint_account,
+            mint_authority:   mint_authority,
             freeze_authority: freeze_authority
           )
 
@@ -68,12 +68,12 @@ describe Solace::Programs::SplToken do
 
         it 'should prepare a transaction without signing it' do
           tx = program.create_mint(
-            payer: payer,
-            funder: payer,
-            sign: false,
-            decimals: decimals,
-            mint_account: mint_account,
-            mint_authority: mint_authority,
+            payer:            payer,
+            funder:           payer,
+            sign:             false,
+            decimals:         decimals,
+            mint_account:     mint_account,
+            mint_authority:   mint_authority,
             freeze_authority: freeze_authority
           )
 
@@ -82,12 +82,12 @@ describe Solace::Programs::SplToken do
 
         it 'should prepare a transaction without sending it' do
           tx = program.create_mint(
-            payer: payer,
-            funder: payer,
-            execute: false,
-            decimals: decimals,
-            mint_account: mint_account,
-            mint_authority: mint_authority,
+            payer:            payer,
+            funder:           payer,
+            execute:          false,
+            decimals:         decimals,
+            mint_account:     mint_account,
+            mint_authority:   mint_authority,
             freeze_authority: freeze_authority
           )
 
@@ -100,12 +100,12 @@ describe Solace::Programs::SplToken do
           yielded = false
 
           program.create_mint(
-            payer: payer,
-            funder: payer,
-            execute: false,
-            decimals: decimals,
-            mint_account: mint_account,
-            mint_authority: mint_authority,
+            payer:            payer,
+            funder:           payer,
+            execute:          false,
+            decimals:         decimals,
+            mint_account:     mint_account,
+            mint_authority:   mint_authority,
             freeze_authority: freeze_authority
           ) do |composer|
             yielded = true
@@ -121,11 +121,11 @@ describe Solace::Programs::SplToken do
           it 'should return a valid signature and create the mint account' do
             # Create the mint
             tx = program.create_mint(
-              payer: payer,
-              funder: funder,
-              decimals: decimals,
-              mint_account: mint_account,
-              mint_authority: mint_authority,
+              payer:            payer,
+              funder:           funder,
+              decimals:         decimals,
+              mint_account:     mint_account,
+              mint_authority:   mint_authority,
               freeze_authority: freeze_authority
             )
 
@@ -159,9 +159,9 @@ describe Solace::Programs::SplToken do
     describe '#compose_mint_to' do
       let(:composer) do
         program.compose_mint_to(
-          amount: amount,
-          mint: mint,
-          destination: destination,
+          amount:         amount,
+          mint:           mint,
+          destination:    destination,
           mint_authority: mint_authority
         )
       end
@@ -178,10 +178,10 @@ describe Solace::Programs::SplToken do
 
         # Mint tokens
         tx = program.mint_to(
-          amount: amount,
-          mint: mint,
-          payer: payer,
-          destination: destination,
+          amount:         amount,
+          mint:           mint,
+          payer:          payer,
+          destination:    destination,
           mint_authority: mint_authority
         )
 
@@ -195,12 +195,12 @@ describe Solace::Programs::SplToken do
 
       it 'should prepare a transaction without signing it' do
         tx = program.mint_to(
-          amount: amount,
-          mint: mint,
-          payer: payer,
-          destination: destination,
+          amount:         amount,
+          mint:           mint,
+          payer:          payer,
+          destination:    destination,
           mint_authority: mint_authority,
-          sign: false
+          sign:           false
         )
 
         assert_equal tx.signatures.count, 0
@@ -208,12 +208,12 @@ describe Solace::Programs::SplToken do
 
       it 'should prepare a transaction without sending it' do
         tx = program.mint_to(
-          amount: amount,
-          mint: mint,
-          payer: payer,
-          destination: destination,
+          amount:         amount,
+          mint:           mint,
+          payer:          payer,
+          destination:    destination,
           mint_authority: mint_authority,
-          execute: false
+          execute:        false
         )
 
         # Assert the signature exists but the transaction was not sent
@@ -225,12 +225,12 @@ describe Solace::Programs::SplToken do
         yielded = false
 
         program.mint_to(
-          amount: amount,
-          mint: mint,
-          payer: payer,
-          destination: destination,
+          amount:         amount,
+          mint:           mint,
+          payer:          payer,
+          destination:    destination,
           mint_authority: mint_authority,
-          execute: false
+          execute:        false
         ) do |composer|
           yielded = true
           assert_kind_of Solace::TransactionComposer, composer
@@ -257,9 +257,9 @@ describe Solace::Programs::SplToken do
     describe '#compose_transfer' do
       let(:composer) do
         program.compose_transfer(
-          amount: amount,
-          source: source,
-          owner: source_owner,
+          amount:      amount,
+          source:      source,
+          owner:       source_owner,
           destination: destination
         )
       end
@@ -272,15 +272,15 @@ describe Solace::Programs::SplToken do
     describe '#transfer' do
       it 'should return a valid signature and transfer tokens between accounts' do
         # Get initial balances
-        source_initial_balance = connection.get_token_account_balance(source)['amount'].to_i
+        source_initial_balance      = connection.get_token_account_balance(source)['amount'].to_i
         destination_initial_balance = connection.get_token_account_balance(destination)['amount'].to_i
 
         # Transfer tokens
         tx = program.transfer(
-          amount: amount,
-          payer: payer,
-          source: source,
-          owner: source_owner,
+          amount:      amount,
+          payer:       payer,
+          source:      source,
+          owner:       source_owner,
           destination: destination
         )
 
@@ -296,12 +296,12 @@ describe Solace::Programs::SplToken do
 
       it 'should prepare a transaction without signing it' do
         tx = program.transfer(
-          amount: amount,
-          payer: payer,
-          source: source,
-          owner: source_owner,
+          amount:      amount,
+          payer:       payer,
+          source:      source,
+          owner:       source_owner,
           destination: destination,
-          sign: false
+          sign:        false
         )
 
         assert_equal tx.signatures.count, 0
@@ -309,12 +309,12 @@ describe Solace::Programs::SplToken do
 
       it 'should prepare a transaction without sending it' do
         tx = program.transfer(
-          amount: amount,
-          payer: payer,
-          source: source,
-          owner: source_owner,
+          amount:      amount,
+          payer:       payer,
+          source:      source,
+          owner:       source_owner,
           destination: destination,
-          execute: false
+          execute:     false
         )
 
         # Assert the signature exists but the transaction was not sent
@@ -326,12 +326,12 @@ describe Solace::Programs::SplToken do
         yielded = false
 
         program.transfer(
-          amount: amount,
-          payer: payer,
-          source: source,
-          owner: source_owner,
+          amount:      amount,
+          payer:       payer,
+          source:      source,
+          owner:       source_owner,
           destination: destination,
-          execute: false
+          execute:     false
         ) do |composer|
           yielded = true
           assert_kind_of Solace::TransactionComposer, composer
@@ -359,12 +359,12 @@ describe Solace::Programs::SplToken do
     describe '#compose_transfer_checked' do
       let(:composer) do
         program.compose_transfer_checked(
-          amount: amount,
-          decimals: decimals,
-          to: destination,
+          amount:    amount,
+          decimals:  decimals,
+          to:        destination,
           authority: source_owner,
-          from: source,
-          mint: mint
+          from:      source,
+          mint:      mint
         )
       end
 
@@ -381,13 +381,13 @@ describe Solace::Programs::SplToken do
 
         # Transfer tokens
         tx = program.transfer_checked(
-          payer: payer,
-          amount: amount,
-          decimals: decimals,
-          to: destination,
+          payer:     payer,
+          amount:    amount,
+          decimals:  decimals,
+          to:        destination,
           authority: source_owner,
-          from: source,
-          mint: mint
+          from:      source,
+          mint:      mint
         )
 
         connection.wait_for_confirmed_signature { tx.signature }
@@ -402,14 +402,14 @@ describe Solace::Programs::SplToken do
 
       it 'should prepare a transaction without signing it' do
         tx = program.transfer_checked(
-          payer: payer,
-          sign: false,
-          amount: amount,
-          decimals: decimals,
-          to: destination,
+          payer:     payer,
+          sign:      false,
+          amount:    amount,
+          decimals:  decimals,
+          to:        destination,
           authority: source_owner,
-          from: source,
-          mint: mint
+          from:      source,
+          mint:      mint
         )
 
         assert_equal tx.signatures.count, 0
@@ -417,14 +417,14 @@ describe Solace::Programs::SplToken do
 
       it 'should prepare a transaction without sending it' do
         tx = program.transfer_checked(
-          payer: payer,
-          execute: false,
-          amount: amount,
-          decimals: decimals,
-          to: destination,
+          payer:     payer,
+          execute:   false,
+          amount:    amount,
+          decimals:  decimals,
+          to:        destination,
           authority: source_owner,
-          from: source,
-          mint: mint
+          from:      source,
+          mint:      mint
         )
 
         # Assert the signature exists but the transaction was not sent
@@ -436,14 +436,14 @@ describe Solace::Programs::SplToken do
         yielded = false
 
         program.transfer_checked(
-          payer: payer,
-          execute: false,
-          amount: amount,
-          decimals: decimals,
-          to: destination,
+          payer:     payer,
+          execute:   false,
+          amount:    amount,
+          decimals:  decimals,
+          to:        destination,
           authority: source_owner,
-          from: source,
-          mint: mint
+          from:      source,
+          mint:      mint
         ) do |composer|
           yielded = true
           assert_kind_of Solace::TransactionComposer, composer
@@ -473,9 +473,9 @@ describe Solace::Programs::SplToken do
 
       # Compose the create mint instruction
       create_mint_composer = program.compose_create_mint(
-        funder: payer,
-        decimals: decimals,
-        mint_account: mint_account,
+        funder:         payer,
+        decimals:       decimals,
+        mint_account:   mint_account,
         mint_authority: mint_authority
       )
 
@@ -484,15 +484,15 @@ describe Solace::Programs::SplToken do
 
       create_ata_composer = ata_program.compose_create_associated_token_account(
         funder: payer,
-        owner: owner,
-        mint: mint_account
+        owner:  owner,
+        mint:   mint_account
       )
 
       # Compose the mint to instruction
       mint_to_composer = program.compose_mint_to(
-        amount: 1_000_000_000,
-        mint: mint_account,
-        destination: ata_address,
+        amount:         1_000_000_000,
+        mint:           mint_account,
+        destination:    ata_address,
         mint_authority: mint_authority
       )
 

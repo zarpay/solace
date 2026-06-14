@@ -22,32 +22,32 @@ puts "✅ Connected to cluster: #{conn.rpc_url}"
 ata_program = Solace::Programs::AssociatedTokenAccount.new(connection: conn)
 
 # Source and destination account owners and their associated token accounts for the loaded mint.
-source_owner = Fixtures.load_keypair('bob')
+source_owner      = Fixtures.load_keypair('bob')
 destination_owner = Fixtures.load_keypair('anna')
-fee_collector = Fixtures.load_keypair('fee-collector')
+fee_collector     = Fixtures.load_keypair('fee-collector')
 
 # Get or create associated token accounts
 source_ata, = ata_program.get_or_create_address(
   owner: source_owner,
-  mint: mint.address,
+  mint:  mint.address,
   payer: payer
 )
 
 destination_ata, = ata_program.get_or_create_address(
   owner: destination_owner,
-  mint: mint.address,
+  mint:  mint.address,
   payer: payer
 )
 
 fee_collector_ata, = ata_program.get_or_create_address(
   owner: fee_collector,
-  mint: mint.address,
+  mint:  mint.address,
   payer: payer
 )
 
 # Get token account balances
-source_ata_start_balance = conn.get_token_account_balance(source_ata)
-destination_ata_start_balance = conn.get_token_account_balance(destination_ata)
+source_ata_start_balance        = conn.get_token_account_balance(source_ata)
+destination_ata_start_balance   = conn.get_token_account_balance(destination_ata)
 fee_collector_ata_start_balance = conn.get_token_account_balance(fee_collector_ata)
 
 # 2. Build Instructions
@@ -71,20 +71,20 @@ accounts = [
 
 # Instruction for transferring tokens
 transfer_ix = Solace::Instructions::SplToken::TransferInstruction.build(
-  amount: transfer_amount,
-  owner_index: 1,
-  source_index: 2,
+  amount:            transfer_amount,
+  owner_index:       1,
+  source_index:      2,
   destination_index: 3,
-  program_index: 5
+  program_index:     5
 )
 
 # Instruction for collecting fee
 fee_ix = Solace::Instructions::SplToken::TransferInstruction.build(
-  amount: fee_amount,
-  owner_index: 1,
-  source_index: 2,
+  amount:            fee_amount,
+  owner_index:       1,
+  source_index:      2,
   destination_index: 4,
-  program_index: 5
+  program_index:     5
 )
 
 # 3. Prepare the transaction
@@ -92,9 +92,9 @@ puts '--- Step 3: Preparing Transaction ---'
 
 # Message
 message = Solace::Message.new(
-  header: [2, 0, 1],
-  accounts: accounts,
-  instructions: [transfer_ix, fee_ix],
+  header:           [2, 0, 1],
+  accounts:         accounts,
+  instructions:     [transfer_ix, fee_ix],
   recent_blockhash: conn.get_latest_blockhash[0]
 )
 
@@ -111,8 +111,8 @@ conn.wait_for_confirmed_signature { response['result'] }
 # 5. Print final balances
 puts '--- Step 5: Printing Final Balances ---'
 
-source_ata_end_balance = conn.get_token_account_balance(source_ata)
-destination_ata_end_balance = conn.get_token_account_balance(destination_ata)
+source_ata_end_balance        = conn.get_token_account_balance(source_ata)
+destination_ata_end_balance   = conn.get_token_account_balance(destination_ata)
 fee_collector_ata_end_balance = conn.get_token_account_balance(fee_collector_ata)
 
 puts "

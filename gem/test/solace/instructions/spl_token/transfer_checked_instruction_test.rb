@@ -10,11 +10,11 @@ describe Solace::Instructions::SplToken::TransferCheckedInstruction do
     # Build a transfer instruction
     let(:ix) do
       Solace::Instructions::SplToken::TransferCheckedInstruction.build(
-        amount: amount,
-        decimals: decimals,
-        to_index: 0,
-        from_index: 1,
-        mint_index: 2,
+        amount:          amount,
+        decimals:        decimals,
+        to_index:        0,
+        from_index:      1,
+        mint_index:      2,
         authority_index: 4
       )
     end
@@ -40,13 +40,13 @@ describe Solace::Instructions::SplToken::TransferCheckedInstruction do
 
       let(:ix_with_custom_program_index) do
         Solace::Instructions::SplToken::TransferCheckedInstruction.build(
-          amount: amount,
-          decimals: decimals,
-          to_index: 0,
-          from_index: 1,
-          mint_index: 2,
+          amount:          amount,
+          decimals:        decimals,
+          to_index:        0,
+          from_index:      1,
+          mint_index:      2,
           authority_index: 4,
-          program_index: program_index
+          program_index:   program_index
         )
       end
 

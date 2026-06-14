@@ -31,6 +31,14 @@ Metrics/BlockLength:
 Naming/AccessorMethodName:
   Enabled: false
 
+# Align hash values in a column (table style) for multi-line hash literals.
+Layout/HashAlignment:
+  EnforcedColonStyle: table
+
+# Enforce column alignment of consecutive `=` assignments.
+Layout/ExtraSpacing:
+  ForceEqualSignAlignment: true
+
 # Numbered locals/ivars (token_2022, transfer #1/#2) read more clearly in the
 # test/bootstrap narratives than the normalcase form this cop wants.
 Naming/VariableNumber:

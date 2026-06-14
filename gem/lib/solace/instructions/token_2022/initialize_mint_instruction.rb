@@ -46,8 +46,8 @@ module Solace
         )
           Solace::Instruction.new.tap do |ix|
             ix.program_index = program_index
-            ix.accounts = [mint_account_index, rent_sysvar_index]
-            ix.data = data(decimals, mint_authority, freeze_authority)
+            ix.accounts      = [mint_account_index, rent_sysvar_index]
+            ix.data          = data(decimals, mint_authority, freeze_authority)
           end
         end
 

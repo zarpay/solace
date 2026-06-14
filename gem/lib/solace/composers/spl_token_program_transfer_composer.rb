@@ -78,11 +78,11 @@ module Solace
       # @return [Solace::Instruction]
       def build_instruction(account_context)
         Instructions::SplToken::TransferInstruction.build(
-          amount: amount,
-          owner_index: account_context.index_of(owner),
-          source_index: account_context.index_of(source),
+          amount:            amount,
+          owner_index:       account_context.index_of(owner),
+          source_index:      account_context.index_of(source),
           destination_index: account_context.index_of(destination),
-          program_index: account_context.index_of(spl_token_program)
+          program_index:     account_context.index_of(spl_token_program)
         )
       end
     end

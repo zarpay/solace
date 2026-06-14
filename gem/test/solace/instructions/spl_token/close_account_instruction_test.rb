@@ -11,10 +11,10 @@ describe Solace::Instructions::SplToken::CloseAccountInstruction do
 
     let(:ix) do
       Solace::Instructions::SplToken::CloseAccountInstruction.build(
-        account_index: account_index,
+        account_index:     account_index,
         destination_index: destination_index,
-        authority_index: authority_index,
-        program_index: program_index
+        authority_index:   authority_index,
+        program_index:     program_index
       )
     end
 

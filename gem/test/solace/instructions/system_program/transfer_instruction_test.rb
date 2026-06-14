@@ -7,10 +7,10 @@ describe Solace::Instructions::SystemProgram::TransferInstruction do
     # Build a transfer instruction
     let(:ix) do
       Solace::Instructions::SystemProgram::TransferInstruction.build(
-        to_index: 1,
-        from_index: 0,
+        to_index:      1,
+        from_index:    0,
         program_index: 2,
-        lamports: 100_000_000
+        lamports:      100_000_000
       )
     end
 
@@ -33,10 +33,10 @@ describe Solace::Instructions::SystemProgram::TransferInstruction do
     describe 'with custom program index' do
       let(:ix_with_custom_program_index) do
         Solace::Instructions::SystemProgram::TransferInstruction.build(
-          to_index: 0,
-          from_index: 1,
+          to_index:      0,
+          from_index:    1,
           program_index: 3,
-          lamports: 100_000
+          lamports:      100_000
         )
       end
 

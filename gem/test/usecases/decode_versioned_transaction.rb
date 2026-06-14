@@ -104,10 +104,10 @@ puts "Number of addresses: #{num_addresses}"
 addresses = Array.new(num_addresses).map do
   account_key = Solace::Utils::Codecs.bytes_to_base58 io.read(32).bytes
 
-  num_writable, = Solace::Utils::Codecs.decode_compact_u16(io)
+  num_writable,    = Solace::Utils::Codecs.decode_compact_u16(io)
   writable_indexes = io.read(num_writable).unpack('C*')
 
-  num_readonly, = Solace::Utils::Codecs.decode_compact_u16(io)
+  num_readonly,    = Solace::Utils::Codecs.decode_compact_u16(io)
   readonly_indexes = io.read(num_readonly).unpack('C*')
 
   [account_key, writable_indexes, readonly_indexes]

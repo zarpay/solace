@@ -68,11 +68,11 @@ module Solace
     )
       super()
 
-      @version = version
-      @header = header
-      @accounts = accounts
-      @recent_blockhash = recent_blockhash
-      @instructions = instructions
+      @version               = version
+      @header                = header
+      @accounts              = accounts
+      @recent_blockhash      = recent_blockhash
+      @instructions          = instructions
       @address_lookup_tables = address_lookup_tables
     end
 

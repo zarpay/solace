@@ -77,7 +77,7 @@ describe Solace::Utils::RPCClient do
 
     it 'raises HTTPError when the response is not a success' do
       # Create a Net::HTTPBadRequest instance
-      bad_request_response = Net::HTTPBadRequest.new('1.1', 400, 'Bad Request')
+      bad_request_response      = Net::HTTPBadRequest.new('1.1', 400, 'Bad Request')
       bad_request_response.instance_variable_set(:@read, true) # mark as already read
       bad_request_response.body = 'Mocked body here'
 
@@ -94,7 +94,7 @@ describe Solace::Utils::RPCClient do
 
     it 'raises ParseError when the response is not a valid JSON' do
       # Create a Net::HTTPSuccess instance
-      text_response = Net::HTTPSuccess.new('1.1', 200, 'OK')
+      text_response      = Net::HTTPSuccess.new('1.1', 200, 'OK')
       text_response.instance_variable_set(:@read, true)
       text_response.body = 'this is not a valid JSON'
 
@@ -110,7 +110,7 @@ describe Solace::Utils::RPCClient do
 
     it 'raises RPCError when the response is a JSON-RPC error' do
       # Create a Net::HTTPSuccess instance
-      json_rpc_error_response = Net::HTTPSuccess.new('1.1', 200, 'OK')
+      json_rpc_error_response      = Net::HTTPSuccess.new('1.1', 200, 'OK')
       json_rpc_error_response.instance_variable_set(:@read, true)
       json_rpc_error_response.body = JSON.dump({ jsonrpc: '2.0', id: '1', error: { code: -32_601, message: 'Method not found', data: 'data' } })
 

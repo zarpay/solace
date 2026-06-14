@@ -40,7 +40,7 @@ module Solace
       #
       # @return [Array] The accounts
       def next_extract_accounts
-        length, = Codecs.decode_compact_u16(io)
+        length,         = Codecs.decode_compact_u16(io)
         record.accounts = io.read(length).unpack('C*')
       end
 
@@ -52,7 +52,7 @@ module Solace
       #
       # @return [Array] The instruction data
       def next_extract_data
-        length, = Codecs.decode_compact_u16(io)
+        length,     = Codecs.decode_compact_u16(io)
         record.data = io.read(length).unpack('C*')
       end
     end

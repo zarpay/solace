@@ -29,17 +29,17 @@ blockhash = connection.get_latest_blockhash[0]
 # =============================
 # 🔐 Key Setup
 # =============================
-bob_path = File.expand_path('../fixtures/bob.json', __dir__)
+bob_path  = File.expand_path('../fixtures/bob.json', __dir__)
 anna_path = File.expand_path('../fixtures/anna.json', __dir__)
 
 # Bob (sender)
 bob_sk_bytes = JSON.load_file(bob_path)
-bob_keypair = RbNaCl::Signatures::Ed25519::SigningKey.new(bob_sk_bytes[0, 32].pack('C*'))
-bob_pubkey = bob_keypair.verify_key.to_bytes
+bob_keypair  = RbNaCl::Signatures::Ed25519::SigningKey.new(bob_sk_bytes[0, 32].pack('C*'))
+bob_pubkey   = bob_keypair.verify_key.to_bytes
 
 # Anna (receiver)
 anna_sk_bytes = JSON.load_file(anna_path)
-anna_pubkey = anna_sk_bytes[32, 32].pack('C*')
+anna_pubkey   = anna_sk_bytes[32, 32].pack('C*')
 
 # Program ID: System Program (111111...)
 #

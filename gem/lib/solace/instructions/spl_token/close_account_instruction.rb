@@ -30,8 +30,8 @@ module Solace
         def self.build(account_index:, destination_index:, authority_index:, program_index:)
           Solace::Instruction.new.tap do |ix|
             ix.program_index = program_index
-            ix.accounts = [account_index, destination_index, authority_index]
-            ix.data = data
+            ix.accounts      = [account_index, destination_index, authority_index]
+            ix.data          = data
           end
         end
 

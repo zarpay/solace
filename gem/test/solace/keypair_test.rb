@@ -35,7 +35,7 @@ describe Solace::Keypair do
     end
 
     it 'creates a keypair from a secret' do
-      secret = @keypair.keypair_bytes.pack('C*')
+      secret   = @keypair.keypair_bytes.pack('C*')
       keypair2 = klass.from_secret_key(secret)
 
       assert_equal @keypair.address, keypair2.address

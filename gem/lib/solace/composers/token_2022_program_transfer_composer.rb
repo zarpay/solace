@@ -74,11 +74,11 @@ module Solace
       # @return [Solace::Instruction]
       def build_instruction(account_context)
         Instructions::Token2022::TransferInstruction.build(
-          amount: amount,
-          owner_index: account_context.index_of(owner),
-          source_index: account_context.index_of(source),
+          amount:            amount,
+          owner_index:       account_context.index_of(owner),
+          source_index:      account_context.index_of(source),
           destination_index: account_context.index_of(destination),
-          program_index: account_context.index_of(token_2022_program)
+          program_index:     account_context.index_of(token_2022_program)
         )
       end
     end

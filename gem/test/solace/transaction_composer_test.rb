@@ -28,16 +28,16 @@ describe Solace::TransactionComposer do
   # Test composers
   let(:transfer_composer1) do
     Solace::Composers::SystemProgramTransferComposer.new(
-      from: anna_keypair,
-      to: bob_keypair,
+      from:     anna_keypair,
+      to:       bob_keypair,
       lamports: 1000
     )
   end
 
   let(:transfer_composer2) do
     Solace::Composers::SystemProgramTransferComposer.new(
-      from: bob_keypair,
-      to: random_keypair,
+      from:     bob_keypair,
+      to:       random_keypair,
       lamports: 2000
     )
   end
@@ -121,8 +121,8 @@ describe Solace::TransactionComposer do
   describe '#insert_instruction' do
     let(:transfer_composer_middle) do
       Solace::Composers::SystemProgramTransferComposer.new(
-        from: payer_keypair,
-        to: random_keypair,
+        from:     payer_keypair,
+        to:       random_keypair,
         lamports: 500
       )
     end
@@ -156,8 +156,8 @@ describe Solace::TransactionComposer do
 
     let(:another_instruction_composer) do
       Solace::Composers::SystemProgramTransferComposer.new(
-        from: bob_keypair,
-        to: anna_keypair,
+        from:     bob_keypair,
+        to:       anna_keypair,
         lamports: 1500
       )
     end

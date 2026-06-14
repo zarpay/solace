@@ -28,9 +28,9 @@ module Solace
       # @param [Object] rpc_data The JSON-RPC error data
       def initialize(message, rpc_code:, rpc_message:, rpc_data: nil)
         super(message)
-        @rpc_code = rpc_code
+        @rpc_code    = rpc_code
         @rpc_message = rpc_message
-        @rpc_data = rpc_data
+        @rpc_data    = rpc_data
       end
 
       # Formats a response to an error
@@ -40,8 +40,8 @@ module Solace
       def self.format_response(response)
         new(
           "RPC error #{response['error']['code']}: #{response['error']['message']}",
-          rpc_data: response['error']['data'],
-          rpc_code: response['error']['code'],
+          rpc_data:    response['error']['data'],
+          rpc_code:    response['error']['code'],
           rpc_message: response['error']['message']
         )
       end

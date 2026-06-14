@@ -36,7 +36,7 @@ module Solace
       # @return [BaseDeserializer] The new deserializer object
       def initialize(io)
         super()
-        @io = io
+        @io     = io
         @record = self.class.record_class.new
       end
 

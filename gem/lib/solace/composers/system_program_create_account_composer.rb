@@ -85,11 +85,11 @@ module Solace
       # @return [Solace::Instruction]
       def build_instruction(account_context)
         Solace::Instructions::SystemProgram::CreateAccountInstruction.build(
-          space: space,
-          lamports: lamports,
-          owner: owner,
-          from_index: account_context.index_of(from),
-          new_account_index: account_context.index_of(new_account),
+          space:                space,
+          lamports:             lamports,
+          owner:                owner,
+          from_index:           account_context.index_of(from),
+          new_account_index:    account_context.index_of(new_account),
           system_program_index: account_context.index_of(system_program)
         )
       end

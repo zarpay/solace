@@ -5,8 +5,8 @@ require 'test_helper'
 describe Solace::PublicKey do
   before do
     # Example 32-byte key (all 1s)
-    @bytes = Array.new(32, 1)
-    @base58 = Solace::Utils::Codecs.bytes_to_base58(@bytes)
+    @bytes      = Array.new(32, 1)
+    @base58     = Solace::Utils::Codecs.bytes_to_base58(@bytes)
     @public_key = Solace::PublicKey.new(@bytes)
   end
 

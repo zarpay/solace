@@ -18,8 +18,8 @@ describe Solace::Composers::Token2022ProgramMintToComposer do
 
   let(:ata_address) do
     Solace::Programs::AssociatedTokenAccount.get_address(
-      owner: bob.address,
-      mint: mint.address,
+      owner:            bob.address,
+      mint:             mint.address,
       token_program_id: Solace::Constants::TOKEN_2022_PROGRAM_ID
     ).first
   end
@@ -27,9 +27,9 @@ describe Solace::Composers::Token2022ProgramMintToComposer do
   # Bob already has a Token-2022 associated token account for the mint created during bootstrap.
   let(:composer) do
     Solace::Composers::Token2022ProgramMintToComposer.new(
-      amount: tokens,
-      mint: mint,
-      destination: ata_address,
+      amount:         tokens,
+      mint:           mint,
+      destination:    ata_address,
       mint_authority: mint_authority
     )
   end

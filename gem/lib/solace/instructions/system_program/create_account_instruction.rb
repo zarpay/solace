@@ -73,8 +73,8 @@ module Solace
         )
           Solace::Instruction.new.tap do |ix|
             ix.program_index = system_program_index
-            ix.accounts = [from_index, new_account_index]
-            ix.data = data(lamports, space, owner)
+            ix.accounts      = [from_index, new_account_index]
+            ix.data          = data(lamports, space, owner)
           end
         end
         # rubocop:enable Metrics/ParameterLists

@@ -18,11 +18,11 @@ mint_keypair = Solace::Keypair.generate
 
 # 5. Build SPL token transfer instruction
 instruction = Solace::Instructions::SplToken::InitializeMintInstruction.build(
-  decimals: 6,
-  mint_authority: mint_authority_keypair.public_key_bytes,
-  rent_sysvar_index: 1,
+  decimals:           6,
+  mint_authority:     mint_authority_keypair.public_key_bytes,
+  rent_sysvar_index:  1,
   mint_account_index: 0,
-  program_index: 2
+  program_index:      2
 )
 
 # 6. Build transaction
@@ -33,14 +33,14 @@ accounts = [
 ]
 
 message = Solace::Message.new(
-  header: [
+  header:           [
     1, # num_required_signatures
     0, # num_readonly_signed
     2 # num_readonly_unsigned
   ],
-  accounts: accounts,
+  accounts:         accounts,
   recent_blockhash: conn.get_latest_blockhash[0],
-  instructions: [instruction]
+  instructions:     [instruction]
 )
 
 # 7. Build transaction

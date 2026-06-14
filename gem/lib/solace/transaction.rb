@@ -66,7 +66,7 @@ module Solace
     )
       super()
       @signatures = signatures
-      @message = message
+      @message    = message
     end
 
     # Returns the first signature of the transaction (signature of the transaction fee payer)

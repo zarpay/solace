@@ -18,7 +18,7 @@ module Solace
       # @param metadata [Hash] A hash containing the token's metadata attributes
       # @return [self] The initialized Token object
       def initialize(symbol, metadata)
-        @symbol = symbol
+        @symbol   = symbol
         @metadata = metadata.transform_keys(&:to_sym)
       end
 

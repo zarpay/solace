@@ -19,11 +19,11 @@ describe Solace::Instructions::SplToken::TransferInstruction do
   describe '.build' do
     let(:ix) do
       Solace::Instructions::SplToken::TransferInstruction.build(
-        amount: amount,
-        source_index: 1,
+        amount:            amount,
+        source_index:      1,
         destination_index: 2,
-        owner_index: 0,
-        program_index: 3
+        owner_index:       0,
+        program_index:     3
       )
     end
 
@@ -54,10 +54,10 @@ describe Solace::Instructions::SplToken::TransferInstruction do
 
       # Create mint, source ATA, and mint tokens
       tx = spl_token_program.mint_to(
-        amount: amount,
-        payer: payer,
-        mint: mint,
-        destination: source,
+        amount:         amount,
+        payer:          payer,
+        mint:           mint,
+        destination:    source,
         mint_authority: mint_authority
       )
 
@@ -74,18 +74,18 @@ describe Solace::Instructions::SplToken::TransferInstruction do
 
       # Instruction
       ix = Solace::Instructions::SplToken::TransferInstruction.build(
-        amount: amount,
-        source_index: 2,
+        amount:            amount,
+        source_index:      2,
         destination_index: 3,
-        owner_index: 1,
-        program_index: 4
+        owner_index:       1,
+        program_index:     4
       )
 
       # Message
       message = Solace::Message.new(
-        header: [2, 0, 1],
-        accounts: accounts,
-        instructions: [ix],
+        header:           [2, 0, 1],
+        accounts:         accounts,
+        instructions:     [ix],
         recent_blockhash: connection.get_latest_blockhash[0]
       )
 

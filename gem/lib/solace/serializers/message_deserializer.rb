@@ -64,7 +64,7 @@ module Solace
       #
       # @return [Array<String>] The account keys of the message
       def next_extract_accounts
-        count, = Codecs.decode_compact_u16(io)
+        count,          = Codecs.decode_compact_u16(io)
         record.accounts = count.times.map do
           Codecs.bytes_to_base58 io.read(32).bytes
         end
@@ -88,7 +88,7 @@ module Solace
       #
       # @return [Array<Solace::Instruction>] The instructions of the message
       def next_extract_instructions
-        count, = Codecs.decode_compact_u16(io)
+        count,              = Codecs.decode_compact_u16(io)
         record.instructions = count.times.map do
           Solace::Instruction.deserialize(io)
         end
@@ -104,7 +104,7 @@ module Solace
       def next_extract_address_lookup_table
         return unless record.versioned?
 
-        count, = Codecs.decode_compact_u16(io)
+        count,                       = Codecs.decode_compact_u16(io)
         record.address_lookup_tables = count.times.map do
           Solace::AddressLookupTable.deserialize(io)
         end

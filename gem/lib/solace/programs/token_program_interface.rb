@@ -84,18 +84,18 @@ module Solace
 
         # Build the account for the mint
         create_account_ix = Composers::SystemProgramCreateAccountComposer.new(
-          from: funder,
+          from:        funder,
           new_account: mint_account,
-          owner: program_id,
-          lamports: rent_lamports,
-          space: 82
+          owner:       program_id,
+          lamports:    rent_lamports,
+          space:       82
         )
 
         # Build the initialize mint composer (per-program class supplied by includer)
         initialize_mint_ix = initialize_mint_composer_class.new(
-          decimals: decimals,
-          mint_account: mint_account,
-          mint_authority: mint_authority,
+          decimals:         decimals,
+          mint_account:     mint_account,
+          mint_authority:   mint_authority,
           freeze_authority: freeze_authority
         )
 
@@ -153,9 +153,9 @@ module Solace
         mint_authority:
       )
         ix = mint_to_composer_class.new(
-          amount: amount,
-          mint: mint,
-          destination: destination,
+          amount:         amount,
+          mint:           mint,
+          destination:    destination,
           mint_authority: mint_authority
         )
 
@@ -210,9 +210,9 @@ module Solace
         owner:
       )
         ix = transfer_composer_class.new(
-          amount: amount,
-          owner: owner,
-          source: source,
+          amount:      amount,
+          owner:       owner,
+          source:      source,
           destination: destination
         )
 
@@ -272,12 +272,12 @@ module Solace
         decimals:
       )
         ix = transfer_checked_composer_class.new(
-          to: to,
-          from: from,
-          mint: mint,
+          to:        to,
+          from:      from,
+          mint:      mint,
           authority: authority,
-          amount: amount,
-          decimals: decimals
+          amount:    amount,
+          decimals:  decimals
         )
 
         TransactionComposer

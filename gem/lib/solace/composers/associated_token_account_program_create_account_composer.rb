@@ -98,13 +98,13 @@ module Solace
       # @return [Solace::Instruction] The instruction
       def build_instruction(account_context)
         Instructions::AssociatedTokenAccount::CreateAccountInstruction.build(
-          funder_index: account_context.index_of(funder),
-          owner_index: account_context.index_of(owner),
-          mint_index: account_context.index_of(mint),
+          funder_index:                   account_context.index_of(funder),
+          owner_index:                    account_context.index_of(owner),
+          mint_index:                     account_context.index_of(mint),
           associated_token_account_index: account_context.index_of(ata_address),
-          system_program_index: account_context.index_of(system_program_id),
-          token_program_index: account_context.index_of(token_program_id),
-          program_index: account_context.index_of(associated_token_account_program_id)
+          system_program_index:           account_context.index_of(system_program_id),
+          token_program_index:            account_context.index_of(token_program_id),
+          program_index:                  account_context.index_of(associated_token_account_program_id)
         )
       end
     end

@@ -6,10 +6,10 @@ describe Solace::Serializers::InstructionDeserializer do
   # Build a transfer instruction
   let(:ix) do
     Solace::Instructions::SystemProgram::TransferInstruction.build(
-      to_index: 1,
-      from_index: 0,
+      to_index:      1,
+      from_index:    0,
       program_index: 2,
-      lamports: 100_000_000
+      lamports:      100_000_000
     )
   end
 

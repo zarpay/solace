@@ -6,13 +6,13 @@ describe Solace::Instructions::AssociatedTokenAccount::CreateAccountInstruction 
   describe '.build' do
     let(:ix) do
       Solace::Instructions::AssociatedTokenAccount::CreateAccountInstruction.build(
-        funder_index: 0,
+        funder_index:                   0,
         associated_token_account_index: 1,
-        owner_index: 2,
-        mint_index: 3,
-        system_program_index: 4,
-        token_program_index: 5,
-        program_index: 6
+        owner_index:                    2,
+        mint_index:                     3,
+        system_program_index:           4,
+        token_program_index:            5,
+        program_index:                  6
       )
     end
 
@@ -67,21 +67,21 @@ describe Solace::Instructions::AssociatedTokenAccount::CreateAccountInstruction 
 
       # 3. Build the instruction, providing the index of each required account.
       instruction = Solace::Instructions::AssociatedTokenAccount::CreateAccountInstruction.build(
-        funder_index: 0,
+        funder_index:                   0,
         associated_token_account_index: 1,
-        owner_index: 2,
-        mint_index: 3,
-        system_program_index: 4,
-        token_program_index: 5,
-        program_index: 6
+        owner_index:                    2,
+        mint_index:                     3,
+        system_program_index:           4,
+        token_program_index:            5,
+        program_index:                  6
       )
 
       # 4. Build the message
       message = Solace::Message.new(
-        header: [1, 0, 4], # 1 signer (payer), 4 readonly accounts
-        accounts: accounts,
+        header:           [1, 0, 4], # 1 signer (payer), 4 readonly accounts
+        accounts:         accounts,
         recent_blockhash: conn.get_latest_blockhash[0],
-        instructions: [instruction]
+        instructions:     [instruction]
       )
 
       # 5. Build and sign the transaction

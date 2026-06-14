@@ -101,10 +101,10 @@ module Solace
         return ata_address unless account_balance.nil?
 
         tx = create_associated_token_account(
-          payer: payer,
-          funder: funder,
-          owner: owner,
-          mint: mint,
+          payer:            payer,
+          funder:           funder,
+          owner:            owner,
+          mint:             mint,
           token_program_id: token_program_id
         )
 
@@ -162,10 +162,10 @@ module Solace
         ata_address, = get_address(owner: owner, mint: mint, token_program_id: token_program_id)
 
         ix = Solace::Composers::AssociatedTokenAccountProgramCreateAccountComposer.new(
-          mint: mint,
-          owner: owner,
-          funder: funder,
-          ata_address: ata_address,
+          mint:             mint,
+          owner:            owner,
+          funder:           funder,
+          ata_address:      ata_address,
           token_program_id: token_program_id
         )
 

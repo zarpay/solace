@@ -8,11 +8,11 @@ describe Solace::Instructions::SplToken::MintToInstruction do
   describe '.build' do
     let(:ix) do
       Solace::Instructions::SplToken::MintToInstruction.build(
-        amount: 1_000_000,
+        amount:               1_000_000,
         mint_authority_index: 0,
-        mint_index: 1,
-        destination_index: 2,
-        program_index: 3
+        mint_index:           1,
+        destination_index:    2,
+        program_index:        3
       )
     end
 
@@ -61,21 +61,21 @@ describe Solace::Instructions::SplToken::MintToInstruction do
 
       # Now, mint to the newly created associated token account
       ix = Solace::Instructions::SplToken::MintToInstruction.build(
-        amount: amount,
+        amount:               amount,
         mint_authority_index: 1,
-        mint_index: 2,
-        destination_index: 3,
-        program_index: 4
+        mint_index:           2,
+        destination_index:    3,
+        program_index:        4
       )
 
       message = Solace::Message.new(
-        header: [
+        header:           [
           2, # num_required_signatures
           0, # num_readonly_signed
           1  # num_readonly_unsigned
         ],
-        accounts: accounts,
-        instructions: [ix],
+        accounts:         accounts,
+        instructions:     [ix],
         recent_blockhash: connection.get_latest_blockhash[0]
       )
 
@@ -92,8 +92,8 @@ describe Solace::Instructions::SplToken::MintToInstruction do
       # TODO: fix this test to use a get token balance call
       balance = connection.get_account_info(@ata_address)
 
-      data_binary = Base64.decode64(balance.dig('data', 0))
-      amount_slice = data_binary.slice(64, 8)
+      data_binary   = Base64.decode64(balance.dig('data', 0))
+      amount_slice  = data_binary.slice(64, 8)
       token_balance = amount_slice.unpack1('Q<')
 
       assert_operator amount, :<=, token_balance

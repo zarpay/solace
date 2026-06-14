@@ -81,16 +81,16 @@ module Solace
       # @param stream [IO, StringIO] The input to read bytes from.
       # @return [Integer, Integer] The decoded value and the number of bytes read.
       def self.decode_compact_u16(stream)
-        value = 0
-        shift = 0
+        value      = 0
+        shift      = 0
         bytes_read = 0
 
         loop do
           byte = stream.read(1)
           raise EOFError, 'Unexpected end of input while decoding compact-u16' unless byte
 
-          byte = byte.ord
-          value |= (byte & 0x7F) << shift
+          byte        = byte.ord
+          value      |= (byte & 0x7F) << shift
           bytes_read += 1
           break if byte.nobits?(0x80)
 

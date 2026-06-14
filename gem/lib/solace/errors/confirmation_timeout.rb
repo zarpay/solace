@@ -26,9 +26,9 @@ module Solace
       # @param [Integer] timeout The time out reached
       def initialize(message, signature:, commitment:, timeout:)
         super(message)
-        @signature = signature
+        @signature  = signature
         @commitment = commitment
-        @timeout = timeout
+        @timeout    = timeout
       end
 
       # Formats a confirmation timeout error
@@ -40,9 +40,9 @@ module Solace
       def self.format(signature, commitment, timeout)
         new(
           "Timed out waiting for signature #{signature} at commitment=#{commitment} after #{timeout}s",
-          signature: signature,
+          signature:  signature,
           commitment: commitment,
-          timeout: timeout
+          timeout:    timeout
         )
       end
     end

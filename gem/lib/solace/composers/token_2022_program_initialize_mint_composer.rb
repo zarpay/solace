@@ -81,11 +81,11 @@ module Solace
       def build_instruction(account_context)
         Instructions::Token2022::InitializeMintInstruction.build(
           mint_account_index: account_context.index_of(mint_account),
-          rent_sysvar_index: account_context.index_of(rent_sysvar),
-          program_index: account_context.index_of(token_2022_program),
-          decimals: decimals,
-          mint_authority: mint_authority,
-          freeze_authority: freeze_authority
+          rent_sysvar_index:  account_context.index_of(rent_sysvar),
+          program_index:      account_context.index_of(token_2022_program),
+          decimals:           decimals,
+          mint_authority:     mint_authority,
+          freeze_authority:   freeze_authority
         )
       end
     end

@@ -49,8 +49,8 @@ module Solace
         )
           Solace::Instruction.new.tap do |ix|
             ix.program_index = program_index
-            ix.accounts = [source_index, destination_index, owner_index]
-            ix.data = data(amount)
+            ix.accounts      = [source_index, destination_index, owner_index]
+            ix.data          = data(amount)
           end
         end
 

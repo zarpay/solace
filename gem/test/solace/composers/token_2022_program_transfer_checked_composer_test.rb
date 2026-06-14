@@ -11,24 +11,24 @@ describe Solace::Composers::Token2022ProgramTransferCheckedComposer do
 
   let(:bob_ata) do
     Solace::Programs::AssociatedTokenAccount.get_address(
-      owner: bob,
-      mint: mint,
+      owner:            bob,
+      mint:             mint,
       token_program_id: Solace::Constants::TOKEN_2022_PROGRAM_ID
     ).first
   end
 
   let(:anna_ata) do
     Solace::Programs::AssociatedTokenAccount.get_address(
-      owner: anna,
-      mint: mint,
+      owner:            anna,
+      mint:             mint,
       token_program_id: Solace::Constants::TOKEN_2022_PROGRAM_ID
     ).first
   end
 
   let(:fee_collector_ata) do
     Solace::Programs::AssociatedTokenAccount.get_address(
-      owner: fee_collector,
-      mint: mint,
+      owner:            fee_collector,
+      mint:             mint,
       token_program_id: Solace::Constants::TOKEN_2022_PROGRAM_ID
     ).first
   end
@@ -42,18 +42,18 @@ describe Solace::Composers::Token2022ProgramTransferCheckedComposer do
   describe 'sponsored transaction' do
     let(:composer) do
       Solace::Composers::Token2022ProgramTransferCheckedComposer.new(
-        mint: mint,
-        to: anna_ata,
-        from: bob_ata,
+        mint:      mint,
+        to:        anna_ata,
+        from:      bob_ata,
         authority: bob,
-        amount: amount,
-        decimals: decimals
+        amount:    amount,
+        decimals:  decimals
       )
     end
 
     before(:all) do
-      @payer_starting_balance = connection.get_balance(payer.address)
-      @bob_starting_token_balance = connection.get_token_account_balance(bob_ata)['amount'].to_i
+      @payer_starting_balance      = connection.get_balance(payer.address)
+      @bob_starting_token_balance  = connection.get_token_account_balance(bob_ata)['amount'].to_i
       @anna_starting_token_balance = connection.get_token_account_balance(anna_ata)['amount'].to_i
 
       transaction_composer.add_instruction(composer)
@@ -65,8 +65,8 @@ describe Solace::Composers::Token2022ProgramTransferCheckedComposer do
       @signature = connection.send_transaction(tx.serialize)
       connection.wait_for_confirmed_signature { @signature['result'] }
 
-      @payer_ending_balance = connection.get_balance(payer.address)
-      @bob_ending_token_balance = connection.get_token_account_balance(bob_ata)['amount'].to_i
+      @payer_ending_balance      = connection.get_balance(payer.address)
+      @bob_ending_token_balance  = connection.get_token_account_balance(bob_ata)['amount'].to_i
       @anna_ending_token_balance = connection.get_token_account_balance(anna_ata)['amount'].to_i
     end
 
@@ -86,18 +86,18 @@ describe Solace::Composers::Token2022ProgramTransferCheckedComposer do
   describe 'non-sponsored transaction' do
     let(:composer) do
       Solace::Composers::Token2022ProgramTransferCheckedComposer.new(
-        mint: mint,
-        to: anna_ata,
-        from: bob_ata,
+        mint:      mint,
+        to:        anna_ata,
+        from:      bob_ata,
         authority: bob,
-        amount: amount,
-        decimals: decimals
+        amount:    amount,
+        decimals:  decimals
       )
     end
 
     before(:all) do
-      @bob_starting_balance = connection.get_balance(bob.address)
-      @bob_starting_token_balance = connection.get_token_account_balance(bob_ata)['amount'].to_i
+      @bob_starting_balance        = connection.get_balance(bob.address)
+      @bob_starting_token_balance  = connection.get_token_account_balance(bob_ata)['amount'].to_i
       @anna_starting_token_balance = connection.get_token_account_balance(anna_ata)['amount'].to_i
 
       transaction_composer.add_instruction(composer)
@@ -109,8 +109,8 @@ describe Solace::Composers::Token2022ProgramTransferCheckedComposer do
       @signature = connection.send_transaction(tx.serialize)
       connection.wait_for_confirmed_signature { @signature['result'] }
 
-      @bob_ending_balance = connection.get_balance(bob.address)
-      @bob_ending_token_balance = connection.get_token_account_balance(bob_ata)['amount'].to_i
+      @bob_ending_balance        = connection.get_balance(bob.address)
+      @bob_ending_token_balance  = connection.get_token_account_balance(bob_ata)['amount'].to_i
       @anna_ending_token_balance = connection.get_token_account_balance(anna_ata)['amount'].to_i
     end
 
@@ -133,41 +133,41 @@ describe Solace::Composers::Token2022ProgramTransferCheckedComposer do
 
     let(:composer1) do
       Solace::Composers::Token2022ProgramTransferCheckedComposer.new(
-        mint: mint,
-        to: anna_ata,
-        from: bob_ata,
+        mint:      mint,
+        to:        anna_ata,
+        from:      bob_ata,
         authority: bob,
-        amount: amount,
-        decimals: decimals
+        amount:    amount,
+        decimals:  decimals
       )
     end
 
     let(:composer2) do
       Solace::Composers::Token2022ProgramTransferCheckedComposer.new(
-        mint: mint,
-        to: fee_collector_ata,
-        from: bob_ata,
+        mint:      mint,
+        to:        fee_collector_ata,
+        from:      bob_ata,
         authority: bob,
-        amount: fee,
-        decimals: decimals
+        amount:    fee,
+        decimals:  decimals
       )
     end
 
     let(:composer3) do
       Solace::Composers::SystemProgramTransferComposer.new(
-        to: bob,
-        from: anna,
+        to:       bob,
+        from:     anna,
         lamports: lamports
       )
     end
 
     before(:all) do
       @payer_starting_balance = connection.get_balance(payer.address)
-      @bob_starting_balance = connection.get_balance(bob.address)
-      @anna_starting_balance = connection.get_balance(anna.address)
+      @bob_starting_balance   = connection.get_balance(bob.address)
+      @anna_starting_balance  = connection.get_balance(anna.address)
 
-      @bob_starting_token_balance = connection.get_token_account_balance(bob_ata)['amount'].to_i
-      @anna_starting_token_balance = connection.get_token_account_balance(anna_ata)['amount'].to_i
+      @bob_starting_token_balance     = connection.get_token_account_balance(bob_ata)['amount'].to_i
+      @anna_starting_token_balance    = connection.get_token_account_balance(anna_ata)['amount'].to_i
       @fee_collector_starting_balance = connection.get_token_account_balance(fee_collector_ata)['amount'].to_i
 
       transaction_composer.add_instruction(composer1)
@@ -182,11 +182,11 @@ describe Solace::Composers::Token2022ProgramTransferCheckedComposer do
       connection.wait_for_confirmed_signature { @signature['result'] }
 
       @payer_ending_balance = connection.get_balance(payer.address)
-      @bob_ending_balance = connection.get_balance(bob.address)
-      @anna_ending_balance = connection.get_balance(anna.address)
+      @bob_ending_balance   = connection.get_balance(bob.address)
+      @anna_ending_balance  = connection.get_balance(anna.address)
 
-      @bob_ending_token_balance = connection.get_token_account_balance(bob_ata)['amount'].to_i
-      @anna_ending_token_balance = connection.get_token_account_balance(anna_ata)['amount'].to_i
+      @bob_ending_token_balance     = connection.get_token_account_balance(bob_ata)['amount'].to_i
+      @anna_ending_token_balance    = connection.get_token_account_balance(anna_ata)['amount'].to_i
       @fee_collector_ending_balance = connection.get_token_account_balance(fee_collector_ata)['amount'].to_i
     end
 

@@ -37,22 +37,22 @@ puts "✅ Rent for 82 bytes: #{rent_lamports} lamports"
 
 # Instruction 1: Create a new account for the mint.
 create_account_ix = Solace::Instructions::SystemProgram::CreateAccountInstruction.build(
-  from_index: 0, # The payer is the first account
-  new_account_index: 1, # The new mint is the second account
+  from_index:           0, # The payer is the first account
+  new_account_index:    1, # The new mint is the second account
   system_program_index: 4, # The System Program is the fourth account
-  lamports: rent_lamports,
-  space: 82,
-  owner: Solace::Constants::TOKEN_PROGRAM_ID
+  lamports:             rent_lamports,
+  space:                82,
+  owner:                Solace::Constants::TOKEN_PROGRAM_ID
 )
 puts '✅ Built SystemProgram::CreateAccount instruction'
 
 # Instruction 2: Initialize the new account as a mint.
 initialize_mint_ix = Solace::Instructions::SplToken::InitializeMintInstruction.build(
   mint_account_index: 1, # The new mint is the second account
-  rent_sysvar_index: 2, # The Rent Sysvar is the third account
-  program_index: 3, # The SPL Token Program is the fourth account
-  decimals: 6,
-  mint_authority: payer.address # The payer will also be the mint authority
+  rent_sysvar_index:  2, # The Rent Sysvar is the third account
+  program_index:      3, # The SPL Token Program is the fourth account
+  decimals:           6,
+  mint_authority:     payer.address # The payer will also be the mint authority
 )
 puts "\xE2\x9C\x85 Built SPLToken::InitializeMint instruction"
 puts "-------------------------------------\n"
@@ -61,10 +61,10 @@ puts "-------------------------------------\n"
 puts '--- Step 3: Building and Signing Transaction ---'
 # Create a new message and add the instructions.
 message = Solace::Message.new(
-  instructions: [create_account_ix, initialize_mint_ix],
+  instructions:     [create_account_ix, initialize_mint_ix],
   # Define all the accounts that will be used in the transaction.
   # Order matters for the instruction indices.
-  accounts: [
+  accounts:         [
     payer.address,
     mint_keypair.address,
     Solace::Constants::SYSVAR_RENT_PROGRAM_ID,
@@ -74,7 +74,7 @@ message = Solace::Message.new(
   # Set the message header now that we know the accounts.
   # Signers: payer (writable), mint_keypair (writable)
   # Read-only: Rent Sysvar, SPL Token Program, System Program
-  header: [2, 0, 3],
+  header:           [2, 0, 3],
   recent_blockhash: conn.get_latest_blockhash[0]
 )
 puts '✅ Assembled message'

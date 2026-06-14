@@ -10,11 +10,11 @@ describe Solace::Instructions::SystemProgram::CreateAccountInstruction do
 
     let(:ix) do
       Solace::Instructions::SystemProgram::CreateAccountInstruction.build(
-        space: space,
-        lamports: lamports,
-        owner: owner,
-        from_index: 0,
-        new_account_index: 1,
+        space:                space,
+        lamports:             lamports,
+        owner:                owner,
+        from_index:           0,
+        new_account_index:    1,
         system_program_index: 2
       )
     end
@@ -45,11 +45,11 @@ describe Solace::Instructions::SystemProgram::CreateAccountInstruction do
   describe 'with custom program index' do
     let(:ix_with_custom_program_index) do
       Solace::Instructions::SystemProgram::CreateAccountInstruction.build(
-        space: 100,
-        lamports: 1_000_000_000,
-        owner: Solace::Constants::SYSTEM_PROGRAM_ID,
-        from_index: 0,
-        new_account_index: 1,
+        space:                100,
+        lamports:             1_000_000_000,
+        owner:                Solace::Constants::SYSTEM_PROGRAM_ID,
+        from_index:           0,
+        new_account_index:    1,
         system_program_index: 3
       )
     end
@@ -72,28 +72,28 @@ describe Solace::Instructions::SystemProgram::CreateAccountInstruction do
     before(:all) do
       # 1. Build instruction
       instruction = Solace::Instructions::SystemProgram::CreateAccountInstruction.build(
-        owner: owner,
-        space: space,
-        lamports: lamports,
-        from_index: 0,
-        new_account_index: 1,
+        owner:                owner,
+        space:                space,
+        lamports:             lamports,
+        from_index:           0,
+        new_account_index:    1,
         system_program_index: 2
       )
 
       # 2. Build message
       message = Solace::Message.new(
-        header: [
+        header:           [
           2, # num_required_signatures
           0, # num_readonly_signed
           1  # num_readonly_unsigned
         ],
-        accounts: [
+        accounts:         [
           payer.address,
           new_account.address,
           Solace::Constants::SYSTEM_PROGRAM_ID
         ],
         recent_blockhash: conn.get_latest_blockhash[0],
-        instructions: [instruction]
+        instructions:     [instruction]
       )
 
       # 3. Build transaction

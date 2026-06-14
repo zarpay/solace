@@ -35,8 +35,8 @@ module Solace
       #
       # @return [Hash] The default account data with lowest level of permissions
       DEFAULT_ACCOUNT = {
-        signer: false,
-        writable: false,
+        signer:    false,
+        writable:  false,
         fee_payer: false
       }.freeze
 
@@ -60,8 +60,8 @@ module Solace
 
       # Initialize the account context
       def initialize
-        @header = []
-        @accounts = []
+        @header             = []
+        @accounts           = []
         @pubkey_account_map = {}
       end
 
@@ -175,7 +175,7 @@ module Solace
       #
       # @return [Hash] The compiled accounts and header
       def compile
-        self.header = calculate_header
+        self.header   = calculate_header
         self.accounts = order_accounts
         self
       end
@@ -206,9 +206,9 @@ module Solace
       def merge_account(pubkey, signer:, writable:, fee_payer: false)
         pubkey_str = pubkey.is_a?(String) ? pubkey : pubkey.address
 
-        @pubkey_account_map[pubkey_str] ||= DEFAULT_ACCOUNT.dup
-        @pubkey_account_map[pubkey_str][:signer] ||= signer
-        @pubkey_account_map[pubkey_str][:writable] ||= writable
+        @pubkey_account_map[pubkey_str]             ||= DEFAULT_ACCOUNT.dup
+        @pubkey_account_map[pubkey_str][:signer]    ||= signer
+        @pubkey_account_map[pubkey_str][:writable]  ||= writable
         @pubkey_account_map[pubkey_str][:fee_payer] ||= fee_payer
 
         self
@@ -242,7 +242,7 @@ module Solace
         @pubkey_account_map.keys.each_with_object([0, 0, 0]) do |pubkey, acc|
           acc[0] += 1 if signer?(pubkey)
 
-          if readonly_signer?(pubkey) then acc[1] += 1
+          if readonly_signer?(pubkey) then acc[1]       += 1
           elsif readonly_nonsigner?(pubkey) then acc[2] += 1
           end
         end

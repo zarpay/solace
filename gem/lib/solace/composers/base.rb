@@ -57,7 +57,7 @@ module Solace
       #
       # @param params [Hash] Parameters to pass to the composer constructor
       def initialize(params)
-        @params = params
+        @params          = params
         @account_context = Utils::AccountContext.new
         setup_accounts
       end

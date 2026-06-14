@@ -19,10 +19,10 @@ describe Solace::Composers::SplTokenProgramTransferComposer do
 
   let(:composer) do
     Solace::Composers::SplTokenProgramTransferComposer.new(
-      owner: bob,
-      source: bob_ata,
+      owner:       bob,
+      source:      bob_ata,
       destination: anna_ata,
-      amount: amount
+      amount:      amount
     )
   end
 

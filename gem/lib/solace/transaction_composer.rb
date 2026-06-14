@@ -77,9 +77,9 @@ module Solace
     #
     # @param connection [Solace::Connection] The connection to the Solana cluster
     def initialize(connection:)
-      @connection = connection
+      @connection            = connection
       @instruction_composers = []
-      @context = Utils::AccountContext.new
+      @context               = Utils::AccountContext.new
     end
 
     # Add an instruction composer to the transaction
@@ -161,9 +161,9 @@ module Solace
       context.compile
 
       message = Solace::Message.new(
-        header: context.header,
-        accounts: context.accounts,
-        instructions: build_instructions,
+        header:           context.header,
+        accounts:         context.accounts,
+        instructions:     build_instructions,
         recent_blockhash: connection.get_latest_blockhash[0]
       )
 

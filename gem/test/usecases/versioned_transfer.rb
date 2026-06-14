@@ -28,22 +28,22 @@ recent_blockhash = connection.get_latest_blockhash[0]
 # =============================
 # 🔐 Key Setup
 # =============================
-bob_path = File.expand_path('../fixtures/bob.json', __dir__)
+bob_path  = File.expand_path('../fixtures/bob.json', __dir__)
 anna_path = File.expand_path('../fixtures/anna.json', __dir__)
 
 # Bob (sender)
 bob_sk_bytes = JSON.load_file(bob_path)
-bob_keypair = RbNaCl::Signatures::Ed25519::SigningKey.new(bob_sk_bytes[0, 32].pack('C*'))
-bob_pubkey = bob_keypair.verify_key.to_bytes
-bob_address = Codecs.binary_to_base58(bob_pubkey)
+bob_keypair  = RbNaCl::Signatures::Ed25519::SigningKey.new(bob_sk_bytes[0, 32].pack('C*'))
+bob_pubkey   = bob_keypair.verify_key.to_bytes
+bob_address  = Codecs.binary_to_base58(bob_pubkey)
 
 # Anna (receiver)
 anna_sk_bytes = JSON.load_file(anna_path)
-anna_pubkey = anna_sk_bytes[32, 32].pack('C*')
-anna_address = Codecs.binary_to_base58(anna_pubkey)
+anna_pubkey   = anna_sk_bytes[32, 32].pack('C*')
+anna_address  = Codecs.binary_to_base58(anna_pubkey)
 
 # Show starting balances
-bob_balance = connection.get_balance(bob_address)
+bob_balance  = connection.get_balance(bob_address)
 anna_balance = connection.get_balance(anna_address)
 
 puts "Bob balance: #{bob_balance} lamports"

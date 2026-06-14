@@ -25,27 +25,27 @@ def with_spinner(message)
 end
 
 # Make sure keypairs are loaded
-bob = Fixtures.load_keypair('bob')
-anna = Fixtures.load_keypair('anna')
+bob   = Fixtures.load_keypair('bob')
+anna  = Fixtures.load_keypair('anna')
 payer = Fixtures.load_keypair('payer')
 
-mint = Fixtures.load_keypair('mint')
-mint_2022 = Fixtures.load_keypair('mint-2022')
+mint           = Fixtures.load_keypair('mint')
+mint_2022      = Fixtures.load_keypair('mint-2022')
 mint_authority = Fixtures.load_keypair('mint-authority')
 
 fee_collector = Fixtures.load_keypair('fee-collector')
 
 # Make sure connection is loaded
-rpc_url = 'http://localhost:8899'
+rpc_url    = 'http://localhost:8899'
 connection = Solace::Connection.new(rpc_url, commitment: 'finalized')
 
-spl_token_program = Solace::Programs::SplToken.new(connection: connection)
+spl_token_program  = Solace::Programs::SplToken.new(connection: connection)
 token_2022_program = Solace::Programs::Token2022.new(connection: connection)
-ata_program = Solace::Programs::AssociatedTokenAccount.new(connection: connection)
+ata_program        = Solace::Programs::AssociatedTokenAccount.new(connection: connection)
 
 # Amounts to airdrop
-TOKENS_AIRDROP = 10_000_000
-LAMPORTS_AIRDROP = 10_000_000_000
+TOKENS_AIRDROP      = 10_000_000
+LAMPORTS_AIRDROP    = 10_000_000_000
 SETUP_PAYER_AIRDROP = 100_000_000_000
 
 puts 'Bootstrapping:'
@@ -60,23 +60,23 @@ end
 # Accounts to fund
 fixture_accounts = [
   {
-    name: 'payer',
+    name:    'payer',
     keypair: payer
   },
   {
-    name: 'bob',
+    name:    'bob',
     keypair: bob
   },
   {
-    name: 'anna',
+    name:    'anna',
     keypair: anna
   },
   {
-    name: 'mint-authority',
+    name:    'mint-authority',
     keypair: mint_authority
   },
   {
-    name: 'fee-collector',
+    name:    'fee-collector',
     keypair: fee_collector
   }
 ]
@@ -99,8 +99,8 @@ fixture_accounts.map do |account|
   # Give the account some SOL
   setup_composer.add_instruction(
     Solace::Composers::SystemProgramTransferComposer.new(
-      from: setup_payer,
-      to: keypair,
+      from:     setup_payer,
+      to:       keypair,
       lamports: 10_000_000_000
     )
   )
@@ -109,9 +109,9 @@ fixture_accounts.map do |account|
   unless ata_exists
     setup_composer.add_instruction(
       Solace::Composers::AssociatedTokenAccountProgramCreateAccountComposer.new(
-        mint: mint,
-        owner: keypair,
-        funder: setup_payer,
+        mint:        mint,
+        owner:       keypair,
+        funder:      setup_payer,
         ata_address: ata_address
       )
     )
@@ -120,9 +120,9 @@ fixture_accounts.map do |account|
   # Mint tokens to the accounts
   setup_composer.add_instruction(
     Solace::Composers::SplTokenProgramMintToComposer.new(
-      amount: TOKENS_AIRDROP,
-      mint: mint,
-      destination: ata_address,
+      amount:         TOKENS_AIRDROP,
+      mint:           mint,
+      destination:    ata_address,
       mint_authority: mint_authority
     )
   )
@@ -141,9 +141,9 @@ if connection.get_account_info(mint.address).nil?
   puts "⤷ Mint Authority: #{mint_authority.address}"
 
   create_mint_composer = spl_token_program.compose_create_mint(
-    funder: setup_payer,
-    decimals: 6,
-    mint_account: mint,
+    funder:         setup_payer,
+    decimals:       6,
+    mint_account:   mint,
     mint_authority: mint_authority
   )
 
@@ -193,11 +193,11 @@ fixture_accounts.each do |account|
   name, keypair = account.values_at(:name, :keypair)
 
   t22_ata_address, = ata_program.get_address(
-    owner: keypair,
-    mint: mint_2022,
+    owner:            keypair,
+    mint:             mint_2022,
     token_program_id: Solace::Constants::TOKEN_2022_PROGRAM_ID
   )
-  t22_ata_exists = !connection.get_account_info(t22_ata_address).nil?
+  t22_ata_exists   = !connection.get_account_info(t22_ata_address).nil?
 
   puts "\n============= Token-2022 Setup for #{name.capitalize} ==============="
   puts "⤷ Address: #{keypair.address}"
@@ -207,10 +207,10 @@ fixture_accounts.each do |account|
   unless t22_ata_exists
     t22_composer.add_instruction(
       Solace::Composers::AssociatedTokenAccountProgramCreateAccountComposer.new(
-        mint: mint_2022,
-        owner: keypair,
-        funder: setup_payer,
-        ata_address: t22_ata_address,
+        mint:             mint_2022,
+        owner:            keypair,
+        funder:           setup_payer,
+        ata_address:      t22_ata_address,
         token_program_id: Solace::Constants::TOKEN_2022_PROGRAM_ID
       )
     )
@@ -218,9 +218,9 @@ fixture_accounts.each do |account|
 
   t22_composer.add_instruction(
     Solace::Composers::Token2022ProgramMintToComposer.new(
-      amount: TOKENS_AIRDROP,
-      mint: mint_2022,
-      destination: t22_ata_address,
+      amount:         TOKENS_AIRDROP,
+      mint:           mint_2022,
+      destination:    t22_ata_address,
       mint_authority: mint_authority
     )
   )
@@ -236,9 +236,9 @@ if connection.get_account_info(mint_2022.address).nil?
   puts "⤷ Mint Authority: #{mint_authority.address}"
 
   create_t22_mint_composer = token_2022_program.compose_create_mint(
-    funder: setup_payer,
-    decimals: 6,
-    mint_account: mint_2022,
+    funder:         setup_payer,
+    decimals:       6,
+    mint_account:   mint_2022,
     mint_authority: mint_authority
   )
 

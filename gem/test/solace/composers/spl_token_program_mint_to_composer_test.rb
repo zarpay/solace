@@ -21,16 +21,16 @@ describe Solace::Composers::SystemProgramCreateAccountComposer do
   let(:ata_address) do
     Solace::Programs::AssociatedTokenAccount.get_address(
       owner: bob.address,
-      mint: mint.address
+      mint:  mint.address
     ).first
   end
 
   # Bob already has an associated token account for the mint created during bootstrap.
   let(:composer) do
     Solace::Composers::SplTokenProgramMintToComposer.new(
-      amount: tokens,
-      mint: mint,
-      destination: ata_address,
+      amount:         tokens,
+      mint:           mint,
+      destination:    ata_address,
       mint_authority: mint_authority
     )
   end

@@ -74,7 +74,7 @@ module Solace
       # Set default options for rpc requests
       @default_options = {
         commitment: commitment,
-        encoding: encoding
+        encoding:   encoding
       }
     end
 
@@ -266,9 +266,9 @@ module Solace
     # @return [Hash] The options for the send_transaction call
     def build_send_transaction_options(overrides)
       {
-        skipPreflight: false,
-        encoding: default_options[:encoding],
-        commitment: default_options[:commitment],
+        skipPreflight:       false,
+        encoding:            default_options[:encoding],
+        commitment:          default_options[:commitment],
         preflightCommitment: default_options[:commitment]
       }.merge(overrides)
     end
@@ -307,7 +307,7 @@ module Solace
       raise ArgumentError, 'Block required' unless block_given?
 
       signature = extract_signature_from(yield)
-      deadline = monotonic_deadline(timeout)
+      deadline  = monotonic_deadline(timeout)
 
       # Wait for confirmation
       until deadline_passed?(deadline)

@@ -23,20 +23,20 @@ describe Solace::Composers::SystemProgramCreateAccountComposer do
     # transaction, followed by the SplTokenProgramInitializeMintComposer.
     let(:create_account_composer) do
       Solace::Composers::SystemProgramCreateAccountComposer.new(
-        from: payer,
+        from:        payer,
         new_account: mint_account,
-        owner: Solace::Constants::TOKEN_PROGRAM_ID,
-        lamports: lamports,
-        space: space
+        owner:       Solace::Constants::TOKEN_PROGRAM_ID,
+        lamports:    lamports,
+        space:       space
       )
     end
 
     let(:initialize_mint_composer) do
       Solace::Composers::SplTokenProgramInitializeMintComposer.new(
-        decimals: 6,
-        mint_authority: mint_authority.address,
+        decimals:         6,
+        mint_authority:   mint_authority.address,
         freeze_authority: freeze_authority.address,
-        mint_account: mint_account.address
+        mint_account:     mint_account.address
       )
     end
 
@@ -83,19 +83,19 @@ describe Solace::Composers::SystemProgramCreateAccountComposer do
 
     let(:create_account_composer) do
       Solace::Composers::SystemProgramCreateAccountComposer.new(
-        from: payer,
+        from:        payer,
         new_account: mint_account,
-        owner: Solace::Constants::TOKEN_PROGRAM_ID,
-        lamports: lamports,
-        space: space
+        owner:       Solace::Constants::TOKEN_PROGRAM_ID,
+        lamports:    lamports,
+        space:       space
       )
     end
 
     let(:initialize_mint_composer) do
       Solace::Composers::SplTokenProgramInitializeMintComposer.new(
-        decimals: 6,
+        decimals:       6,
         mint_authority: mint_authority.address,
-        mint_account: mint_account.address
+        mint_account:   mint_account.address
       )
     end
 

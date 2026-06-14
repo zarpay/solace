@@ -35,7 +35,7 @@ module Solace
         open_timeout:,
         read_timeout:
       )
-        @url = url
+        @url          = url
         @open_timeout = open_timeout
         @read_timeout = read_timeout
       end
@@ -52,7 +52,7 @@ module Solace
       #   Solace::Errors::ConfirmationTimeout
       # ]
       def rpc_request(method, params = [])
-        request = build_rpc_request(method, params)
+        request  = build_rpc_request(method, params)
         response = perform_http_request(*request)
         handle_rpc_response(response)
       end
@@ -67,10 +67,10 @@ module Solace
       def build_rpc_request(method, params)
         uri = URI(url)
 
-        req = Net::HTTP::Post.new(uri)
-        req['Accept'] = 'application/json'
+        req                 = Net::HTTP::Post.new(uri)
+        req['Accept']       = 'application/json'
         req['Content-Type'] = 'application/json'
-        req.body = build_request_body(method, params)
+        req.body            = build_request_body(method, params)
 
         [uri, req]
       end
@@ -83,9 +83,9 @@ module Solace
       def build_request_body(method, params)
         {
           jsonrpc: '2.0',
-          id: SecureRandom.uuid,
-          method: method,
-          params: params
+          id:      SecureRandom.uuid,
+          method:  method,
+          params:  params
         }.to_json
       end
 
@@ -99,7 +99,7 @@ module Solace
         Net::HTTP.start(
           uri.hostname,
           uri.port,
-          use_ssl: uri.scheme == 'https',
+          use_ssl:      uri.scheme == 'https',
           open_timeout: open_timeout,
           read_timeout: read_timeout
         ) do |http|

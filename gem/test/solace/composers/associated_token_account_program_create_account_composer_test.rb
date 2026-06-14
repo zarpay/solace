@@ -18,17 +18,17 @@ describe Solace::Composers::AssociatedTokenAccountProgramCreateAccountComposer d
 
     let(:composer) do
       Solace::Composers::AssociatedTokenAccountProgramCreateAccountComposer.new(
-        mint: mint,
-        owner: owner,
-        funder: funder,
+        mint:        mint,
+        owner:       owner,
+        funder:      funder,
         ata_address: owner_ata
       )
     end
 
     it 'creates the a funded associated token account' do
       # Get starting balances and data
-      account_starting_data = connection.get_account_info(owner_ata)
-      payer_starting_balance = connection.get_balance(payer.address)
+      account_starting_data   = connection.get_account_info(owner_ata)
+      payer_starting_balance  = connection.get_balance(payer.address)
       funder_starting_balance = connection.get_balance(funder.address)
 
       # Set fee payer and add instruction
@@ -44,8 +44,8 @@ describe Solace::Composers::AssociatedTokenAccountProgramCreateAccountComposer d
       connection.wait_for_confirmed_signature { signature['result'] }
 
       # Get ending balances
-      account_ending_data = connection.get_account_info(owner_ata)
-      payer_ending_balance = connection.get_balance(payer.address)
+      account_ending_data   = connection.get_account_info(owner_ata)
+      payer_ending_balance  = connection.get_balance(payer.address)
       funder_ending_balance = connection.get_balance(funder.address)
 
       assert_nil account_starting_data
@@ -66,17 +66,17 @@ describe Solace::Composers::AssociatedTokenAccountProgramCreateAccountComposer d
 
     let(:sol_transfer_composer) do
       Solace::Composers::SystemProgramTransferComposer.new(
-        to: owner,
-        from: payer,
+        to:       owner,
+        from:     payer,
         lamports: owner_starting_balance
       )
     end
 
     let(:create_account_composer) do
       Solace::Composers::AssociatedTokenAccountProgramCreateAccountComposer.new(
-        mint: mint,
-        owner: owner,
-        funder: owner,
+        mint:        mint,
+        owner:       owner,
+        funder:      owner,
         ata_address: owner_ata
       )
     end
@@ -102,7 +102,7 @@ describe Solace::Composers::AssociatedTokenAccountProgramCreateAccountComposer d
 
       # Get ending balances
       account_ending_balance = connection.get_balance(owner_ata)
-      owner_ending_balance = connection.get_balance(owner.address)
+      owner_ending_balance   = connection.get_balance(owner.address)
 
       assert_nil account_starting_data
       assert_operator account_ending_balance, :>, 0

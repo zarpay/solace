@@ -16,11 +16,11 @@ describe Solace::Composers::SystemProgramCreateAccountComposer do
   describe 'sponsored transaction' do
     let(:composer) do
       Solace::Composers::SystemProgramCreateAccountComposer.new(
-        from: payer,
+        from:        payer,
         new_account: new_account,
-        owner: owner,
-        lamports: lamports,
-        space: 1
+        owner:       owner,
+        lamports:    lamports,
+        space:       1
       )
     end
 
@@ -67,27 +67,27 @@ describe Solace::Composers::SystemProgramCreateAccountComposer do
 
     let(:composer1) do
       Solace::Composers::SystemProgramCreateAccountComposer.new(
-        from: payer,
+        from:        payer,
         new_account: new_account_one,
-        owner: Solace::Constants::SYSTEM_PROGRAM_ID,
-        lamports: lamports,
-        space: 1
+        owner:       Solace::Constants::SYSTEM_PROGRAM_ID,
+        lamports:    lamports,
+        space:       1
       )
     end
 
     let(:composer2) do
       Solace::Composers::SystemProgramCreateAccountComposer.new(
-        from: payer,
+        from:        payer,
         new_account: new_account_two,
-        owner: Solace::Constants::SYSTEM_PROGRAM_ID,
-        lamports: lamports,
-        space: 1
+        owner:       Solace::Constants::SYSTEM_PROGRAM_ID,
+        lamports:    lamports,
+        space:       1
       )
     end
 
     before(:all) do
       # Get starting information
-      @payer_starting_balance = connection.get_balance(payer.address)
+      @payer_starting_balance  = connection.get_balance(payer.address)
       @account_info_one_before = connection.get_account_info(new_account_one.address)
       @account_info_two_before = connection.get_account_info(new_account_two.address)
 
@@ -105,7 +105,7 @@ describe Solace::Composers::SystemProgramCreateAccountComposer do
       connection.wait_for_confirmed_signature { @signature['result'] }
 
       # Get ending information
-      @payer_ending_balance = connection.get_balance(payer.address)
+      @payer_ending_balance   = connection.get_balance(payer.address)
       @account_info_one_after = connection.get_account_info(new_account_one.address)
       @account_info_two_after = connection.get_account_info(new_account_two.address)
     end

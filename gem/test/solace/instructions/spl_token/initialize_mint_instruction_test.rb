@@ -14,12 +14,12 @@ describe Solace::Instructions::SplToken::InitializeMintInstruction do
 
     let(:ix) do
       Solace::Instructions::SplToken::InitializeMintInstruction.build(
-        decimals: decimals,
-        mint_authority: mint_authority,
-        freeze_authority: freeze_authority,
+        decimals:           decimals,
+        mint_authority:     mint_authority,
+        freeze_authority:   freeze_authority,
         mint_account_index: mint_account_index,
-        rent_sysvar_index: rent_sysvar_index,
-        program_index: program_index
+        rent_sysvar_index:  rent_sysvar_index,
+        program_index:      program_index
       )
     end
 

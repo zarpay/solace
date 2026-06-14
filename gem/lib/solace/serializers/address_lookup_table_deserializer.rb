@@ -40,7 +40,7 @@ module Solace
       #
       # @return [Array<Integer>] The writable indexes
       def next_extract_writable_indexes
-        length, = Codecs.decode_compact_u16(io)
+        length,                 = Codecs.decode_compact_u16(io)
         record.writable_indexes = io.read(length).unpack('C*')
       end
 
@@ -52,7 +52,7 @@ module Solace
       #
       # @return [Array<Integer>] The readonly indexes
       def next_extract_readonly_indexes
-        length, = Codecs.decode_compact_u16(io)
+        length,                 = Codecs.decode_compact_u16(io)
         record.readonly_indexes = io.read(length).unpack('C*')
       end
     end

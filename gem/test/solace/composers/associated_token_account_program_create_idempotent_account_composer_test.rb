@@ -21,18 +21,18 @@ describe Solace::Composers::AssociatedTokenAccountProgramCreateIdempotentAccount
       .add_instruction(
         # This will try to create the ATA that already exists
         Solace::Composers::AssociatedTokenAccountProgramCreateIdempotentAccountComposer.new(
-          mint: mint,
-          owner: to,
-          funder: payer,
+          mint:        mint,
+          owner:       to,
+          funder:      payer,
           ata_address: to_ata
         )
       )
       .add_instruction(
         # This is just to have a follow-up instruction to see if the transaction completes
         Solace::Composers::SplTokenProgramMintToComposer.new(
-          amount: 1_000_000,
-          mint: mint,
-          destination: to_ata,
+          amount:         1_000_000,
+          mint:           mint,
+          destination:    to_ata,
           mint_authority: mint_authority
         )
       )

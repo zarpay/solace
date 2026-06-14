@@ -46,10 +46,10 @@ FactoryBot.define do
     instructions do
       [
         Solace::Instructions::SystemProgram::TransferInstruction.build(
-          to_index: 1,
-          from_index: 0,
+          to_index:      1,
+          from_index:    0,
           program_index: 2,
-          lamports: 10_000_000 # 0.01 SOL
+          lamports:      10_000_000 # 0.01 SOL
         )
       ]
     end

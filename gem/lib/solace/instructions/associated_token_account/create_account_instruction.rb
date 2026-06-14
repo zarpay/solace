@@ -63,7 +63,7 @@ module Solace
         )
           Solace::Instruction.new.tap do |ix|
             ix.program_index = program_index
-            ix.accounts = [
+            ix.accounts      = [
               funder_index,
               associated_token_account_index,
               owner_index,
@@ -71,6 +71,7 @@ module Solace
               system_program_index,
               token_program_index
             ]
+
             ix.data = data
           end
         end

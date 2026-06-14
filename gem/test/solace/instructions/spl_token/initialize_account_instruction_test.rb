@@ -12,11 +12,11 @@ describe Solace::Instructions::SplToken::InitializeAccountInstruction do
 
     let(:ix) do
       Solace::Instructions::SplToken::InitializeAccountInstruction.build(
-        account_index: account_index,
-        mint_index: mint_index,
-        owner_index: owner_index,
+        account_index:     account_index,
+        mint_index:        mint_index,
+        owner_index:       owner_index,
         rent_sysvar_index: rent_sysvar_index,
-        program_index: program_index
+        program_index:     program_index
       )
     end
 

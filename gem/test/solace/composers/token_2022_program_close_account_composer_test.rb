@@ -11,8 +11,8 @@ describe Solace::Composers::Token2022ProgramCloseAccountComposer do
 
   let(:tmp_account_ata) do
     Solace::Programs::AssociatedTokenAccount.get_address(
-      owner: tmp_account,
-      mint: mint,
+      owner:            tmp_account,
+      mint:             mint,
       token_program_id: Solace::Constants::TOKEN_2022_PROGRAM_ID
     ).first
   end
@@ -26,10 +26,10 @@ describe Solace::Composers::Token2022ProgramCloseAccountComposer do
          .add_instruction(
            # Create a Token-2022 ATA for the temporary account
            Solace::Composers::AssociatedTokenAccountProgramCreateAccountComposer.new(
-             mint: mint,
-             funder: payer,
-             owner: tmp_account,
-             ata_address: tmp_account_ata,
+             mint:             mint,
+             funder:           payer,
+             owner:            tmp_account,
+             ata_address:      tmp_account_ata,
              token_program_id: Solace::Constants::TOKEN_2022_PROGRAM_ID
            )
          )
@@ -44,8 +44,8 @@ describe Solace::Composers::Token2022ProgramCloseAccountComposer do
     let(:composer) do
       Solace::Composers::Token2022ProgramCloseAccountComposer.new(
         destination: payer,
-        authority: tmp_account,
-        account: tmp_account_ata
+        authority:   tmp_account,
+        account:     tmp_account_ata
       )
     end
 

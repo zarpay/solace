@@ -95,13 +95,13 @@ module Solace
       # @return [Solace::Instruction]
       def build_instruction(account_context)
         Instructions::Token2022::TransferCheckedInstruction.build(
-          amount: amount,
-          decimals: decimals,
-          to_index: account_context.index_of(to),
-          from_index: account_context.index_of(from),
-          mint_index: account_context.index_of(mint),
+          amount:          amount,
+          decimals:        decimals,
+          to_index:        account_context.index_of(to),
+          from_index:      account_context.index_of(from),
+          mint_index:      account_context.index_of(mint),
           authority_index: account_context.index_of(authority),
-          program_index: account_context.index_of(token_2022_program)
+          program_index:   account_context.index_of(token_2022_program)
         )
       end
     end

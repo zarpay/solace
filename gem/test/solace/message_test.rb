@@ -6,19 +6,19 @@ describe Solace::Message do
   describe '#serialize' do
     before do
       @msg = Solace::Message.new(
-        header: [1, 0, 1],
-        accounts: [
+        header:           [1, 0, 1],
+        accounts:         [
           '2VFAhjXBhMuEbmcTtjYXAZX4oVPhr3im7yb8RmaBofU6',
           'cbk37cQDdSqarxFTD9oG9c31YhcGZzd2QJwuGmWZhLL',
           Solace::Constants::SYSTEM_PROGRAM_ID
         ],
         recent_blockhash: '9s5BVd3xd3MinQcJbCCTBwXn6WRukcdEwgC2ZjktjKqu',
-        instructions: [
+        instructions:     [
           Solace::Instructions::SystemProgram::TransferInstruction.build(
-            to_index: 1,
-            from_index: 0,
+            to_index:      1,
+            from_index:    0,
             program_index: 2,
-            lamports: 1_000_000
+            lamports:      1_000_000
           )
         ]
       )

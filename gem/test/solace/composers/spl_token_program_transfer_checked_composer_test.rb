@@ -22,19 +22,19 @@ describe Solace::Composers::SplTokenProgramTransferCheckedComposer do
   describe 'sponsored transaction' do
     let(:composer) do
       Solace::Composers::SplTokenProgramTransferCheckedComposer.new(
-        mint: mint,
-        to: anna_ata,
-        from: bob_ata,
+        mint:      mint,
+        to:        anna_ata,
+        from:      bob_ata,
         authority: bob,
-        amount: amount,
-        decimals: decimals
+        amount:    amount,
+        decimals:  decimals
       )
     end
 
     before(:all) do
       # Get starting balances
-      @payer_starting_balance = connection.get_balance(payer.address)
-      @bob_starting_token_balance = connection.get_token_account_balance(bob_ata)['amount'].to_i
+      @payer_starting_balance      = connection.get_balance(payer.address)
+      @bob_starting_token_balance  = connection.get_token_account_balance(bob_ata)['amount'].to_i
       @anna_starting_token_balance = connection.get_token_account_balance(anna_ata)['amount'].to_i
 
       # Set fee payer and add instruction
@@ -50,8 +50,8 @@ describe Solace::Composers::SplTokenProgramTransferCheckedComposer do
       connection.wait_for_confirmed_signature { @signature['result'] }
 
       # Get ending balances
-      @payer_ending_balance = connection.get_balance(payer.address)
-      @bob_ending_token_balance = connection.get_token_account_balance(bob_ata)['amount'].to_i
+      @payer_ending_balance      = connection.get_balance(payer.address)
+      @bob_ending_token_balance  = connection.get_token_account_balance(bob_ata)['amount'].to_i
       @anna_ending_token_balance = connection.get_token_account_balance(anna_ata)['amount'].to_i
     end
 
@@ -71,19 +71,19 @@ describe Solace::Composers::SplTokenProgramTransferCheckedComposer do
   describe 'non-sponsored transaction' do
     let(:composer) do
       Solace::Composers::SplTokenProgramTransferCheckedComposer.new(
-        mint: mint,
-        to: anna_ata,
-        from: bob_ata,
+        mint:      mint,
+        to:        anna_ata,
+        from:      bob_ata,
         authority: bob,
-        amount: amount,
-        decimals: decimals
+        amount:    amount,
+        decimals:  decimals
       )
     end
 
     before(:all) do
       # Get starting balances
-      @bob_starting_balance = connection.get_balance(bob.address)
-      @bob_starting_token_balance = connection.get_token_account_balance(bob_ata)['amount'].to_i
+      @bob_starting_balance        = connection.get_balance(bob.address)
+      @bob_starting_token_balance  = connection.get_token_account_balance(bob_ata)['amount'].to_i
       @anna_starting_token_balance = connection.get_token_account_balance(anna_ata)['amount'].to_i
 
       # Add instruction and set fee payer
@@ -99,8 +99,8 @@ describe Solace::Composers::SplTokenProgramTransferCheckedComposer do
       connection.wait_for_confirmed_signature { @signature['result'] }
 
       # Get ending balances
-      @bob_ending_balance = connection.get_balance(bob.address)
-      @bob_ending_token_balance = connection.get_token_account_balance(bob_ata)['amount'].to_i
+      @bob_ending_balance        = connection.get_balance(bob.address)
+      @bob_ending_token_balance  = connection.get_token_account_balance(bob_ata)['amount'].to_i
       @anna_ending_token_balance = connection.get_token_account_balance(anna_ata)['amount'].to_i
     end
 
@@ -123,30 +123,30 @@ describe Solace::Composers::SplTokenProgramTransferCheckedComposer do
 
     let(:composer1) do
       Solace::Composers::SplTokenProgramTransferCheckedComposer.new(
-        mint: mint,
-        to: anna_ata,
-        from: bob_ata,
+        mint:      mint,
+        to:        anna_ata,
+        from:      bob_ata,
         authority: bob,
-        amount: amount,
-        decimals: decimals
+        amount:    amount,
+        decimals:  decimals
       )
     end
 
     let(:composer2) do
       Solace::Composers::SplTokenProgramTransferCheckedComposer.new(
-        mint: mint,
-        to: fee_collector_ata,
-        from: bob_ata,
+        mint:      mint,
+        to:        fee_collector_ata,
+        from:      bob_ata,
         authority: bob,
-        amount: fee,
-        decimals: decimals
+        amount:    fee,
+        decimals:  decimals
       )
     end
 
     let(:composer3) do
       Solace::Composers::SystemProgramTransferComposer.new(
-        to: bob,
-        from: anna,
+        to:       bob,
+        from:     anna,
         lamports: lamports
       )
     end
@@ -154,11 +154,11 @@ describe Solace::Composers::SplTokenProgramTransferCheckedComposer do
     before(:all) do
       # Get starting balances
       @payer_starting_balance = connection.get_balance(payer.address)
-      @bob_starting_balance = connection.get_balance(bob.address)
-      @anna_starting_balance = connection.get_balance(anna.address)
+      @bob_starting_balance   = connection.get_balance(bob.address)
+      @anna_starting_balance  = connection.get_balance(anna.address)
 
-      @bob_starting_token_balance = connection.get_token_account_balance(bob_ata)['amount'].to_i
-      @anna_starting_token_balance = connection.get_token_account_balance(anna_ata)['amount'].to_i
+      @bob_starting_token_balance     = connection.get_token_account_balance(bob_ata)['amount'].to_i
+      @anna_starting_token_balance    = connection.get_token_account_balance(anna_ata)['amount'].to_i
       @fee_collector_starting_balance = connection.get_token_account_balance(fee_collector_ata)['amount'].to_i
 
       # Add instructions and set fee payer
@@ -177,11 +177,11 @@ describe Solace::Composers::SplTokenProgramTransferCheckedComposer do
 
       # Get ending balances
       @payer_ending_balance = connection.get_balance(payer.address)
-      @bob_ending_balance = connection.get_balance(bob.address)
-      @anna_ending_balance = connection.get_balance(anna.address)
+      @bob_ending_balance   = connection.get_balance(bob.address)
+      @anna_ending_balance  = connection.get_balance(anna.address)
 
-      @bob_ending_token_balance = connection.get_token_account_balance(bob_ata)['amount'].to_i
-      @anna_ending_token_balance = connection.get_token_account_balance(anna_ata)['amount'].to_i
+      @bob_ending_token_balance     = connection.get_token_account_balance(bob_ata)['amount'].to_i
+      @anna_ending_token_balance    = connection.get_token_account_balance(anna_ata)['amount'].to_i
       @fee_collector_ending_balance = connection.get_token_account_balance(fee_collector_ata)['amount'].to_i
     end
 

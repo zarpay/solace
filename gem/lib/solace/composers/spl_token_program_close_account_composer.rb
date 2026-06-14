@@ -70,10 +70,10 @@ module Solace
       # @return [Solace::Instruction]
       def build_instruction(account_context)
         Instructions::SplToken::CloseAccountInstruction.build(
-          account_index: account_context.index_of(account),
-          authority_index: account_context.index_of(authority),
+          account_index:     account_context.index_of(account),
+          authority_index:   account_context.index_of(authority),
           destination_index: account_context.index_of(destination),
-          program_index: account_context.index_of(spl_token_program)
+          program_index:     account_context.index_of(spl_token_program)
         )
       end
     end

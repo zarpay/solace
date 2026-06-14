@@ -11,16 +11,16 @@ describe Solace::Composers::Token2022ProgramTransferComposer do
 
   let(:bob_ata) do
     Solace::Programs::AssociatedTokenAccount.get_address(
-      owner: bob,
-      mint: mint,
+      owner:            bob,
+      mint:             mint,
       token_program_id: Solace::Constants::TOKEN_2022_PROGRAM_ID
     ).first
   end
 
   let(:anna_ata) do
     Solace::Programs::AssociatedTokenAccount.get_address(
-      owner: anna,
-      mint: mint,
+      owner:            anna,
+      mint:             mint,
       token_program_id: Solace::Constants::TOKEN_2022_PROGRAM_ID
     ).first
   end
@@ -32,10 +32,10 @@ describe Solace::Composers::Token2022ProgramTransferComposer do
 
   let(:composer) do
     Solace::Composers::Token2022ProgramTransferComposer.new(
-      owner: bob,
-      source: bob_ata,
+      owner:       bob,
+      source:      bob_ata,
       destination: anna_ata,
-      amount: amount
+      amount:      amount
     )
   end
 

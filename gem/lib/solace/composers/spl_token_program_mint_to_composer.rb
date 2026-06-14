@@ -74,11 +74,11 @@ module Solace
       # @return [Solace::Instruction]
       def build_instruction(account_context)
         Instructions::SplToken::MintToInstruction.build(
-          amount: amount,
-          mint_index: account_context.index_of(mint),
-          destination_index: account_context.index_of(destination),
+          amount:               amount,
+          mint_index:           account_context.index_of(mint),
+          destination_index:    account_context.index_of(destination),
           mint_authority_index: account_context.index_of(mint_authority),
-          program_index: account_context.index_of(spl_token_program)
+          program_index:        account_context.index_of(spl_token_program)
         )
       end
     end

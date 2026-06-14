@@ -29,7 +29,7 @@ module Solace
       #
       # @return [Array] Array of base58 encoded signatures
       def next_extract_signatures
-        count, = Codecs.decode_compact_u16(io)
+        count,            = Codecs.decode_compact_u16(io)
         record.signatures = count.times.map { io.read(64) }
       end
 

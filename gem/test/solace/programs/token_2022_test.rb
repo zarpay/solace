@@ -33,10 +33,10 @@ describe Solace::Programs::Token2022 do
 
     let(:composer) do
       program.compose_transfer(
-        amount: 1_000,
-        source: source,
+        amount:      1_000,
+        source:      source,
         destination: destination,
-        owner: owner
+        owner:       owner
       )
     end
 
@@ -66,9 +66,9 @@ describe Solace::Programs::Token2022 do
 
     let(:composer) do
       program.compose_create_mint(
-        funder: funder,
-        decimals: 6,
-        mint_account: mint_account,
+        funder:         funder,
+        decimals:       6,
+        mint_account:   mint_account,
         mint_authority: mint_authority
       )
     end

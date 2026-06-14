@@ -29,7 +29,7 @@ module Solace
     # @param network [String, Symbol] Network name (e.g., 'mainnet', 'testnet')
     # @return [void]
     def self.load(path:, network:)
-      data = YAML.load_file(path)
+      data   = YAML.load_file(path)
       tokens = data.fetch(network.to_s) do
         raise ArgumentError, "Network '#{network}' not found in config"
       end
@@ -40,7 +40,7 @@ module Solace
       @registry = {}
 
       tokens.each do |symbol, attrs|
-        token = Solace::Tokens::Token.new(symbol, attrs)
+        token                  = Solace::Tokens::Token.new(symbol, attrs)
         const_set(symbol, token)
         @registry[symbol.to_s] = token
       end

@@ -22,9 +22,9 @@ describe Solace::Composers::SplTokenProgramCloseAccountComposer do
          .add_instruction(
            # Create an ata for the temporary account
            Solace::Composers::AssociatedTokenAccountProgramCreateAccountComposer.new(
-             mint: mint,
-             funder: payer,
-             owner: tmp_account,
+             mint:        mint,
+             funder:      payer,
+             owner:       tmp_account,
              ata_address: tmp_account_ata
            )
          )
@@ -39,8 +39,8 @@ describe Solace::Composers::SplTokenProgramCloseAccountComposer do
     let(:composer) do
       Solace::Composers::SplTokenProgramCloseAccountComposer.new(
         destination: payer,
-        authority: tmp_account,
-        account: tmp_account_ata
+        authority:   tmp_account,
+        account:     tmp_account_ata
       )
     end
 
