@@ -1,0 +1,22 @@
+# Local solana-test-validator ledger (recreated fresh on every test run)
+/test-ledger/
+
+# Test outputs / snapshots
+/test/output/
+/test/snapshot/
+
+# Rust native-extension build cache (prebuilt binaries live in lib/solace/utils/)
+/ext/curve25519_dalek/target/
+
+# Build / packaging / docs artifacts
+/builds/
+/pkg/
+/.bundle/
+/vendor/
+/coverage/
+/doc/
+/.yardoc/
+
+# tmp/ is a runtime scratch dir the test suite writes into; keep the dir, ignore contents.
+/tmp/*
+!/tmp/.keep

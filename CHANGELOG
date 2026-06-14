@@ -20,6 +20,23 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ---
 
+## 0.1.5 - 2026-06-13
+
+### Added
+
+1. Added Token-2022 program support
+2. Added integration tests for the Token-2022 composers
+
+### Changed
+
+1. Decoupled Token-2022 from the SPL composers via a shared mixin
+
+### Fixed
+
+1. Fixed `TransferChecked` instruction layout documentation
+
+---
+
 ## 0.1.3 - 2025-06-11
 
 ### Added

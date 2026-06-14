@@ -1,0 +1,8 @@
+/* Solana-leaning accent over the VitePress default theme. */
+:root {
+  --vp-c-brand-1: #7c3aed;
+  --vp-c-brand-2: #8b5cf6;
+  --vp-c-brand-3: #6d28d9;
+
+  --vp-home-hero-name-color: var(--vp-c-brand-1);
+}

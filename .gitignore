@@ -1,9 +1,10 @@
-# Test ledger
-test-ledger
+# Build / packaging / docs artifacts (the gem lives in gem/, docs in site/)
+/builds/
+/pkg/
+/doc/
+/.yardoc/
+/tmp/
+*.gem
 
-# Test outputs
-test/output
-
-# Test snapshots
-test/snapshot
-
+# Misc
+repomix-output.xml
