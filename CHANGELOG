@@ -20,6 +20,24 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ---
 
+## 0.1.6 - 2026-06-22
+
+### Added
+
+1. Expanded `Solace::Utils::Codecs` with general-purpose Borsh/Solana serialization helpers (upstreamed from extension gems so any extension can reuse them):
+  - Fixed-width little-endian integers: `encode_u8`/`decode_u8`, `encode_le_u16`/`decode_le_u16`, `encode_le_u32`/`decode_le_u32`, `encode_le_u128`/`decode_le_u128`, `encode_le_i64`/`decode_le_i64`, and `encode_bool`
+  - Byte sequences: `encode_bytes`/`decode_bytes` (Borsh `Vec<u8>`), `encode_smallvec_u8_bytes`, `encode_smallvec_u16_bytes`
+  - Public keys: `encode_pubkey`/`decode_pubkey`, `encode_vec_pubkeys`/`decode_vec_pubkeys`, `encode_smallvec_u8_pubkeys`
+  - Optionals: `encode_option_pubkey`/`decode_option_pubkey`, `encode_option_i64`/`decode_option_i64`, `encode_option_string`
+
+### Changed
+
+1. `Solace::Utils::Codecs` now uses `extend self`; all helpers (existing and new) are available both as module functions and as instance methods when the module is included. Existing `Solace::Utils::Codecs.<method>` calls are unaffected.
+
+### Fixed
+
+---
+
 ## 0.1.5 - 2026-06-13
 
 ### Added
