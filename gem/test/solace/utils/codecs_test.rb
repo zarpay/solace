@@ -117,4 +117,210 @@ describe Solace::Utils::Codecs do
       end
     end
   end
+
+  # --- Borsh / Solana scalar and collection helpers ---------------------
+
+  describe '#encode_u8 / #decode_u8' do
+    let(:values) { { 0 => [0], 1 => [1], 42 => [42], 255 => [255] } }
+
+    it 'round-trips u8 values' do
+      values.each do |n, bytes|
+        assert_equal bytes, Solace::Utils::Codecs.encode_u8(n)
+        assert_equal n, Solace::Utils::Codecs.decode_u8(StringIO.new(bytes.pack('C*')))
+      end
+    end
+  end
+
+  describe '#encode_le_u16 / #decode_le_u16' do
+    let(:values) do
+      {
+        0 => "\x00\x00".b,
+        1 => "\x01\x00".b,
+        256 => "\x00\x01".b,
+        65_535 => "\xff\xff".b
+      }
+    end
+
+    it 'round-trips little-endian u16 values' do
+      values.each do |n, bytes|
+        assert_equal bytes, Solace::Utils::Codecs.encode_le_u16(n)
+        assert_equal n, Solace::Utils::Codecs.decode_le_u16(StringIO.new(bytes))
+      end
+    end
+  end
+
+  describe '#encode_le_u32 / #decode_le_u32' do
+    let(:values) do
+      {
+        0 => "\x00\x00\x00\x00".b,
+        1 => "\x01\x00\x00\x00".b,
+        65_536 => "\x00\x00\x01\x00".b,
+        4_294_967_295 => "\xff\xff\xff\xff".b
+      }
+    end
+
+    it 'round-trips little-endian u32 values' do
+      values.each do |n, bytes|
+        assert_equal bytes, Solace::Utils::Codecs.encode_le_u32(n)
+        assert_equal n, Solace::Utils::Codecs.decode_le_u32(StringIO.new(bytes))
+      end
+    end
+  end
+
+  describe '#encode_le_i64 / #decode_le_i64' do
+    let(:values) do
+      {
+        0 => "\x00\x00\x00\x00\x00\x00\x00\x00".b,
+        1 => "\x01\x00\x00\x00\x00\x00\x00\x00".b,
+        -1 => "\xff\xff\xff\xff\xff\xff\xff\xff".b,
+        -2 => "\xfe\xff\xff\xff\xff\xff\xff\xff".b,
+        (2**63) - 1 => "\xff\xff\xff\xff\xff\xff\xff\x7f".b,
+        -(2**63) => "\x00\x00\x00\x00\x00\x00\x00\x80".b
+      }
+    end
+
+    it 'round-trips little-endian i64 values' do
+      values.each do |n, bytes|
+        assert_equal bytes, Solace::Utils::Codecs.encode_le_i64(n)
+        assert_equal n, Solace::Utils::Codecs.decode_le_i64(StringIO.new(bytes))
+      end
+    end
+  end
+
+  describe '#encode_le_u128 / #decode_le_u128' do
+    let(:values) do
+      {
+        0 => ([0] * 16).pack('C*'),
+        1 => ([1] + ([0] * 15)).pack('C*'),
+        2**64 => (([0] * 8) + [1] + ([0] * 7)).pack('C*'),
+        (2**128) - 1 => ([255] * 16).pack('C*')
+      }
+    end
+
+    it 'round-trips little-endian u128 values' do
+      values.each do |n, bytes|
+        assert_equal bytes, Solace::Utils::Codecs.encode_le_u128(n)
+        assert_equal n, Solace::Utils::Codecs.decode_le_u128(StringIO.new(bytes))
+      end
+    end
+  end
+
+  describe '#encode_bool' do
+    it 'encodes true and false' do
+      assert_equal [1], Solace::Utils::Codecs.encode_bool(true)
+      assert_equal [0], Solace::Utils::Codecs.encode_bool(false)
+    end
+  end
+
+  describe '#encode_bytes / #decode_bytes' do
+    it 'round-trips a Borsh Vec<u8> with a u32 length prefix' do
+      bytes   = [1, 2, 3, 255]
+      encoded = Solace::Utils::Codecs.encode_bytes(bytes)
+      assert_equal [4, 0, 0, 0] + bytes, encoded
+      assert_equal bytes.pack('C*'), Solace::Utils::Codecs.decode_bytes(StringIO.new(encoded.pack('C*')))
+    end
+
+    it 'round-trips an empty byte vector' do
+      encoded = Solace::Utils::Codecs.encode_bytes([])
+      assert_equal [0, 0, 0, 0], encoded
+      assert_equal '', Solace::Utils::Codecs.decode_bytes(StringIO.new(encoded.pack('C*')))
+    end
+  end
+
+  describe '#encode_smallvec_u8_bytes' do
+    it 'prefixes raw bytes with a u8 count' do
+      assert_equal [3, 10, 20, 30], Solace::Utils::Codecs.encode_smallvec_u8_bytes([10, 20, 30])
+      assert_equal [0], Solace::Utils::Codecs.encode_smallvec_u8_bytes([])
+    end
+  end
+
+  describe '#encode_smallvec_u16_bytes' do
+    it 'prefixes raw bytes with a u16 LE count' do
+      assert_equal [3, 0, 10, 20, 30], Solace::Utils::Codecs.encode_smallvec_u16_bytes([10, 20, 30])
+      assert_equal [0, 0], Solace::Utils::Codecs.encode_smallvec_u16_bytes([])
+    end
+  end
+
+  describe '#encode_pubkey / #decode_pubkey' do
+    let(:pubkey) { '2VFAhjXBhMuEbmcTtjYXAZX4oVPhr3im7yb8RmaBofU6' }
+
+    it 'round-trips a 32-byte public key' do
+      encoded = Solace::Utils::Codecs.encode_pubkey(pubkey)
+      assert_equal 32, encoded.length
+      assert_equal pubkey, Solace::Utils::Codecs.decode_pubkey(StringIO.new(encoded.pack('C*')))
+    end
+  end
+
+  describe '#encode_vec_pubkeys / #decode_vec_pubkeys' do
+    let(:pubkeys) do
+      %w[2VFAhjXBhMuEbmcTtjYXAZX4oVPhr3im7yb8RmaBofU6 11111111111111111111111111111111]
+    end
+
+    it 'round-trips a Vec<publicKey> with a u32 count' do
+      encoded = Solace::Utils::Codecs.encode_vec_pubkeys(pubkeys)
+      assert_equal [2, 0, 0, 0], encoded.first(4)
+      assert_equal 4 + (32 * 2), encoded.length
+      assert_equal pubkeys, Solace::Utils::Codecs.decode_vec_pubkeys(StringIO.new(encoded.pack('C*')))
+    end
+
+    it 'round-trips an empty Vec<publicKey>' do
+      encoded = Solace::Utils::Codecs.encode_vec_pubkeys([])
+      assert_equal [0, 0, 0, 0], encoded
+      assert_equal [], Solace::Utils::Codecs.decode_vec_pubkeys(StringIO.new(encoded.pack('C*')))
+    end
+  end
+
+  describe '#encode_smallvec_u8_pubkeys' do
+    let(:pubkeys) do
+      %w[2VFAhjXBhMuEbmcTtjYXAZX4oVPhr3im7yb8RmaBofU6 11111111111111111111111111111111]
+    end
+
+    it 'prefixes pubkeys with a u8 count' do
+      encoded = Solace::Utils::Codecs.encode_smallvec_u8_pubkeys(pubkeys)
+      assert_equal 2, encoded.first
+      assert_equal 1 + (32 * 2), encoded.length
+    end
+  end
+
+  describe '#encode_option_pubkey / #decode_option_pubkey' do
+    let(:pubkey) { '2VFAhjXBhMuEbmcTtjYXAZX4oVPhr3im7yb8RmaBofU6' }
+
+    it 'encodes and decodes Some(pubkey)' do
+      encoded = Solace::Utils::Codecs.encode_option_pubkey(pubkey)
+      assert_equal 1, encoded.first
+      assert_equal 33, encoded.length
+      assert_equal pubkey, Solace::Utils::Codecs.decode_option_pubkey(StringIO.new(encoded.pack('C*')))
+    end
+
+    it 'encodes and decodes None' do
+      encoded = Solace::Utils::Codecs.encode_option_pubkey(nil)
+      assert_equal [0], encoded
+      assert_nil Solace::Utils::Codecs.decode_option_pubkey(StringIO.new(encoded.pack('C*')))
+    end
+  end
+
+  describe '#encode_option_i64 / #decode_option_i64' do
+    it 'encodes and decodes Some(i64)' do
+      encoded = Solace::Utils::Codecs.encode_option_i64(-42)
+      assert_equal 1, encoded.first
+      assert_equal 9, encoded.length
+      assert_equal(-42, Solace::Utils::Codecs.decode_option_i64(StringIO.new(encoded.pack('C*'))))
+    end
+
+    it 'encodes and decodes None' do
+      encoded = Solace::Utils::Codecs.encode_option_i64(nil)
+      assert_equal [0], encoded
+      assert_nil Solace::Utils::Codecs.decode_option_i64(StringIO.new(encoded.pack('C*')))
+    end
+  end
+
+  describe '#encode_option_string' do
+    it 'encodes Some(str) with a u32 length prefix' do
+      assert_equal [1, 2, 0, 0, 0, 104, 105], Solace::Utils::Codecs.encode_option_string('hi')
+    end
+
+    it 'encodes None' do
+      assert_equal [0], Solace::Utils::Codecs.encode_option_string(nil)
+    end
+  end
 end
