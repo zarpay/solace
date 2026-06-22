@@ -109,10 +109,10 @@ module Solace
 
       # Encodes a u8 as a single byte.
       #
-      # @param u8 [Integer] Value in range 0..255.
+      # @param byte [Integer] Value in range 0..255.
       # @return [Array<Integer>] A single-element byte array.
-      def encode_u8(u8)
-        [u8]
+      def encode_u8(byte)
+        [byte]
       end
 
       # Decodes a u8 from 1 byte.

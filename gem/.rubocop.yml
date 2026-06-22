@@ -24,12 +24,23 @@ Metrics/ParameterLists:
 Metrics/MethodLength:
   Max: 15
 
+# Utility modules (e.g. Solace::Utils::Codecs) legitimately collect many small
+# related methods; the default of 100 is too low for them.
+Metrics/ModuleLength:
+  Max: 150
+
 Metrics/BlockLength:
   Exclude:
     - 'test/**/*'
 
 Naming/AccessorMethodName:
   Enabled: false
+
+# Prefer `extend self` over `module_function`: it keeps helpers as public
+# instance methods (so utility modules can be mixed into composed encoders)
+# while also exposing them as Module.<method>.
+Style/ModuleFunction:
+  EnforcedStyle: extend_self
 
 # Align hash values in a column (table style) for multi-line hash literals.
 Layout/HashAlignment:

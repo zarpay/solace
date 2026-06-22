@@ -190,10 +190,10 @@ describe Solace::Utils::Codecs do
   describe '#encode_le_u128 / #decode_le_u128' do
     let(:values) do
       {
-        0 => ("\x00" * 16).b,
-        1 => ("\x01" + ("\x00" * 15)).b,
-        2**64 => (("\x00" * 8) + "\x01" + ("\x00" * 7)).b,
-        (2**128) - 1 => ("\xff" * 16).b
+        0 => ([0] * 16).pack('C*'),
+        1 => ([1] + ([0] * 15)).pack('C*'),
+        2**64 => (([0] * 8) + [1] + ([0] * 7)).pack('C*'),
+        (2**128) - 1 => ([255] * 16).pack('C*')
       }
     end
 
@@ -214,7 +214,7 @@ describe Solace::Utils::Codecs do
 
   describe '#encode_bytes / #decode_bytes' do
     it 'round-trips a Borsh Vec<u8> with a u32 length prefix' do
-      bytes = [1, 2, 3, 255]
+      bytes   = [1, 2, 3, 255]
       encoded = Solace::Utils::Codecs.encode_bytes(bytes)
       assert_equal [4, 0, 0, 0] + bytes, encoded
       assert_equal bytes.pack('C*'), Solace::Utils::Codecs.decode_bytes(StringIO.new(encoded.pack('C*')))
@@ -253,7 +253,7 @@ describe Solace::Utils::Codecs do
 
   describe '#encode_vec_pubkeys / #decode_vec_pubkeys' do
     let(:pubkeys) do
-      ['2VFAhjXBhMuEbmcTtjYXAZX4oVPhr3im7yb8RmaBofU6', '11111111111111111111111111111111']
+      %w[2VFAhjXBhMuEbmcTtjYXAZX4oVPhr3im7yb8RmaBofU6 11111111111111111111111111111111]
     end
 
     it 'round-trips a Vec<publicKey> with a u32 count' do
@@ -272,7 +272,7 @@ describe Solace::Utils::Codecs do
 
   describe '#encode_smallvec_u8_pubkeys' do
     let(:pubkeys) do
-      ['2VFAhjXBhMuEbmcTtjYXAZX4oVPhr3im7yb8RmaBofU6', '11111111111111111111111111111111']
+      %w[2VFAhjXBhMuEbmcTtjYXAZX4oVPhr3im7yb8RmaBofU6 11111111111111111111111111111111]
     end
 
     it 'prefixes pubkeys with a u8 count' do
