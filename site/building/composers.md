@@ -38,7 +38,7 @@ You construct composers with addresses and domain arguments; you never compute i
 | **SPL Token** | `SplTokenProgramInitializeMintComposer`, `SplTokenProgramMintToComposer`, `SplTokenProgramTransferComposer`, `SplTokenProgramTransferCheckedComposer`, `SplTokenProgramCloseAccountComposer` |
 | **Token-2022** | `Token2022Program…` — the same set for the Token-2022 program |
 | **Associated Token Account** | `AssociatedTokenAccountProgramCreateAccountComposer`, `AssociatedTokenAccountProgramCreateIdempotentAccountComposer` |
-| **Compute Budget** | `ComputeBudgetProgramSetComputeUnitPriceComposer` |
+| **Compute Budget** | `ComputeBudgetProgramSetComputeUnitPriceComposer`, `ComputeBudgetProgramSetComputeUnitLimitComposer` |
 
 ## The Base contract
 

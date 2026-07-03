@@ -25,7 +25,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ### Added
 
 1. Added `Solace::Instructions::ComputeBudget::SetComputeUnitPriceInstruction` for setting a transaction's priority fee
-2. Added `Solace::Composers::ComputeBudgetProgramSetComputeUnitPriceComposer`
+2. Added `Solace::Instructions::ComputeBudget::SetComputeUnitLimitInstruction` for capping a transaction's compute units
+3. Added `Solace::Composers::ComputeBudgetProgramSetComputeUnitPriceComposer`
+4. Added `Solace::Composers::ComputeBudgetProgramSetComputeUnitLimitComposer`
 
 ### Changed
 

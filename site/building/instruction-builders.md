@@ -38,7 +38,7 @@ program. The returned instruction's `data` is the fully-encoded byte payload.
 | **SPL Token** (`Instructions::SplToken`) | `InitializeMintInstruction`, `InitializeAccountInstruction`, `MintToInstruction`, `TransferInstruction`, `TransferCheckedInstruction`, `CloseAccountInstruction` |
 | **Token-2022** (`Instructions::Token2022`) | the same set as SPL Token, targeting the Token-2022 program |
 | **Associated Token Account** (`Instructions::AssociatedTokenAccount`) | `CreateAccountInstruction`, `CreateIdempotentAccountInstruction` |
-| **Compute Budget** (`Instructions::ComputeBudget`) | `SetComputeUnitPriceInstruction` |
+| **Compute Budget** (`Instructions::ComputeBudget`) | `SetComputeUnitPriceInstruction`, `SetComputeUnitLimitInstruction` |
 
 ## Resolving indices
 
