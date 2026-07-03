@@ -35,6 +35,7 @@ test suite and most examples assume.
 | `get_mint_program_id(mint)` | `String \| nil` | Which token program owns a mint (SPL vs. Token-2022). |
 | `get_minimum_lamports_for_rent_exemption(space)` | `Integer` | Rent-exempt minimum for `space` bytes. |
 | `get_program_accounts(program_id, filters)` | `Array` | Accounts owned by a program. |
+| `get_block_height(commitment:)` | `Integer` | Current block height (defaults to the connection's commitment). |
 | `get_version` / `get_health` / `get_genesis_hash` | varies | Node metadata. |
 
 ## Blockhash and rent
@@ -44,10 +45,14 @@ array — the blockhash and the last valid block height:
 
 ```ruby
 blockhash, last_valid_height = connection.get_latest_blockhash
+
+# The blockhash stays usable until the chain passes last_valid_height:
+connection.get_block_height <= last_valid_height # => true while the blockhash is usable
 ```
 
 The composer layer fetches this for you; you only call it directly when assembling a
-[`Message`](/concepts/transactions-and-messages) by hand.
+[`Message`](/concepts/transactions-and-messages) by hand. `get_block_height` uses the
+connection's commitment by default, so the expiry comparison is apples-to-apples.
 
 ## Sending and confirming
 

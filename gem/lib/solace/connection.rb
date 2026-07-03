@@ -157,6 +157,17 @@ module Solace
       [@last_fetched_blockhash, @last_fetched_block_height]
     end
 
+    # Get the current block height from the Solana node
+    #
+    # Defaults to the connection's commitment so comparisons against the
+    # +lastValidBlockHeight+ from {#get_latest_blockhash} stay consistent.
+    #
+    # @param commitment [String] The commitment level for the request
+    # @return [Integer] The current block height
+    def get_block_height(commitment: default_options[:commitment])
+      @rpc_client.rpc_request('getBlockHeight', [{ commitment: commitment }])['result']
+    end
+
     # Get the minimum required lamports for rent exemption
     #
     # @param space [Integer] Number of bytes to allocate for the account
