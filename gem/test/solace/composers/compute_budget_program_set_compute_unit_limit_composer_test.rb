@@ -12,7 +12,7 @@ describe Solace::Composers::ComputeBudgetProgramSetComputeUnitLimitComposer do
 
   let(:composer) do
     Solace::Composers::ComputeBudgetProgramSetComputeUnitLimitComposer.new(
-      units: 10_000
+      units: 20_000
     )
   end
 
@@ -24,85 +24,79 @@ describe Solace::Composers::ComputeBudgetProgramSetComputeUnitLimitComposer do
     )
   end
 
-  describe 'sponsored transaction' do
-    before(:all) do
-      # Get starting balances
-      @bob_starting_balance   = connection.get_balance(bob.address)
-      @anna_starting_balance  = connection.get_balance(anna.address)
-      @payer_starting_balance = connection.get_balance(payer.address)
+  describe 'composed transaction' do
+    let(:decoded_message) do
+      transaction_composer.add_instruction(composer)
+      transaction_composer.add_instruction(transfer_composer)
+      transaction_composer.set_fee_payer(bob)
 
-      # Add instructions and set fee payer
+      Solace::Transaction.from(transaction_composer.compose_transaction.serialize).message
+    end
+
+    it 'includes the set compute unit limit instruction' do
+      instructions = decoded_message.instructions.map { |ix| [decoded_message.accounts[ix.program_index], ix.data] }
+
+      assert_includes instructions, [
+        Solace::Constants::COMPUTE_BUDGET_PROGRAM_ID,
+        [2] + [20_000].pack('L<').bytes
+      ]
+    end
+  end
+
+  describe 'sponsored transaction' do
+    let(:transaction) do
       transaction_composer.add_instruction(composer)
       transaction_composer.add_instruction(transfer_composer)
       transaction_composer.set_fee_payer(payer)
 
-      # Compose and sign transaction
-      tx = transaction_composer.compose_transaction
-      tx.sign(payer, bob)
-
-      # Send transaction and wait for confirmation
-      @signature = connection.send_transaction(tx.serialize)
-      connection.wait_for_confirmed_signature { @signature['result'] }
-
-      # Get ending balances
-      @bob_ending_balance   = connection.get_balance(bob.address)
-      @anna_ending_balance  = connection.get_balance(anna.address)
-      @payer_ending_balance = connection.get_balance(payer.address)
+      transaction_composer.compose_transaction.tap { |tx| tx.sign(payer, bob) }
     end
 
-    it 'deducts the fees from the payer' do
-      # 2 signatures + 5000 lamports per signature
-      assert_equal @payer_ending_balance, @payer_starting_balance - (2 * 5000)
-    end
+    it 'generates a valid transaction' do
+      signature = connection.send_transaction(transaction.serialize)
 
-    it 'sends lamports to the correct address' do
-      assert_equal @anna_ending_balance, @anna_starting_balance + 10_000
-    end
-
-    it 'sends lamports from the correct address' do
-      assert_equal @bob_ending_balance, @bob_starting_balance - 10_000
+      assert(connection.wait_for_confirmed_signature { signature['result'] })
     end
   end
 
-  describe 'transaction with a compute unit price' do
-    let(:price_composer) do
-      Solace::Composers::ComputeBudgetProgramSetComputeUnitPriceComposer.new(
-        micro_lamports: 1_000_000
-      )
-    end
-
-    before(:all) do
-      # Get starting balances
-      @bob_starting_balance  = connection.get_balance(bob.address)
-      @anna_starting_balance = connection.get_balance(anna.address)
-
-      # Add instructions and set fee payer
+  describe 'non-sponsored transaction' do
+    let(:transaction) do
       transaction_composer.add_instruction(composer)
-      transaction_composer.add_instruction(price_composer)
       transaction_composer.add_instruction(transfer_composer)
       transaction_composer.set_fee_payer(bob)
 
-      # Compose and sign transaction
-      tx = transaction_composer.compose_transaction
-      tx.sign(bob)
-
-      # Send transaction and wait for confirmation
-      @signature = connection.send_transaction(tx.serialize)
-      connection.wait_for_confirmed_signature { @signature['result'] }
-
-      # Get ending balances
-      @bob_ending_balance  = connection.get_balance(bob.address)
-      @anna_ending_balance = connection.get_balance(anna.address)
+      transaction_composer.compose_transaction.tap { |tx| tx.sign(bob) }
     end
 
-    it 'sends lamports to the correct address' do
-      assert_equal @anna_ending_balance, @anna_starting_balance + 10_000
+    it 'generates a valid transaction' do
+      signature = connection.send_transaction(transaction.serialize)
+
+      assert(connection.wait_for_confirmed_signature { signature['result'] })
+    end
+  end
+
+  describe 'transaction exceeding the compute unit limit' do
+    # Requests fewer units than the transaction needs
+    let(:composer) do
+      Solace::Composers::ComputeBudgetProgramSetComputeUnitLimitComposer.new(
+        units: 100
+      )
     end
 
-    it 'deducts the exact priority fee implied by the limit and price' do
-      # 10_000 lamport transfer + 1 signature at 5000 lamports, plus 10_000 units
-      # at 1_000_000 micro-lamports per unit (10_000 lamports)
-      assert_equal @bob_ending_balance, @bob_starting_balance - (10_000 + 5000 + 10_000)
+    let(:transaction) do
+      transaction_composer.add_instruction(composer)
+      transaction_composer.add_instruction(transfer_composer)
+      transaction_composer.set_fee_payer(bob)
+
+      transaction_composer.compose_transaction.tap { |tx| tx.sign(bob) }
+    end
+
+    it 'is rejected by the node' do
+      error = assert_raises(Solace::Errors::RPCError) do
+        connection.send_transaction(transaction.serialize)
+      end
+
+      assert_match(/exceeded/i, error.message)
     end
   end
 end

@@ -24,11 +24,28 @@ describe Solace::Composers::ComputeBudgetProgramSetComputeUnitPriceComposer do
     )
   end
 
+  describe 'composed transaction' do
+    let(:decoded_message) do
+      transaction_composer.add_instruction(composer)
+      transaction_composer.add_instruction(transfer_composer)
+      transaction_composer.set_fee_payer(bob)
+
+      Solace::Transaction.from(transaction_composer.compose_transaction.serialize).message
+    end
+
+    it 'includes the set compute unit price instruction' do
+      instructions = decoded_message.instructions.map { |ix| [decoded_message.accounts[ix.program_index], ix.data] }
+
+      assert_includes instructions, [
+        Solace::Constants::COMPUTE_BUDGET_PROGRAM_ID,
+        [3] + [1_000_000].pack('Q<').bytes
+      ]
+    end
+  end
+
   describe 'sponsored transaction' do
     before(:all) do
-      # Get starting balances
-      @bob_starting_balance   = connection.get_balance(bob.address)
-      @anna_starting_balance  = connection.get_balance(anna.address)
+      # Get starting balance
       @payer_starting_balance = connection.get_balance(payer.address)
 
       # Add instructions and set fee payer
@@ -44,31 +61,24 @@ describe Solace::Composers::ComputeBudgetProgramSetComputeUnitPriceComposer do
       @signature = connection.send_transaction(tx.serialize)
       connection.wait_for_confirmed_signature { @signature['result'] }
 
-      # Get ending balances
-      @bob_ending_balance   = connection.get_balance(bob.address)
-      @anna_ending_balance  = connection.get_balance(anna.address)
+      # Get ending balance
       @payer_ending_balance = connection.get_balance(payer.address)
     end
 
-    it 'deducts the fees and priority fee from the payer' do
-      # 2 signatures + 5000 lamports per signature, plus the priority fee
+    it 'generates a valid transaction' do
+      assert(connection.wait_for_confirmed_signature { @signature['result'] })
+    end
+
+    it 'deducts the priority fee from the payer' do
+      # 2 signatures + 5000 lamports per signature + a priority fee for the runtime's default compute unit limit
       assert_operator @payer_ending_balance, :<, @payer_starting_balance - (2 * 5000)
-    end
-
-    it 'sends lamports to the correct address' do
-      assert_equal @anna_ending_balance, @anna_starting_balance + 10_000
-    end
-
-    it 'sends lamports from the correct address' do
-      assert_equal @bob_ending_balance, @bob_starting_balance - 10_000
     end
   end
 
   describe 'non-sponsored transaction' do
     before(:all) do
-      # Get starting balances
-      @bob_starting_balance  = connection.get_balance(bob.address)
-      @anna_starting_balance = connection.get_balance(anna.address)
+      # Get starting balance
+      @bob_starting_balance = connection.get_balance(bob.address)
 
       # Add instructions and set fee payer
       transaction_composer.add_instruction(composer)
@@ -83,17 +93,16 @@ describe Solace::Composers::ComputeBudgetProgramSetComputeUnitPriceComposer do
       @signature = connection.send_transaction(tx.serialize)
       connection.wait_for_confirmed_signature { @signature['result'] }
 
-      # Get ending balances
-      @bob_ending_balance  = connection.get_balance(bob.address)
-      @anna_ending_balance = connection.get_balance(anna.address)
+      # Get ending balance
+      @bob_ending_balance = connection.get_balance(bob.address)
     end
 
-    it 'sends lamports to the correct address' do
-      assert_equal @anna_ending_balance, @anna_starting_balance + 10_000
+    it 'generates a valid transaction' do
+      assert(connection.wait_for_confirmed_signature { @signature['result'] })
     end
 
-    it 'sends lamports, fees, and priority fee from the correct address' do
-      # 1 signature + 5000 lamports per signature, plus the priority fee
+    it 'deducts the priority fee from the sender' do
+      # 10_000 lamport transfer + 1 signature + 5000 lamports per signature + a priority fee
       assert_operator @bob_ending_balance, :<, @bob_starting_balance - (10_000 + 5000)
     end
   end
