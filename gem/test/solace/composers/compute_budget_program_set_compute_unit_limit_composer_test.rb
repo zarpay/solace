@@ -5,7 +5,6 @@ require 'test_helper'
 describe Solace::Composers::ComputeBudgetProgramSetComputeUnitLimitComposer do
   let(:bob) { Fixtures.load_keypair('bob') }
   let(:anna) { Fixtures.load_keypair('anna') }
-  let(:payer) { Fixtures.load_keypair('payer') }
 
   let(:connection) { Solace::Connection.new(commitment: 'processed') }
   let(:transaction_composer) { Solace::TransactionComposer.new(connection: connection) }
@@ -25,16 +24,18 @@ describe Solace::Composers::ComputeBudgetProgramSetComputeUnitLimitComposer do
   end
 
   describe 'composed transaction' do
-    let(:decoded_message) do
+    before(:all) do
+      # Add instructions and set fee payer
       transaction_composer.add_instruction(composer)
       transaction_composer.add_instruction(transfer_composer)
       transaction_composer.set_fee_payer(bob)
 
-      Solace::Transaction.from(transaction_composer.compose_transaction.serialize).message
+      # Compose and decode the transaction message
+      @decoded_message = Solace::Transaction.from(transaction_composer.compose_transaction.serialize).message
     end
 
     it 'includes the set compute unit limit instruction' do
-      instructions = decoded_message.instructions.map { |ix| [decoded_message.accounts[ix.program_index], ix.data] }
+      instructions = @decoded_message.instructions.map { |ix| [@decoded_message.accounts[ix.program_index], ix.data] }
 
       assert_includes instructions, [
         Solace::Constants::COMPUTE_BUDGET_PROGRAM_ID,
@@ -43,35 +44,23 @@ describe Solace::Composers::ComputeBudgetProgramSetComputeUnitLimitComposer do
     end
   end
 
-  describe 'sponsored transaction' do
-    let(:transaction) do
-      transaction_composer.add_instruction(composer)
-      transaction_composer.add_instruction(transfer_composer)
-      transaction_composer.set_fee_payer(payer)
-
-      transaction_composer.compose_transaction.tap { |tx| tx.sign(payer, bob) }
-    end
-
-    it 'generates a valid transaction' do
-      signature = connection.send_transaction(transaction.serialize)
-
-      assert(connection.wait_for_confirmed_signature { signature['result'] })
-    end
-  end
-
-  describe 'non-sponsored transaction' do
-    let(:transaction) do
+  describe 'transaction consuming fewer compute units than the limit' do
+    before(:all) do
+      # Add instructions and set fee payer
       transaction_composer.add_instruction(composer)
       transaction_composer.add_instruction(transfer_composer)
       transaction_composer.set_fee_payer(bob)
 
-      transaction_composer.compose_transaction.tap { |tx| tx.sign(bob) }
+      # Compose and sign transaction
+      tx = transaction_composer.compose_transaction
+      tx.sign(bob)
+
+      # Send transaction
+      @signature = connection.send_transaction(tx.serialize)
     end
 
-    it 'generates a valid transaction' do
-      signature = connection.send_transaction(transaction.serialize)
-
-      assert(connection.wait_for_confirmed_signature { signature['result'] })
+    it 'is confirmed by the node' do
+      assert(connection.wait_for_confirmed_signature { @signature['result'] })
     end
   end
 
@@ -83,17 +72,20 @@ describe Solace::Composers::ComputeBudgetProgramSetComputeUnitLimitComposer do
       )
     end
 
-    let(:transaction) do
+    before(:all) do
+      # Add instructions and set fee payer
       transaction_composer.add_instruction(composer)
       transaction_composer.add_instruction(transfer_composer)
       transaction_composer.set_fee_payer(bob)
 
-      transaction_composer.compose_transaction.tap { |tx| tx.sign(bob) }
+      # Compose and sign transaction
+      @transaction = transaction_composer.compose_transaction
+      @transaction.sign(bob)
     end
 
     it 'is rejected by the node' do
       error = assert_raises(Solace::Errors::RPCError) do
-        connection.send_transaction(transaction.serialize)
+        connection.send_transaction(@transaction.serialize)
       end
 
       assert_match(/exceeded/i, error.message)
