@@ -62,6 +62,7 @@ export default defineConfig({
           { text: 'SPL Token', link: '/programs/spl-token' },
           { text: 'Token-2022', link: '/programs/token-2022' },
           { text: 'Associated Token Account', link: '/programs/associated-token-account' },
+          { text: 'Compute Budget', link: '/programs/compute-budget' },
         ],
       },
       {

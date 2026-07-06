@@ -57,8 +57,9 @@ you more control. Every operation is reachable at more than one level — see
   [transaction composer](/building/transaction-composer), and
   [program clients](/building/program-clients).
 - **Programs** — the [System Program](/programs/system-program),
-  [SPL Token](/programs/spl-token), [Token-2022](/programs/token-2022), and the
-  [Associated Token Account](/programs/associated-token-account) program.
+  [SPL Token](/programs/spl-token), [Token-2022](/programs/token-2022), the
+  [Associated Token Account](/programs/associated-token-account) program, and
+  [Compute Budget](/programs/compute-budget).
 - **Reference** — [codecs](/reference/codecs), [PDA derivation](/reference/pda),
   [Curve25519](/reference/curve25519), [constants](/reference/constants),
   [serialization](/reference/serialization), [tokens](/reference/tokens), and
