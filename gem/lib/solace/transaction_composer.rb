@@ -73,6 +73,10 @@ module Solace
     #   The instruction composers
     attr_reader :instruction_composers
 
+    # @!attribute lookup_tables
+    #   The lookup table context
+    attr_reader :lookup_tables
+
     # Initialize the composer
     #
     # @param connection [Solace::Connection] The connection to the Solana cluster
@@ -80,6 +84,7 @@ module Solace
       @connection            = connection
       @instruction_composers = []
       @context               = Utils::AccountContext.new
+      @lookup_tables         = Utils::LookupTableContext.new
     end
 
     # Add an instruction composer to the transaction
@@ -154,23 +159,98 @@ module Solace
       self
     end
 
+    # Make an address lookup table available to the transaction
+    #
+    # When at least one lookup table is added, `compose_transaction` emits a v0
+    # message: every compiled account that can be loaded through a table (a
+    # non-signer that is not the fee payer and not a program id of any
+    # instruction) is referenced by table index instead of occupying a static
+    # account slot.
+    #
+    # @example
+    #   composer.add_lookup_table(
+    #     account:   table_address,
+    #     addresses: on_chain_table_addresses
+    #   )
+    #
+    # @param account [#to_s, PublicKey] The lookup table's on-chain address
+    # @param addresses [Array<#to_s>] The full, ordered list of addresses stored in the table
+    # @return [TransactionComposer] Self for chaining
+    #
+    # @since 0.1.8
+    def add_lookup_table(account:, addresses:)
+      lookup_tables.add_table(account: account, addresses: addresses)
+      self
+    end
+
     # Compose the final transaction
+    #
+    # Emits a legacy message unless lookup tables were added, in which case a
+    # v0 message is emitted instead.
     #
     # @return [Transaction] The composed transaction (unsigned)
     def compose_transaction
       context.compile
 
-      message = Solace::Message.new(
-        header:           context.header,
-        accounts:         context.accounts,
-        instructions:     build_instructions,
-        recent_blockhash: connection.get_latest_blockhash[0]
-      )
+      return Solace::Transaction.new(message: legacy_message) if lookup_tables.empty?
 
-      Solace::Transaction.new(message: message)
+      Solace::Transaction.new(message: versioned_message)
     end
 
     private
+
+    # Build the legacy message
+    #
+    # @return [Solace::Message] The legacy message
+    def legacy_message
+      Solace::Message.new(
+        header:           context.header,
+        accounts:         context.accounts,
+        instructions:     build_instructions,
+        recent_blockhash: recent_blockhash
+      )
+    end
+
+    # Build the v0 message
+    #
+    # Loaded accounts leave the static account list and are referenced through
+    # the lookup tables. Instructions are rebuilt after the relocation so their
+    # indices resolve against the combined v0 account space
+    # [static..., loaded writable..., loaded readonly...] — the order in which
+    # the Solana runtime flattens loaded addresses before execution.
+    #
+    # @return [Solace::Message] The v0 message
+    def versioned_message
+      writable, readonly = lookup_tables.select_loaded_accounts(context, program_ids)
+      static_accounts    = context.relocate_loaded_accounts(writable.keys, readonly.keys)
+
+      Solace::Message.new(
+        version:               0,
+        header:                context.header,
+        accounts:              static_accounts,
+        instructions:          build_instructions,
+        recent_blockhash:      recent_blockhash,
+        address_lookup_tables: lookup_tables.address_lookup_tables_for(writable, readonly)
+      )
+    end
+
+    # Fetch a recent blockhash from the connection
+    #
+    # @return [String] The recent blockhash (base58)
+    def recent_blockhash
+      connection.get_latest_blockhash[0]
+    end
+
+    # Program ids referenced by the built instructions
+    #
+    # Resolved by building the instructions against the compiled static order,
+    # so any program an instruction actually invokes is covered — including
+    # composers that emit multiple instructions for different programs.
+    #
+    # @return [Array<String>] The program id pubkeys
+    def program_ids
+      build_instructions.map { |instruction| context.accounts[instruction.program_index] }.uniq
+    end
 
     # Build all instructions with resolved indices
     #

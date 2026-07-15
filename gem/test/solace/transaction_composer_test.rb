@@ -23,7 +23,7 @@ describe Solace::TransactionComposer do
 
   # Test programs
   let(:system_program) { Solace::Constants::SYSTEM_PROGRAM_ID }
-  let(:spl_token_program) { Solace::Constants::SPL_TOKEN_PROGRAM_ID }
+  let(:spl_token_program) { Solace::Constants::TOKEN_PROGRAM_ID }
 
   # Test composers
   let(:transfer_composer1) do
@@ -271,6 +271,247 @@ describe Solace::TransactionComposer do
       assert_equal 1, tx.message.accounts.length # Only fee payer
       assert_equal 0, tx.message.instructions.length
       assert_equal payer_keypair.address, tx.message.accounts[0]
+    end
+  end
+
+  describe '#add_lookup_table' do
+    let(:table_account) { Solace::Keypair.generate.address }
+
+    it 'registers the table on the lookup table context and returns self for chaining' do
+      result = composer.add_lookup_table(account: table_account, addresses: [bob_keypair.address])
+
+      assert_equal composer, result
+      assert_equal [{ account: table_account, addresses: [bob_keypair.address] }], composer.lookup_tables.tables
+    end
+  end
+
+  describe '#compose_transaction with lookup tables' do
+    let(:table_account) { Solace::Keypair.generate.address }
+
+    let(:mint_address) { mint_keypair.address }
+    let(:from_token_account) { Solace::Keypair.generate.address }
+    let(:to_token_account) { Solace::Keypair.generate.address }
+    let(:unrelated_address) { Solace::Keypair.generate.address }
+
+    let(:transfer_checked_composer) do
+      Solace::Composers::SplTokenProgramTransferCheckedComposer.new(
+        from:      from_token_account,
+        to:        to_token_account,
+        mint:      mint_address,
+        authority: anna_keypair,
+        amount:    1_000,
+        decimals:  6
+      )
+    end
+
+    before do
+      # Mock connection to return a blockhash
+      def connection.get_latest_blockhash
+        ['EkSnNWid2cvwEVnVx9aBqawnmiCNiDgp3gUdkDPTKN1N', 1000]
+      end
+
+      composer
+        .add_instruction(transfer_checked_composer)
+        .set_fee_payer(payer_keypair)
+    end
+
+    describe 'when the table covers loadable accounts' do
+      before do
+        composer.add_lookup_table(
+          account:   table_account,
+          addresses: [unrelated_address, to_token_account, mint_address, anna_keypair.address, spl_token_program]
+        )
+
+        @transaction = composer.compose_transaction
+        @message     = @transaction.message
+      end
+
+      it 'emits a v0 message' do
+        assert_predicate @message, :versioned?
+        assert_equal 0, @message.version
+      end
+
+      it 'moves loadable accounts out of the static account list' do
+        refute_includes @message.accounts, to_token_account
+        refute_includes @message.accounts, mint_address
+
+        # Writable, but not present in the table — stays static
+        assert_includes @message.accounts, from_token_account
+      end
+
+      it 'keeps signers, the fee payer, and program ids static even when listed in the table' do
+        assert_equal payer_keypair.address, @message.accounts[0]
+        assert_includes @message.accounts, anna_keypair.address
+        assert_includes @message.accounts, spl_token_program
+      end
+
+      it 'drops loaded readonly accounts from the readonly unsigned count' do
+        # payer + authority sign; of the two readonly unsigned accounts
+        # (mint + token program) only the program remains static
+        assert_equal [2, 0, 1], @message.header
+      end
+
+      it 'references loaded accounts through their table positions' do
+        assert_equal 1, @message.address_lookup_tables.length
+
+        table = @message.address_lookup_tables.first
+
+        assert_equal table_account, table.account
+        assert_equal [1], table.writable_indexes # to_token_account
+        assert_equal [2], table.readonly_indexes # mint
+      end
+
+      it 'resolves instruction indices against the combined v0 account space' do
+        combined = @message.accounts + [to_token_account, mint_address]
+
+        instruction = @message.instructions.first
+
+        assert_equal spl_token_program, combined[instruction.program_index]
+        assert_equal(
+          [from_token_account, mint_address, to_token_account, anna_keypair.address],
+          instruction.accounts.map { |index| combined[index] }
+        )
+      end
+
+      it 'round-trips through serialization' do
+        decoded = Solace::Transaction.from(@transaction.serialize).message
+
+        assert_equal 0, decoded.version
+        assert_equal @message.accounts, decoded.accounts
+        assert_equal @message.header, decoded.header
+
+        table = decoded.address_lookup_tables.first
+
+        assert_equal table_account, table.account
+        assert_equal [1], table.writable_indexes
+        assert_equal [2], table.readonly_indexes
+      end
+    end
+
+    describe 'when no table address is loadable' do
+      before do
+        composer.add_lookup_table(
+          account:   table_account,
+          addresses: [unrelated_address, anna_keypair.address, spl_token_program]
+        )
+
+        @message = composer.compose_transaction.message
+      end
+
+      it 'composes a v0 message with no table references and every account static' do
+        assert_equal 0, @message.version
+        assert_empty @message.address_lookup_tables
+        assert_includes @message.accounts, to_token_account
+        assert_includes @message.accounts, mint_address
+        assert_equal [2, 0, 2], @message.header
+      end
+    end
+
+    describe 'when no lookup tables were added' do
+      before do
+        @message = composer.compose_transaction.message
+      end
+
+      it 'composes a legacy message' do
+        refute_predicate @message, :versioned?
+        assert_empty @message.address_lookup_tables
+      end
+    end
+  end
+
+  describe 'composing a v0 transaction against the validator' do
+    before(:all) do
+      @connection = Solace::Connection.new(commitment: 'processed')
+
+      bob         = Fixtures.load_keypair('bob')
+      @recipient1 = Solace::Keypair.generate
+      @recipient2 = Solace::Keypair.generate
+
+      # Provision an on-chain lookup table holding the recipients
+      recent_slot = @connection.get_slot - 1
+
+      @table_address, bump = Solace::Utils::PDA.find_program_address(
+        [bob.address, Solace::Utils::Codecs.encode_le_u64(recent_slot).bytes],
+        Solace::Constants::ADDRESS_LOOKUP_TABLE_PROGRAM_ID
+      )
+
+      provision_tx = Solace::TransactionComposer
+                     .new(connection: @connection)
+                     .add_instruction(LookupTableProgram::CreateComposer.new(
+                                        table:       @table_address,
+                                        payer:       bob.address,
+                                        recent_slot: recent_slot,
+                                        bump:        bump
+                                      ))
+                     .add_instruction(LookupTableProgram::ExtendComposer.new(
+                                        table:     @table_address,
+                                        payer:     bob.address,
+                                        addresses: [@recipient1.address, @recipient2.address]
+                                      ))
+                     .set_fee_payer(bob)
+                     .compose_transaction
+
+      provision_tx.sign(bob)
+
+      signature = @connection.send_transaction(provision_tx.serialize)
+      @connection.wait_for_confirmed_signature { signature['result'] }
+
+      # A table extended in slot N becomes usable in slot N + 1
+      extended_slot = @connection.get_slot
+      50.times do
+        break if @connection.get_slot > extended_slot
+
+        sleep 0.2
+      end
+
+      # Compose the transfers as a v0 transaction loading the recipients
+      # through the on-chain table
+      transaction = Solace::TransactionComposer
+                    .new(connection: @connection)
+                    .add_instruction(Solace::Composers::SystemProgramTransferComposer.new(
+                                       from:     bob,
+                                       to:       @recipient1,
+                                       lamports: 5_000_000
+                                     ))
+                    .add_instruction(Solace::Composers::SystemProgramTransferComposer.new(
+                                       from:     bob,
+                                       to:       @recipient2,
+                                       lamports: 6_000_000
+                                     ))
+                    .set_fee_payer(bob)
+                    .add_lookup_table(
+                      account:   @table_address,
+                      addresses: [@recipient1.address, @recipient2.address]
+                    )
+                    .compose_transaction
+
+      @message = transaction.message
+
+      transaction.sign(bob)
+
+      @signature = @connection.send_transaction(transaction.serialize)
+    end
+
+    it 'emits a v0 message with the recipients loaded through the table' do
+      assert_equal 0, @message.version
+
+      refute_includes @message.accounts, @recipient1.address
+      refute_includes @message.accounts, @recipient2.address
+
+      assert_equal [@table_address], @message.address_lookup_tables.map(&:account)
+      assert_equal [0, 1], @message.address_lookup_tables.first.writable_indexes
+      assert_empty @message.address_lookup_tables.first.readonly_indexes
+    end
+
+    it 'is confirmed by the node' do
+      assert(@connection.wait_for_confirmed_signature { @signature['result'] })
+    end
+
+    it 'credits the recipients through the loaded addresses' do
+      @connection.wait_for_confirmed_signature { @signature['result'] }
+
+      assert_equal 5_000_000, @connection.get_balance(@recipient1.address)
+      assert_equal 6_000_000, @connection.get_balance(@recipient2.address)
     end
   end
 end
