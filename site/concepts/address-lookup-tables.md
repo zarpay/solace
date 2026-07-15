@@ -42,9 +42,33 @@ ALTs serialize and deserialize through the [serialization layer](/reference/seri
 (`AddressLookupTable.deserialize(io)` / `#serialize`), the same path used for the rest of
 the wire format.
 
+## Composing v0 transactions
+
+You rarely build these references by hand. Register a table on the
+[`TransactionComposer`](/building/transaction-composer#address-lookup-tables-v0) and it
+selects the loadable accounts, computes the indexes, and emits a v0 message for you:
+
+```ruby
+tx = Solace::TransactionComposer.new(connection:)
+                                .add_instruction(swap_composer)
+                                .set_fee_payer(payer.address)
+                                .add_lookup_table(
+                                  account:   lookup_table_address,
+                                  addresses: on_chain_table_addresses # the table's full address list
+                                )
+                                .compose_transaction
+
+tx.message.versioned? # => true — registering a table opts into the v0 format
+```
+
+The selection follows the runtime rules: signers, the fee payer, and instruction program
+ids always stay static; everything else referenced by the transaction and present in a
+table is loaded by index.
+
 ::: tip Scope
-Solace models the lookup-table **reference** inside a transaction so it can serialize and
-deserialize v0 transactions that use ALTs. Building examples target legacy transactions
-unless versioned features are specifically needed; see
+Solace models the lookup-table **reference** inside a transaction — plus the composer
+support above for building v0 transactions from tables that already exist on chain.
+Creating or extending the on-chain tables themselves (the Address Lookup Table program's
+instructions) is not covered; see
 [Transactions & Messages](/concepts/transactions-and-messages#legacy-vs-versioned).
 :::

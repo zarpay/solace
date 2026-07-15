@@ -36,6 +36,7 @@ test suite and most examples assume.
 | `get_minimum_lamports_for_rent_exemption(space)` | `Integer` | Rent-exempt minimum for `space` bytes. |
 | `get_program_accounts(program_id, filters)` | `Array` | Accounts owned by a program. |
 | `get_block_height(commitment:)` | `Integer` | Current block height (defaults to the connection's commitment). |
+| `get_slot(commitment:)` | `Integer` | Current slot (defaults to the connection's commitment). |
 | `get_version` / `get_health` / `get_genesis_hash` | varies | Node metadata. |
 
 ## Blockhash and rent

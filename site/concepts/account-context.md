@@ -58,6 +58,18 @@ ix = Solace::Instructions::SystemProgram::TransferInstruction.build(
 )
 ```
 
+## Relocating accounts loaded through lookup tables
+
+For v0 transactions, `relocate_loaded_accounts(writable, readonly)` rebuilds a compiled
+account list as `[static..., loaded writable..., loaded readonly...]` — the combined
+account space the Solana runtime uses once
+[address lookup tables](/concepts/address-lookup-tables) are resolved — and removes the
+loaded readonly accounts from the header's readonly-unsigned count. It returns the static
+accounts that remain in the message, while `index_of` keeps resolving loaded accounts at
+their combined-space positions. The
+[`TransactionComposer`](/building/transaction-composer#address-lookup-tables-v0) calls
+this for you when lookup tables are in play.
+
 ## You usually don't touch it directly
 
 The [`TransactionComposer`](/building/transaction-composer) owns an `AccountContext`
