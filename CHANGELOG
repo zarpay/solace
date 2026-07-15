@@ -20,6 +20,21 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ---
 
+## 0.1.8 - 2026-07-14
+
+### Added
+
+1. Added address lookup table support to `Solace::TransactionComposer`: `#add_lookup_table(account:, addresses:)` registers a table, and `#compose_transaction` emits a v0 message loading every eligible account (non-signer, not the fee payer, not an instruction program id) through the tables
+2. Added `Solace::Utils::LookupTableContext` — the lookup-table counterpart to `AccountContext`, managing registered tables, v0 loading rules, and the message's table references
+3. Added `Solace::Utils::AccountContext#relocate_loaded_accounts` for rebuilding a compiled account list into the combined v0 account space `[static..., loaded writable..., loaded readonly...]`
+4. Added `Solace::Connection#get_slot`
+
+### Changed
+
+### Fixed
+
+---
+
 ## 0.1.7 - 2026-07-03
 
 ### Added
