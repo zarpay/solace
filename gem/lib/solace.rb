@@ -38,6 +38,7 @@ require_relative 'solace/connection'
 require_relative 'solace/utils/codecs'
 require_relative 'solace/utils/pda'
 require_relative 'solace/utils/account_context'
+require_relative 'solace/utils/lookup_table_context'
 require_relative 'solace/utils/curve25519_dalek'
 require_relative 'solace/concerns/binary_serializable'
 

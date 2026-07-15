@@ -232,6 +232,52 @@ describe Solace::Utils::AccountContext do
     end
   end
 
+  describe '#relocate_loaded_accounts' do
+    let(:pubkey4) { keypair4.address }
+    let(:keypair4) { Solace::Keypair.generate }
+
+    before do
+      context.set_fee_payer(keypair1)
+      context.add_writable_nonsigner(pubkey2)
+      context.add_writable_nonsigner(pubkey3)
+      context.add_readonly_nonsigner(pubkey4)
+      context.add_readonly_nonsigner(program_id)
+
+      context.compile
+    end
+
+    it 'returns the static accounts remaining in the message' do
+      compiled = context.accounts.dup
+
+      static = context.relocate_loaded_accounts([pubkey3], [pubkey4])
+
+      assert_equal compiled - [pubkey3, pubkey4], static
+    end
+
+    it 'moves loaded accounts to the end of the account space in writable-then-readonly order' do
+      static = context.relocate_loaded_accounts([pubkey3], [pubkey4])
+
+      assert_equal static + [pubkey3, pubkey4], context.accounts
+      assert_equal context.accounts.length - 2, context.index_of(pubkey3)
+      assert_equal context.accounts.length - 1, context.index_of(pubkey4)
+    end
+
+    it 'removes loaded readonly accounts from the readonly unsigned count' do
+      assert_equal [1, 0, 2], context.header
+
+      context.relocate_loaded_accounts([pubkey3], [pubkey4])
+
+      assert_equal [1, 0, 1], context.header
+    end
+
+    it 'keeps the header intact when only writable accounts are loaded' do
+      static = context.relocate_loaded_accounts([pubkey2, pubkey3], [])
+
+      assert_equal [1, 0, 2], context.header
+      assert_equal static + [pubkey2, pubkey3], context.accounts
+    end
+  end
+
   describe 'edge cases' do
     it 'handles empty context compilation' do
       context.compile

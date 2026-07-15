@@ -161,8 +161,7 @@ module Solace
       # @param other_context [AccountContext] The other context to merge from
       def merge_from(other_context)
         other_context.pubkey_account_map.each do |pubkey, data|
-          signer, writable, fee_payer = data.values_at(:signer, :writable, :fee_payer)
-          merge_account(pubkey, signer: signer, writable: writable, fee_payer: fee_payer)
+          merge_account(pubkey, **data.slice(:signer, :writable, :fee_payer))
         end
       end
 
@@ -178,6 +177,30 @@ module Solace
         self.header   = calculate_header
         self.accounts = order_accounts
         self
+      end
+
+      # Relocate lookup-loaded accounts to the end of the account space
+      #
+      # Rebuilds the compiled account list as [static..., writable..., readonly...]
+      # so index resolution matches the combined v0 account space — the Solana
+      # runtime appends loaded writable then loaded readonly addresses after the
+      # static keys before execution. Loaded readonly accounts leave the header's
+      # readonly unsigned count since they no longer occupy a static slot.
+      #
+      # @note Must be called after {#compile}.
+      #
+      # @param writable [Array<String>] The loaded writable account pubkeys
+      # @param readonly [Array<String>] The loaded readonly account pubkeys
+      # @return [Array<String>] The static accounts remaining in the message
+      #
+      # @since 0.1.8
+      def relocate_loaded_accounts(writable, readonly)
+        static = accounts - (writable + readonly)
+
+        self.accounts = static + writable + readonly
+        header[2]    -= readonly.size
+
+        static
       end
 
       # Index of a pubkey in the accounts array
@@ -241,10 +264,8 @@ module Solace
       def calculate_header
         @pubkey_account_map.keys.each_with_object([0, 0, 0]) do |pubkey, acc|
           acc[0] += 1 if signer?(pubkey)
-
-          if readonly_signer?(pubkey) then acc[1]       += 1
-          elsif readonly_nonsigner?(pubkey) then acc[2] += 1
-          end
+          acc[1] += 1 if readonly_signer?(pubkey)
+          acc[2] += 1 if readonly_nonsigner?(pubkey)
         end
       end
     end
