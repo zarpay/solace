@@ -13,15 +13,17 @@ describe Solace::Composers::AddressLookupTableProgramCreateComposer do
       Solace::Constants::ADDRESS_LOOKUP_TABLE_PROGRAM_ID
     )
 
+    create_composer = Solace::Composers::AddressLookupTableProgramCreateComposer.new(
+      table:       @table,
+      authority:   @authority,
+      payer:       @authority,
+      recent_slot: recent_slot,
+      bump:        bump
+    )
+
     tx = Solace::TransactionComposer
          .new(connection: connection)
-         .add_instruction(Solace::Composers::AddressLookupTableProgramCreateComposer.new(
-                            table:       @table,
-                            authority:   @authority,
-                            payer:       @authority,
-                            recent_slot: recent_slot,
-                            bump:        bump
-                          ))
+         .add_instruction(create_composer)
          .set_fee_payer(@authority)
          .compose_transaction
 

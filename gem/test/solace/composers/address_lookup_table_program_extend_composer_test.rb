@@ -15,15 +15,17 @@ describe Solace::Composers::AddressLookupTableProgramExtendComposer do
       Solace::Constants::ADDRESS_LOOKUP_TABLE_PROGRAM_ID
     )
 
+    create_composer = Solace::Composers::AddressLookupTableProgramCreateComposer.new(
+      table:       table,
+      authority:   authority,
+      payer:       authority,
+      recent_slot: recent_slot,
+      bump:        bump
+    )
+
     create_tx = Solace::TransactionComposer
                 .new(connection: connection)
-                .add_instruction(Solace::Composers::AddressLookupTableProgramCreateComposer.new(
-                                   table:       table,
-                                   authority:   authority,
-                                   payer:       authority,
-                                   recent_slot: recent_slot,
-                                   bump:        bump
-                                 ))
+                .add_instruction(create_composer)
                 .set_fee_payer(authority)
                 .compose_transaction
 
@@ -31,14 +33,16 @@ describe Solace::Composers::AddressLookupTableProgramExtendComposer do
     create_signature = connection.send_transaction(create_tx.serialize)
     connection.wait_for_confirmed_signature { create_signature['result'] }
 
+    extend_composer = Solace::Composers::AddressLookupTableProgramExtendComposer.new(
+      table:     table,
+      authority: authority,
+      payer:     authority,
+      addresses: @addresses
+    )
+
     extend_tx = Solace::TransactionComposer
                 .new(connection: connection)
-                .add_instruction(Solace::Composers::AddressLookupTableProgramExtendComposer.new(
-                                   table:     table,
-                                   authority: authority,
-                                   payer:     authority,
-                                   addresses: @addresses
-                                 ))
+                .add_instruction(extend_composer)
                 .set_fee_payer(authority)
                 .compose_transaction
 

@@ -460,9 +460,11 @@ describe Solace::TransactionComposer do
       composer = Solace::TransactionComposer.new(connection: connection)
 
       recipients.each do |recipient, lamports|
-        composer.add_instruction(Solace::Composers::SystemProgramTransferComposer.new(
-                                   from: from, to: recipient, lamports: lamports
-                                 ))
+        transfer = Solace::Composers::SystemProgramTransferComposer.new(
+          from: from, to: recipient, lamports: lamports
+        )
+
+        composer.add_instruction(transfer)
       end
 
       composer.set_fee_payer(from)
@@ -633,12 +635,13 @@ describe Solace::TransactionComposer do
 
         @anna_starting_balance = @connection.get_token_account_balance(anna_ata)['amount'].to_i
 
+        transfer_composer = Solace::Composers::SplTokenProgramTransferCheckedComposer.new(
+          mint: mint, from: bob_ata, to: anna_ata, authority: bob, amount: @amount, decimals: 6
+        )
+
         transaction = Solace::TransactionComposer
                       .new(connection: @connection)
-                      .add_instruction(Solace::Composers::SplTokenProgramTransferCheckedComposer.new(
-                                         mint: mint, from: bob_ata, to: anna_ata,
-                                         authority: bob, amount: @amount, decimals: 6
-                                       ))
+                      .add_instruction(transfer_composer)
                       .set_fee_payer(payer)
                       .add_address_lookup_table(account: @table, addresses: [@mint_address])
                       .compose_transaction
