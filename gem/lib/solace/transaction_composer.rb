@@ -73,6 +73,14 @@ module Solace
     #   The instruction composers
     attr_reader :instruction_composers
 
+    # @!attribute address_lookup_tables
+    #   The registered address lookup tables
+    attr_reader :address_lookup_tables
+
+    # @!attribute version
+    #   The transaction version (nil for legacy, 0 for v0)
+    attr_reader :version
+
     # Initialize the composer
     #
     # @param connection [Solace::Connection] The connection to the Solana cluster
@@ -80,6 +88,8 @@ module Solace
       @connection            = connection
       @instruction_composers = []
       @context               = Utils::AccountContext.new
+      @address_lookup_tables = []
+      @version               = nil
     end
 
     # Add an instruction composer to the transaction
@@ -127,6 +137,7 @@ module Solace
     # @since 0.1.0
     def merge(other, placement: :add, index: nil)
       merge_accounts(other.context)
+      merge_address_lookup_tables(other.address_lookup_tables)
 
       case placement
       when :add
@@ -154,23 +165,108 @@ module Solace
       self
     end
 
+    # Make an address lookup table available to the transaction
+    #
+    # Registering a table opts the transaction into the v0 format: every
+    # compiled account found in a table that is allowed to load (a non-signer
+    # that is not the fee payer and not an invoked program id) is referenced by
+    # table index instead of occupying a static account slot. Adding the same
+    # table (by account) twice is a no-op.
+    #
+    # @example
+    #   composer.add_address_lookup_table(account: table_address, addresses: on_chain_addresses)
+    #
+    # @param account [#to_s, PublicKey] The lookup table's on-chain address
+    # @param addresses [Array<#to_s>, nil] The full, ordered list of addresses stored in the table
+    # @return [TransactionComposer] Self for chaining
+    #
+    # @since 0.1.7
+    def add_address_lookup_table(account:, addresses: nil)
+      account   = account.to_s
+      @version  = 0 # Lookup tables require a v0 transaction
+
+      unless address_lookup_tables.any? { |table| table.account == account }
+        address_lookup_tables << Solace::Accounts::AddressLookupTable.new(account: account, addresses: addresses)
+      end
+
+      self
+    end
+
     # Compose the final transaction
+    #
+    # Emits a message at the composer's {#version} — legacy by default, or v0
+    # once a lookup table has been added — loading eligible accounts through any
+    # registered tables.
     #
     # @return [Transaction] The composed transaction (unsigned)
     def compose_transaction
       context.compile
 
-      message = Solace::Message.new(
-        header:           context.header,
-        accounts:         context.accounts,
-        instructions:     build_instructions,
-        recent_blockhash: connection.get_latest_blockhash[0]
-      )
+      writable, readonly, references = resolve_address_lookup_tables
+      context.compile(loaded_accounts: writable + readonly)
 
-      Solace::Transaction.new(message: message)
+      Solace::Transaction.new(message: build_message(references))
     end
 
     private
+
+    # Fold the registered tables into the accounts they load and the references
+    # the message carries — a single pass over the tables (the order that
+    # defines the v0 combined account space).
+    #
+    # First table wins when tables share an address; within a table the on-chain
+    # address order is preserved, so the accumulated writable/readonly segments
+    # match the runtime's loaded-address order once concatenated.
+    #
+    # @return [Array(Array<String>, Array<String>, Array<Solace::AddressLookupTable>)]
+    #   The loaded writable pubkeys, loaded readonly pubkeys, and table references
+    def resolve_address_lookup_tables
+      loadable = loadable_accounts
+      writable = []
+      readonly = []
+
+      references = address_lookup_tables.filter_map do |table|
+        loaded    = table.addresses & loadable
+        loadable -= loaded
+        on, off   = loaded.partition { |pubkey| context.writable?(pubkey) }
+        writable.concat(on)
+        readonly.concat(off)
+        table.reference(on, off)
+      end
+
+      [writable, readonly, references]
+    end
+
+    # Accounts eligible to load through a table: referenced by the transaction,
+    # not a signer (which covers the fee payer), and not an invoked program id.
+    #
+    # @return [Array<String>] The loadable account pubkeys
+    def loadable_accounts
+      programs = program_ids
+      context.accounts.reject { |pubkey| context.signer?(pubkey) || programs.include?(pubkey) }
+    end
+
+    # Program ids invoked by the built instructions — these must stay static
+    #
+    # @return [Array<String>] The invoked program id pubkeys
+    def program_ids
+      build_instructions.map { context.accounts[_1.program_index] }.uniq
+    end
+
+    # Build the composed message at the composer's version (legacy or v0)
+    #
+    # @param references [Array<Solace::AddressLookupTable>] The table references
+    # @return [Solace::Message] The composed message
+    def build_message(references)
+      Solace::Message.new(
+        version:               version,
+        header:                context.header,
+        accounts:              context.accounts,
+        instructions:          build_instructions,
+        recent_blockhash:      connection.get_latest_blockhash[0],
+        address_lookup_tables: references
+      )
+    end
 
     # Build all instructions with resolved indices
     #
@@ -184,6 +280,13 @@ module Solace
     # @param account_context [AccountContext] The other context to merge from
     def merge_accounts(account_context)
       context.merge_from(account_context)
+    end
+
+    # Merge registered tables from another composer, deduped by account
+    #
+    # @param tables [Array<Solace::Accounts::AddressLookupTable>] The other composer's tables
+    def merge_address_lookup_tables(tables)
+      tables.each { |table| add_address_lookup_table(account: table.account, addresses: table.addresses) }
     end
   end
 end

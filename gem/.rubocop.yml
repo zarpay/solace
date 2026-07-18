@@ -24,6 +24,12 @@ Metrics/ParameterLists:
 Metrics/MethodLength:
   Max: 15
 
+# Composers and utilities collect many small, cohesive methods (e.g. the
+# TransactionComposer's account/lookup-table orchestration); 100 is a touch
+# tight for them while still discouraging genuinely large classes.
+Metrics/ClassLength:
+  Max: 125
+
 # Utility modules (e.g. Solace::Utils::Codecs) legitimately collect many small
 # related methods; the default of 100 is too low for them.
 Metrics/ModuleLength:

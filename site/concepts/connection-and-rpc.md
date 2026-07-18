@@ -35,6 +35,7 @@ test suite and most examples assume.
 | `get_mint_program_id(mint)` | `String \| nil` | Which token program owns a mint (SPL vs. Token-2022). |
 | `get_minimum_lamports_for_rent_exemption(space)` | `Integer` | Rent-exempt minimum for `space` bytes. |
 | `get_program_accounts(program_id, filters)` | `Array` | Accounts owned by a program. |
+| `get_slot(commitment:)` | `Integer` | Current slot (defaults to the connection's commitment). |
 | `get_version` / `get_health` / `get_genesis_hash` | varies | Node metadata. |
 
 ## Blockhash and rent

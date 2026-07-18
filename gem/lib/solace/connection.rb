@@ -157,6 +157,16 @@ module Solace
       [@last_fetched_blockhash, @last_fetched_block_height]
     end
 
+    # Get the current slot from the Solana node
+    #
+    # @param commitment [String] The commitment level for the request
+    # @return [Integer] The current slot
+    #
+    # @since 0.1.7
+    def get_slot(commitment: default_options[:commitment])
+      @rpc_client.rpc_request('getSlot', [{ commitment: commitment }])['result']
+    end
+
     # Get the minimum required lamports for rent exemption
     #
     # @param space [Integer] Number of bytes to allocate for the account
