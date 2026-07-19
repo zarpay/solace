@@ -17,7 +17,7 @@ module Solace
       #     system_program_index: 3
       #   )
       #
-      # @since 0.1.7
+      # @since 0.1.8
       class ExtendLookupTableInstruction
         # Instruction discriminator for ExtendLookupTable (u32 LE)
         INSTRUCTION_ID = [2, 0, 0, 0].freeze

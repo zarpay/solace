@@ -157,12 +157,23 @@ module Solace
       [@last_fetched_blockhash, @last_fetched_block_height]
     end
 
+    # Get the current block height from the Solana node
+    #
+    # Defaults to the connection's commitment so comparisons against the
+    # +lastValidBlockHeight+ from {#get_latest_blockhash} stay consistent.
+    #
+    # @param commitment [String] The commitment level for the request
+    # @return [Integer] The current block height
+    def get_block_height(commitment: default_options[:commitment])
+      @rpc_client.rpc_request('getBlockHeight', [{ commitment: commitment }])['result']
+    end
+
     # Get the current slot from the Solana node
     #
     # @param commitment [String] The commitment level for the request
     # @return [Integer] The current slot
     #
-    # @since 0.1.7
+    # @since 0.1.8
     def get_slot(commitment: default_options[:commitment])
       @rpc_client.rpc_request('getSlot', [{ commitment: commitment }])['result']
     end

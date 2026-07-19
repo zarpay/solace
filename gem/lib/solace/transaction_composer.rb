@@ -180,7 +180,7 @@ module Solace
     # @param addresses [Array<#to_s>, nil] The full, ordered list of addresses stored in the table
     # @return [TransactionComposer] Self for chaining
     #
-    # @since 0.1.7
+    # @since 0.1.8
     def add_address_lookup_table(account:, addresses: nil)
       account   = account.to_s
       @version  = 0 # Lookup tables require a v0 transaction

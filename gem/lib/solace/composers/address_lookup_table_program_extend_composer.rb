@@ -25,7 +25,7 @@ module Solace
     #   )
     #
     # @see Instructions::AddressLookupTableProgram::ExtendLookupTableInstruction
-    # @since 0.1.7
+    # @since 0.1.8
     class AddressLookupTableProgramExtendComposer < Base
       # @return [String] The table's on-chain address
       def table

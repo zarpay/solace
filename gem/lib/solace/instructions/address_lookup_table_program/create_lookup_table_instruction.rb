@@ -10,7 +10,7 @@ module Solace
     # can touch far more accounts than the legacy format allows.
     #
     # @see https://docs.solana.com/developing/lookup-tables
-    # @since 0.1.7
+    # @since 0.1.8
     module AddressLookupTableProgram
       # Instruction for creating a new (uninitialized) address lookup table.
       #
@@ -28,7 +28,7 @@ module Solace
       #     system_program_index: 3
       #   )
       #
-      # @since 0.1.7
+      # @since 0.1.8
       class CreateLookupTableInstruction
         # Instruction discriminator for CreateLookupTable (u32 LE)
         INSTRUCTION_ID = [0, 0, 0, 0].freeze

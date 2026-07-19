@@ -27,7 +27,7 @@ module Solace
     #
     # @see Solace::AddressLookupTable
     # @see Solace::TransactionComposer
-    # @since 0.1.7
+    # @since 0.1.8
     class AddressLookupTable
       # Byte offset at which the stored addresses begin — the program reserves a
       # fixed-size metadata region ahead of them regardless of its contents.

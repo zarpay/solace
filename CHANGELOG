@@ -20,7 +20,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ---
 
-## 0.1.7 - 2026-07-19
+## 0.1.8 - 2026-07-19
 
 ### Added
 
@@ -32,6 +32,21 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ### Changed
 
 1. `Solace::Utils::AccountContext#compile` accepts `loaded_accounts:`, rebuilding index resolution against the combined v0 account space (static keys followed by loaded addresses) while keeping only the static keys in the message. With no loaded accounts the legacy compilation is unchanged.
+
+### Fixed
+
+---
+
+## 0.1.7 - 2026-07-03
+
+### Added
+
+1. Added `Solace::Instructions::ComputeBudget::SetComputeUnitPriceInstruction` for setting a transaction's priority fee
+2. Added `Solace::Instructions::ComputeBudget::SetComputeUnitLimitInstruction` for capping a transaction's compute units
+3. Added `Solace::Composers::ComputeBudgetProgramSetComputeUnitPriceComposer`
+4. Added `Solace::Composers::ComputeBudgetProgramSetComputeUnitLimitComposer`
+
+### Changed
 
 ### Fixed
 

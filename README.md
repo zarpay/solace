@@ -64,8 +64,8 @@ more control. Every operation is reachable at more than one level.
   messages (legacy and versioned), instructions, account context, and address lookup tables.
 - **Building transactions** — instruction builders, composers, the transaction composer,
   and program clients.
-- **Programs** — the System program, SPL Token, Token-2022, and the Associated Token
-  Account program.
+- **Programs** — the System program, SPL Token, Token-2022, the Associated Token
+  Account program, and Compute Budget.
 - **Reference** — codecs, PDA derivation, Curve25519, constants, serialization, tokens, and
   errors.
 
