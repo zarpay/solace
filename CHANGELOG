@@ -20,6 +20,23 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ---
 
+## 0.1.8 - 2026-07-19
+
+### Added
+
+1. Added address lookup table (v0) support to `Solace::TransactionComposer`: `#add_address_lookup_table(account:, addresses:)` registers a table and opts the transaction into the v0 format, and `#compose_transaction` loads every eligible account (a non-signer that is not the fee payer and not an invoked program id) through the tables instead of a static account slot. `#merge` folds another composer's tables in, deduped by account.
+2. Added `Solace::Accounts` for on-chain account models, with `Solace::Accounts::AddressLookupTable` — a table's address and stored addresses, with `.deserialize` for reading on-chain table state and `#reference` for building the v0 message reference it contributes.
+3. Added Address Lookup Table program composers and instruction builders: `Solace::Composers::AddressLookupTableProgram{Create,Extend}Composer` and `Solace::Instructions::AddressLookupTableProgram::{CreateLookupTable,ExtendLookupTable}Instruction`, so tables can be created and extended on chain.
+4. Added `Solace::Connection#get_slot`.
+
+### Changed
+
+1. `Solace::Utils::AccountContext#compile` accepts `loaded_accounts:`, rebuilding index resolution against the combined v0 account space (static keys followed by loaded addresses) while keeping only the static keys in the message. With no loaded accounts the legacy compilation is unchanged.
+
+### Fixed
+
+---
+
 ## 0.1.7 - 2026-07-03
 
 ### Added

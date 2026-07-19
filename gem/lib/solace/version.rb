@@ -2,5 +2,5 @@
 
 module Solace
   # Latest version of the Solace gem.
-  VERSION = '0.1.7'
+  VERSION = '0.1.8'
 end

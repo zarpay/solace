@@ -62,6 +62,7 @@ module Solace
       def initialize
         @header             = []
         @accounts           = []
+        @loaded_accounts    = []
         @pubkey_account_map = {}
       end
 
@@ -173,26 +174,40 @@ module Solace
       #   - Then writable accounts
       #   - Then readonly accounts
       #
-      # @return [Hash] The compiled accounts and header
-      def compile
-        self.header   = calculate_header
-        self.accounts = order_accounts
+      # For a v0 (versioned) transaction, accounts resolved through lookup tables
+      # leave the static account list entirely: the message carries only the
+      # static keys, and the runtime rebuilds the combined space
+      # [static..., loaded...] at execution time. Passing them keeps {#index_of}
+      # resolving against that combined space (so instructions index correctly)
+      # while dropping them from the static accounts and the header. They must be
+      # ordered writable-first to match the runtime's combined space. With no
+      # loaded accounts (the default) this is the legacy compilation, unchanged.
+      #
+      # @param loaded_accounts [Array<String>] Pubkeys resolved through lookup tables
+      # @return [AccountContext] Self
+      def compile(loaded_accounts: [])
+        @loaded_accounts = loaded_accounts
+
+        self.header   = calculate_header(loaded_accounts)
+        self.accounts = order_accounts(loaded_accounts)
         self
       end
 
-      # Index of a pubkey in the accounts array
+      # Index of a pubkey in the combined account space
       #
       # @param pubkey_str [String] The public key of the account
-      # @return [Integer] The index of the pubkey in the accounts array or -1 if not found
+      # @return [Integer] The index in the combined space, or -1 if not found
       def index_of(pubkey_str)
         indices[pubkey_str] || -1
       end
 
-      # Get map of indicies for pubkeys in accounts array
+      # Map of pubkey => index across the combined space (static keys followed by
+      # any loaded accounts), so instruction indices resolve the same way the
+      # runtime does once lookup tables are expanded.
       #
-      # @return [Hash{String => Integer}] The indices of the pubkeys in the accounts array
+      # @return [Hash{String => Integer}] The indices of the pubkeys
       def indices
-        accounts.each_with_index.to_h
+        (accounts + @loaded_accounts).each_with_index.to_h
       end
 
       private
@@ -214,11 +229,15 @@ module Solace
         self
       end
 
-      # Order accounts by signer, writable, readonly signer, readonly
+      # Order the static accounts by signer, writable, readonly signer, readonly
       #
-      # @return [Array<String>] The ordered accounts
-      def order_accounts
-        @pubkey_account_map.keys.sort_by do |pubkey|
+      # Loaded accounts are excluded — they leave the static account list and are
+      # resolved through lookup tables at runtime.
+      #
+      # @param loaded_accounts [Array<String>] Pubkeys resolved through lookup tables
+      # @return [Array<String>] The ordered static accounts
+      def order_accounts(loaded_accounts)
+        (@pubkey_account_map.keys - loaded_accounts).sort_by do |pubkey|
           if fee_payer?(pubkey) then 0
           elsif writable_signer?(pubkey) then 1
           elsif readonly_signer?(pubkey) then 2
@@ -237,9 +256,14 @@ module Solace
       #   - The number of readonly signers
       #   - The number of readonly unsigned accounts
       #
+      # Loaded accounts no longer occupy the static account list, so they drop
+      # out of the header. They are never signers, so only the readonly-unsigned
+      # count changes.
+      #
+      # @param loaded_accounts [Array<String>] Pubkeys resolved through lookup tables
       # @return [Array] The header for the transaction
-      def calculate_header
-        @pubkey_account_map.keys.each_with_object([0, 0, 0]) do |pubkey, acc|
+      def calculate_header(loaded_accounts)
+        (@pubkey_account_map.keys - loaded_accounts).each_with_object([0, 0, 0]) do |pubkey, acc|
           acc[0] += 1 if signer?(pubkey)
 
           if readonly_signer?(pubkey) then acc[1]       += 1

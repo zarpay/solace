@@ -55,6 +55,10 @@ require_relative 'solace/transaction'
 require_relative 'solace/message'
 require_relative 'solace/instruction'
 require_relative 'solace/address_lookup_table'
+
+# Accounts (on-chain account models)
+require_relative 'solace/accounts/address_lookup_table'
+
 require_relative 'solace/transaction_composer'
 
 # Base Classes (Abstract classes)

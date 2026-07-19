@@ -137,6 +137,47 @@ describe Solace::Utils::AccountContext do
     end
   end
 
+  describe '#compile with loaded accounts' do
+    let(:pubkey4) { keypair4.address }
+    let(:keypair4) { Solace::Keypair.generate }
+
+    before do
+      context.set_fee_payer(keypair1)
+      context.add_writable_nonsigner(pubkey2)
+      context.add_writable_nonsigner(pubkey3)
+      context.add_readonly_nonsigner(pubkey4)
+      context.add_readonly_nonsigner(program_id)
+
+      # pubkey3 loads writable, pubkey4 loads readonly
+      context.compile(loaded_accounts: [pubkey3, pubkey4])
+    end
+
+    it 'drops the loaded accounts from the static account list' do
+      refute_includes context.accounts, pubkey3
+      refute_includes context.accounts, pubkey4
+
+      assert_includes context.accounts, pubkey2
+      assert_includes context.accounts, program_id
+    end
+
+    it 'resolves loaded accounts at the end of the combined space' do
+      assert_equal context.accounts.length,     context.index_of(pubkey3)
+      assert_equal context.accounts.length + 1, context.index_of(pubkey4)
+    end
+
+    it 'drops loaded readonly accounts from the readonly-unsigned count' do
+      # Without loading, the header would be [1, 0, 2] (pubkey4 + program_id).
+      # Loading pubkey4 (readonly) leaves only program_id readonly-unsigned.
+      assert_equal [1, 0, 1], context.header
+    end
+
+    it 'keeps the header intact when only writable accounts are loaded' do
+      context.compile(loaded_accounts: [pubkey2, pubkey3])
+
+      assert_equal [1, 0, 2], context.header
+    end
+  end
+
   describe '#merge_from' do
     let(:other_context) { Solace::Utils::AccountContext.new }
 

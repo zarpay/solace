@@ -58,6 +58,17 @@ ix = Solace::Instructions::SystemProgram::TransferInstruction.build(
 )
 ```
 
+## Loaded accounts (v0)
+
+For a versioned (v0) transaction, `compile(loaded_accounts:)` takes the pubkeys resolved
+through [address lookup tables](/concepts/address-lookup-tables). Those addresses leave the
+static account list entirely — `accounts` (and therefore `Message#accounts`) keeps only the
+static keys — while `index_of` still resolves them, against the combined space
+`[static..., loaded...]` the runtime rebuilds at execution time. Loaded accounts also drop
+out of the header. With no loaded accounts this is exactly the legacy compilation. The
+[`TransactionComposer`](/building/transaction-composer#address-lookup-tables-v0) supplies
+this for you when tables are registered.
+
 ## You usually don't touch it directly
 
 The [`TransactionComposer`](/building/transaction-composer) owns an `AccountContext`
