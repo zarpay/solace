@@ -47,7 +47,13 @@ module Solace
       end
 
       # @return [Hash] The error as a hash
-      def to_h = { code: rpc_code, message: rpc_message, data: rpc_data }
+      def to_h
+        {
+          code:    rpc_code,
+          message: rpc_message,
+          data:    rpc_data
+        }
+      end
     end
   end
 end

@@ -101,6 +101,27 @@ module Solace
         merge_account(pubkey, signer: false, writable: false)
       end
 
+      # Add or merge an account into the context
+      #
+      # The primitive the +add_*+ methods above name a role for; call it
+      # directly when the flags are data in hand. Permissions only ever widen:
+      # an account added twice keeps the union of what it was given.
+      #
+      # @param pubkey [#to_s, PublicKey] The public key of the account
+      # @param signer [Boolean] Whether the account is a signer
+      # @param writable [Boolean] Whether the account is writable
+      # @param fee_payer [Boolean] Whether the account pays the fee (see {#set_fee_payer})
+      def merge_account(pubkey, signer:, writable:, fee_payer: false)
+        pubkey_str = pubkey.to_s
+
+        @pubkey_account_map[pubkey_str]             ||= DEFAULT_ACCOUNT.dup
+        @pubkey_account_map[pubkey_str][:signer]    ||= signer
+        @pubkey_account_map[pubkey_str][:writable]  ||= writable
+        @pubkey_account_map[pubkey_str][:fee_payer] ||= fee_payer
+
+        self
+      end
+
       # Predicate to check if an account is a fee payer
       #
       # @param pubkey [String] The pubkey of the account
@@ -212,23 +233,6 @@ module Solace
 
       private
 
-      # Add or merge an account into the context
-      #
-      # @param pubkey [#to_s, PublicKey] The public key of the account
-      # @param signer [Boolean] Whether the account is a signer
-      # @param writable [Boolean] Whether the account is writable
-      # @param [Boolean] fee_payer
-      def merge_account(pubkey, signer:, writable:, fee_payer: false)
-        pubkey_str = pubkey.is_a?(String) ? pubkey : pubkey.address
-
-        @pubkey_account_map[pubkey_str]             ||= DEFAULT_ACCOUNT.dup
-        @pubkey_account_map[pubkey_str][:signer]    ||= signer
-        @pubkey_account_map[pubkey_str][:writable]  ||= writable
-        @pubkey_account_map[pubkey_str][:fee_payer] ||= fee_payer
-
-        self
-      end
-
       # Order the static accounts by signer, writable, readonly signer, readonly
       #
       # Loaded accounts are excluded — they leave the static account list and are
@@ -237,15 +241,23 @@ module Solace
       # @param loaded_accounts [Array<String>] Pubkeys resolved through lookup tables
       # @return [Array<String>] The ordered static accounts
       def order_accounts(loaded_accounts)
-        (@pubkey_account_map.keys - loaded_accounts).sort_by do |pubkey|
-          if fee_payer?(pubkey) then 0
-          elsif writable_signer?(pubkey) then 1
-          elsif readonly_signer?(pubkey) then 2
-          elsif writable_nonsigner?(pubkey) then 3
-          elsif readonly_nonsigner?(pubkey) then 4
-          else
-            raise ArgumentError, "Unknown account type for pubkey: #{pubkey}"
-          end
+        # Keyed on the position too: sort_by is not stable, and accounts of the
+        # same rank must keep the order they were added in
+        (@pubkey_account_map.keys - loaded_accounts).sort_by.with_index { |pubkey, index| [rank_of(pubkey), index] }
+      end
+
+      # The position of an account's segment in the static account list
+      #
+      # @param pubkey [String] The pubkey of the account
+      # @return [Integer] The segment rank
+      def rank_of(pubkey)
+        if fee_payer?(pubkey) then 0
+        elsif writable_signer?(pubkey) then 1
+        elsif readonly_signer?(pubkey) then 2
+        elsif writable_nonsigner?(pubkey) then 3
+        elsif readonly_nonsigner?(pubkey) then 4
+        else
+          raise ArgumentError, "Unknown account type for pubkey: #{pubkey}"
         end
       end
 

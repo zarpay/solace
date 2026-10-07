@@ -21,9 +21,8 @@ module Solace
     #   table.reference(loaded_writable, loaded_readonly) # => Solace::AddressLookupTable or nil
     #
     # @example Read a table's on-chain state
-    #   data  = Base64.decode64(connection.get_account_info(address)['data'][0])
-    #   table = Solace::Accounts::AddressLookupTable.deserialize(StringIO.new(data))
-    #   table.addresses # => the stored addresses
+    #   table = Solace::Accounts::AddressLookupTable.fetch(address, connection: connection)
+    #   table&.addresses # => the stored addresses, or nil if the chain holds no such account
     #
     # @see Solace::AddressLookupTable
     # @see Solace::TransactionComposer
@@ -53,38 +52,61 @@ module Solace
       #   @return [Integer, nil] The slot the table was last extended in
       attr_reader :last_extended_slot
 
-      # Deserialize an on-chain lookup table account
-      #
-      # The BufferLayout is:
-      #   - [State type (4 bytes, u32 LE)]
-      #   - [Deactivation slot (8 bytes, u64 LE)]
-      #   - [Last extended slot (8 bytes, u64 LE)]
-      #   - [Last extended start index (1 byte)]
-      #   - [Authority (Borsh Option<Pubkey>)]
-      #   - [Padding, up to {META_SIZE}]
-      #   - [Addresses (32 bytes each, to end of data)]
-      #
-      # @param io [IO, StringIO] The account data to read from
-      # @return [AddressLookupTable] The parsed table
-      def self.deserialize(io)
-        Utils::Codecs.decode_le_u32(io) # state type (1 = lookup table); positional
-        deactivation_slot  = Utils::Codecs.decode_le_u64(io)
-        last_extended_slot = Utils::Codecs.decode_le_u64(io)
+      class << self
+        # Fetch a lookup table account from chain
+        #
+        # Like {Solace::Connection#get_account_info}, answers nil when the chain
+        # holds no account at the address; the caller decides whether that is an error.
+        #
+        # @param account [#to_s, PublicKey] The lookup table's on-chain address
+        # @param connection [Solace::Connection] The connection to read it through
+        # @return [AddressLookupTable, nil] The table with its address set, or nil
+        def fetch(account, connection:)
+          info = connection.get_account_info(account.to_s)
+          return unless info
 
-        Utils::Codecs.decode_u8(io) # last extended start index; positional
-        authority = Utils::Codecs.decode_option_pubkey(io)
+          base64, = info['data'] # the RPC answers [data, encoding]
+          deserialize(Utils::Codecs.base64_to_bytestream(base64), account: account)
+        end
 
-        io.seek(META_SIZE) # addresses begin after the fixed-size metadata region
+        # Deserialize an on-chain lookup table account
+        #
+        # The BufferLayout is:
+        #   - [State type (4 bytes, u32 LE)]
+        #   - [Deactivation slot (8 bytes, u64 LE)]
+        #   - [Last extended slot (8 bytes, u64 LE)]
+        #   - [Last extended start index (1 byte)]
+        #   - [Authority (Borsh Option<Pubkey>)]
+        #   - [Padding, up to {META_SIZE}]
+        #   - [Addresses (32 bytes each, to end of data)]
+        #
+        # The account data does not carry its own address, so pass it to have
+        # the table know where it lives.
+        #
+        # @param io [IO, StringIO] The account data to read from
+        # @param account [#to_s, PublicKey, nil] The lookup table's on-chain address
+        # @return [AddressLookupTable] The parsed table
+        def deserialize(io, account: nil)
+          Utils::Codecs.decode_le_u32(io) # state type (1 = lookup table); positional
+          deactivation_slot  = Utils::Codecs.decode_le_u64(io)
+          last_extended_slot = Utils::Codecs.decode_le_u64(io)
 
-        addresses = []
-        addresses << Utils::Codecs.decode_pubkey(io) until io.eof?
+          Utils::Codecs.decode_u8(io) # last extended start index; positional
+          authority = Utils::Codecs.decode_option_pubkey(io)
 
-        new(
-          deactivation_slot:  deactivation_slot,
-          last_extended_slot: last_extended_slot,
-          authority:          authority,
-          addresses:          addresses
-        )
+          io.seek(META_SIZE) # addresses begin after the fixed-size metadata region
+
+          addresses = []
+          addresses << Utils::Codecs.decode_pubkey(io) until io.eof?
+
+          new(
+            account:            account,
+            deactivation_slot:  deactivation_slot,
+            last_extended_slot: last_extended_slot,
+            authority:          authority,
+            addresses:          addresses
+          )
+        end
       end
 
       # Initialize a lookup table account

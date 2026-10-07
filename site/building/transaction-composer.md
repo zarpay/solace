@@ -29,15 +29,17 @@ connection.send_transaction(tx.serialize)
 
 | Method | Returns | Description |
 | --- | --- | --- |
-| `new(connection:)` | composer | Create a composer bound to a connection (used to fetch the blockhash). |
+| `new(connection:)` | composer | Create a composer bound to a connection (used to fetch the blockhash unless one is set). |
 | `add_instruction(composer)` | `self` | Append a composer. |
 | `prepend_instruction(composer)` | `self` | Insert a composer at the front. |
 | `insert_instruction(index, composer)` | `self` | Insert at a position. |
 | `set_fee_payer(pubkey)` | `self` | Set the fee payer (`#to_s`); becomes account index 0. |
+| `set_blockhash(blockhash)` | `self` | Set the blockhash to compose against instead of fetching the latest. |
+| `set_version(version)` | `self` | `0` for a v0 message even with no table, `nil` for legacy; registering a table sets `0` on its own. |
 | `set_compute_budget(units:, micro_lamports:)` | `self` | Set the compute budget; the ComputeBudget instructions are written first when composing, superseding any added as plain instructions. |
 | `add_address_lookup_table(account:, addresses:)` | `self` | Register an [address lookup table](/concepts/address-lookup-tables); the composed transaction becomes v0. |
 | `merge(other, placement: :add, index: nil)` | `self` | Merge another `TransactionComposer` (`placement:` `:add`, `:prepend`, or `:insert` with `index:`); its tables fold in too. |
-| `compose_transaction(blockhash: nil)` | `Solace::Transaction` | Compile accounts, build the message, return an unsigned transaction. Composes against `blockhash:` when given, otherwise fetches the latest from the connection. |
+| `compose_transaction` | `Solace::Transaction` | Compile accounts, build the message, return an unsigned transaction. Composes against the set blockhash, otherwise fetches the latest from the connection. |
 
 | Accessor | Description |
 | --- | --- |
@@ -45,8 +47,9 @@ connection.send_transaction(tx.serialize)
 | `context` | The shared `AccountContext`. |
 | `instruction_composers` | The composers added so far. |
 | `address_lookup_tables` | The registered lookup tables (`Solace::Accounts::AddressLookupTable`). |
-| `version` | The transaction version — `nil` (legacy) until a table opts it into `0` (v0). |
+| `version` | The transaction version — `nil` (legacy) until a table or `set_version` opts it into `0` (v0). |
 | `compute_budget` | The compute budget set on the composer (`Solace::Utils::ComputeBudget`): `units`, `micro_lamports`, `set?`. |
+| `blockhash` | The blockhash set on the composer — `nil` (fetch the latest) unless set or recovered. |
 
 ## Batching several instructions
 
@@ -113,17 +116,54 @@ may be omitted to set just one; calling it again replaces the budget. `compute_b
 back what is set (`units`, `micro_lamports`, `set?`). With no budget set, directly added
 ComputeBudget composers behave as any other instruction.
 
+## Taking a transaction apart
+
+`Solace::TransactionDecomposer` does the reverse of composing: it reads a transaction you
+were handed — a `Solace::Transaction` or its base64 — and answers an ordinary
+composer that represents it.
+
+```ruby
+composer = Solace::TransactionDecomposer.new(connection:).decompose_transaction(transaction)
+
+composer.instruction_composers   # one OpaqueInstructionComposer per instruction, in order
+composer.compute_budget          # the limit and price the transaction carried, if any
+composer.address_lookup_tables   # its tables, read from chain, with their full address lists
+composer.blockhash               # the blockhash it was composed against, already set
+
+composer.set_compute_budget(units: 600_000, micro_lamports: 50_000)
+composer.compose_transaction     # composes against that same blockhash
+```
+
+Each instruction comes back as an [`OpaqueInstructionComposer`](/building/composers) carrying the
+program it invokes, its accounts in order with the roles the message header gave them
+(declared on the composer's `account_context`), and its data untouched. The rules are Solana's: static keys take their flags from the
+header ordering (signers first, writable before read-only, then non-signers the same way);
+a v0 message's instruction indexes address the combined space of the static keys, then every
+table's writable entries in table order, then every table's read-only entries, and a loaded
+address never signs. The tables are read from chain once each and registered, so the
+composer composes as v0 again. A table the chain does not hold raises
+`Solace::Errors::AddressLookupTableNotFound`.
+
+A `SetComputeUnitLimit` or `SetComputeUnitPrice` the transaction carried becomes the
+composer's `compute_budget` rather than an instruction composer, so you can read it and
+resize it; any other ComputeBudget directive stays an ordinary instruction.
+
+For a transaction `TransactionComposer` built, decomposing then composing answers the same
+bytes. A transaction built elsewhere recomposes to the same instructions, accounts and
+flags, but may lay the static accounts and table indexes out in a different order.
+
 ## Composing against a known blockhash
 
 `compose_transaction` fetches the latest blockhash by default. When you already hold the one
 you want — re-composing a transaction you were handed, say, so its expiry stays the same —
-pass it in and no fetch happens:
+set it and no fetch happens:
 
 ```ruby
 tx = Solace::TransactionComposer.new(connection:)
                                 .add_instruction(transfer_composer)
                                 .set_fee_payer(payer.address)
-                                .compose_transaction(blockhash: original.message.recent_blockhash)
+                                .set_blockhash(original.message.recent_blockhash)
+                                .compose_transaction
 ```
 
 ## Address lookup tables (v0)

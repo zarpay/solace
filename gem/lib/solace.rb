@@ -63,6 +63,7 @@ require_relative 'solace/address_lookup_table'
 require_relative 'solace/accounts/address_lookup_table'
 
 require_relative 'solace/transaction_composer'
+require_relative 'solace/transaction_decomposer'
 
 # Base Classes (Abstract classes)
 require_relative 'solace/programs/base'

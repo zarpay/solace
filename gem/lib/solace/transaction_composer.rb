@@ -78,18 +78,23 @@ module Solace
     attr_reader :address_lookup_tables
 
     # @!attribute version
-    #   The transaction version (nil for legacy, 0 for v0)
+    #   The transaction version (nil for legacy, 0 for v0); see {#set_version}
     attr_reader :version
 
     # @!attribute compute_budget
     #   The compute budget set on the composer (see {Utils::ComputeBudget})
     attr_reader :compute_budget
 
+    # @!attribute blockhash
+    #   The blockhash set on the composer, or nil when the latest is fetched at compose time
+    attr_reader :blockhash
+
     # Initialize the composer
     #
     # @param connection [Solace::Connection] The connection to the Solana cluster
     def initialize(connection:)
       @connection            = connection
+      @blockhash             = nil
       @instruction_composers = []
       @context               = Utils::AccountContext.new
       @address_lookup_tables = []
@@ -102,7 +107,7 @@ module Solace
     # @param composer [Composers::Base] The instruction composer
     # @return [TransactionComposer] Self for chaining
     def add_instruction(composer)
-      merge_accounts(composer.account_context)
+      context.merge_from(composer.account_context)
       instruction_composers << composer
       self
     end
@@ -114,7 +119,7 @@ module Solace
     #
     # @since 0.1.0
     def prepend_instruction(composer)
-      merge_accounts(composer.account_context)
+      context.merge_from(composer.account_context)
       instruction_composers.unshift(composer)
       self
     end
@@ -127,7 +132,7 @@ module Solace
     #
     # @since 0.1.0
     def insert_instruction(index, composer)
-      merge_accounts(composer.account_context)
+      context.merge_from(composer.account_context)
       instruction_composers.insert(index, composer)
       self
     end
@@ -141,9 +146,7 @@ module Solace
     #
     # @since 0.1.0
     def merge(other, placement: :add, index: nil)
-      merge_accounts(other.context)
-      merge_address_lookup_tables(other.address_lookup_tables)
-      merge_compute_budget(other.compute_budget)
+      absorb(other)
 
       case placement
       when :add
@@ -168,6 +171,39 @@ module Solace
     # @return [TransactionComposer] Self for chaining
     def set_fee_payer(pubkey)
       context.set_fee_payer(pubkey.to_s)
+      self
+    end
+
+    # Set the transaction version
+    #
+    # Registering a lookup table opts into v0 on its own; this is for a v0
+    # transaction that loads nothing through a table, which is still v0 on the
+    # wire. nil composes a legacy message.
+    #
+    # @param version [Integer, nil] 0 for v0, nil for legacy
+    # @return [TransactionComposer] Self for chaining
+    # @raise [ArgumentError] For a version other than 0 or nil
+    def set_version(version)
+      raise ArgumentError, "Unsupported transaction version: #{version.inspect}" unless [nil, 0].include?(version)
+
+      @version = version
+      self
+    end
+
+    # Set the blockhash to compose against
+    #
+    # Beside {#set_fee_payer}: a caller re-composing a transaction it was handed
+    # wants the blockhash that transaction carried, so the expiry its origin
+    # reports stays true. With none set, {#compose_transaction} fetches the
+    # latest from the connection. nil clears it.
+    #
+    # @example
+    #   composer.set_blockhash(original.message.recent_blockhash)
+    #
+    # @param blockhash [#to_s, nil] The blockhash (base58)
+    # @return [TransactionComposer] Self for chaining
+    def set_blockhash(blockhash)
+      @blockhash = blockhash&.to_s
       self
     end
 
@@ -207,8 +243,8 @@ module Solace
     #
     # @since 0.1.8
     def add_address_lookup_table(account:, addresses: nil)
-      account   = account.to_s
-      @version  = 0 # Lookup tables require a v0 transaction
+      account = account.to_s
+      set_version(0) # Lookup tables require a v0 transaction
 
       unless address_lookup_tables.any? { |table| table.account == account }
         address_lookup_tables << Solace::Accounts::AddressLookupTable.new(account: account, addresses: addresses)
@@ -223,19 +259,17 @@ module Solace
     # once a lookup table has been added — loading eligible accounts through any
     # registered tables.
     #
-    # @example Composing against a blockhash the caller already holds
-    #   composer.compose_transaction(blockhash: recent_blockhash)
+    # Composes against the {#blockhash} set with {#set_blockhash}, or the latest
+    # fetched from the connection when none is set.
     #
-    # @param blockhash [#to_s, nil] The blockhash to compose against; when nil
-    #   the latest blockhash is fetched from the connection
     # @return [Transaction] The composed transaction (unsigned)
-    def compose_transaction(blockhash: nil)
+    def compose_transaction
       context.compile
 
       writable, readonly, references = resolve_address_lookup_tables
       context.compile(loaded_accounts: writable + readonly)
 
-      Solace::Transaction.new(message: build_message(references, blockhash))
+      Solace::Transaction.new(message: build_message(references))
     end
 
     private
@@ -286,40 +320,26 @@ module Solace
     # Build the composed message at the composer's version (legacy or v0)
     #
     # @param references [Array<Solace::AddressLookupTable>] The table references
-    # @param blockhash [#to_s, nil] The blockhash to compose against, or nil to
-    #   fetch the latest from the connection
     # @return [Solace::Message] The composed message
-    def build_message(references, blockhash = nil)
+    def build_message(references)
       Solace::Message.new(
         version:               version,
         header:                context.header,
         accounts:              context.accounts,
         instructions:          build_instructions,
-        recent_blockhash:      blockhash&.to_s || connection.get_latest_blockhash[0],
+        recent_blockhash:      blockhash || connection.get_latest_blockhash[0],
         address_lookup_tables: references
       )
     end
 
-    # Build all instructions with resolved indices
+    # Build all instructions with resolved indices: the budget first, then the
+    # added composers minus any ComputeBudget composer the budget supersedes
     #
     # @return [Array<Solace::Instruction>] The built instructions
     def build_instructions
-      composers_to_build.map { _1.build_instruction(context) }.flatten
-    end
+      kept = instruction_composers.reject { |composer| compute_budget.supersedes?(composer) }
 
-    # The composers the transaction is built from: the budget first, then the
-    # added composers minus any ComputeBudget composer the budget supersedes.
-    #
-    # @return [Array<Composers::Base>] The composers in build order
-    def composers_to_build
-      compute_budget.composers + instruction_composers.reject { |composer| compute_budget.supersedes?(composer) }
-    end
-
-    # Fold another budget into this one where it has settings
-    #
-    # @param budget [Utils::ComputeBudget] The budget to fold in
-    def merge_compute_budget(budget)
-      apply_compute_budget(compute_budget.merge(budget))
+      (compute_budget.composers + kept).map { _1.build_instruction(context) }.flatten
     end
 
     # Replace the compute budget, bringing its program into the account context
@@ -328,22 +348,20 @@ module Solace
     # @return [TransactionComposer] Self for chaining
     def apply_compute_budget(budget)
       @compute_budget = budget
-      budget.composers.each { |composer| merge_accounts(composer.account_context) }
+      budget.composers.each { |composer| context.merge_from(composer.account_context) }
       self
     end
 
-    # Merge all accounts from another AccountContext into this one
+    # Take on another composer's accounts, tables (deduped by account) and
+    # budget (where it has one set)
     #
-    # @param account_context [AccountContext] The other context to merge from
-    def merge_accounts(account_context)
-      context.merge_from(account_context)
-    end
-
-    # Merge registered tables from another composer, deduped by account
-    #
-    # @param tables [Array<Solace::Accounts::AddressLookupTable>] The other composer's tables
-    def merge_address_lookup_tables(tables)
-      tables.each { |table| add_address_lookup_table(account: table.account, addresses: table.addresses) }
+    # @param other [TransactionComposer] The other composer
+    def absorb(other)
+      context.merge_from(other.context)
+      other.address_lookup_tables.each do |table|
+        add_address_lookup_table(account: table.account, addresses: table.addresses)
+      end
+      apply_compute_budget(compute_budget.merge(other.compute_budget))
     end
   end
 end
