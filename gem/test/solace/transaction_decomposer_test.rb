@@ -146,6 +146,29 @@ describe Solace::TransactionDecomposer do
       end
     end
 
+    describe 'a v0 message that loads nothing through a table' do
+      let(:compiled) do
+        Solace::Message.new(
+          version:          0,
+          header:           [1, 0, 1],
+          accounts:         keys.first(3),
+          instructions:     [instruction(2, [0, 1], [1])],
+          recent_blockhash: blockhash
+        )
+      end
+
+      it 'stays v0 without touching the chain and composes again to the same bytes' do
+        connection.define_singleton_method(:get_account_info) { |_| raise 'no table to fetch' }
+        transaction = Solace::Transaction.new(message: compiled)
+
+        recovered = decomposer.decompose_transaction(transaction)
+
+        assert_equal 0, recovered.version
+        assert_empty recovered.address_lookup_tables
+        assert_equal transaction.serialize, recovered.compose_transaction.serialize
+      end
+    end
+
     describe 'a message carrying compute budget directives' do
       let(:limit_data) { [2] + [200_000].pack('L<').bytes }
       let(:price_data) { [3] + [50_000].pack('Q<').bytes }

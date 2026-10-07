@@ -35,6 +35,7 @@ connection.send_transaction(tx.serialize)
 | `insert_instruction(index, composer)` | `self` | Insert at a position. |
 | `set_fee_payer(pubkey)` | `self` | Set the fee payer (`#to_s`); becomes account index 0. |
 | `set_blockhash(blockhash)` | `self` | Set the blockhash to compose against instead of fetching the latest. |
+| `set_version(version)` | `self` | `0` for a v0 message even with no table, `nil` for legacy; registering a table sets `0` on its own. |
 | `set_compute_budget(units:, micro_lamports:)` | `self` | Set the compute budget; the ComputeBudget instructions are written first when composing, superseding any added as plain instructions. |
 | `add_address_lookup_table(account:, addresses:)` | `self` | Register an [address lookup table](/concepts/address-lookup-tables); the composed transaction becomes v0. |
 | `merge(other, placement: :add, index: nil)` | `self` | Merge another `TransactionComposer` (`placement:` `:add`, `:prepend`, or `:insert` with `index:`); its tables fold in too. |
@@ -46,7 +47,7 @@ connection.send_transaction(tx.serialize)
 | `context` | The shared `AccountContext`. |
 | `instruction_composers` | The composers added so far. |
 | `address_lookup_tables` | The registered lookup tables (`Solace::Accounts::AddressLookupTable`). |
-| `version` | The transaction version — `nil` (legacy) until a table opts it into `0` (v0). |
+| `version` | The transaction version — `nil` (legacy) until a table or `set_version` opts it into `0` (v0). |
 | `compute_budget` | The compute budget set on the composer (`Solace::Utils::ComputeBudget`): `units`, `micro_lamports`, `set?`. |
 | `blockhash` | The blockhash set on the composer — `nil` (fetch the latest) unless set or recovered. |
 

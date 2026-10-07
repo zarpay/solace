@@ -13,8 +13,9 @@ module Solace
   # {Composers::OpaqueInstructionComposer} per instruction, in order, each
   # carrying the program it invokes, its accounts with the signer and writable
   # flags the message header gave them, and its data untouched. The lookup
-  # tables a v0 message references are read from chain once and registered so
-  # the composer composes as v0 again; a `SetComputeUnitLimit` or
+  # tables a v0 message references are read from chain once and registered, and
+  # the version is kept, so the composer composes as v0 again (with or without
+  # tables); a `SetComputeUnitLimit` or
   # `SetComputeUnitPrice` the transaction carried becomes the composer's
   # {TransactionComposer#compute_budget}; and the blockhash it was composed
   # against is set as the composer's {TransactionComposer#blockhash}.
@@ -67,7 +68,9 @@ module Solace
     # @raise [Solace::Errors::AddressLookupTableNotFound] When a referenced table is not on chain
     def decompose_transaction(transaction)
       reading  = read(message_of(transaction))
-      composer = TransactionComposer.new(connection: connection).set_blockhash(reading.message.recent_blockhash)
+      composer = TransactionComposer.new(connection: connection)
+                                    .set_version(reading.message.version)
+                                    .set_blockhash(reading.message.recent_blockhash)
 
       seed(composer, reading)
       fill(composer, reading)

@@ -78,7 +78,7 @@ module Solace
     attr_reader :address_lookup_tables
 
     # @!attribute version
-    #   The transaction version (nil for legacy, 0 for v0)
+    #   The transaction version (nil for legacy, 0 for v0); see {#set_version}
     attr_reader :version
 
     # @!attribute compute_budget
@@ -107,7 +107,7 @@ module Solace
     # @param composer [Composers::Base] The instruction composer
     # @return [TransactionComposer] Self for chaining
     def add_instruction(composer)
-      merge_accounts(composer.account_context)
+      context.merge_from(composer.account_context)
       instruction_composers << composer
       self
     end
@@ -119,7 +119,7 @@ module Solace
     #
     # @since 0.1.0
     def prepend_instruction(composer)
-      merge_accounts(composer.account_context)
+      context.merge_from(composer.account_context)
       instruction_composers.unshift(composer)
       self
     end
@@ -132,7 +132,7 @@ module Solace
     #
     # @since 0.1.0
     def insert_instruction(index, composer)
-      merge_accounts(composer.account_context)
+      context.merge_from(composer.account_context)
       instruction_composers.insert(index, composer)
       self
     end
@@ -146,7 +146,7 @@ module Solace
     #
     # @since 0.1.0
     def merge(other, placement: :add, index: nil)
-      merge_accounts(other.context)
+      context.merge_from(other.context)
       merge_address_lookup_tables(other.address_lookup_tables)
       merge_compute_budget(other.compute_budget)
 
@@ -173,6 +173,22 @@ module Solace
     # @return [TransactionComposer] Self for chaining
     def set_fee_payer(pubkey)
       context.set_fee_payer(pubkey.to_s)
+      self
+    end
+
+    # Set the transaction version
+    #
+    # Registering a lookup table opts into v0 on its own; this is for a v0
+    # transaction that loads nothing through a table, which is still v0 on the
+    # wire. nil composes a legacy message.
+    #
+    # @param version [Integer, nil] 0 for v0, nil for legacy
+    # @return [TransactionComposer] Self for chaining
+    # @raise [ArgumentError] For a version other than 0 or nil
+    def set_version(version)
+      raise ArgumentError, "Unsupported transaction version: #{version.inspect}" unless [nil, 0].include?(version)
+
+      @version = version
       self
     end
 
@@ -229,8 +245,8 @@ module Solace
     #
     # @since 0.1.8
     def add_address_lookup_table(account:, addresses: nil)
-      account   = account.to_s
-      @version  = 0 # Lookup tables require a v0 transaction
+      account = account.to_s
+      set_version(0) # Lookup tables require a v0 transaction
 
       unless address_lookup_tables.any? { |table| table.account == account }
         address_lookup_tables << Solace::Accounts::AddressLookupTable.new(account: account, addresses: addresses)
@@ -318,19 +334,13 @@ module Solace
       )
     end
 
-    # Build all instructions with resolved indices
+    # Build all instructions with resolved indices: the budget first, then the
+    # added composers minus any ComputeBudget composer the budget supersedes
     #
     # @return [Array<Solace::Instruction>] The built instructions
     def build_instructions
-      composers_to_build.map { _1.build_instruction(context) }.flatten
-    end
-
-    # The composers the transaction is built from: the budget first, then the
-    # added composers minus any ComputeBudget composer the budget supersedes.
-    #
-    # @return [Array<Composers::Base>] The composers in build order
-    def composers_to_build
-      compute_budget.composers + instruction_composers.reject { |composer| compute_budget.supersedes?(composer) }
+      composers = compute_budget.composers + instruction_composers.reject { |composer| compute_budget.supersedes?(composer) }
+      composers.map { _1.build_instruction(context) }.flatten
     end
 
     # Fold another budget into this one where it has settings
@@ -346,15 +356,8 @@ module Solace
     # @return [TransactionComposer] Self for chaining
     def apply_compute_budget(budget)
       @compute_budget = budget
-      budget.composers.each { |composer| merge_accounts(composer.account_context) }
+      budget.composers.each { |composer| context.merge_from(composer.account_context) }
       self
-    end
-
-    # Merge all accounts from another AccountContext into this one
-    #
-    # @param account_context [AccountContext] The other context to merge from
-    def merge_accounts(account_context)
-      context.merge_from(account_context)
     end
 
     # Merge registered tables from another composer, deduped by account

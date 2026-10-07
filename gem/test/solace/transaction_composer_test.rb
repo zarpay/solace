@@ -209,6 +209,35 @@ describe Solace::TransactionComposer do
     end
   end
 
+  describe '#set_version' do
+    before do
+      def connection.get_latest_blockhash
+        ['EkSnNWid2cvwEVnVx9aBqawnmiCNiDgp3gUdkDPTKN1N', 1000]
+      end
+
+      composer.add_instruction(transfer_composer1).set_fee_payer(payer_keypair)
+    end
+
+    it 'composes a v0 message without any table' do
+      message = composer.set_version(0).compose_transaction.message
+
+      assert_equal 0, composer.version
+      assert_equal 0, message.version
+      assert_empty message.address_lookup_tables
+      assert_equal 0, Solace::Transaction.from(composer.compose_transaction.serialize).message.version
+    end
+
+    it 'composes a legacy message when set back to nil' do
+      composer.set_version(0).set_version(nil)
+
+      refute_predicate composer.compose_transaction.message, :versioned?
+    end
+
+    it 'rejects a version the gem does not know' do
+      assert_raises(ArgumentError) { composer.set_version(1) }
+    end
+  end
+
   describe '#set_compute_budget' do
     let(:compute_budget_program) { Solace::Constants::COMPUTE_BUDGET_PROGRAM_ID }
     let(:limit_data) { ->(units) { [2] + [units].pack('L<').bytes } }
