@@ -51,7 +51,7 @@ module Solace
       #
       # @return [void]
       def setup_accounts
-        accounts.each { |account| account_context.add_account(account[:pubkey], **account.slice(:signer, :writable)) }
+        accounts.each { |account| account_context.merge_account(account[:pubkey], **account.slice(:signer, :writable)) }
         account_context.add_readonly_nonsigner(program_id)
       end
 

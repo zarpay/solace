@@ -304,16 +304,6 @@ describe Solace::Utils::AccountContext do
     end
   end
 
-  describe '#add_account' do
-    it 'adds an account with the flags given as data' do
-      context.add_account(pubkey1, signer: true, writable: false)
-      context.add_account(pubkey2, signer: false, writable: true)
-
-      assert context.readonly_signer?(pubkey1)
-      assert context.writable_nonsigner?(pubkey2)
-    end
-  end
-
   describe 'ordering accounts of the same rank' do
     it 'keeps the order they were added in' do
       added = Array.new(40) { Solace::Keypair.generate.address }

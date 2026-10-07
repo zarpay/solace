@@ -101,16 +101,25 @@ module Solace
         merge_account(pubkey, signer: false, writable: false)
       end
 
-      # Add an account with its flags given as data
+      # Add or merge an account into the context
       #
-      # The four +add_*+ methods above name a role; this one takes the role
-      # apart, for a caller that holds the flags rather than knows them.
+      # The primitive the +add_*+ methods above name a role for; call it
+      # directly when the flags are data in hand. Permissions only ever widen:
+      # an account added twice keeps the union of what it was given.
       #
-      # @param pubkey [Solace::Keypair, Solace::PublicKey, String] The pubkey of the account
-      # @param signer [Boolean] Whether the account signs
+      # @param pubkey [#to_s, PublicKey] The public key of the account
+      # @param signer [Boolean] Whether the account is a signer
       # @param writable [Boolean] Whether the account is writable
-      def add_account(pubkey, signer:, writable:)
-        merge_account(pubkey, signer: signer, writable: writable)
+      # @param fee_payer [Boolean] Whether the account pays the fee (see {#set_fee_payer})
+      def merge_account(pubkey, signer:, writable:, fee_payer: false)
+        pubkey_str = pubkey.is_a?(String) ? pubkey : pubkey.address
+
+        @pubkey_account_map[pubkey_str]             ||= DEFAULT_ACCOUNT.dup
+        @pubkey_account_map[pubkey_str][:signer]    ||= signer
+        @pubkey_account_map[pubkey_str][:writable]  ||= writable
+        @pubkey_account_map[pubkey_str][:fee_payer] ||= fee_payer
+
+        self
       end
 
       # Predicate to check if an account is a fee payer
@@ -223,23 +232,6 @@ module Solace
       end
 
       private
-
-      # Add or merge an account into the context
-      #
-      # @param pubkey [#to_s, PublicKey] The public key of the account
-      # @param signer [Boolean] Whether the account is a signer
-      # @param writable [Boolean] Whether the account is writable
-      # @param [Boolean] fee_payer
-      def merge_account(pubkey, signer:, writable:, fee_payer: false)
-        pubkey_str = pubkey.is_a?(String) ? pubkey : pubkey.address
-
-        @pubkey_account_map[pubkey_str]             ||= DEFAULT_ACCOUNT.dup
-        @pubkey_account_map[pubkey_str][:signer]    ||= signer
-        @pubkey_account_map[pubkey_str][:writable]  ||= writable
-        @pubkey_account_map[pubkey_str][:fee_payer] ||= fee_payer
-
-        self
-      end
 
       # Order the static accounts by signer, writable, readonly signer, readonly
       #
