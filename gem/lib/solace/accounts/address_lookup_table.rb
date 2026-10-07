@@ -52,52 +52,54 @@ module Solace
       #   @return [Integer, nil] The slot the table was last extended in
       attr_reader :last_extended_slot
 
-      # Fetch a lookup table account from chain
-      #
-      # @param account [#to_s, PublicKey] The lookup table's on-chain address
-      # @param connection [Solace::Connection] The connection to read it through
-      # @return [AddressLookupTable] The table, with its address set
-      # @raise [Solace::Errors::AddressLookupTableNotFound] When the chain holds no account at the address
-      def self.fetch(account, connection:)
-        account = account.to_s
-        info    = connection.get_account_info(account)
-        raise Solace::Errors::AddressLookupTableNotFound, account unless info
+      class << self
+        # Fetch a lookup table account from chain
+        #
+        # @param account [#to_s, PublicKey] The lookup table's on-chain address
+        # @param connection [Solace::Connection] The connection to read it through
+        # @return [AddressLookupTable] The table, with its address set
+        # @raise [Solace::Errors::AddressLookupTableNotFound] When the chain holds no account at the address
+        def fetch(account, connection:)
+          account = account.to_s
+          info    = connection.get_account_info(account)
+          raise Solace::Errors::AddressLookupTableNotFound, account unless info
 
-        deserialize(Utils::Codecs.base64_to_bytestream(info['data'][0])).tap { |table| table.account = account }
-      end
+          deserialize(Utils::Codecs.base64_to_bytestream(info['data'][0])).tap { |table| table.account = account }
+        end
 
-      # Deserialize an on-chain lookup table account
-      #
-      # The BufferLayout is:
-      #   - [State type (4 bytes, u32 LE)]
-      #   - [Deactivation slot (8 bytes, u64 LE)]
-      #   - [Last extended slot (8 bytes, u64 LE)]
-      #   - [Last extended start index (1 byte)]
-      #   - [Authority (Borsh Option<Pubkey>)]
-      #   - [Padding, up to {META_SIZE}]
-      #   - [Addresses (32 bytes each, to end of data)]
-      #
-      # @param io [IO, StringIO] The account data to read from
-      # @return [AddressLookupTable] The parsed table
-      def self.deserialize(io)
-        Utils::Codecs.decode_le_u32(io) # state type (1 = lookup table); positional
-        deactivation_slot  = Utils::Codecs.decode_le_u64(io)
-        last_extended_slot = Utils::Codecs.decode_le_u64(io)
+        # Deserialize an on-chain lookup table account
+        #
+        # The BufferLayout is:
+        #   - [State type (4 bytes, u32 LE)]
+        #   - [Deactivation slot (8 bytes, u64 LE)]
+        #   - [Last extended slot (8 bytes, u64 LE)]
+        #   - [Last extended start index (1 byte)]
+        #   - [Authority (Borsh Option<Pubkey>)]
+        #   - [Padding, up to {META_SIZE}]
+        #   - [Addresses (32 bytes each, to end of data)]
+        #
+        # @param io [IO, StringIO] The account data to read from
+        # @return [AddressLookupTable] The parsed table
+        def deserialize(io)
+          Utils::Codecs.decode_le_u32(io) # state type (1 = lookup table); positional
+          deactivation_slot  = Utils::Codecs.decode_le_u64(io)
+          last_extended_slot = Utils::Codecs.decode_le_u64(io)
 
-        Utils::Codecs.decode_u8(io) # last extended start index; positional
-        authority = Utils::Codecs.decode_option_pubkey(io)
+          Utils::Codecs.decode_u8(io) # last extended start index; positional
+          authority = Utils::Codecs.decode_option_pubkey(io)
 
-        io.seek(META_SIZE) # addresses begin after the fixed-size metadata region
+          io.seek(META_SIZE) # addresses begin after the fixed-size metadata region
 
-        addresses = []
-        addresses << Utils::Codecs.decode_pubkey(io) until io.eof?
+          addresses = []
+          addresses << Utils::Codecs.decode_pubkey(io) until io.eof?
 
-        new(
-          deactivation_slot:  deactivation_slot,
-          last_extended_slot: last_extended_slot,
-          authority:          authority,
-          addresses:          addresses
-        )
+          new(
+            deactivation_slot:  deactivation_slot,
+            last_extended_slot: last_extended_slot,
+            authority:          authority,
+            addresses:          addresses
+          )
+        end
       end
 
       # Initialize a lookup table account
