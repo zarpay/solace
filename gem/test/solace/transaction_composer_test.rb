@@ -286,15 +286,65 @@ describe Solace::TransactionComposer do
       assert_equal 2, message.instructions.length
     end
 
-    it 'is adopted by merge when the other composer carries one' do
-      other = Solace::TransactionComposer.new(connection: connection)
-                                         .add_instruction(transfer_composer2)
-                                         .set_compute_budget(micro_lamports: 25)
+    describe 'merging another composer' do
+      let(:other) { Solace::TransactionComposer.new(connection: connection).add_instruction(transfer_composer2) }
 
-      composer.set_compute_budget(units: 150_000).merge(other)
+      it 'combines complementary budgets' do
+        other.set_compute_budget(micro_lamports: 25)
+        composer.set_compute_budget(units: 150_000).merge(other)
 
-      assert_equal 150_000, composer.compute_budget.units
-      assert_equal 25, composer.compute_budget.micro_lamports
+        assert_equal 150_000, composer.compute_budget.units
+        assert_equal 25, composer.compute_budget.micro_lamports
+      end
+
+      it 'takes the other budget where both set the same field' do
+        other.set_compute_budget(units: 400_000, micro_lamports: 25)
+        composer.set_compute_budget(units: 150_000, micro_lamports: 1).merge(other)
+
+        assert_equal 400_000, composer.compute_budget.units
+        assert_equal 25, composer.compute_budget.micro_lamports
+      end
+
+      it 'keeps its own budget when the other has none' do
+        composer.set_compute_budget(units: 150_000, micro_lamports: 1).merge(other)
+
+        assert_equal 150_000, composer.compute_budget.units
+        assert_equal 1, composer.compute_budget.micro_lamports
+      end
+
+      it 'adopts the other budget when it has none' do
+        other.set_compute_budget(units: 400_000, micro_lamports: 25)
+        composer.merge(other)
+
+        assert_equal 400_000, composer.compute_budget.units
+        assert_equal 25, composer.compute_budget.micro_lamports
+      end
+
+      it 'stays unset when neither has a budget' do
+        composer.merge(other)
+
+        refute_predicate composer.compute_budget, :set?
+        refute_includes programs_and_data(composer.compose_transaction.message).map(&:first), compute_budget_program
+      end
+
+      it 'supersedes budget composers the other added directly' do
+        other.add_instruction(Solace::Composers::ComputeBudgetProgramSetComputeUnitLimitComposer.new(units: 1_000))
+        composer.set_compute_budget(units: 150_000).merge(other)
+
+        budget = programs_and_data(composer.compose_transaction.message).select { |program, _| program == compute_budget_program }
+
+        assert_equal [[compute_budget_program, limit_data[150_000]]], budget
+      end
+
+      it 'writes the merged budget first whatever the placement' do
+        other.set_compute_budget(units: 400_000, micro_lamports: 25)
+        message = composer.merge(other, placement: :prepend).compose_transaction.message
+
+        assert_equal 4, message.instructions.length
+        assert_equal [compute_budget_program, limit_data[400_000]], programs_and_data(message)[0]
+        assert_equal [compute_budget_program, price_data[25]], programs_and_data(message)[1]
+        assert_equal [system_program, system_program], programs_and_data(message).drop(2).map(&:first)
+      end
     end
   end
 

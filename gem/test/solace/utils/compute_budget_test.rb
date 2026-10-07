@@ -59,6 +59,25 @@ describe Solace::Utils::ComputeBudget do
       assert_equal 1, merged.micro_lamports
     end
 
+    it 'takes the other budget where both set the same field' do
+      merged = Solace::Utils::ComputeBudget.new(units: 100, micro_lamports: 1)
+                                           .merge(Solace::Utils::ComputeBudget.new(units: 300, micro_lamports: 5))
+
+      assert_equal 300, merged.units
+      assert_equal 5, merged.micro_lamports
+    end
+
+    it 'keeps its own budget when the other is unset' do
+      merged = Solace::Utils::ComputeBudget.new(units: 100, micro_lamports: 1).merge(Solace::Utils::ComputeBudget.new)
+
+      assert_equal 100, merged.units
+      assert_equal 1, merged.micro_lamports
+    end
+
+    it 'stays unset when both are unset' do
+      refute_predicate Solace::Utils::ComputeBudget.new.merge(Solace::Utils::ComputeBudget.new), :set?
+    end
+
     it 'answers a new budget, leaving both inputs alone' do
       original = Solace::Utils::ComputeBudget.new(units: 100)
       merged   = original.merge(Solace::Utils::ComputeBudget.new(micro_lamports: 5))
