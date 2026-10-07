@@ -42,7 +42,7 @@ describe Solace::TransactionDecomposer do
     instruction_composer.accounts.map { |meta| [meta[:pubkey], meta[:signer], meta[:writable]] }
   end
 
-  describe 'reading a hand-built message' do
+  describe 'reading a hand-built transaction' do
     let(:keys) { Array.new(8) { Solace::Keypair.generate.address } }
     let(:blockhash) { 'EkSnNWid2cvwEVnVx9aBqawnmiCNiDgp3gUdkDPTKN1N' }
 
@@ -58,7 +58,7 @@ describe Solace::TransactionDecomposer do
         )
       end
 
-      let(:recovered) { decomposer.decompose_transaction(compiled) }
+      let(:recovered) { decomposer.decompose_transaction(Solace::Transaction.new(message: compiled)) }
 
       it 'answers a composer with the fee payer, blockhash and static keys in message order' do
         assert_equal blockhash, recovered.blockhash
@@ -113,7 +113,7 @@ describe Solace::TransactionDecomposer do
       end
 
       it 'resolves the combined space writable segment first and lets no loaded account sign' do
-        lifted = decomposer.decompose_transaction(compiled).instruction_composers.first
+        lifted = decomposer.decompose_transaction(Solace::Transaction.new(message: compiled)).instruction_composers.first
 
         assert_equal(
           [
@@ -128,7 +128,7 @@ describe Solace::TransactionDecomposer do
       end
 
       it 'registers the tables whole, fetched once each, and composes as v0' do
-        recovered = decomposer.decompose_transaction(compiled)
+        recovered = decomposer.decompose_transaction(Solace::Transaction.new(message: compiled))
 
         assert_equal 0, recovered.version
         assert_equal [first_table, second_table], recovered.address_lookup_tables.map(&:account)
@@ -139,7 +139,7 @@ describe Solace::TransactionDecomposer do
       it 'refuses a table the chain does not hold' do
         LookupTableAccount.stub(connection, first_table => first_entries)
 
-        error = assert_raises(Solace::Errors::AddressLookupTableNotFound) { decomposer.decompose_transaction(compiled) }
+        error = assert_raises(Solace::Errors::AddressLookupTableNotFound) { decomposer.decompose_transaction(Solace::Transaction.new(message: compiled)) }
 
         assert_equal second_table, error.account
         assert_match(/#{second_table}/, error.message)
@@ -165,7 +165,7 @@ describe Solace::TransactionDecomposer do
         )
       end
 
-      let(:recovered) { decomposer.decompose_transaction(compiled) }
+      let(:recovered) { decomposer.decompose_transaction(Solace::Transaction.new(message: compiled)) }
 
       it 'decodes the limit and price into the budget' do
         assert_equal 200_000, recovered.compute_budget.units

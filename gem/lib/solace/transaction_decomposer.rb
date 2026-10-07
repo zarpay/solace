@@ -8,8 +8,8 @@ require_relative 'instructions/compute_budget/set_compute_unit_price_instruction
 module Solace
   # Takes a transaction apart into the composer that composes it again
   #
-  # The reverse of {TransactionComposer}: given a transaction (or its message,
-  # or its base64), answers a {TransactionComposer} holding one
+  # The reverse of {TransactionComposer}: given a transaction (or its base64),
+  # answers a {TransactionComposer} holding one
   # {Composers::OpaqueInstructionComposer} per instruction, in order, each
   # carrying the program it invokes, its accounts with the signer and writable
   # flags the message header gave them, and its data untouched. The lookup
@@ -62,8 +62,7 @@ module Solace
 
     # Take a transaction apart
     #
-    # @param transaction [Solace::Transaction, Solace::Message, String] The transaction,
-    #   its message, or its base64
+    # @param transaction [Solace::Transaction, String] The transaction, or its base64
     # @return [Solace::TransactionComposer] A composer that composes it again
     # @raise [Solace::Errors::AddressLookupTableNotFound] When a referenced table is not on chain
     def decompose_transaction(transaction)
@@ -115,16 +114,13 @@ module Solace
       budget.set? ? composer.set_compute_budget(units: budget.units, micro_lamports: budget.micro_lamports) : composer
     end
 
-    # The message of a transaction given in any of its representations
+    # The message of a transaction given as the object or its base64
     #
-    # @param transaction [Solace::Transaction, Solace::Message, String]
+    # @param transaction [Solace::Transaction, String]
     # @return [Solace::Message]
     def message_of(transaction)
-      case transaction
-      when Solace::Message then transaction
-      when String then Solace::Transaction.from(transaction).message
-      else transaction.message
-      end
+      transaction = Solace::Transaction.from(transaction) if transaction.is_a?(String)
+      transaction.message
     end
 
     # The tables the message references, read from chain once each, in message order

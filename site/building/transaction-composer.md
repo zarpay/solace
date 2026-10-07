@@ -118,7 +118,7 @@ ComputeBudget composers behave as any other instruction.
 ## Taking a transaction apart
 
 `Solace::TransactionDecomposer` does the reverse of composing: it reads a transaction you
-were handed — a `Solace::Transaction`, its message, or its base64 — and answers an ordinary
+were handed — a `Solace::Transaction` or its base64 — and answers an ordinary
 composer that represents it.
 
 ```ruby
