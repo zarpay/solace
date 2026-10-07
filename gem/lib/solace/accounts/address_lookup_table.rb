@@ -32,9 +32,9 @@ module Solace
       # fixed-size metadata region ahead of them regardless of its contents.
       META_SIZE = 56
 
-      # @!attribute [rw] account
+      # @!attribute [r] account
       #   @return [String, nil] The lookup table's on-chain address
-      attr_accessor :account
+      attr_reader :account
 
       # @!attribute [r] addresses
       #   @return [Array<String>] The full, ordered list of addresses stored in the table
@@ -62,11 +62,11 @@ module Solace
         # @param connection [Solace::Connection] The connection to read it through
         # @return [AddressLookupTable, nil] The table with its address set, or nil
         def fetch(account, connection:)
-          account = account.to_s
-          info    = connection.get_account_info(account)
+          info = connection.get_account_info(account.to_s)
           return unless info
 
-          deserialize(Utils::Codecs.base64_to_bytestream(info['data'][0])).tap { |table| table.account = account }
+          base64, = info['data'] # the RPC answers [data, encoding]
+          deserialize(Utils::Codecs.base64_to_bytestream(base64), account: account)
         end
 
         # Deserialize an on-chain lookup table account
@@ -80,9 +80,13 @@ module Solace
         #   - [Padding, up to {META_SIZE}]
         #   - [Addresses (32 bytes each, to end of data)]
         #
+        # The account data does not carry its own address, so pass it to have
+        # the table know where it lives.
+        #
         # @param io [IO, StringIO] The account data to read from
+        # @param account [#to_s, PublicKey, nil] The lookup table's on-chain address
         # @return [AddressLookupTable] The parsed table
-        def deserialize(io)
+        def deserialize(io, account: nil)
           Utils::Codecs.decode_le_u32(io) # state type (1 = lookup table); positional
           deactivation_slot  = Utils::Codecs.decode_le_u64(io)
           last_extended_slot = Utils::Codecs.decode_le_u64(io)
@@ -96,6 +100,7 @@ module Solace
           addresses << Utils::Codecs.decode_pubkey(io) until io.eof?
 
           new(
+            account:            account,
             deactivation_slot:  deactivation_slot,
             last_extended_slot: last_extended_slot,
             authority:          authority,
