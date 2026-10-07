@@ -25,6 +25,7 @@ accept anything `#to_s` (string, `PublicKey`, or `Keypair`).
 | `add_readonly_signer(pubkey)` | Readonly, signs. |
 | `add_writable_nonsigner(pubkey)` | Writable, doesn't sign. |
 | `add_readonly_nonsigner(pubkey)` | Readonly, doesn't sign (e.g. a program ID). |
+| `merge_account(pubkey, signer:, writable:)` | The primitive behind the four above, for when the flags are data in hand; permissions only ever widen. |
 
 If the same address is added more than once, its role is **merged** toward the most
 privileged combination (writable wins over readonly, signer over non-signer).

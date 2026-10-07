@@ -135,8 +135,8 @@ composer.compose_transaction     # composes against that same blockhash
 ```
 
 Each instruction comes back as an [`OpaqueInstructionComposer`](/building/composers) carrying the
-program it invokes, its accounts with the signer and writable flags the message header gave
-them, and its data untouched. The rules are Solana's: static keys take their flags from the
+program it invokes, its accounts in order with the roles the message header gave them
+(declared on the composer's `account_context`), and its data untouched. The rules are Solana's: static keys take their flags from the
 header ordering (signers first, writable before read-only, then non-signers the same way);
 a v0 message's instruction indexes address the combined space of the static keys, then every
 table's writable entries in table order, then every table's read-only entries, and a loaded
@@ -152,6 +152,7 @@ For a transaction `TransactionComposer` built, decomposing then composing answer
 bytes. A transaction built elsewhere recomposes to the same instructions, accounts and
 flags, but may lay the static accounts and table indexes out in a different order.
 
+## Composing against a known blockhash
 
 `compose_transaction` fetches the latest blockhash by default. When you already hold the one
 you want — re-composing a transaction you were handed, say, so its expiry stays the same —
