@@ -35,11 +35,14 @@ require_relative 'solace/version'
 require_relative 'solace/errors'
 require_relative 'solace/constants'
 require_relative 'solace/connection'
+require_relative 'solace/concerns/binary_serializable'
+
+# Utils
 require_relative 'solace/utils/codecs'
 require_relative 'solace/utils/pda'
 require_relative 'solace/utils/account_context'
+require_relative 'solace/utils/compute_budget'
 require_relative 'solace/utils/curve25519_dalek'
-require_relative 'solace/concerns/binary_serializable'
 
 # Tokens
 require_relative 'solace/tokens'
@@ -67,9 +70,6 @@ require_relative 'solace/composers/base'
 
 # Composers
 Dir[File.join(__dir__, 'solace/composers', '**', '*.rb')].each { |file| require file }
-
-# The compute budget names the ComputeBudget composers as constants, so it loads after them
-require_relative 'solace/utils/compute_budget'
 
 # Instructions (Builders)
 Dir[File.join(__dir__, 'solace/instructions', '**', '*.rb')].each { |file| require file }

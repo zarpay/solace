@@ -1,5 +1,9 @@
 # frozen_string_literal: true
 
+require_relative '../composers/base'
+require_relative '../composers/compute_budget_program_set_compute_unit_limit_composer'
+require_relative '../composers/compute_budget_program_set_compute_unit_price_composer'
+
 module Solace
   module Utils
     # The compute budget a transaction composer carries as a setting
