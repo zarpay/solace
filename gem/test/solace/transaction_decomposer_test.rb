@@ -38,8 +38,11 @@ describe Solace::TransactionDecomposer do
     end
   end
 
-  def metas(instruction_composer)
-    instruction_composer.accounts.map { |meta| [meta[:pubkey], meta[:signer], meta[:writable]] }
+  # [pubkey, signer?, writable?] for each account of a recovered instruction composer
+  def roles(instruction_composer)
+    context = instruction_composer.account_context
+
+    instruction_composer.accounts.map { |pubkey| [pubkey, context.signer?(pubkey), context.writable?(pubkey)] }
   end
 
   describe 'reading a hand-built transaction' do
@@ -84,65 +87,70 @@ describe Solace::TransactionDecomposer do
             [keys[3], false, true],
             [keys[4], false, false]
           ],
-          metas(lifted)
+          roles(lifted)
         )
       end
     end
 
     describe 'a v0 message loading through two tables' do
-      let(:first_table) { Solace::Keypair.generate.address }
-      let(:second_table) { Solace::Keypair.generate.address }
-      let(:first_entries) { Array.new(3) { Solace::Keypair.generate.address } }
-      let(:second_entries) { Array.new(3) { Solace::Keypair.generate.address } }
+      before(:all) do
+        @connection     = Solace::Connection.new(commitment: 'processed')
+        bob             = Fixtures.load_keypair('bob')
+        @keys           = Array.new(3) { Solace::Keypair.generate.address }
+        @first_entries  = Array.new(3) { Solace::Keypair.generate.address }
+        @second_entries = Array.new(3) { Solace::Keypair.generate.address }
+        @first_table    = LookupTableProvisioner.provision(connection: @connection, authority: bob, addresses: @first_entries)
+        @second_table   = LookupTableProvisioner.provision(connection: @connection, authority: bob, addresses: @second_entries)
+      end
 
       # statics: payer, vault, program; combined space:
       # [payer, vault, program, first[1], second[2], first[0], second[0]]
-      let(:compiled) do
+      def message_through(first_table, second_table)
         Solace::Message.new(
           version:               0,
           header:                [1, 0, 1],
-          accounts:              keys.first(3),
+          accounts:              @keys,
           instructions:          [instruction(2, [1, 3, 4, 5, 6], [1])],
           recent_blockhash:      blockhash,
           address_lookup_tables: [reference(first_table, [1], [0]), reference(second_table, [2], [0])]
         )
       end
 
-      before do
-        @fetched = LookupTableAccount.stub(connection, first_table => first_entries, second_table => second_entries)
-      end
+      let(:decomposer) { Solace::TransactionDecomposer.new(connection: @connection) }
+      let(:transaction) { Solace::Transaction.new(message: message_through(@first_table, @second_table)) }
 
       it 'resolves the combined space writable segment first and lets no loaded account sign' do
-        lifted = decomposer.decompose_transaction(Solace::Transaction.new(message: compiled)).instruction_composers.first
+        lifted = decomposer.decompose_transaction(transaction).instruction_composers.first
 
         assert_equal(
           [
-            [keys[1], false, true],
-            [first_entries[1], false, true],
-            [second_entries[2], false, true],
-            [first_entries[0], false, false],
-            [second_entries[0], false, false]
+            [@keys[1], false, true],
+            [@first_entries[1], false, true],
+            [@second_entries[2], false, true],
+            [@first_entries[0], false, false],
+            [@second_entries[0], false, false]
           ],
-          metas(lifted)
+          roles(lifted)
         )
       end
 
-      it 'registers the tables whole, fetched once each, and composes as v0' do
-        recovered = decomposer.decompose_transaction(Solace::Transaction.new(message: compiled))
+      it 'registers the tables whole, read from the chain, and composes as v0' do
+        recovered = decomposer.decompose_transaction(transaction)
 
         assert_equal 0, recovered.version
-        assert_equal [first_table, second_table], recovered.address_lookup_tables.map(&:account)
-        assert_equal [first_entries, second_entries], recovered.address_lookup_tables.map(&:addresses)
-        assert_equal [first_table, second_table], @fetched
+        assert_equal [@first_table, @second_table], recovered.address_lookup_tables.map(&:account)
+        assert_equal [@first_entries, @second_entries], recovered.address_lookup_tables.map(&:addresses)
+        assert_equal transaction.serialize, recovered.compose_transaction.serialize
       end
 
       it 'refuses a table the chain does not hold' do
-        LookupTableAccount.stub(connection, first_table => first_entries)
+        missing = Solace::Keypair.generate.address
+        absent  = Solace::Transaction.new(message: message_through(@first_table, missing))
 
-        error = assert_raises(Solace::Errors::AddressLookupTableNotFound) { decomposer.decompose_transaction(Solace::Transaction.new(message: compiled)) }
+        error = assert_raises(Solace::Errors::AddressLookupTableNotFound) { decomposer.decompose_transaction(absent) }
 
-        assert_equal second_table, error.account
-        assert_match(/#{second_table}/, error.message)
+        assert_equal missing, error.account
+        assert_match(/#{missing}/, error.message)
       end
     end
 
@@ -207,15 +215,11 @@ describe Solace::TransactionDecomposer do
 
   describe '#decompose_transaction' do
     let(:blockhash) { 'EkSnNWid2cvwEVnVx9aBqawnmiCNiDgp3gUdkDPTKN1N' }
-    let(:table_account) { Solace::Keypair.generate.address }
-    let(:loaded_recipient) { Solace::Keypair.generate.address }
 
     before do
       def connection.get_latest_blockhash
         ['EkSnNWid2cvwEVnVx9aBqawnmiCNiDgp3gUdkDPTKN1N', 1000]
       end
-
-      LookupTableAccount.stub(connection, table_account => [random_keypair.address, loaded_recipient])
     end
 
     # Compose, take apart, compose again; answer both transactions
@@ -238,18 +242,7 @@ describe Solace::TransactionDecomposer do
         assert_equal 2, recovered.instruction_composers.length
         assert_kind_of Solace::Composers::OpaqueInstructionComposer, first
         assert_equal system_program, first.program_id
-        assert_equal(
-          [{
-            pubkey:   anna_keypair.address,
-            signer:   true,
-            writable: true
-          }, {
-            pubkey:   bob_keypair.address,
-            signer:   true,
-            writable: true
-          }],
-          first.accounts
-        )
+        assert_equal [[anna_keypair.address, true, true], [bob_keypair.address, true, true]], roles(first)
         assert recovered.context.fee_payer?(payer_keypair.address)
         assert_nil recovered.version
         refute_predicate recovered.compute_budget, :set?
@@ -330,33 +323,40 @@ describe Solace::TransactionDecomposer do
     end
 
     describe 'a v0 transaction' do
+      before(:all) do
+        provisioning      = Solace::Connection.new(commitment: 'processed')
+        @unrelated        = Solace::Keypair.generate.address
+        @loaded_recipient = Solace::Keypair.generate.address
+        @table            = LookupTableProvisioner.provision(
+          connection: provisioning, authority: Fixtures.load_keypair('bob'), addresses: [@unrelated, @loaded_recipient]
+        )
+      end
+
       let(:loaded_transfer) do
-        Solace::Composers::SystemProgramTransferComposer.new(from: anna_keypair, to: loaded_recipient, lamports: 10)
+        Solace::Composers::SystemProgramTransferComposer.new(from: anna_keypair, to: @loaded_recipient, lamports: 10)
       end
 
       before do
         composer.add_instruction(loaded_transfer).add_instruction(transfer_composer1).set_fee_payer(payer_keypair)
-                .add_address_lookup_table(account: table_account, addresses: [random_keypair.address, loaded_recipient])
+                .add_address_lookup_table(account: @table, addresses: [@unrelated, @loaded_recipient])
       end
 
-      it 'registers the table from chain and resolves the loaded account with its flags' do
+      it 'registers the table from chain and resolves the loaded account with its role' do
         recovered = decomposer.decompose_transaction(composer.compose_transaction)
         first     = recovered.instruction_composers.first
 
         assert_equal 0, recovered.version
-        assert_equal [table_account], recovered.address_lookup_tables.map(&:account)
-        assert_equal [random_keypair.address, loaded_recipient], recovered.address_lookup_tables.first.addresses
-        assert_equal({
-                       pubkey:   loaded_recipient,
-                       signer:   false,
-                       writable: true
-                     }, first.accounts[1])
+        assert_equal [@table], recovered.address_lookup_tables.map(&:account)
+        assert_equal [@unrelated, @loaded_recipient], recovered.address_lookup_tables.first.addresses
+        assert_equal @loaded_recipient, first.accounts[1]
+        refute first.account_context.signer?(@loaded_recipient)
+        assert first.account_context.writable?(@loaded_recipient)
       end
 
       it 'composes it again byte for byte' do
         original, recomposed = round_trip(composer)
 
-        refute_includes original.message.accounts, loaded_recipient
+        refute_includes original.message.accounts, @loaded_recipient
         assert_equal original.serialize, recomposed.serialize
       end
     end
@@ -542,8 +542,12 @@ describe Solace::TransactionDecomposer do
 
       it 'recovers the flags of every account and composes again to the bytes that landed' do
         assert_equal Solace::Constants::TOKEN_PROGRAM_ID, @lifted.program_id
-        assert_equal [true, false], @lifted.accounts.map { |meta| meta[:signer] }.values_at(3, 1)
-        assert_equal [true, false], @lifted.accounts.map { |meta| meta[:writable] }.values_at(0, 1)
+        authority, mint, source = @lifted.accounts.values_at(3, 1, 0)
+
+        assert @lifted.account_context.signer?(authority)
+        refute @lifted.account_context.signer?(mint)
+        assert @lifted.account_context.writable?(source)
+        refute @lifted.account_context.writable?(mint)
         assert @recovered.context.fee_payer?(@payer.address)
         assert_equal @landed, @recomposed
       end

@@ -30,24 +30,23 @@ describe Solace::Accounts::AddressLookupTable do
   end
 
   describe '.fetch' do
-    let(:connection) { Solace::Connection.new }
-    let(:table_account) { Solace::Keypair.generate.address }
-    let(:addresses) { Array.new(3) { Solace::Keypair.generate.address } }
+    before(:all) do
+      @connection = Solace::Connection.new(commitment: 'processed')
+      @addresses  = Array.new(3) { Solace::Keypair.generate.address }
+      @table      = LookupTableProvisioner.provision(
+        connection: @connection, authority: Fixtures.load_keypair('bob'), addresses: @addresses
+      )
+    end
 
-    it 'reads the table through the connection with its address set' do
-      fetched = LookupTableAccount.stub(connection, table_account => addresses)
+    it 'reads a table from the chain with its address set' do
+      table = Solace::Accounts::AddressLookupTable.fetch(@table, connection: @connection)
 
-      table = Solace::Accounts::AddressLookupTable.fetch(table_account, connection: connection)
-
-      assert_equal table_account, table.account
-      assert_equal addresses, table.addresses
-      assert_equal [table_account], fetched
+      assert_equal @table, table.account
+      assert_equal @addresses, table.addresses
     end
 
     it 'answers nil when the chain holds no account at the address' do
-      LookupTableAccount.stub(connection, {})
-
-      assert_nil Solace::Accounts::AddressLookupTable.fetch(table_account, connection: connection)
+      assert_nil Solace::Accounts::AddressLookupTable.fetch(Solace::Keypair.generate.address, connection: @connection)
     end
   end
 

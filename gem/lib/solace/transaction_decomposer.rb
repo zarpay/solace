@@ -47,9 +47,9 @@ module Solace
     private_constant :LIMIT_INDEX, :PRICE_INDEX
 
     # What one call reads off a message: the message, the tables it references
-    # (by account, read from chain), and every account of the combined space
-    # with its flags, in index order
-    Reading = Struct.new(:message, :tables, :metas, keyword_init: true)
+    # (by account, read from chain), the combined account space in index
+    # order, and a context declaring every account's role
+    Reading = Struct.new(:message, :tables, :accounts, :roles, keyword_init: true)
     private_constant :Reading
 
     # @!attribute connection
@@ -78,28 +78,50 @@ module Solace
 
     private
 
-    # Read a message: its tables from chain, and every account with its flags
+    # Read a message: its tables from chain, its combined account space, and
+    # the role of every account in it
     #
     # @param message [Solace::Message]
     # @return [Reading]
     def read(message)
-      tables = fetch_tables(message)
+      tables   = fetch_tables(message)
+      writable = loaded(message, tables, :writable_indexes)
+      readonly = loaded(message, tables, :readonly_indexes)
+      roles    = Utils::AccountContext.new
 
-      Reading.new(message: message, tables: tables, metas: account_metas(message, tables))
+      declare_static(roles, message)
+      writable.each { |pubkey| roles.merge_account(pubkey, signer: false, writable: true) }
+      readonly.each { |pubkey| roles.merge_account(pubkey, signer: false, writable: false) }
+
+      Reading.new(message: message, tables: tables, accounts: message.accounts + writable + readonly, roles: roles)
     end
 
-    # Declare the static keys in message order and the fee payer, so the
-    # composer composes the same account order again
+    # Declare the static keys with the roles their header positions give them:
+    # signers first, writable before read-only, then non-signers the same way
+    #
+    # @param roles [Utils::AccountContext]
+    # @param message [Solace::Message]
+    # @return [void]
+    def declare_static(roles, message)
+      signers, readonly_signed, readonly_unsigned = message.header
+
+      message.accounts.each_with_index do |pubkey, index|
+        signer        = index < signers
+        readonly_from = signer ? signers - readonly_signed : message.accounts.size - readonly_unsigned
+
+        roles.merge_account(pubkey, signer: signer, writable: index < readonly_from)
+      end
+    end
+
+    # Seed the composer's accounts in message order and set the fee payer, so
+    # it composes the same account order again
     #
     # @param composer [Solace::TransactionComposer]
     # @param reading [Reading]
     # @return [void]
     def seed(composer, reading)
-      static = reading.metas.first(reading.message.accounts.size)
-      seeded = Composers::OpaqueInstructionComposer.new(program_id: static.first[:pubkey], accounts: static, data: [])
-
-      composer.context.merge_from(seeded.account_context)
-      composer.set_fee_payer(static.first[:pubkey])
+      composer.context.merge_from(reading.roles)
+      composer.set_fee_payer(reading.message.accounts.first)
     end
 
     # Add the instructions, register the tables, and set the budget
@@ -139,59 +161,6 @@ module Solace
       end
     end
 
-    # Every account of the combined space with its flags, in index order
-    #
-    # @param message [Solace::Message]
-    # @param tables [Hash{String => Accounts::AddressLookupTable}]
-    # @return [Array<Hash>] `{ pubkey:, signer:, writable: }` per index
-    def account_metas(message, tables)
-      static   = message.accounts.each_with_index.map do |pubkey, index|
-        { pubkey: pubkey, **static_flags(message, index) }
-      end
-      writable = loaded_metas(message, tables, :writable_indexes, writable: true)
-      readonly = loaded_metas(message, tables, :readonly_indexes, writable: false)
-
-      static + writable + readonly
-    end
-
-    # The flags of a static key, from its position in the header ordering
-    #
-    # @param message [Solace::Message]
-    # @param index [Integer] The index into the static keys
-    # @return [Hash] `{ signer:, writable: }`
-    def static_flags(message, index)
-      signers, readonly_signed, readonly_unsigned = message.header
-
-      if index < signers
-        {
-          signer:   true,
-          writable: index < signers - readonly_signed
-        }
-      else
-        {
-          signer:   false,
-          writable: index < message.accounts.size - readonly_unsigned
-        }
-      end
-    end
-
-    # The metas of one loaded segment: never a signer, writable by the segment
-    #
-    # @param message [Solace::Message]
-    # @param tables [Hash{String => Accounts::AddressLookupTable}]
-    # @param kind [Symbol] :writable_indexes or :readonly_indexes
-    # @param writable [Boolean] The segment's writability
-    # @return [Array<Hash>]
-    def loaded_metas(message, tables, kind, writable:)
-      loaded(message, tables, kind).map do |pubkey|
-        {
-          pubkey:   pubkey,
-          signer:   false,
-          writable: writable
-        }
-      end
-    end
-
     # The pubkeys one segment loads, across every table in table order
     #
     # @param message [Solace::Message]
@@ -210,13 +179,12 @@ module Solace
     # @param reading [Reading]
     # @return [Array<Composers::OpaqueInstructionComposer>]
     def instruction_composers(reading)
-      metas = reading.metas
-
-      reading.message.instructions.reject { |instruction| budget?(instruction, metas) }.map do |instruction|
+      reading.message.instructions.reject { |instruction| budget?(instruction, reading) }.map do |instruction|
         Composers::OpaqueInstructionComposer.new(
-          program_id: metas.fetch(instruction.program_index)[:pubkey],
-          accounts:   instruction.accounts.map { |index| metas.fetch(index) },
-          data:       instruction.data
+          program_id: reading.accounts.fetch(instruction.program_index),
+          accounts:   instruction.accounts.map { |index| reading.accounts.fetch(index) },
+          data:       instruction.data,
+          roles:      reading.roles
         )
       end
     end
@@ -224,10 +192,10 @@ module Solace
     # Whether an instruction is a limit or price directive the budget setting holds
     #
     # @param instruction [Solace::Instruction]
-    # @param metas [Array<Hash>] The combined account metas
+    # @param reading [Reading]
     # @return [Boolean]
-    def budget?(instruction, metas)
-      metas.fetch(instruction.program_index)[:pubkey] == Constants::COMPUTE_BUDGET_PROGRAM_ID &&
+    def budget?(instruction, reading)
+      reading.accounts.fetch(instruction.program_index) == Constants::COMPUTE_BUDGET_PROGRAM_ID &&
         [LIMIT_INDEX, PRICE_INDEX].include?(instruction.data.first)
     end
 
@@ -236,7 +204,7 @@ module Solace
     # @param reading [Reading]
     # @return [Utils::ComputeBudget] Unset when the message carried neither
     def compute_budget(reading)
-      directives = reading.message.instructions.select { |instruction| budget?(instruction, reading.metas) }
+      directives = reading.message.instructions.select { |instruction| budget?(instruction, reading) }
 
       Utils::ComputeBudget.new(
         units:          decode(directives, LIMIT_INDEX, 'L<'),

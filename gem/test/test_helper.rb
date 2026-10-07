@@ -20,5 +20,4 @@ end
 require_relative 'support/fixtures'
 require_relative 'support/factory_bot'
 require_relative 'support/lookup_table_provisioner'
-require_relative 'support/lookup_table_account'
 require_relative 'support/solana_test_validator'
