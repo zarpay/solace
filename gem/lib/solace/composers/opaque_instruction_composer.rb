@@ -51,7 +51,7 @@ module Solace
       #
       # @return [void]
       def setup_accounts
-        accounts.each { |account| declare(account) }
+        accounts.each { |account| account_context.add_account(account[:pubkey], **account.slice(:signer, :writable)) }
         account_context.add_readonly_nonsigner(program_id)
       end
 
@@ -64,25 +64,6 @@ module Solace
           instruction.program_index = account_context.index_of(program_id)
           instruction.accounts      = accounts.map { |account| account_context.index_of(account[:pubkey]) }
           instruction.data          = data
-        end
-      end
-
-      private
-
-      # Declare one account on the local context with its flags
-      #
-      # @param account [Hash] The account meta
-      def declare(account)
-        pubkey = account[:pubkey]
-
-        if account[:signer] && account[:writable]
-          account_context.add_writable_signer(pubkey)
-        elsif account[:signer]
-          account_context.add_readonly_signer(pubkey)
-        elsif account[:writable]
-          account_context.add_writable_nonsigner(pubkey)
-        else
-          account_context.add_readonly_nonsigner(pubkey)
         end
       end
     end

@@ -101,6 +101,18 @@ module Solace
         merge_account(pubkey, signer: false, writable: false)
       end
 
+      # Add an account with its flags given as data
+      #
+      # The four +add_*+ methods above name a role; this one takes the role
+      # apart, for a caller that holds the flags rather than knows them.
+      #
+      # @param pubkey [Solace::Keypair, Solace::PublicKey, String] The pubkey of the account
+      # @param signer [Boolean] Whether the account signs
+      # @param writable [Boolean] Whether the account is writable
+      def add_account(pubkey, signer:, writable:)
+        merge_account(pubkey, signer: signer, writable: writable)
+      end
+
       # Predicate to check if an account is a fee payer
       #
       # @param pubkey [String] The pubkey of the account
