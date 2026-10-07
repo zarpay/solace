@@ -29,15 +29,16 @@ connection.send_transaction(tx.serialize)
 
 | Method | Returns | Description |
 | --- | --- | --- |
-| `new(connection:, blockhash: nil)` | composer | Create a composer bound to a connection (used to fetch the blockhash unless one is given). |
+| `new(connection:)` | composer | Create a composer bound to a connection (used to fetch the blockhash unless one is set). |
 | `add_instruction(composer)` | `self` | Append a composer. |
 | `prepend_instruction(composer)` | `self` | Insert a composer at the front. |
 | `insert_instruction(index, composer)` | `self` | Insert at a position. |
 | `set_fee_payer(pubkey)` | `self` | Set the fee payer (`#to_s`); becomes account index 0. |
+| `set_blockhash(blockhash)` | `self` | Set the blockhash to compose against instead of fetching the latest. |
 | `set_compute_budget(units:, micro_lamports:)` | `self` | Set the compute budget; the ComputeBudget instructions are written first when composing, superseding any added as plain instructions. |
 | `add_address_lookup_table(account:, addresses:)` | `self` | Register an [address lookup table](/concepts/address-lookup-tables); the composed transaction becomes v0. |
 | `merge(other, placement: :add, index: nil)` | `self` | Merge another `TransactionComposer` (`placement:` `:add`, `:prepend`, or `:insert` with `index:`); its tables fold in too. |
-| `compose_transaction(blockhash: nil)` | `Solace::Transaction` | Compile accounts, build the message, return an unsigned transaction. Composes against `blockhash:` when given, otherwise fetches the latest from the connection. |
+| `compose_transaction` | `Solace::Transaction` | Compile accounts, build the message, return an unsigned transaction. Composes against the set blockhash, otherwise fetches the latest from the connection. |
 
 | Accessor | Description |
 | --- | --- |
@@ -47,7 +48,7 @@ connection.send_transaction(tx.serialize)
 | `address_lookup_tables` | The registered lookup tables (`Solace::Accounts::AddressLookupTable`). |
 | `version` | The transaction version — `nil` (legacy) until a table opts it into `0` (v0). |
 | `compute_budget` | The compute budget set on the composer (`Solace::Utils::ComputeBudget`): `units`, `micro_lamports`, `set?`. |
-| `blockhash` | The blockhash the composer composes against by default — `nil` (fetch the latest) unless given or recovered. |
+| `blockhash` | The blockhash set on the composer — `nil` (fetch the latest) unless set or recovered. |
 
 ## Batching several instructions
 
@@ -126,10 +127,10 @@ composer = Solace::TransactionDecomposer.new(connection:).decompose_transaction(
 composer.instruction_composers   # one OpaqueInstructionComposer per instruction, in order
 composer.compute_budget          # the limit and price the transaction carried, if any
 composer.address_lookup_tables   # its tables, read from chain, with their full address lists
-composer.blockhash               # the blockhash it was composed against
+composer.blockhash               # the blockhash it was composed against, already set
 
 composer.set_compute_budget(units: 600_000, micro_lamports: 50_000)
-composer.compose_transaction     # composes against that same blockhash by default
+composer.compose_transaction     # composes against that same blockhash
 ```
 
 Each instruction comes back as an [`OpaqueInstructionComposer`](/building/composers) carrying the
@@ -153,13 +154,14 @@ flags, but may lay the static accounts and table indexes out in a different orde
 
 `compose_transaction` fetches the latest blockhash by default. When you already hold the one
 you want — re-composing a transaction you were handed, say, so its expiry stays the same —
-pass it in and no fetch happens:
+set it and no fetch happens:
 
 ```ruby
 tx = Solace::TransactionComposer.new(connection:)
                                 .add_instruction(transfer_composer)
                                 .set_fee_payer(payer.address)
-                                .compose_transaction(blockhash: original.message.recent_blockhash)
+                                .set_blockhash(original.message.recent_blockhash)
+                                .compose_transaction
 ```
 
 ## Address lookup tables (v0)

@@ -17,7 +17,7 @@ module Solace
   # the composer composes as v0 again; a `SetComputeUnitLimit` or
   # `SetComputeUnitPrice` the transaction carried becomes the composer's
   # {TransactionComposer#compute_budget}; and the blockhash it was composed
-  # against becomes the composer's {TransactionComposer#blockhash}.
+  # against is set as the composer's {TransactionComposer#blockhash}.
   #
   # The Solana facts applied:
   #
@@ -68,7 +68,7 @@ module Solace
     # @raise [Solace::Errors::AddressLookupTableNotFound] When a referenced table is not on chain
     def decompose_transaction(transaction)
       reading  = read(message_of(transaction))
-      composer = TransactionComposer.new(connection: connection, blockhash: reading.message.recent_blockhash)
+      composer = TransactionComposer.new(connection: connection).set_blockhash(reading.message.recent_blockhash)
 
       seed(composer, reading)
       fill(composer, reading)

@@ -389,7 +389,7 @@ describe Solace::TransactionComposer do
       assert_equal 'EkSnNWid2cvwEVnVx9aBqawnmiCNiDgp3gUdkDPTKN1N', tx.message.recent_blockhash
     end
 
-    it 'composes against a supplied blockhash without fetching one' do
+    it 'composes against a set blockhash without fetching one' do
       connection.singleton_class.remove_method(:get_latest_blockhash)
       connection.define_singleton_method(:get_latest_blockhash) do
         raise 'get_latest_blockhash should not be called'
@@ -400,8 +400,9 @@ describe Solace::TransactionComposer do
       composer.add_instruction(transfer_composer1)
       composer.set_fee_payer(payer_keypair)
 
-      tx = composer.compose_transaction(blockhash: blockhash)
+      tx = composer.set_blockhash(blockhash).compose_transaction
 
+      assert_equal blockhash, composer.blockhash
       assert_equal blockhash, tx.message.recent_blockhash
 
       decoded = Solace::Transaction.from(tx.serialize).message
@@ -558,10 +559,10 @@ describe Solace::TransactionComposer do
         )
       end
 
-      it 'composes a v0 message against a supplied blockhash' do
+      it 'composes a v0 message against a set blockhash' do
         blockhash = '4vJ9JU1bJJE96FWSJKvHsmmFADCg4gpZQff4P3bkLKi'
 
-        message = composer.compose_transaction(blockhash: blockhash).message
+        message = composer.set_blockhash(blockhash).compose_transaction.message
 
         assert_equal 0, message.version
         assert_equal blockhash, message.recent_blockhash
@@ -693,7 +694,7 @@ describe Solace::TransactionComposer do
     end
   end
 
-  describe 'composing against a supplied blockhash on the validator' do
+  describe 'composing against a set blockhash on the validator' do
     before(:all) do
       @connection = Solace::Connection.new(commitment: 'processed')
       bob         = Fixtures.load_keypair('bob')
@@ -707,14 +708,15 @@ describe Solace::TransactionComposer do
       @transaction = Solace::TransactionComposer.new(connection: @connection)
                                                 .add_instruction(transfer)
                                                 .set_fee_payer(bob)
-                                                .compose_transaction(blockhash: @blockhash)
+                                                .set_blockhash(@blockhash)
+                                                .compose_transaction
       @transaction.sign(bob)
 
       signature = @connection.send_transaction(@transaction.serialize)
       @connection.wait_for_confirmed_signature { signature['result'] }
     end
 
-    it 'carries the supplied blockhash' do
+    it 'carries the set blockhash' do
       assert_equal @blockhash, @transaction.message.recent_blockhash
     end
 

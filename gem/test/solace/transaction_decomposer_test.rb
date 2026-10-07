@@ -258,11 +258,11 @@ describe Solace::TransactionDecomposer do
         assert_equal blockhash, recovered.compose_transaction.message.recent_blockhash
       end
 
-      it 'still honours an explicit blockhash' do
+      it 'can be set to compose against another blockhash' do
         other     = '4vJ9JU1bJJE96FWSJKvHsmmFADCg4gpZQff4P3bkLKi'
         recovered = decomposer.decompose_transaction(composer.compose_transaction)
 
-        assert_equal other, recovered.compose_transaction(blockhash: other).message.recent_blockhash
+        assert_equal other, recovered.set_blockhash(other).compose_transaction.message.recent_blockhash
       end
 
       it 'can be edited like any composer' do
