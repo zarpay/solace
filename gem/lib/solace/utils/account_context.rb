@@ -112,7 +112,7 @@ module Solace
       # @param writable [Boolean] Whether the account is writable
       # @param fee_payer [Boolean] Whether the account pays the fee (see {#set_fee_payer})
       def merge_account(pubkey, signer:, writable:, fee_payer: false)
-        pubkey_str = pubkey.is_a?(String) ? pubkey : pubkey.address
+        pubkey_str = pubkey.to_s
 
         @pubkey_account_map[pubkey_str]             ||= DEFAULT_ACCOUNT.dup
         @pubkey_account_map[pubkey_str][:signer]    ||= signer
