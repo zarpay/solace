@@ -241,6 +241,35 @@ describe Solace::TransactionComposer do
       assert_instance_of Solace::Instruction, instruction
     end
 
+    it 'fetches the latest blockhash when none is supplied' do
+      composer.add_instruction(transfer_composer1)
+      composer.set_fee_payer(payer_keypair)
+
+      tx = composer.compose_transaction
+
+      assert_equal 'EkSnNWid2cvwEVnVx9aBqawnmiCNiDgp3gUdkDPTKN1N', tx.message.recent_blockhash
+    end
+
+    it 'composes against a supplied blockhash without fetching one' do
+      connection.singleton_class.remove_method(:get_latest_blockhash)
+      connection.define_singleton_method(:get_latest_blockhash) do
+        raise 'get_latest_blockhash should not be called'
+      end
+
+      blockhash = '4vJ9JU1bJJE96FWSJKvHsmmFADCg4gpZQff4P3bkLKi'
+
+      composer.add_instruction(transfer_composer1)
+      composer.set_fee_payer(payer_keypair)
+
+      tx = composer.compose_transaction(blockhash: blockhash)
+
+      assert_equal blockhash, tx.message.recent_blockhash
+
+      decoded = Solace::Transaction.from(tx.serialize).message
+
+      assert_equal blockhash, decoded.recent_blockhash
+    end
+
     it 'composes multi-instruction transaction with account deduplication' do
       composer.add_instruction(transfer_composer1)
       composer.add_instruction(transfer_composer2)
@@ -390,6 +419,15 @@ describe Solace::TransactionComposer do
         )
       end
 
+      it 'composes a v0 message against a supplied blockhash' do
+        blockhash = '4vJ9JU1bJJE96FWSJKvHsmmFADCg4gpZQff4P3bkLKi'
+
+        message = composer.compose_transaction(blockhash: blockhash).message
+
+        assert_equal 0, message.version
+        assert_equal blockhash, message.recent_blockhash
+      end
+
       it 'round-trips through serialization' do
         decoded = Solace::Transaction.from(@transaction.serialize).message
 
@@ -450,6 +488,36 @@ describe Solace::TransactionComposer do
 
       assert_equal [table_a, table_b], composer.address_lookup_tables.map(&:account)
       assert_equal 0, composer.version
+    end
+  end
+
+  describe 'composing against a supplied blockhash on the validator' do
+    before(:all) do
+      @connection = Solace::Connection.new(commitment: 'processed')
+      bob         = Fixtures.load_keypair('bob')
+      @recipient  = Solace::Keypair.generate
+      @blockhash  = @connection.get_latest_blockhash[0]
+
+      transfer = Solace::Composers::SystemProgramTransferComposer.new(
+        from: bob, to: @recipient, lamports: 5_000_000
+      )
+
+      @transaction = Solace::TransactionComposer.new(connection: @connection)
+                                                .add_instruction(transfer)
+                                                .set_fee_payer(bob)
+                                                .compose_transaction(blockhash: @blockhash)
+      @transaction.sign(bob)
+
+      signature = @connection.send_transaction(@transaction.serialize)
+      @connection.wait_for_confirmed_signature { signature['result'] }
+    end
+
+    it 'carries the supplied blockhash' do
+      assert_equal @blockhash, @transaction.message.recent_blockhash
+    end
+
+    it 'lands on chain' do
+      assert_equal 5_000_000, @connection.get_balance(@recipient.address)
     end
   end
 

@@ -36,7 +36,7 @@ connection.send_transaction(tx.serialize)
 | `set_fee_payer(pubkey)` | `self` | Set the fee payer (`#to_s`); becomes account index 0. |
 | `add_address_lookup_table(account:, addresses:)` | `self` | Register an [address lookup table](/concepts/address-lookup-tables); the composed transaction becomes v0. |
 | `merge(other, placement: :add, index: nil)` | `self` | Merge another `TransactionComposer` (`placement:` `:add`, `:prepend`, or `:insert` with `index:`); its tables fold in too. |
-| `compose_transaction` | `Solace::Transaction` | Compile accounts, fetch blockhash, build the message, return an unsigned transaction. |
+| `compose_transaction(blockhash: nil)` | `Solace::Transaction` | Compile accounts, build the message, return an unsigned transaction. Composes against `blockhash:` when given, otherwise fetches the latest from the connection. |
 
 | Accessor | Description |
 | --- | --- |
@@ -77,6 +77,19 @@ connection.send_transaction(tx.serialize)
 This is the layer to reach for when you want several instructions in one atomic
 transaction, or precise control over the fee payer and signing — without dropping all the
 way down to hand-built [messages](/concepts/transactions-and-messages).
+
+## Composing against a known blockhash
+
+`compose_transaction` fetches the latest blockhash by default. When you already hold the one
+you want — re-composing a transaction you were handed, say, so its expiry stays the same —
+pass it in and no fetch happens:
+
+```ruby
+tx = Solace::TransactionComposer.new(connection:)
+                                .add_instruction(transfer_composer)
+                                .set_fee_payer(payer.address)
+                                .compose_transaction(blockhash: original.message.recent_blockhash)
+```
 
 ## Address lookup tables (v0)
 
