@@ -76,10 +76,14 @@ module Solace
       #
       # @param account [Hash] The account meta
       def declare(account)
-        role = account[:writable] ? 'writable' : 'readonly'
-        kind = account[:signer] ? 'signer' : 'nonsigner'
+        pubkey = account[:pubkey]
 
-        account_context.public_send(:"add_#{role}_#{kind}", account[:pubkey])
+        case [account[:signer], account[:writable]]
+        when [true, true] then account_context.add_writable_signer(pubkey)
+        when [true, false] then account_context.add_readonly_signer(pubkey)
+        when [false, true] then account_context.add_writable_nonsigner(pubkey)
+        else account_context.add_readonly_nonsigner(pubkey)
+        end
       end
     end
   end
