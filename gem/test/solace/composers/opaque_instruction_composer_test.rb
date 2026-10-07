@@ -14,10 +14,26 @@ describe Solace::Composers::OpaqueInstructionComposer do
     Solace::Composers::OpaqueInstructionComposer.new(
       program_id: program_id,
       accounts:   [
-        { pubkey: writable_signer, signer: true, writable: true },
-        { pubkey: readonly_signer, signer: true, writable: false },
-        { pubkey: writable_account, signer: false, writable: true },
-        { pubkey: readonly_account, signer: false, writable: false }
+        {
+          pubkey:   writable_signer,
+          signer:   true,
+          writable: true
+        },
+        {
+          pubkey:   readonly_signer,
+          signer:   true,
+          writable: false
+        },
+        {
+          pubkey:   writable_account,
+          signer:   false,
+          writable: true
+        },
+        {
+          pubkey:   readonly_account,
+          signer:   false,
+          writable: false
+        }
       ],
       data:       data
     )
@@ -54,12 +70,20 @@ describe Solace::Composers::OpaqueInstructionComposer do
     keypair  = Solace::Keypair.generate
     composer = Solace::Composers::OpaqueInstructionComposer.new(
       program_id: Solace::PublicKey.new(Solace::Utils::Codecs.base58_to_bytes(program_id)),
-      accounts:   [{ pubkey: keypair, signer: true, writable: true }],
+      accounts:   [{
+        pubkey:   keypair,
+        signer:   true,
+        writable: true
+      }],
       data:       data
     )
 
     assert_equal program_id, composer.program_id
-    assert_equal [{ pubkey: keypair.address, signer: true, writable: true }], composer.accounts
+    assert_equal [{
+      pubkey:   keypair.address,
+      signer:   true,
+      writable: true
+    }], composer.accounts
     assert_equal data, composer.data
   end
 
@@ -72,8 +96,16 @@ describe Solace::Composers::OpaqueInstructionComposer do
       transfer = Solace::Composers::OpaqueInstructionComposer.new(
         program_id: Solace::Constants::SYSTEM_PROGRAM_ID,
         accounts:   [
-          { pubkey: bob, signer: true, writable: true },
-          { pubkey: @recipient, signer: false, writable: true }
+          {
+            pubkey:   bob,
+            signer:   true,
+            writable: true
+          },
+          {
+            pubkey:   @recipient,
+            signer:   false,
+            writable: true
+          }
         ],
         data:       Solace::Instructions::SystemProgram::TransferInstruction.data(5_000_000)
       )

@@ -35,7 +35,11 @@ module Solace
       # @return [Array<Hash>] `{ pubkey: String, signer: Boolean, writable: Boolean }` per account
       def accounts
         @accounts ||= params[:accounts].map do |account|
-          { pubkey: account[:pubkey].to_s, signer: account[:signer] == true, writable: account[:writable] == true }
+          {
+            pubkey:   account[:pubkey].to_s,
+            signer:   account[:signer] == true,
+            writable: account[:writable] == true
+          }
         end
       end
 

@@ -763,7 +763,10 @@ describe Solace::TransactionComposer do
         @message = land_transfers(
           connection: @connection,
           from:       bob,
-          recipients: { @recipient1 => 5_000_000, @recipient2 => 6_000_000 },
+          recipients: {
+            @recipient1 => 5_000_000,
+            @recipient2 => 6_000_000
+          },
           tables:     { @table => [@recipient1.address, @recipient2.address] }
         )
       end
@@ -802,8 +805,14 @@ describe Solace::TransactionComposer do
         @message = land_transfers(
           connection: @connection,
           from:       bob,
-          recipients: { @recipient1 => 5_000_000, @recipient2 => 6_000_000 },
-          tables:     { @table_a => [@recipient1.address], @table_b => [@recipient2.address] }
+          recipients: {
+            @recipient1 => 5_000_000,
+            @recipient2 => 6_000_000
+          },
+          tables:     {
+            @table_a => [@recipient1.address],
+            @table_b => [@recipient2.address]
+          }
         )
       end
 
@@ -835,7 +844,10 @@ describe Solace::TransactionComposer do
         @message = land_transfers(
           connection: @connection,
           from:       bob,
-          recipients: { @loaded => 5_000_000, @static => 6_000_000 },
+          recipients: {
+            @loaded => 5_000_000,
+            @static => 6_000_000
+          },
           tables:     { @table => [@loaded.address] }
         )
       end

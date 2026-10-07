@@ -112,7 +112,15 @@ describe Solace::Utils::RPCClient do
       # Create a Net::HTTPSuccess instance
       json_rpc_error_response      = Net::HTTPSuccess.new('1.1', 200, 'OK')
       json_rpc_error_response.instance_variable_set(:@read, true)
-      json_rpc_error_response.body = JSON.dump({ jsonrpc: '2.0', id: '1', error: { code: -32_601, message: 'Method not found', data: 'data' } })
+      json_rpc_error_response.body = JSON.dump({
+                                                 jsonrpc: '2.0',
+                                                 id:      '1',
+                                                 error:   {
+                                                   code:    -32_601,
+                                                   message: 'Method not found',
+                                                   data:    'data'
+                                                 }
+                                               })
 
       Net::HTTP.stub(:start, ->(*) { json_rpc_error_response }) do
         error = assert_raises(Solace::Errors::RPCError) do

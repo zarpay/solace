@@ -1,6 +1,10 @@
 plugins:
   - rubocop-yard
 
+# Project-local custom cops
+require:
+  - ./lib/rubocop/cop/solace/exploded_hash
+
 YARD:
   Enabled: true
 
@@ -47,6 +51,14 @@ Naming/AccessorMethodName:
 # while also exposing them as Module.<method>.
 Style/ModuleFunction:
   EnforcedStyle: extend_self
+
+# A hash is read as a table, so every pair starts a line however short the hash is.
+# These two only fire once a hash is already multi-line; Solace/ExplodedHash carries
+# the rule that a short hash cannot escape, and skips keyword argument lists.
+Layout/MultilineHashKeyLineBreaks:
+  Enabled: true
+Layout/FirstHashElementLineBreak:
+  Enabled: true
 
 # Align hash values in a column (table style) for multi-line hash literals.
 Layout/HashAlignment:

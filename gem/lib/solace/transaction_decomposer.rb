@@ -164,9 +164,15 @@ module Solace
       signers, readonly_signed, readonly_unsigned = message.header
 
       if index < signers
-        { signer: true, writable: index < signers - readonly_signed }
+        {
+          signer:   true,
+          writable: index < signers - readonly_signed
+        }
       else
-        { signer: false, writable: index < message.accounts.size - readonly_unsigned }
+        {
+          signer:   false,
+          writable: index < message.accounts.size - readonly_unsigned
+        }
       end
     end
 
@@ -178,7 +184,13 @@ module Solace
     # @param writable [Boolean] The segment's writability
     # @return [Array<Hash>]
     def loaded_metas(message, tables, kind, writable:)
-      loaded(message, tables, kind).map { |pubkey| { pubkey: pubkey, signer: false, writable: writable } }
+      loaded(message, tables, kind).map do |pubkey|
+        {
+          pubkey:   pubkey,
+          signer:   false,
+          writable: writable
+        }
+      end
     end
 
     # The pubkeys one segment loads, across every table in table order

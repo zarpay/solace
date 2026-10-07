@@ -121,7 +121,14 @@ describe Solace::Utils::Codecs do
   # --- Borsh / Solana scalar and collection helpers ---------------------
 
   describe '#encode_u8 / #decode_u8' do
-    let(:values) { { 0 => [0], 1 => [1], 42 => [42], 255 => [255] } }
+    let(:values) do
+      {
+        0 => [0],
+        1 => [1],
+        42 => [42],
+        255 => [255]
+      }
+    end
 
     it 'round-trips u8 values' do
       values.each do |n, bytes|

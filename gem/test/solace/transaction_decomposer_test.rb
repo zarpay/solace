@@ -216,7 +216,15 @@ describe Solace::TransactionDecomposer do
         assert_kind_of Solace::Composers::OpaqueInstructionComposer, first
         assert_equal system_program, first.program_id
         assert_equal(
-          [{ pubkey: anna_keypair.address, signer: true, writable: true }, { pubkey: bob_keypair.address, signer: true, writable: true }],
+          [{
+            pubkey:   anna_keypair.address,
+            signer:   true,
+            writable: true
+          }, {
+            pubkey:   bob_keypair.address,
+            signer:   true,
+            writable: true
+          }],
           first.accounts
         )
         assert recovered.context.fee_payer?(payer_keypair.address)
@@ -315,7 +323,11 @@ describe Solace::TransactionDecomposer do
         assert_equal 0, recovered.version
         assert_equal [table_account], recovered.address_lookup_tables.map(&:account)
         assert_equal [random_keypair.address, loaded_recipient], recovered.address_lookup_tables.first.addresses
-        assert_equal({ pubkey: loaded_recipient, signer: false, writable: true }, first.accounts[1])
+        assert_equal({
+                       pubkey:   loaded_recipient,
+                       signer:   false,
+                       writable: true
+                     }, first.accounts[1])
       end
 
       it 'composes it again byte for byte' do
