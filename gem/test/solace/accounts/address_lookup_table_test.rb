@@ -29,6 +29,28 @@ describe Solace::Accounts::AddressLookupTable do
     bytes + ([0] * (Solace::Accounts::AddressLookupTable::META_SIZE - bytes.length))
   end
 
+  describe '.fetch' do
+    let(:connection) { Solace::Connection.new }
+    let(:table_account) { Solace::Keypair.generate.address }
+    let(:addresses) { Array.new(3) { Solace::Keypair.generate.address } }
+
+    it 'reads the table through the connection with its address set' do
+      fetched = LookupTableAccount.stub(connection, table_account => addresses)
+
+      table = Solace::Accounts::AddressLookupTable.fetch(table_account, connection: connection)
+
+      assert_equal table_account, table.account
+      assert_equal addresses, table.addresses
+      assert_equal [table_account], fetched
+    end
+
+    it 'answers nil when the chain holds no account at the address' do
+      LookupTableAccount.stub(connection, {})
+
+      assert_nil Solace::Accounts::AddressLookupTable.fetch(table_account, connection: connection)
+    end
+  end
+
   describe '.deserialize' do
     it 'reads the metadata and stored addresses' do
       io    = encode_account_data(authority: authority, addresses: [address1, address2], last_extended_slot: 99)

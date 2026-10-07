@@ -133,7 +133,10 @@ module Solace
     # @return [Hash{String => Accounts::AddressLookupTable}] Keyed by table account
     def fetch_tables(message)
       Array(message.address_lookup_tables).map(&:account).uniq.to_h do |account|
-        [account, Accounts::AddressLookupTable.fetch(account, connection: connection)]
+        table = Accounts::AddressLookupTable.fetch(account, connection: connection)
+        raise Errors::AddressLookupTableNotFound, account unless table
+
+        [account, table]
       end
     end
 

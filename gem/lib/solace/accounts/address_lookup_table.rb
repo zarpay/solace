@@ -22,7 +22,7 @@ module Solace
     #
     # @example Read a table's on-chain state
     #   table = Solace::Accounts::AddressLookupTable.fetch(address, connection: connection)
-    #   table.addresses # => the stored addresses
+    #   table&.addresses # => the stored addresses, or nil if the chain holds no such account
     #
     # @see Solace::AddressLookupTable
     # @see Solace::TransactionComposer
@@ -55,14 +55,16 @@ module Solace
       class << self
         # Fetch a lookup table account from chain
         #
+        # Like {Solace::Connection#get_account_info}, answers nil when the chain
+        # holds no account at the address; the caller decides whether that is an error.
+        #
         # @param account [#to_s, PublicKey] The lookup table's on-chain address
         # @param connection [Solace::Connection] The connection to read it through
-        # @return [AddressLookupTable] The table, with its address set
-        # @raise [Solace::Errors::AddressLookupTableNotFound] When the chain holds no account at the address
+        # @return [AddressLookupTable, nil] The table with its address set, or nil
         def fetch(account, connection:)
           account = account.to_s
           info    = connection.get_account_info(account)
-          raise Solace::Errors::AddressLookupTableNotFound, account unless info
+          return unless info
 
           deserialize(Utils::Codecs.base64_to_bytestream(info['data'][0])).tap { |table| table.account = account }
         end
