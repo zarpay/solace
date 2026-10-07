@@ -32,15 +32,12 @@ module Solace
 
       # The accounts the instruction touches, in order, with their flags
       #
+      # Pubkeys are answered as strings whatever they were given as, like
+      # every other composer's addresses.
+      #
       # @return [Array<Hash>] `{ pubkey: String, signer: Boolean, writable: Boolean }` per account
       def accounts
-        @accounts ||= params[:accounts].map do |account|
-          {
-            pubkey:   account[:pubkey].to_s,
-            signer:   account[:signer] == true,
-            writable: account[:writable] == true
-          }
-        end
+        @accounts ||= params[:accounts].map { |account| account.merge(pubkey: account[:pubkey].to_s) }
       end
 
       # The instruction data, untouched
@@ -78,11 +75,14 @@ module Solace
       def declare(account)
         pubkey = account[:pubkey]
 
-        case [account[:signer], account[:writable]]
-        when [true, true] then account_context.add_writable_signer(pubkey)
-        when [true, false] then account_context.add_readonly_signer(pubkey)
-        when [false, true] then account_context.add_writable_nonsigner(pubkey)
-        else account_context.add_readonly_nonsigner(pubkey)
+        if account[:signer] && account[:writable]
+          account_context.add_writable_signer(pubkey)
+        elsif account[:signer]
+          account_context.add_readonly_signer(pubkey)
+        elsif account[:writable]
+          account_context.add_writable_nonsigner(pubkey)
+        else
+          account_context.add_readonly_nonsigner(pubkey)
         end
       end
     end
