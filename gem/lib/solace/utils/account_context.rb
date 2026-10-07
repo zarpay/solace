@@ -237,15 +237,23 @@ module Solace
       # @param loaded_accounts [Array<String>] Pubkeys resolved through lookup tables
       # @return [Array<String>] The ordered static accounts
       def order_accounts(loaded_accounts)
-        (@pubkey_account_map.keys - loaded_accounts).sort_by do |pubkey|
-          if fee_payer?(pubkey) then 0
-          elsif writable_signer?(pubkey) then 1
-          elsif readonly_signer?(pubkey) then 2
-          elsif writable_nonsigner?(pubkey) then 3
-          elsif readonly_nonsigner?(pubkey) then 4
-          else
-            raise ArgumentError, "Unknown account type for pubkey: #{pubkey}"
-          end
+        # Keyed on the position too: sort_by is not stable, and accounts of the
+        # same rank must keep the order they were added in
+        (@pubkey_account_map.keys - loaded_accounts).sort_by.with_index { |pubkey, index| [rank_of(pubkey), index] }
+      end
+
+      # The position of an account's segment in the static account list
+      #
+      # @param pubkey [String] The pubkey of the account
+      # @return [Integer] The segment rank
+      def rank_of(pubkey)
+        if fee_payer?(pubkey) then 0
+        elsif writable_signer?(pubkey) then 1
+        elsif readonly_signer?(pubkey) then 2
+        elsif writable_nonsigner?(pubkey) then 3
+        elsif readonly_nonsigner?(pubkey) then 4
+        else
+          raise ArgumentError, "Unknown account type for pubkey: #{pubkey}"
         end
       end
 

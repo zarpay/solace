@@ -1,0 +1,82 @@
+# frozen_string_literal: true
+
+module Solace
+  module Composers
+    # Composer for an instruction whose accounts are already resolved.
+    #
+    # Where every other composer derives its account metas from domain
+    # arguments, this one declares exactly the program id, accounts and data it
+    # was given, and rebuilds the instruction by index against whatever context
+    # it is composed into. It is what a {Solace::TransactionComposer.from}
+    # answers for each instruction of a transaction taken apart, and what a
+    # caller reaches for to rebuild one of those with an account swapped out.
+    #
+    # @example Rebuild a recovered instruction with a different rent payer
+    #   accounts = recovered.accounts.dup
+    #   accounts[0] = { pubkey: sponsor, signer: true, writable: true }
+    #
+    #   composer = Solace::Composers::InstructionComposer.new(
+    #     program_id: recovered.program_id,
+    #     accounts:   accounts,
+    #     data:       recovered.data
+    #   )
+    #
+    # @since 0.1.9
+    class InstructionComposer < Base
+      # The program the instruction invokes
+      #
+      # @return [String] The program id
+      def program_id
+        params[:program_id].to_s
+      end
+
+      # The accounts the instruction touches, in order, with their flags
+      #
+      # @return [Array<Hash>] `{ pubkey: String, signer: Boolean, writable: Boolean }` per account
+      def accounts
+        @accounts ||= params[:accounts].map do |account|
+          { pubkey: account[:pubkey].to_s, signer: account[:signer] == true, writable: account[:writable] == true }
+        end
+      end
+
+      # The instruction data, untouched
+      #
+      # @return [Array<Integer>] The data bytes
+      def data
+        params[:data]
+      end
+
+      # Declare every account with the flags it was given, plus the program
+      #
+      # @return [void]
+      def setup_accounts
+        accounts.each { |account| declare(account) }
+        account_context.add_readonly_nonsigner(program_id)
+      end
+
+      # Build the instruction with indices resolved against the given context
+      #
+      # @param account_context [Utils::AccountContext] The account context
+      # @return [Solace::Instruction]
+      def build_instruction(account_context)
+        Solace::Instruction.new.tap do |instruction|
+          instruction.program_index = account_context.index_of(program_id)
+          instruction.accounts      = accounts.map { |account| account_context.index_of(account[:pubkey]) }
+          instruction.data          = data
+        end
+      end
+
+      private
+
+      # Declare one account on the local context with its flags
+      #
+      # @param account [Hash] The account meta
+      def declare(account)
+        role = account[:writable] ? 'writable' : 'readonly'
+        kind = account[:signer] ? 'signer' : 'nonsigner'
+
+        account_context.public_send(:"add_#{role}_#{kind}", account[:pubkey])
+      end
+    end
+  end
+end

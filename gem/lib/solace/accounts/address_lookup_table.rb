@@ -21,8 +21,7 @@ module Solace
     #   table.reference(loaded_writable, loaded_readonly) # => Solace::AddressLookupTable or nil
     #
     # @example Read a table's on-chain state
-    #   data  = Base64.decode64(connection.get_account_info(address)['data'][0])
-    #   table = Solace::Accounts::AddressLookupTable.deserialize(StringIO.new(data))
+    #   table = Solace::Accounts::AddressLookupTable.fetch(address, connection: connection)
     #   table.addresses # => the stored addresses
     #
     # @see Solace::AddressLookupTable
@@ -33,9 +32,9 @@ module Solace
       # fixed-size metadata region ahead of them regardless of its contents.
       META_SIZE = 56
 
-      # @!attribute [r] account
+      # @!attribute [rw] account
       #   @return [String, nil] The lookup table's on-chain address
-      attr_reader :account
+      attr_accessor :account
 
       # @!attribute [r] addresses
       #   @return [Array<String>] The full, ordered list of addresses stored in the table
@@ -52,6 +51,20 @@ module Solace
       # @!attribute [r] last_extended_slot
       #   @return [Integer, nil] The slot the table was last extended in
       attr_reader :last_extended_slot
+
+      # Fetch a lookup table account from chain
+      #
+      # @param account [#to_s, PublicKey] The lookup table's on-chain address
+      # @param connection [Solace::Connection] The connection to read it through
+      # @return [AddressLookupTable] The table, with its address set
+      # @raise [Solace::Errors::AddressLookupTableNotFound] When the chain holds no account at the address
+      def self.fetch(account, connection:)
+        account = account.to_s
+        info    = connection.get_account_info(account)
+        raise Solace::Errors::AddressLookupTableNotFound, account unless info
+
+        deserialize(Utils::Codecs.base64_to_bytestream(info['data'][0])).tap { |table| table.account = account }
+      end
 
       # Deserialize an on-chain lookup table account
       #

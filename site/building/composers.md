@@ -39,6 +39,7 @@ You construct composers with addresses and domain arguments; you never compute i
 | **Token-2022** | `Token2022Program…` — the same set for the Token-2022 program |
 | **Associated Token Account** | `AssociatedTokenAccountProgramCreateAccountComposer`, `AssociatedTokenAccountProgramCreateIdempotentAccountComposer` |
 | **Compute Budget** | `ComputeBudgetProgramSetComputeUnitPriceComposer`, `ComputeBudgetProgramSetComputeUnitLimitComposer` |
+| **Any program** | `InstructionComposer` — an instruction whose accounts are already resolved: `new(program_id:, accounts: [{ pubkey:, signer:, writable: }], data:)`. What `TransactionComposer.from` answers; also for rebuilding one of those with an account swapped. |
 
 ## The Base contract
 

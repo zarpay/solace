@@ -21,5 +21,6 @@ module Solace
     require 'solace/errors/http_error'
     require 'solace/errors/parse_error'
     require 'solace/errors/confirmation_timeout'
+    require 'solace/errors/address_lookup_table_not_found'
   end
 end

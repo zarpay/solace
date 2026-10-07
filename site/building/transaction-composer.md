@@ -29,7 +29,8 @@ connection.send_transaction(tx.serialize)
 
 | Method | Returns | Description |
 | --- | --- | --- |
-| `new(connection:)` | composer | Create a composer bound to a connection (used to fetch the blockhash). |
+| `new(connection:, blockhash: nil)` | composer | Create a composer bound to a connection (used to fetch the blockhash unless one is given). |
+| `from(transaction, connection:)` | composer | Take a transaction (or its base64) apart into a composer that composes it again; see below. |
 | `add_instruction(composer)` | `self` | Append a composer. |
 | `prepend_instruction(composer)` | `self` | Insert a composer at the front. |
 | `insert_instruction(index, composer)` | `self` | Insert at a position. |
@@ -47,6 +48,7 @@ connection.send_transaction(tx.serialize)
 | `address_lookup_tables` | The registered lookup tables (`Solace::Accounts::AddressLookupTable`). |
 | `version` | The transaction version — `nil` (legacy) until a table opts it into `0` (v0). |
 | `compute_budget` | The compute budget set on the composer (`Solace::Utils::ComputeBudget`): `units`, `micro_lamports`, `set?`. |
+| `blockhash` | The blockhash the composer composes against by default — `nil` (fetch the latest) unless given or recovered. |
 
 ## Batching several instructions
 
@@ -113,7 +115,41 @@ may be omitted to set just one; calling it again replaces the budget. `compute_b
 back what is set (`units`, `micro_lamports`, `set?`). With no budget set, directly added
 ComputeBudget composers behave as any other instruction.
 
-## Composing against a known blockhash
+## Taking a transaction apart
+
+`from` does the reverse of composing: it reads a transaction you were handed — a
+`Solace::Transaction` or its base64 — back into an ordinary composer.
+
+```ruby
+composer = Solace::TransactionComposer.from(transaction, connection:)
+
+composer.instruction_composers   # one InstructionComposer per instruction, in order
+composer.compute_budget          # the limit and price the transaction carried, if any
+composer.address_lookup_tables   # its tables, read from chain, with their full address lists
+composer.blockhash               # the blockhash it was composed against
+
+composer.set_compute_budget(units: 600_000, micro_lamports: 50_000)
+composer.compose_transaction     # composes against that same blockhash by default
+```
+
+Each instruction comes back as a [`InstructionComposer`](/building/composers) carrying the
+program it invokes, its accounts with the signer and writable flags the message header gave
+them, and its data untouched. The rules are Solana's: static keys take their flags from the
+header ordering (signers first, writable before read-only, then non-signers the same way);
+a v0 message's instruction indexes address the combined space of the static keys, then every
+table's writable entries in table order, then every table's read-only entries, and a loaded
+address never signs. The tables are read from chain once each and registered, so the
+composer composes as v0 again. A table the chain does not hold raises
+`Solace::Errors::AddressLookupTableNotFound`.
+
+A `SetComputeUnitLimit` or `SetComputeUnitPrice` the transaction carried becomes the
+composer's `compute_budget` rather than an instruction composer, so you can read it and
+resize it; any other ComputeBudget directive stays an ordinary instruction.
+
+For a transaction this composer built, `from` then `compose_transaction` answers the same
+bytes. A transaction built elsewhere recomposes to the same instructions, accounts and
+flags, but may lay the static accounts and table indexes out in a different order.
+
 
 `compose_transaction` fetches the latest blockhash by default. When you already hold the one
 you want — re-composing a transaction you were handed, say, so its expiry stays the same —

@@ -209,6 +209,151 @@ describe Solace::TransactionComposer do
     end
   end
 
+  describe '.from' do
+    let(:blockhash) { 'EkSnNWid2cvwEVnVx9aBqawnmiCNiDgp3gUdkDPTKN1N' }
+    let(:table_account) { Solace::Keypair.generate.address }
+    let(:loaded_recipient) { Solace::Keypair.generate.address }
+
+    before do
+      def connection.get_latest_blockhash
+        ['EkSnNWid2cvwEVnVx9aBqawnmiCNiDgp3gUdkDPTKN1N', 1000]
+      end
+
+      LookupTableAccount.stub(connection, table_account => [random_keypair.address, loaded_recipient])
+    end
+
+    # Compose, take apart, compose again; answer both transactions
+    def round_trip(composer)
+      original  = composer.compose_transaction
+      recovered = Solace::TransactionComposer.from(original, connection: connection)
+
+      [original, recovered.compose_transaction]
+    end
+
+    describe 'a legacy transaction' do
+      before do
+        composer.add_instruction(transfer_composer1).add_instruction(transfer_composer2).set_fee_payer(payer_keypair)
+      end
+
+      it 'answers one instruction composer per instruction with the flags the header gave them' do
+        recovered = Solace::TransactionComposer.from(composer.compose_transaction, connection: connection)
+        first     = recovered.instruction_composers.first
+
+        assert_equal 2, recovered.instruction_composers.length
+        assert_kind_of Solace::Composers::InstructionComposer, first
+        assert_equal system_program, first.program_id
+        assert_equal(
+          [{ pubkey: anna_keypair.address, signer: true, writable: true }, { pubkey: bob_keypair.address, signer: true, writable: true }],
+          first.accounts
+        )
+        assert recovered.context.fee_payer?(payer_keypair.address)
+        assert_nil recovered.version
+        refute_predicate recovered.compute_budget, :set?
+      end
+
+      it 'accepts the transaction or its base64 alike' do
+        transaction = composer.compose_transaction
+
+        assert_equal(
+          Solace::TransactionComposer.from(transaction, connection: connection).compose_transaction.serialize,
+          Solace::TransactionComposer.from(transaction.serialize, connection: connection).compose_transaction.serialize
+        )
+      end
+
+      it 'composes it again byte for byte' do
+        original, recomposed = round_trip(composer)
+
+        assert_equal original.serialize, recomposed.serialize
+      end
+
+      it 'defaults to the blockhash it was recovered with, without fetching' do
+        transaction = composer.compose_transaction
+        connection.singleton_class.remove_method(:get_latest_blockhash)
+        connection.define_singleton_method(:get_latest_blockhash) { raise 'should not fetch' }
+
+        recovered = Solace::TransactionComposer.from(transaction, connection: connection)
+
+        assert_equal blockhash, recovered.blockhash
+        assert_equal blockhash, recovered.compose_transaction.message.recent_blockhash
+      end
+
+      it 'still honours an explicit blockhash' do
+        other     = '4vJ9JU1bJJE96FWSJKvHsmmFADCg4gpZQff4P3bkLKi'
+        recovered = Solace::TransactionComposer.from(composer.compose_transaction, connection: connection)
+
+        assert_equal other, recovered.compose_transaction(blockhash: other).message.recent_blockhash
+      end
+
+      it 'can be edited like any composer' do
+        recovered = Solace::TransactionComposer.from(composer.compose_transaction, connection: connection)
+        extra     = Solace::Composers::SystemProgramTransferComposer.new(from: bob_keypair, to: anna_keypair, lamports: 5)
+
+        message = recovered.add_instruction(extra)
+                           .set_compute_budget(units: 300_000)
+                           .compose_transaction.message
+
+        assert_equal payer_keypair.address, message.accounts[0]
+        assert_equal 4, message.instructions.length
+        assert_equal Solace::Constants::COMPUTE_BUDGET_PROGRAM_ID, message.accounts[message.instructions.first.program_index]
+      end
+    end
+
+    describe 'a transaction carrying a compute budget' do
+      before do
+        composer.add_instruction(transfer_composer1).set_fee_payer(payer_keypair)
+                .set_compute_budget(units: 200_000, micro_lamports: 50_000)
+      end
+
+      it 'recovers the budget as the setting, leaving it out of the instruction composers' do
+        recovered = Solace::TransactionComposer.from(composer.compose_transaction, connection: connection)
+
+        assert_equal 200_000, recovered.compute_budget.units
+        assert_equal 50_000, recovered.compute_budget.micro_lamports
+        assert_equal [system_program], recovered.instruction_composers.map(&:program_id)
+      end
+
+      it 'composes it again byte for byte, and resized when asked' do
+        original, recomposed = round_trip(composer)
+
+        assert_equal original.serialize, recomposed.serialize
+
+        resized = Solace::TransactionComposer.from(original, connection: connection)
+                                             .set_compute_budget(units: 400_000, micro_lamports: 50_000)
+                                             .compose_transaction.message
+
+        assert_equal [2] + [400_000].pack('L<').bytes, resized.instructions.first.data
+      end
+    end
+
+    describe 'a v0 transaction' do
+      let(:loaded_transfer) do
+        Solace::Composers::SystemProgramTransferComposer.new(from: anna_keypair, to: loaded_recipient, lamports: 10)
+      end
+
+      before do
+        composer.add_instruction(loaded_transfer).add_instruction(transfer_composer1).set_fee_payer(payer_keypair)
+                .add_address_lookup_table(account: table_account, addresses: [random_keypair.address, loaded_recipient])
+      end
+
+      it 'registers the table from chain and resolves the loaded account with its flags' do
+        recovered = Solace::TransactionComposer.from(composer.compose_transaction, connection: connection)
+        first     = recovered.instruction_composers.first
+
+        assert_equal 0, recovered.version
+        assert_equal [table_account], recovered.address_lookup_tables.map(&:account)
+        assert_equal [random_keypair.address, loaded_recipient], recovered.address_lookup_tables.first.addresses
+        assert_equal({ pubkey: loaded_recipient, signer: false, writable: true }, first.accounts[1])
+      end
+
+      it 'composes it again byte for byte' do
+        original, recomposed = round_trip(composer)
+
+        refute_includes original.message.accounts, loaded_recipient
+        assert_equal original.serialize, recomposed.serialize
+      end
+    end
+  end
+
   describe '#set_compute_budget' do
     let(:compute_budget_program) { Solace::Constants::COMPUTE_BUDGET_PROGRAM_ID }
     let(:limit_data) { ->(units) { [2] + [units].pack('L<').bytes } }
@@ -690,6 +835,42 @@ describe Solace::TransactionComposer do
       end
 
       assert_match(/exceeded/i, error.message)
+    end
+  end
+
+  describe 'recomposing a v0 transaction taken apart on the validator' do
+    before(:all) do
+      @connection = Solace::Connection.new(commitment: 'processed')
+      bob         = Fixtures.load_keypair('bob')
+      @recipient  = Solace::Keypair.generate
+
+      @table = LookupTableProvisioner.provision(connection: @connection, authority: bob, addresses: [@recipient.address])
+
+      transfer = Solace::Composers::SystemProgramTransferComposer.new(from: bob, to: @recipient, lamports: 5_000_000)
+      original = Solace::TransactionComposer.new(connection: @connection)
+                                            .add_instruction(transfer)
+                                            .set_fee_payer(bob)
+                                            .set_compute_budget(units: 20_000)
+                                            .add_address_lookup_table(account: @table, addresses: [@recipient.address])
+                                            .compose_transaction
+
+      @recovered   = Solace::TransactionComposer.from(original.serialize, connection: @connection)
+      @transaction = @recovered.compose_transaction
+      @transaction.sign(bob)
+
+      @identical = original.message.serialize == @transaction.message.serialize
+
+      signature = @connection.send_transaction(@transaction.serialize)
+      @connection.wait_for_confirmed_signature { signature['result'] }
+    end
+
+    it 'reads the table from chain and recomposes the same bytes' do
+      assert_equal [@recipient.address], @recovered.address_lookup_tables.first.addresses
+      assert @identical
+    end
+
+    it 'lands on chain through the loaded address' do
+      assert_equal 5_000_000, @connection.get_balance(@recipient.address)
     end
   end
 

@@ -85,11 +85,42 @@ module Solace
     #   The compute budget set on the composer (see {Utils::ComputeBudget})
     attr_reader :compute_budget
 
+    # @!attribute blockhash
+    #   The blockhash the composer composes against by default, or nil to fetch the latest
+    attr_reader :blockhash
+
+    # Build a composer back from a transaction
+    #
+    # Takes the transaction apart into one {Composers::InstructionComposer}
+    # per instruction, in order, each carrying the program it invokes, its
+    # accounts with the flags the message header gave them, and its data
+    # untouched. A v0 message's lookup tables are read from chain once and
+    # registered, so the composer composes as v0 again. The compute budget the
+    # transaction carried becomes the composer's {#compute_budget}, and the
+    # blockhash it was composed against becomes the default for
+    # {#compose_transaction}.
+    #
+    # @example
+    #   composer = Solace::TransactionComposer.from(transaction, connection: connection)
+    #   composer.instruction_composers # => the recovered instructions
+    #   composer.compose_transaction   # => the transaction again
+    #
+    # @param transaction [Solace::Transaction, String] The transaction, or its base64
+    # @param connection [Solace::Connection] The connection to read lookup tables through
+    # @return [TransactionComposer] The recovered composer
+    # @raise [Solace::Errors::AddressLookupTableNotFound] When a referenced table is not on chain
+    def self.from(transaction, connection:)
+      parts = Utils::TransactionDecomposer.new(transaction, connection: connection)
+      parts.recover_into(new(connection: connection, blockhash: parts.blockhash))
+    end
+
     # Initialize the composer
     #
     # @param connection [Solace::Connection] The connection to the Solana cluster
-    def initialize(connection:)
+    # @param blockhash [#to_s, nil] The blockhash to compose against by default; nil fetches the latest
+    def initialize(connection:, blockhash: nil)
       @connection            = connection
+      @blockhash             = blockhash&.to_s
       @instruction_composers = []
       @context               = Utils::AccountContext.new
       @address_lookup_tables = []
@@ -227,7 +258,8 @@ module Solace
     #   composer.compose_transaction(blockhash: recent_blockhash)
     #
     # @param blockhash [#to_s, nil] The blockhash to compose against; when nil
-    #   the latest blockhash is fetched from the connection
+    #   the composer's own {#blockhash} is used, and when that is nil too the
+    #   latest blockhash is fetched from the connection
     # @return [Transaction] The composed transaction (unsigned)
     def compose_transaction(blockhash: nil)
       context.compile
@@ -235,7 +267,7 @@ module Solace
       writable, readonly, references = resolve_address_lookup_tables
       context.compile(loaded_accounts: writable + readonly)
 
-      Solace::Transaction.new(message: build_message(references, blockhash))
+      Solace::Transaction.new(message: build_message(references, blockhash || self.blockhash))
     end
 
     private

@@ -26,6 +26,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 1. Added an optional `blockhash:` keyword to `Solace::TransactionComposer#compose_transaction`. When given, the transaction is composed against that blockhash; otherwise the latest blockhash is fetched from the connection, as before.
 2. Added `Solace::TransactionComposer#set_compute_budget(units:, micro_lamports:)`, a convenience over the ComputeBudget composers, read back through `#compute_budget` (a `Solace::Utils::ComputeBudget`: `units`, `micro_lamports`, `set?`). The composer writes the ComputeBudget instructions first when composing and leaves out any ComputeBudget composer of the same kind added as a plain instruction, so the budget cannot be declared twice. `#merge` adopts the other composer's budget.
+3. Added `Solace::TransactionComposer.from(transaction, connection:)`, which takes a transaction (or its base64) apart into a composer that composes it again: one `InstructionComposer` per instruction with the flags the message header gave its accounts, the lookup tables a v0 message references read from chain and registered, the compute budget it carried as `#compute_budget`, and the blockhash it was composed against as `#blockhash` — the default `#compose_transaction` now composes against (`new` takes `blockhash:` too).
+4. Added `Solace::Composers::InstructionComposer`, a composer for an instruction whose accounts are already resolved: `new(program_id:, accounts: [{ pubkey:, signer:, writable: }], data:)`.
+5. Added `Solace::Accounts::AddressLookupTable.fetch(account, connection:)` to read a table from chain, raising `Solace::Errors::AddressLookupTableNotFound` when the chain holds none.
+
+### Changed
+
+1. `Solace::Utils::AccountContext` now keeps accounts of the same rank in the order they were added — the order the composer has always produced in practice, now guaranteed (`sort_by` is not stable), so a transaction taken apart with `TransactionComposer.from` composes again byte for byte.
 
 ## 0.1.8 - 2026-07-19
 

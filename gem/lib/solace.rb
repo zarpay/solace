@@ -42,6 +42,7 @@ require_relative 'solace/utils/codecs'
 require_relative 'solace/utils/pda'
 require_relative 'solace/utils/account_context'
 require_relative 'solace/utils/compute_budget'
+require_relative 'solace/utils/transaction_decomposer'
 require_relative 'solace/utils/curve25519_dalek'
 
 # Tokens

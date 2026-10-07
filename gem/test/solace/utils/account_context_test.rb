@@ -303,4 +303,16 @@ describe Solace::Utils::AccountContext do
       assert_equal pubkey1, context.accounts[0]
     end
   end
+
+  describe 'ordering accounts of the same rank' do
+    it 'keeps the order they were added in' do
+      added = Array.new(40) { Solace::Keypair.generate.address }
+
+      context.set_fee_payer(pubkey1)
+      added.each { |pubkey| context.add_writable_nonsigner(pubkey) }
+      context.compile
+
+      assert_equal [pubkey1] + added, context.accounts
+    end
+  end
 end
