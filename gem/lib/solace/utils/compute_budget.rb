@@ -16,6 +16,14 @@ module Solace
     # @see Solace::TransactionComposer#set_compute_budget
     # @since 0.1.9
     class ComputeBudget
+      # The composer a compute unit limit translates to
+      LIMIT_COMPOSER = Composers::ComputeBudgetProgramSetComputeUnitLimitComposer
+      private_constant :LIMIT_COMPOSER
+
+      # The composer a compute unit price translates to
+      PRICE_COMPOSER = Composers::ComputeBudgetProgramSetComputeUnitPriceComposer
+      private_constant :PRICE_COMPOSER
+
       # @!attribute units
       #   The compute unit limit, or nil when none is set
       attr_reader :units
@@ -44,12 +52,9 @@ module Solace
       #
       # @return [Array<Composers::Base>] The composers, empty when nothing is set
       def composers
-        limit = Composers::ComputeBudgetProgramSetComputeUnitLimitComposer
-        price = Composers::ComputeBudgetProgramSetComputeUnitPriceComposer
-
         [
-          (limit.new(units: units) if units),
-          (price.new(micro_lamports: micro_lamports) if micro_lamports)
+          (LIMIT_COMPOSER.new(units: units) if units),
+          (PRICE_COMPOSER.new(micro_lamports: micro_lamports) if micro_lamports)
         ].compact
       end
 
@@ -58,8 +63,7 @@ module Solace
       # @param composer [Composers::Base] The added composer
       # @return [Boolean]
       def supersedes?(composer)
-        (!units.nil? && composer.is_a?(Composers::ComputeBudgetProgramSetComputeUnitLimitComposer)) ||
-          (!micro_lamports.nil? && composer.is_a?(Composers::ComputeBudgetProgramSetComputeUnitPriceComposer))
+        (!units.nil? && composer.is_a?(LIMIT_COMPOSER)) || (!micro_lamports.nil? && composer.is_a?(PRICE_COMPOSER))
       end
 
       # A budget with the other's settings where it has them, and this one's otherwise
