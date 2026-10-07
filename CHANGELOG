@@ -25,6 +25,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ### Added
 
 1. Added an optional `blockhash:` keyword to `Solace::TransactionComposer#compose_transaction`. When given, the transaction is composed against that blockhash; otherwise the latest blockhash is fetched from the connection, as before.
+2. Added `Solace::TransactionComposer#set_compute_budget(units:, micro_lamports:)`, with `#compute_unit_limit` and `#compute_unit_price` readers. The composer writes the ComputeBudget instructions first when composing and leaves out any ComputeBudget composer of the same kind added as a plain instruction, so the budget cannot be declared twice. `#merge` adopts the other composer's budget.
 
 ## 0.1.8 - 2026-07-19
 

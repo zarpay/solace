@@ -34,6 +34,7 @@ connection.send_transaction(tx.serialize)
 | `prepend_instruction(composer)` | `self` | Insert a composer at the front. |
 | `insert_instruction(index, composer)` | `self` | Insert at a position. |
 | `set_fee_payer(pubkey)` | `self` | Set the fee payer (`#to_s`); becomes account index 0. |
+| `set_compute_budget(units:, micro_lamports:)` | `self` | Set the compute budget; the ComputeBudget instructions are written first when composing, superseding any added as plain instructions. |
 | `add_address_lookup_table(account:, addresses:)` | `self` | Register an [address lookup table](/concepts/address-lookup-tables); the composed transaction becomes v0. |
 | `merge(other, placement: :add, index: nil)` | `self` | Merge another `TransactionComposer` (`placement:` `:add`, `:prepend`, or `:insert` with `index:`); its tables fold in too. |
 | `compose_transaction(blockhash: nil)` | `Solace::Transaction` | Compile accounts, build the message, return an unsigned transaction. Composes against `blockhash:` when given, otherwise fetches the latest from the connection. |
@@ -45,6 +46,8 @@ connection.send_transaction(tx.serialize)
 | `instruction_composers` | The composers added so far. |
 | `address_lookup_tables` | The registered lookup tables (`Solace::Accounts::AddressLookupTable`). |
 | `version` | The transaction version — `nil` (legacy) until a table opts it into `0` (v0). |
+| `compute_unit_limit` | The compute unit limit set on the composer, or `nil`. |
+| `compute_unit_price` | The compute unit price in micro-lamports set on the composer, or `nil`. |
 
 ## Batching several instructions
 
@@ -77,6 +80,25 @@ connection.send_transaction(tx.serialize)
 This is the layer to reach for when you want several instructions in one atomic
 transaction, or precise control over the fee payer and signing — without dropping all the
 way down to hand-built [messages](/concepts/transactions-and-messages).
+
+## Setting a compute budget
+
+The composer owns the compute budget as a setting rather than as two more instructions:
+
+```ruby
+tx = Solace::TransactionComposer.new(connection:)
+                                .add_instruction(transfer_composer)
+                                .set_fee_payer(payer.address)
+                                .set_compute_budget(units: 200_000, micro_lamports: 50_000)
+                                .compose_transaction
+```
+
+When composing, `SetComputeUnitLimit` and `SetComputeUnitPrice` are written first, and any
+ComputeBudget composer of the same kind that was added as a plain instruction is left out —
+so the budget cannot be declared twice (a duplicate `SetComputeUnitLimit` fails on chain).
+Either keyword may be omitted to set just one; calling it again replaces the budget.
+`compute_unit_limit` and `compute_unit_price` read back what is set. With no budget set, the
+ComputeBudget composers behave as any other added instruction.
 
 ## Composing against a known blockhash
 
