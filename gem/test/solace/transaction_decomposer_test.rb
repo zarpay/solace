@@ -339,6 +339,269 @@ describe Solace::TransactionDecomposer do
     end
   end
 
+  # Transactions that landed on the validator, taken apart from the chain's own
+  # copy of them (fetched by signature), and composed again: once to the same
+  # bytes, and once against a fresh blockhash to land a second time. Each
+  # group does all of its work up front, so the order the cases run in does
+  # not matter.
+  describe 'landed transactions on the validator' do
+    # Sign and land a transaction; answer its signature once confirmed
+    def land(connection, transaction, *signers)
+      transaction.sign(*signers)
+      signature = connection.send_transaction(transaction.serialize)['result']
+      connection.wait_for_confirmed_signature { signature }
+      signature
+    end
+
+    # The chain's record of a landed transaction: its raw base64 and whether it succeeded
+    def on_chain(connection, signature)
+      record = connection.get_transaction(signature)
+
+      [record['transaction'][0], record.dig('meta', 'err')]
+    end
+
+    # Take the chain's copy apart; answer the composer and the landed bytes
+    def decompose(connection, signature)
+      base64, error = on_chain(connection, signature)
+      raise "the landed transaction failed: #{error.inspect}" if error
+
+      [Solace::TransactionDecomposer.new(connection: connection).decompose_transaction(base64), base64]
+    end
+
+    # Compose the recovered composer again and sign; answer the bytes
+    def recompose(recovered, *signers)
+      recovered.compose_transaction.tap { |transaction| transaction.sign(*signers) }.serialize
+    end
+
+    # Compose the recovered composer again against a fresh blockhash and land it
+    def reland(connection, recovered, *signers)
+      recovered.set_blockhash(connection.get_latest_blockhash[0])
+      land(connection, recovered.compose_transaction, *signers)
+    end
+
+    def transfer(from, to, lamports)
+      Solace::Composers::SystemProgramTransferComposer.new(from: from, to: to, lamports: lamports)
+    end
+
+    describe 'a legacy transfer' do
+      before(:all) do
+        @connection = Solace::Connection.new(commitment: 'confirmed')
+        @bob        = Fixtures.load_keypair('bob')
+        @recipient  = Solace::Keypair.generate
+
+        transaction         = Solace::TransactionComposer.new(connection: @connection)
+                                                         .add_instruction(transfer(@bob, @recipient, 5_000_000))
+                                                         .set_fee_payer(@bob)
+                                                         .compose_transaction
+        @signature          = land(@connection, transaction, @bob)
+        @recovered, @landed = decompose(@connection, @signature)
+        @recomposed         = recompose(@recovered, @bob)
+        @second             = reland(@connection, @recovered, @bob)
+      end
+
+      it 'composes again to the very bytes that landed, signature included' do
+        assert_equal @landed, @recomposed
+        assert_equal @signature, Solace::Transaction.from(@recomposed).signature
+      end
+
+      it 'lands again against a fresh blockhash' do
+        refute_equal @signature, @second
+        assert_nil on_chain(@connection, @second)[1]
+        assert_equal 10_000_000, @connection.get_balance(@recipient.address)
+      end
+    end
+
+    describe 'a v0 transfer loading its recipient through a table' do
+      before(:all) do
+        @connection = Solace::Connection.new(commitment: 'confirmed')
+        @bob        = Fixtures.load_keypair('bob')
+        @recipient  = Solace::Keypair.generate
+        @table      = LookupTableProvisioner.provision(connection: @connection, authority: @bob, addresses: [@recipient.address])
+
+        transaction         = Solace::TransactionComposer.new(connection: @connection)
+                                                         .add_instruction(transfer(@bob, @recipient, 5_000_000))
+                                                         .set_fee_payer(@bob)
+                                                         .add_address_lookup_table(account: @table, addresses: [@recipient.address])
+                                                         .compose_transaction
+        @signature          = land(@connection, transaction, @bob)
+        @recovered, @landed = decompose(@connection, @signature)
+        @tables             = @recovered.address_lookup_tables.map(&:addresses)
+        @recomposed         = recompose(@recovered, @bob)
+        @second             = reland(@connection, @recovered, @bob)
+      end
+
+      it 'reads the table from chain and composes again to the bytes that landed' do
+        assert_equal [[@recipient.address]], @tables
+        assert_equal 0, @recovered.version
+        assert_equal @landed, @recomposed
+      end
+
+      it 'lands again as v0 through the same table' do
+        base64, error = on_chain(@connection, @second)
+        message       = Solace::Transaction.from(base64).message
+
+        assert_nil error
+        assert_equal 0, message.version
+        assert_equal [@table], message.address_lookup_tables.map(&:account)
+        refute_includes message.accounts, @recipient.address
+        assert_equal 10_000_000, @connection.get_balance(@recipient.address)
+      end
+    end
+
+    describe 'a transfer carrying a compute budget' do
+      before(:all) do
+        @connection = Solace::Connection.new(commitment: 'confirmed')
+        @bob        = Fixtures.load_keypair('bob')
+        @recipient  = Solace::Keypair.generate
+
+        transaction         = Solace::TransactionComposer.new(connection: @connection)
+                                                         .add_instruction(transfer(@bob, @recipient, 5_000_000))
+                                                         .set_fee_payer(@bob)
+                                                         .set_compute_budget(units: 20_000, micro_lamports: 1)
+                                                         .compose_transaction
+        @signature          = land(@connection, transaction, @bob)
+        @recovered, @landed = decompose(@connection, @signature)
+        @budget             = [@recovered.compute_budget.units, @recovered.compute_budget.micro_lamports]
+        @programs           = @recovered.instruction_composers.map(&:program_id)
+        @recomposed         = recompose(@recovered, @bob)
+
+        @recovered.set_compute_budget(units: 40_000, micro_lamports: 2)
+        @second = reland(@connection, @recovered, @bob)
+      end
+
+      it 'recovers the budget as the setting and composes again to the bytes that landed' do
+        assert_equal [20_000, 1], @budget
+        assert_equal [Solace::Constants::SYSTEM_PROGRAM_ID], @programs
+        assert_equal @landed, @recomposed
+      end
+
+      it 'lands again with the budget resized' do
+        base64, error = on_chain(@connection, @second)
+        message       = Solace::Transaction.from(base64).message
+
+        assert_nil error
+        assert_equal [2] + [40_000].pack('L<').bytes, message.instructions[0].data
+        assert_equal [3] + [2].pack('Q<').bytes, message.instructions[1].data
+        assert_equal 10_000_000, @connection.get_balance(@recipient.address)
+      end
+    end
+
+    describe 'a sponsored token transfer with two signers' do
+      before(:all) do
+        @connection = Solace::Connection.new(commitment: 'confirmed')
+        @bob        = Fixtures.load_keypair('bob')
+        @payer      = Fixtures.load_keypair('payer')
+        anna        = Fixtures.load_keypair('anna')
+        mint        = Fixtures.load_keypair('mint')
+        bob_ata     = Solace::Programs::AssociatedTokenAccount.get_address(owner: @bob, mint: mint).first
+        @anna_ata   = Solace::Programs::AssociatedTokenAccount.get_address(owner: anna, mint: mint).first
+        @anna_start = @connection.get_token_account_balance(@anna_ata)['amount'].to_i
+
+        transfer_checked = Solace::Composers::SplTokenProgramTransferCheckedComposer.new(
+          mint:      mint,
+          to:        @anna_ata,
+          from:      bob_ata,
+          authority: @bob,
+          amount:    1_000,
+          decimals:  6
+        )
+
+        transaction         = Solace::TransactionComposer.new(connection: @connection)
+                                                         .add_instruction(transfer_checked)
+                                                         .set_fee_payer(@payer)
+                                                         .compose_transaction
+        @signature          = land(@connection, transaction, @payer, @bob)
+        @recovered, @landed = decompose(@connection, @signature)
+        @lifted             = @recovered.instruction_composers.first
+        @recomposed         = recompose(@recovered, @payer, @bob)
+        @second             = reland(@connection, @recovered, @payer, @bob)
+      end
+
+      it 'recovers the flags of every account and composes again to the bytes that landed' do
+        assert_equal Solace::Constants::TOKEN_PROGRAM_ID, @lifted.program_id
+        assert_equal [true, false], @lifted.accounts.map { |meta| meta[:signer] }.values_at(3, 1)
+        assert_equal [true, false], @lifted.accounts.map { |meta| meta[:writable] }.values_at(0, 1)
+        assert @recovered.context.fee_payer?(@payer.address)
+        assert_equal @landed, @recomposed
+      end
+
+      it 'lands again, both signers signing the recomposed transaction' do
+        assert_nil on_chain(@connection, @second)[1]
+        assert_equal @anna_start + 2_000, @connection.get_token_account_balance(@anna_ata)['amount'].to_i
+      end
+    end
+
+    describe 'a landed transfer edited before landing again' do
+      before(:all) do
+        @connection = Solace::Connection.new(commitment: 'confirmed')
+        @bob        = Fixtures.load_keypair('bob')
+        @recipient  = Solace::Keypair.generate
+        @another    = Solace::Keypair.generate
+
+        transaction = Solace::TransactionComposer.new(connection: @connection)
+                                                 .add_instruction(transfer(@bob, @recipient, 5_000_000))
+                                                 .set_fee_payer(@bob)
+                                                 .compose_transaction
+        @signature  = land(@connection, transaction, @bob)
+        @recovered, = decompose(@connection, @signature)
+
+        @recovered.add_instruction(transfer(@bob, @another, 3_000_000)).set_compute_budget(units: 30_000)
+        @second = reland(@connection, @recovered, @bob)
+      end
+
+      it 'lands with the recovered instruction, the added one, and the new budget' do
+        base64, error = on_chain(@connection, @second)
+        message       = Solace::Transaction.from(base64).message
+        programs      = message.instructions.map { |ix| message.accounts[ix.program_index] }
+
+        assert_nil error
+        assert_equal [Solace::Constants::COMPUTE_BUDGET_PROGRAM_ID] + ([Solace::Constants::SYSTEM_PROGRAM_ID] * 2), programs
+        assert_equal 10_000_000, @connection.get_balance(@recipient.address)
+        assert_equal 3_000_000, @connection.get_balance(@another.address)
+      end
+    end
+
+    describe 'a transaction composed elsewhere, with accounts in an order the composer would not choose' do
+      before(:all) do
+        @connection = Solace::Connection.new(commitment: 'confirmed')
+        @bob        = Fixtures.load_keypair('bob')
+        @first      = Solace::Keypair.generate
+        @second_key = Solace::Keypair.generate
+
+        # The composer would place @first before @second_key (instruction
+        # order); this message places them the other way round
+        accounts = [@bob.address, @second_key.address, @first.address, Solace::Constants::SYSTEM_PROGRAM_ID]
+        message  = Solace::Message.new(
+          header:           [1, 0, 1],
+          accounts:         accounts,
+          instructions:     [
+            Solace::Instructions::SystemProgram::TransferInstruction.build(from_index: 0, to_index: 2, lamports: 5_000_000, program_index: 3),
+            Solace::Instructions::SystemProgram::TransferInstruction.build(from_index: 0, to_index: 1, lamports: 4_000_000, program_index: 3)
+          ],
+          recent_blockhash: @connection.get_latest_blockhash[0]
+        )
+
+        @signature          = land(@connection, Solace::Transaction.new(message: message), @bob)
+        @recovered, @landed = decompose(@connection, @signature)
+        @recomposed         = recompose(@recovered, @bob)
+        @second             = reland(@connection, @recovered, @bob)
+      end
+
+      it 'keeps the foreign account order and composes again to the bytes that landed' do
+        accounts = Solace::Transaction.from(@recomposed).message.accounts
+
+        assert_equal [@bob.address, @second_key.address, @first.address], accounts.first(3)
+        assert_equal @landed, @recomposed
+      end
+
+      it 'lands again' do
+        assert_nil on_chain(@connection, @second)[1]
+        assert_equal 10_000_000, @connection.get_balance(@first.address)
+        assert_equal 8_000_000, @connection.get_balance(@second_key.address)
+      end
+    end
+  end
+
   describe 'recomposing a v0 transaction taken apart on the validator' do
     before(:all) do
       @connection = Solace::Connection.new(commitment: 'processed')
