@@ -72,7 +72,7 @@ module Solace
       composer = TransactionComposer.new(connection: connection)
                                     .set_version(message.version)
                                     .set_blockhash(message.recent_blockhash)
-      
+
       seed(composer, reading)
       fill(composer, reading)
     end
