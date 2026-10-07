@@ -146,9 +146,7 @@ module Solace
     #
     # @since 0.1.0
     def merge(other, placement: :add, index: nil)
-      context.merge_from(other.context)
-      merge_address_lookup_tables(other.address_lookup_tables)
-      merge_compute_budget(other.compute_budget)
+      absorb(other)
 
       case placement
       when :add
@@ -339,15 +337,9 @@ module Solace
     #
     # @return [Array<Solace::Instruction>] The built instructions
     def build_instructions
-      composers = compute_budget.composers + instruction_composers.reject { |composer| compute_budget.supersedes?(composer) }
-      composers.map { _1.build_instruction(context) }.flatten
-    end
+      kept = instruction_composers.reject { |composer| compute_budget.supersedes?(composer) }
 
-    # Fold another budget into this one where it has settings
-    #
-    # @param budget [Utils::ComputeBudget] The budget to fold in
-    def merge_compute_budget(budget)
-      apply_compute_budget(compute_budget.merge(budget))
+      (compute_budget.composers + kept).map { _1.build_instruction(context) }.flatten
     end
 
     # Replace the compute budget, bringing its program into the account context
@@ -360,11 +352,16 @@ module Solace
       self
     end
 
-    # Merge registered tables from another composer, deduped by account
+    # Take on another composer's accounts, tables (deduped by account) and
+    # budget (where it has one set)
     #
-    # @param tables [Array<Solace::Accounts::AddressLookupTable>] The other composer's tables
-    def merge_address_lookup_tables(tables)
-      tables.each { |table| add_address_lookup_table(account: table.account, addresses: table.addresses) }
+    # @param other [TransactionComposer] The other composer
+    def absorb(other)
+      context.merge_from(other.context)
+      other.address_lookup_tables.each do |table|
+        add_address_lookup_table(account: table.account, addresses: table.addresses)
+      end
+      apply_compute_budget(compute_budget.merge(other.compute_budget))
     end
   end
 end
