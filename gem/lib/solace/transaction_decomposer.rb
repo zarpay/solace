@@ -70,9 +70,9 @@ module Solace
       message  = message_of(transaction)
       reading  = read(message)
       composer = TransactionComposer.new(connection: connection)
-
-      composer.set_version(message.version)
-      composer.set_blockhash(message.recent_blockhash)
+                                    .set_version(message.version)
+                                    .set_blockhash(message.recent_blockhash)
+      
       seed(composer, reading)
       fill(composer, reading)
     end
@@ -109,10 +109,11 @@ module Solace
       signers, readonly_signed, readonly_unsigned = message.header
 
       message.accounts.each_with_index do |pubkey, index|
-        signer        = index < signers
-        readonly_from = signer ? signers - readonly_signed : message.accounts.size - readonly_unsigned
+        is_signer     = index < signers
+        readonly_from = is_signer ? signers - readonly_signed : message.accounts.size - readonly_unsigned
+        is_writable   = index < readonly_from
 
-        roles.merge_account(pubkey, signer: signer, writable: index < readonly_from)
+        roles.merge_account(pubkey, signer: is_signer, writable: is_writable)
       end
     end
 
