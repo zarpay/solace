@@ -198,14 +198,19 @@ module Solace
     # once a lookup table has been added — loading eligible accounts through any
     # registered tables.
     #
+    # @example Composing against a blockhash the caller already holds
+    #   composer.compose_transaction(blockhash: recent_blockhash)
+    #
+    # @param blockhash [#to_s, nil] The blockhash to compose against; when nil
+    #   the latest blockhash is fetched from the connection
     # @return [Transaction] The composed transaction (unsigned)
-    def compose_transaction
+    def compose_transaction(blockhash: nil)
       context.compile
 
       writable, readonly, references = resolve_address_lookup_tables
       context.compile(loaded_accounts: writable + readonly)
 
-      Solace::Transaction.new(message: build_message(references))
+      Solace::Transaction.new(message: build_message(references, blockhash))
     end
 
     private
@@ -256,14 +261,16 @@ module Solace
     # Build the composed message at the composer's version (legacy or v0)
     #
     # @param references [Array<Solace::AddressLookupTable>] The table references
+    # @param blockhash [#to_s, nil] The blockhash to compose against, or nil to
+    #   fetch the latest from the connection
     # @return [Solace::Message] The composed message
-    def build_message(references)
+    def build_message(references, blockhash = nil)
       Solace::Message.new(
         version:               version,
         header:                context.header,
         accounts:              context.accounts,
         instructions:          build_instructions,
-        recent_blockhash:      connection.get_latest_blockhash[0],
+        recent_blockhash:      blockhash&.to_s || connection.get_latest_blockhash[0],
         address_lookup_tables: references
       )
     end

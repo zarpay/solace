@@ -20,6 +20,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ---
 
+## Unreleased
+
+### Added
+
+1. Added an optional `blockhash:` keyword to `Solace::TransactionComposer#compose_transaction`. When given, the transaction is composed against that blockhash; otherwise the latest blockhash is fetched from the connection, as before.
+
 ## 0.1.8 - 2026-07-19
 
 ### Added
