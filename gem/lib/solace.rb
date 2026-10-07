@@ -35,11 +35,14 @@ require_relative 'solace/version'
 require_relative 'solace/errors'
 require_relative 'solace/constants'
 require_relative 'solace/connection'
+require_relative 'solace/concerns/binary_serializable'
+
+# Utils
 require_relative 'solace/utils/codecs'
 require_relative 'solace/utils/pda'
 require_relative 'solace/utils/account_context'
+require_relative 'solace/utils/compute_budget'
 require_relative 'solace/utils/curve25519_dalek'
-require_relative 'solace/concerns/binary_serializable'
 
 # Tokens
 require_relative 'solace/tokens'

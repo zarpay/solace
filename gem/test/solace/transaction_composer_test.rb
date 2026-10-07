@@ -209,6 +209,145 @@ describe Solace::TransactionComposer do
     end
   end
 
+  describe '#set_compute_budget' do
+    let(:compute_budget_program) { Solace::Constants::COMPUTE_BUDGET_PROGRAM_ID }
+    let(:limit_data) { ->(units) { [2] + [units].pack('L<').bytes } }
+    let(:price_data) { ->(micro_lamports) { [3] + [micro_lamports].pack('Q<').bytes } }
+
+    # [program id, data] for each instruction of a composed message
+    def programs_and_data(message)
+      message.instructions.map { |ix| [message.accounts[ix.program_index], ix.data] }
+    end
+
+    before do
+      def connection.get_latest_blockhash
+        ['EkSnNWid2cvwEVnVx9aBqawnmiCNiDgp3gUdkDPTKN1N', 1000]
+      end
+
+      composer.add_instruction(transfer_composer1).set_fee_payer(payer_keypair)
+    end
+
+    it 'holds no budget until one is set' do
+      assert_instance_of Solace::Utils::ComputeBudget, composer.compute_budget
+      refute_predicate composer.compute_budget, :set?
+    end
+
+    it 'stores the budget and returns self' do
+      result = composer.set_compute_budget(units: 200_000, micro_lamports: 50_000)
+
+      assert_equal composer, result
+      assert_equal 200_000, composer.compute_budget.units
+      assert_equal 50_000, composer.compute_budget.micro_lamports
+    end
+
+    it 'writes the budget instructions first, limit then price' do
+      message = composer.set_compute_budget(units: 200_000, micro_lamports: 50_000).compose_transaction.message
+
+      assert_equal 3, message.instructions.length
+      assert_equal [compute_budget_program, limit_data[200_000]], programs_and_data(message)[0]
+      assert_equal [compute_budget_program, price_data[50_000]], programs_and_data(message)[1]
+      assert_equal system_program, programs_and_data(message)[2][0]
+    end
+
+    it 'writes only the part of the budget that is set' do
+      message = composer.set_compute_budget(units: 200_000).compose_transaction.message
+
+      assert_equal [[compute_budget_program, limit_data[200_000]]], programs_and_data(message).first(1)
+      assert_equal 2, message.instructions.length
+    end
+
+    it 'replaces a budget composer added as a plain instruction' do
+      composer.add_instruction(Solace::Composers::ComputeBudgetProgramSetComputeUnitLimitComposer.new(units: 1_000))
+      composer.set_compute_budget(units: 200_000)
+
+      message = composer.compose_transaction.message
+      budget  = programs_and_data(message).select { |program, _| program == compute_budget_program }
+
+      assert_equal [[compute_budget_program, limit_data[200_000]]], budget
+    end
+
+    it 'leaves a plainly added budget composer alone when no budget is set' do
+      composer.add_instruction(Solace::Composers::ComputeBudgetProgramSetComputeUnitLimitComposer.new(units: 1_000))
+
+      message = composer.compose_transaction.message
+
+      assert_nil composer.compute_budget.units
+      assert_includes programs_and_data(message), [compute_budget_program, limit_data[1_000]]
+    end
+
+    it 'resizes a budget that was already set' do
+      composer.set_compute_budget(units: 100_000, micro_lamports: 1)
+      composer.set_compute_budget(units: 300_000)
+
+      message = composer.compose_transaction.message
+
+      assert_equal 300_000, composer.compute_budget.units
+      assert_nil composer.compute_budget.micro_lamports
+      assert_equal 2, message.instructions.length
+    end
+
+    describe 'merging another composer' do
+      let(:other) { Solace::TransactionComposer.new(connection: connection).add_instruction(transfer_composer2) }
+
+      it 'combines complementary budgets' do
+        other.set_compute_budget(micro_lamports: 25)
+        composer.set_compute_budget(units: 150_000).merge(other)
+
+        assert_equal 150_000, composer.compute_budget.units
+        assert_equal 25, composer.compute_budget.micro_lamports
+      end
+
+      it 'takes the other budget where both set the same field' do
+        other.set_compute_budget(units: 400_000, micro_lamports: 25)
+        composer.set_compute_budget(units: 150_000, micro_lamports: 1).merge(other)
+
+        assert_equal 400_000, composer.compute_budget.units
+        assert_equal 25, composer.compute_budget.micro_lamports
+      end
+
+      it 'keeps its own budget when the other has none' do
+        composer.set_compute_budget(units: 150_000, micro_lamports: 1).merge(other)
+
+        assert_equal 150_000, composer.compute_budget.units
+        assert_equal 1, composer.compute_budget.micro_lamports
+      end
+
+      it 'adopts the other budget when it has none' do
+        other.set_compute_budget(units: 400_000, micro_lamports: 25)
+        composer.merge(other)
+
+        assert_equal 400_000, composer.compute_budget.units
+        assert_equal 25, composer.compute_budget.micro_lamports
+      end
+
+      it 'stays unset when neither has a budget' do
+        composer.merge(other)
+
+        refute_predicate composer.compute_budget, :set?
+        refute_includes programs_and_data(composer.compose_transaction.message).map(&:first), compute_budget_program
+      end
+
+      it 'supersedes budget composers the other added directly' do
+        other.add_instruction(Solace::Composers::ComputeBudgetProgramSetComputeUnitLimitComposer.new(units: 1_000))
+        composer.set_compute_budget(units: 150_000).merge(other)
+
+        budget = programs_and_data(composer.compose_transaction.message).select { |program, _| program == compute_budget_program }
+
+        assert_equal [[compute_budget_program, limit_data[150_000]]], budget
+      end
+
+      it 'writes the merged budget first whatever the placement' do
+        other.set_compute_budget(units: 400_000, micro_lamports: 25)
+        message = composer.merge(other, placement: :prepend).compose_transaction.message
+
+        assert_equal 4, message.instructions.length
+        assert_equal [compute_budget_program, limit_data[400_000]], programs_and_data(message)[0]
+        assert_equal [compute_budget_program, price_data[25]], programs_and_data(message)[1]
+        assert_equal [system_program, system_program], programs_and_data(message).drop(2).map(&:first)
+      end
+    end
+  end
+
   describe '#compose_transaction' do
     before do
       # Mock connection to return a blockhash
@@ -488,6 +627,69 @@ describe Solace::TransactionComposer do
 
       assert_equal [table_a, table_b], composer.address_lookup_tables.map(&:account)
       assert_equal 0, composer.version
+    end
+  end
+
+  describe 'composing with a compute budget on the validator' do
+    before(:all) do
+      @connection = Solace::Connection.new(commitment: 'processed')
+      bob         = Fixtures.load_keypair('bob')
+      @recipient  = Solace::Keypair.generate
+
+      transfer = Solace::Composers::SystemProgramTransferComposer.new(
+        from: bob, to: @recipient, lamports: 5_000_000
+      )
+
+      # A limit added as a plain instruction would duplicate the setting and
+      # be rejected on chain; the setting supersedes it instead
+      plain_limit = Solace::Composers::ComputeBudgetProgramSetComputeUnitLimitComposer.new(units: 1_000)
+
+      @transaction = Solace::TransactionComposer.new(connection: @connection)
+                                                .add_instruction(plain_limit)
+                                                .add_instruction(transfer)
+                                                .set_fee_payer(bob)
+                                                .set_compute_budget(units: 20_000, micro_lamports: 1)
+                                                .compose_transaction
+      @transaction.sign(bob)
+
+      signature = @connection.send_transaction(@transaction.serialize)
+      @connection.wait_for_confirmed_signature { signature['result'] }
+    end
+
+    it 'carries one limit and one price instruction, first' do
+      programs = @transaction.message.instructions.map { |ix| @transaction.message.accounts[ix.program_index] }
+
+      assert_equal ([Solace::Constants::COMPUTE_BUDGET_PROGRAM_ID] * 2) + [Solace::Constants::SYSTEM_PROGRAM_ID], programs
+    end
+
+    it 'lands on chain' do
+      assert_equal 5_000_000, @connection.get_balance(@recipient.address)
+    end
+  end
+
+  describe 'composing with a compute budget too small for the transaction' do
+    before(:all) do
+      @connection = Solace::Connection.new(commitment: 'processed')
+      bob         = Fixtures.load_keypair('bob')
+
+      transfer = Solace::Composers::SystemProgramTransferComposer.new(
+        from: bob, to: Solace::Keypair.generate, lamports: 5_000_000
+      )
+
+      @transaction = Solace::TransactionComposer.new(connection: @connection)
+                                                .add_instruction(transfer)
+                                                .set_fee_payer(bob)
+                                                .set_compute_budget(units: 100)
+                                                .compose_transaction
+      @transaction.sign(bob)
+    end
+
+    it 'is rejected by the node for exceeding the limit' do
+      error = assert_raises(Solace::Errors::RPCError) do
+        @connection.send_transaction(@transaction.serialize)
+      end
+
+      assert_match(/exceeded/i, error.message)
     end
   end
 

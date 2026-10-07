@@ -81,6 +81,10 @@ module Solace
     #   The transaction version (nil for legacy, 0 for v0)
     attr_reader :version
 
+    # @!attribute compute_budget
+    #   The compute budget set on the composer (see {Utils::ComputeBudget})
+    attr_reader :compute_budget
+
     # Initialize the composer
     #
     # @param connection [Solace::Connection] The connection to the Solana cluster
@@ -90,6 +94,7 @@ module Solace
       @context               = Utils::AccountContext.new
       @address_lookup_tables = []
       @version               = nil
+      @compute_budget        = Utils::ComputeBudget.new
     end
 
     # Add an instruction composer to the transaction
@@ -138,6 +143,7 @@ module Solace
     def merge(other, placement: :add, index: nil)
       merge_accounts(other.context)
       merge_address_lookup_tables(other.address_lookup_tables)
+      merge_compute_budget(other.compute_budget)
 
       case placement
       when :add
@@ -163,6 +169,25 @@ module Solace
     def set_fee_payer(pubkey)
       context.set_fee_payer(pubkey.to_s)
       self
+    end
+
+    # Set the compute budget for the transaction
+    #
+    # The composer owns the budget as a setting: when it composes, the
+    # ComputeBudget instructions are written first, and any
+    # ComputeBudget composer of the same kind that was added as a plain
+    # instruction is left out, so the budget can never be declared twice
+    # (a duplicate `SetComputeUnitLimit` fails on chain). Each keyword
+    # replaces that setting; nil clears it. Read it back through {#compute_budget}.
+    #
+    # @example
+    #   composer.set_compute_budget(units: 200_000, micro_lamports: 50_000)
+    #
+    # @param units [Integer, nil] The compute unit limit
+    # @param micro_lamports [Integer, nil] The compute unit price in micro-lamports
+    # @return [TransactionComposer] Self for chaining
+    def set_compute_budget(units: nil, micro_lamports: nil)
+      apply_compute_budget(Utils::ComputeBudget.new(units: units, micro_lamports: micro_lamports))
     end
 
     # Make an address lookup table available to the transaction
@@ -279,7 +304,32 @@ module Solace
     #
     # @return [Array<Solace::Instruction>] The built instructions
     def build_instructions
-      instruction_composers.map { _1.build_instruction(context) }.flatten
+      composers_to_build.map { _1.build_instruction(context) }.flatten
+    end
+
+    # The composers the transaction is built from: the budget first, then the
+    # added composers minus any ComputeBudget composer the budget supersedes.
+    #
+    # @return [Array<Composers::Base>] The composers in build order
+    def composers_to_build
+      compute_budget.composers + instruction_composers.reject { |composer| compute_budget.supersedes?(composer) }
+    end
+
+    # Fold another budget into this one where it has settings
+    #
+    # @param budget [Utils::ComputeBudget] The budget to fold in
+    def merge_compute_budget(budget)
+      apply_compute_budget(compute_budget.merge(budget))
+    end
+
+    # Replace the compute budget, bringing its program into the account context
+    #
+    # @param budget [Utils::ComputeBudget] The budget to hold
+    # @return [TransactionComposer] Self for chaining
+    def apply_compute_budget(budget)
+      @compute_budget = budget
+      budget.composers.each { |composer| merge_accounts(composer.account_context) }
+      self
     end
 
     # Merge all accounts from another AccountContext into this one
