@@ -60,7 +60,6 @@ module Solace
   #
   # @see Solace::Composers::Base
   # @since 0.0.6
-  # rubocop:disable Metrics/ClassLength
   class TransactionComposer
     # @!attribute connection
     #   The connection to the Solana cluster
@@ -82,13 +81,9 @@ module Solace
     #   The transaction version (nil for legacy, 0 for v0)
     attr_reader :version
 
-    # @!attribute compute_unit_limit
-    #   The compute unit limit set on the composer, or nil when none is set
-    attr_reader :compute_unit_limit
-
-    # @!attribute compute_unit_price
-    #   The compute unit price in micro-lamports set on the composer, or nil when none is set
-    attr_reader :compute_unit_price
+    # @!attribute compute_budget
+    #   The compute budget set on the composer (see {Utils::ComputeBudget})
+    attr_reader :compute_budget
 
     # Initialize the composer
     #
@@ -99,8 +94,7 @@ module Solace
       @context               = Utils::AccountContext.new
       @address_lookup_tables = []
       @version               = nil
-      @compute_unit_limit    = nil
-      @compute_unit_price    = nil
+      @compute_budget        = Utils::ComputeBudget.new
     end
 
     # Add an instruction composer to the transaction
@@ -149,7 +143,7 @@ module Solace
     def merge(other, placement: :add, index: nil)
       merge_accounts(other.context)
       merge_address_lookup_tables(other.address_lookup_tables)
-      merge_compute_budget(other)
+      merge_compute_budget(other.compute_budget)
 
       case placement
       when :add
@@ -184,7 +178,7 @@ module Solace
     # ComputeBudget composer of the same kind that was added as a plain
     # instruction is left out, so the budget can never be declared twice
     # (a duplicate `SetComputeUnitLimit` fails on chain). Each keyword
-    # replaces that setting; nil clears it.
+    # replaces that setting; nil clears it. Read it back through {#compute_budget}.
     #
     # @example
     #   composer.set_compute_budget(units: 200_000, micro_lamports: 50_000)
@@ -193,12 +187,7 @@ module Solace
     # @param micro_lamports [Integer, nil] The compute unit price in micro-lamports
     # @return [TransactionComposer] Self for chaining
     def set_compute_budget(units: nil, micro_lamports: nil)
-      @compute_unit_limit = units
-      @compute_unit_price = micro_lamports
-
-      compute_budget_composers.each { |composer| merge_accounts(composer.account_context) }
-
-      self
+      apply_compute_budget(Utils::ComputeBudget.new(units: units, micro_lamports: micro_lamports))
     end
 
     # Make an address lookup table available to the transaction
@@ -323,39 +312,24 @@ module Solace
     #
     # @return [Array<Composers::Base>] The composers in build order
     def composers_to_build
-      compute_budget_composers + instruction_composers.reject { |composer| superseded_by_compute_budget?(composer) }
+      compute_budget.composers + instruction_composers.reject { |composer| compute_budget.supersedes?(composer) }
     end
 
-    # The composers the compute budget settings translate to, limit then price
+    # Fold another budget into this one where it has settings
     #
-    # @return [Array<Composers::Base>] The ComputeBudget composers, possibly empty
-    def compute_budget_composers
-      limit = Composers::ComputeBudgetProgramSetComputeUnitLimitComposer
-      price = Composers::ComputeBudgetProgramSetComputeUnitPriceComposer
-
-      [
-        (limit.new(units: compute_unit_limit) if compute_unit_limit),
-        (price.new(micro_lamports: compute_unit_price) if compute_unit_price)
-      ].compact
+    # @param budget [Utils::ComputeBudget] The budget to fold in
+    def merge_compute_budget(budget)
+      apply_compute_budget(compute_budget.merge(budget))
     end
 
-    # Whether an added composer is replaced by a budget setting of the same kind
+    # Replace the compute budget, bringing its program into the account context
     #
-    # @param composer [Composers::Base] The added composer
-    # @return [Boolean]
-    def superseded_by_compute_budget?(composer)
-      (compute_unit_limit && composer.is_a?(Composers::ComputeBudgetProgramSetComputeUnitLimitComposer)) ||
-        (compute_unit_price && composer.is_a?(Composers::ComputeBudgetProgramSetComputeUnitPriceComposer))
-    end
-
-    # Adopt the other composer's compute budget where it has one set
-    #
-    # @param other [TransactionComposer] The other composer
-    def merge_compute_budget(other)
-      units          = other.compute_unit_limit || compute_unit_limit
-      micro_lamports = other.compute_unit_price || compute_unit_price
-
-      set_compute_budget(units: units, micro_lamports: micro_lamports)
+    # @param budget [Utils::ComputeBudget] The budget to hold
+    # @return [TransactionComposer] Self for chaining
+    def apply_compute_budget(budget)
+      @compute_budget = budget
+      budget.composers.each { |composer| merge_accounts(composer.account_context) }
+      self
     end
 
     # Merge all accounts from another AccountContext into this one
@@ -372,5 +346,4 @@ module Solace
       tables.each { |table| add_address_lookup_table(account: table.account, addresses: table.addresses) }
     end
   end
-  # rubocop:enable Metrics/ClassLength
 end

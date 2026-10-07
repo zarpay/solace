@@ -228,16 +228,16 @@ describe Solace::TransactionComposer do
     end
 
     it 'holds no budget until one is set' do
-      assert_nil composer.compute_unit_limit
-      assert_nil composer.compute_unit_price
+      assert_instance_of Solace::Utils::ComputeBudget, composer.compute_budget
+      refute_predicate composer.compute_budget, :set?
     end
 
     it 'stores the budget and returns self' do
       result = composer.set_compute_budget(units: 200_000, micro_lamports: 50_000)
 
       assert_equal composer, result
-      assert_equal 200_000, composer.compute_unit_limit
-      assert_equal 50_000, composer.compute_unit_price
+      assert_equal 200_000, composer.compute_budget.units
+      assert_equal 50_000, composer.compute_budget.micro_lamports
     end
 
     it 'writes the budget instructions first, limit then price' do
@@ -271,7 +271,7 @@ describe Solace::TransactionComposer do
 
       message = composer.compose_transaction.message
 
-      assert_nil composer.compute_unit_limit
+      assert_nil composer.compute_budget.units
       assert_includes programs_and_data(message), [compute_budget_program, limit_data[1_000]]
     end
 
@@ -281,8 +281,8 @@ describe Solace::TransactionComposer do
 
       message = composer.compose_transaction.message
 
-      assert_equal 300_000, composer.compute_unit_limit
-      assert_nil composer.compute_unit_price
+      assert_equal 300_000, composer.compute_budget.units
+      assert_nil composer.compute_budget.micro_lamports
       assert_equal 2, message.instructions.length
     end
 
@@ -293,8 +293,8 @@ describe Solace::TransactionComposer do
 
       composer.set_compute_budget(units: 150_000).merge(other)
 
-      assert_equal 150_000, composer.compute_unit_limit
-      assert_equal 25, composer.compute_unit_price
+      assert_equal 150_000, composer.compute_budget.units
+      assert_equal 25, composer.compute_budget.micro_lamports
     end
   end
 

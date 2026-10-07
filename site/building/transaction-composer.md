@@ -46,8 +46,7 @@ connection.send_transaction(tx.serialize)
 | `instruction_composers` | The composers added so far. |
 | `address_lookup_tables` | The registered lookup tables (`Solace::Accounts::AddressLookupTable`). |
 | `version` | The transaction version — `nil` (legacy) until a table opts it into `0` (v0). |
-| `compute_unit_limit` | The compute unit limit set on the composer, or `nil`. |
-| `compute_unit_price` | The compute unit price in micro-lamports set on the composer, or `nil`. |
+| `compute_budget` | The compute budget set on the composer (`Solace::Utils::ComputeBudget`): `units`, `micro_lamports`, `set?`. |
 
 ## Batching several instructions
 
@@ -110,8 +109,8 @@ tx = Solace::TransactionComposer.new(connection:)
 When composing, `SetComputeUnitLimit` and `SetComputeUnitPrice` are written first, and any
 ComputeBudget composer of the same kind that was added directly is left out — so the budget
 cannot be declared twice (a duplicate `SetComputeUnitLimit` fails on chain). Either keyword
-may be omitted to set just one; calling it again replaces the budget. `compute_unit_limit`
-and `compute_unit_price` read back what is set. With no budget set, directly added
+may be omitted to set just one; calling it again replaces the budget. `compute_budget` reads
+back what is set (`units`, `micro_lamports`, `set?`). With no budget set, directly added
 ComputeBudget composers behave as any other instruction.
 
 ## Composing against a known blockhash
