@@ -9,7 +9,7 @@ module Solace
     #
     # @example
     #   begin
-    #     Solace::TransactionComposer.from(transaction, connection: connection)
+    #     Solace::TransactionDecomposer.new(connection: connection).decompose_transaction(transaction)
     #   rescue Solace::Errors::AddressLookupTableNotFound => e
     #     puts "missing table: #{e.account}"
     #   end

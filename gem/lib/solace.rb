@@ -42,7 +42,6 @@ require_relative 'solace/utils/codecs'
 require_relative 'solace/utils/pda'
 require_relative 'solace/utils/account_context'
 require_relative 'solace/utils/compute_budget'
-require_relative 'solace/utils/transaction_decomposer'
 require_relative 'solace/utils/curve25519_dalek'
 
 # Tokens
@@ -64,6 +63,7 @@ require_relative 'solace/address_lookup_table'
 require_relative 'solace/accounts/address_lookup_table'
 
 require_relative 'solace/transaction_composer'
+require_relative 'solace/transaction_decomposer'
 
 # Base Classes (Abstract classes)
 require_relative 'solace/programs/base'

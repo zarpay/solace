@@ -2,7 +2,7 @@
 
 require 'test_helper'
 
-describe Solace::Composers::InstructionComposer do
+describe Solace::Composers::OpaqueInstructionComposer do
   let(:program_id) { Solace::Keypair.generate.address }
   let(:writable_signer) { Solace::Keypair.generate.address }
   let(:readonly_signer) { Solace::Keypair.generate.address }
@@ -11,7 +11,7 @@ describe Solace::Composers::InstructionComposer do
   let(:data) { [7, 1, 2, 3] }
 
   let(:composer) do
-    Solace::Composers::InstructionComposer.new(
+    Solace::Composers::OpaqueInstructionComposer.new(
       program_id: program_id,
       accounts:   [
         { pubkey: writable_signer, signer: true, writable: true },
@@ -52,7 +52,7 @@ describe Solace::Composers::InstructionComposer do
 
   it 'exposes what it was given, coerced to strings' do
     keypair  = Solace::Keypair.generate
-    composer = Solace::Composers::InstructionComposer.new(
+    composer = Solace::Composers::OpaqueInstructionComposer.new(
       program_id: Solace::PublicKey.new(Solace::Utils::Codecs.base58_to_bytes(program_id)),
       accounts:   [{ pubkey: keypair, signer: true, writable: true }],
       data:       data
@@ -69,7 +69,7 @@ describe Solace::Composers::InstructionComposer do
       bob         = Fixtures.load_keypair('bob')
       @recipient  = Solace::Keypair.generate
 
-      transfer = Solace::Composers::InstructionComposer.new(
+      transfer = Solace::Composers::OpaqueInstructionComposer.new(
         program_id: Solace::Constants::SYSTEM_PROGRAM_ID,
         accounts:   [
           { pubkey: bob, signer: true, writable: true },

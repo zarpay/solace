@@ -30,7 +30,6 @@ connection.send_transaction(tx.serialize)
 | Method | Returns | Description |
 | --- | --- | --- |
 | `new(connection:, blockhash: nil)` | composer | Create a composer bound to a connection (used to fetch the blockhash unless one is given). |
-| `from(transaction, connection:)` | composer | Take a transaction (or its base64) apart into a composer that composes it again; see below. |
 | `add_instruction(composer)` | `self` | Append a composer. |
 | `prepend_instruction(composer)` | `self` | Insert a composer at the front. |
 | `insert_instruction(index, composer)` | `self` | Insert at a position. |
@@ -117,13 +116,14 @@ ComputeBudget composers behave as any other instruction.
 
 ## Taking a transaction apart
 
-`from` does the reverse of composing: it reads a transaction you were handed — a
-`Solace::Transaction` or its base64 — back into an ordinary composer.
+`Solace::TransactionDecomposer` does the reverse of composing: it reads a transaction you
+were handed — a `Solace::Transaction`, its message, or its base64 — and answers an ordinary
+composer that represents it.
 
 ```ruby
-composer = Solace::TransactionComposer.from(transaction, connection:)
+composer = Solace::TransactionDecomposer.new(connection:).decompose_transaction(transaction)
 
-composer.instruction_composers   # one InstructionComposer per instruction, in order
+composer.instruction_composers   # one OpaqueInstructionComposer per instruction, in order
 composer.compute_budget          # the limit and price the transaction carried, if any
 composer.address_lookup_tables   # its tables, read from chain, with their full address lists
 composer.blockhash               # the blockhash it was composed against
@@ -132,7 +132,7 @@ composer.set_compute_budget(units: 600_000, micro_lamports: 50_000)
 composer.compose_transaction     # composes against that same blockhash by default
 ```
 
-Each instruction comes back as a [`InstructionComposer`](/building/composers) carrying the
+Each instruction comes back as an [`OpaqueInstructionComposer`](/building/composers) carrying the
 program it invokes, its accounts with the signer and writable flags the message header gave
 them, and its data untouched. The rules are Solana's: static keys take their flags from the
 header ordering (signers first, writable before read-only, then non-signers the same way);
@@ -146,7 +146,7 @@ A `SetComputeUnitLimit` or `SetComputeUnitPrice` the transaction carried becomes
 composer's `compute_budget` rather than an instruction composer, so you can read it and
 resize it; any other ComputeBudget directive stays an ordinary instruction.
 
-For a transaction this composer built, `from` then `compose_transaction` answers the same
+For a transaction `TransactionComposer` built, decomposing then composing answers the same
 bytes. A transaction built elsewhere recomposes to the same instructions, accounts and
 flags, but may lay the static accounts and table indexes out in a different order.
 

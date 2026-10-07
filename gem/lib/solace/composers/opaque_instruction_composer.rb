@@ -2,27 +2,27 @@
 
 module Solace
   module Composers
-    # Composer for an instruction whose accounts are already resolved.
+    # Composer for an instruction it does not interpret.
     #
     # Where every other composer derives its account metas from domain
     # arguments, this one declares exactly the program id, accounts and data it
     # was given, and rebuilds the instruction by index against whatever context
-    # it is composed into. It is what a {Solace::TransactionComposer.from}
-    # answers for each instruction of a transaction taken apart, and what a
-    # caller reaches for to rebuild one of those with an account swapped out.
+    # it is composed into. It is what {Solace::TransactionDecomposer} answers
+    # for each instruction of a transaction taken apart, and what a caller
+    # reaches for to rebuild one of those with an account swapped out.
     #
     # @example Rebuild a recovered instruction with a different rent payer
     #   accounts = recovered.accounts.dup
     #   accounts[0] = { pubkey: sponsor, signer: true, writable: true }
     #
-    #   composer = Solace::Composers::InstructionComposer.new(
+    #   composer = Solace::Composers::OpaqueInstructionComposer.new(
     #     program_id: recovered.program_id,
     #     accounts:   accounts,
     #     data:       recovered.data
     #   )
     #
     # @since 0.1.9
-    class InstructionComposer < Base
+    class OpaqueInstructionComposer < Base
       # The program the instruction invokes
       #
       # @return [String] The program id
