@@ -67,11 +67,12 @@ module Solace
     # @return [Solace::TransactionComposer] A composer that composes it again
     # @raise [Solace::Errors::AddressLookupTableNotFound] When a referenced table is not on chain
     def decompose_transaction(transaction)
-      reading  = read(message_of(transaction))
+      message  = message_of(transaction)
+      reading  = read(message)
       composer = TransactionComposer.new(connection: connection)
-                                    .set_version(reading.message.version)
-                                    .set_blockhash(reading.message.recent_blockhash)
 
+      composer.set_version(message.version)
+      composer.set_blockhash(message.recent_blockhash)
       seed(composer, reading)
       fill(composer, reading)
     end
@@ -93,7 +94,9 @@ module Solace
       writable.each { |pubkey| roles.merge_account(pubkey, signer: false, writable: true) }
       readonly.each { |pubkey| roles.merge_account(pubkey, signer: false, writable: false) }
 
-      Reading.new(message: message, tables: tables, accounts: message.accounts + writable + readonly, roles: roles)
+      accounts = message.accounts + writable + readonly
+
+      Reading.new(message: message, tables: tables, accounts: accounts, roles: roles)
     end
 
     # Declare the static keys with the roles their header positions give them:
@@ -131,12 +134,15 @@ module Solace
     # @return [Solace::TransactionComposer] The composer
     def fill(composer, reading)
       instruction_composers(reading).each { |instruction| composer.add_instruction(instruction) }
+
       reading.tables.each_value do |table|
         composer.add_address_lookup_table(account: table.account, addresses: table.addresses)
       end
 
       budget = compute_budget(reading)
-      budget.set? ? composer.set_compute_budget(units: budget.units, micro_lamports: budget.micro_lamports) : composer
+      composer.set_compute_budget(units: budget.units, micro_lamports: budget.micro_lamports) if budget.set?
+
+      composer
     end
 
     # The message of a transaction given as the object or its base64
@@ -153,7 +159,10 @@ module Solace
     # @param message [Solace::Message]
     # @return [Hash{String => Accounts::AddressLookupTable}] Keyed by table account
     def fetch_tables(message)
-      Array(message.address_lookup_tables).map(&:account).uniq.to_h do |account|
+      references = Array(message.address_lookup_tables)
+      accounts   = references.map(&:account).uniq
+
+      accounts.to_h do |account|
         table = Accounts::AddressLookupTable.fetch(account, connection: connection)
         raise Errors::AddressLookupTableNotFound, account unless table
 
@@ -168,9 +177,13 @@ module Solace
     # @param kind [Symbol] :writable_indexes or :readonly_indexes
     # @return [Array<String>]
     def loaded(message, tables, kind)
-      Array(message.address_lookup_tables).flat_map do |reference|
+      references = Array(message.address_lookup_tables)
+
+      references.flat_map do |reference|
         addresses = tables.fetch(reference.account).addresses
-        reference.public_send(kind).map { |index| addresses.fetch(index) }
+        indexes   = kind == :writable_indexes ? reference.writable_indexes : reference.readonly_indexes
+
+        indexes.map { |index| addresses.fetch(index) }
       end
     end
 
@@ -179,10 +192,15 @@ module Solace
     # @param reading [Reading]
     # @return [Array<Composers::OpaqueInstructionComposer>]
     def instruction_composers(reading)
-      reading.message.instructions.reject { |instruction| budget?(instruction, reading) }.map do |instruction|
+      lifted = reading.message.instructions.reject { |instruction| budget?(instruction, reading) }
+
+      lifted.map do |instruction|
+        program_id = reading.accounts.fetch(instruction.program_index)
+        accounts   = instruction.accounts.map { |index| reading.accounts.fetch(index) }
+
         Composers::OpaqueInstructionComposer.new(
-          program_id: reading.accounts.fetch(instruction.program_index),
-          accounts:   instruction.accounts.map { |index| reading.accounts.fetch(index) },
+          program_id: program_id,
+          accounts:   accounts,
           data:       instruction.data,
           roles:      reading.roles
         )
@@ -195,8 +213,10 @@ module Solace
     # @param reading [Reading]
     # @return [Boolean]
     def budget?(instruction, reading)
-      reading.accounts.fetch(instruction.program_index) == Constants::COMPUTE_BUDGET_PROGRAM_ID &&
-        [LIMIT_INDEX, PRICE_INDEX].include?(instruction.data.first)
+      program_id    = reading.accounts.fetch(instruction.program_index)
+      discriminator = instruction.data.first
+
+      program_id == Constants::COMPUTE_BUDGET_PROGRAM_ID && [LIMIT_INDEX, PRICE_INDEX].include?(discriminator)
     end
 
     # The budget the message carried, decoded from its limit and price directives
@@ -220,7 +240,10 @@ module Solace
     # @return [Integer, nil]
     def decode(directives, discriminator, format)
       directive = directives.find { |instruction| instruction.data.first == discriminator }
-      directive && directive.data.drop(1).pack('C*').unpack1(format)
+      return unless directive
+
+      value_bytes = directive.data.drop(1)
+      value_bytes.pack('C*').unpack1(format)
     end
   end
 end
