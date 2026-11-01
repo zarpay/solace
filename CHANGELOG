@@ -20,6 +20,20 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ---
 
+## Unreleased
+
+### Added
+
+1. Added `Solace::Errors::TransactionFailed` (`signature`, `commitment`, `transaction_error`), raised by `Solace::Connection#wait_for_confirmed_signature` when the transaction reaches the awaited commitment with an `err`. The failure is final at that commitment, so the wait stops instead of running out its timeout.
+
+### Changed
+
+1. `Solace::Connection#wait_for_confirmed_signature` raises `ArgumentError` for a commitment other than `processed`, `confirmed` or `finalized`, and accepts the commitment as a symbol.
+
+### Fixed
+
+1. `Solace::Connection#wait_for_confirmed_signature` counts a status at or above the awaited commitment as reached (processed < confirmed < finalized). A transaction the node already reported as `finalized` no longer waits out the whole timeout when `confirmed` was awaited, and a failed transaction is no longer reported as reached.
+
 ## 0.1.9 - 2026-10-08
 
 ### Added

@@ -35,6 +35,9 @@ module Solace
   # @since 0.0.1
   # rubocop:disable Metrics/ClassLength
   class Connection
+    # Commitment levels, lowest first
+    COMMITMENTS = %w[processed confirmed finalized].freeze
+
     # @!attribute [r] rpc_url
     #   The URL of the Solana RPC node
     attr_reader :rpc_client
@@ -314,18 +317,24 @@ module Solace
 
     # Wait until the yielded signature reaches the desired commitment or timeout.
     #
-    # @param commitment [String] One of "processed", "confirmed", "finalized"
+    # A status at or above the desired commitment counts as reached, so waiting for
+    # "confirmed" returns once the node reports "finalized".
+    #
+    # @param commitment [String, Symbol] One of "processed", "confirmed", "finalized"
     # @param timeout [Numeric] seconds to wait before raising
     # @param interval [Numeric] polling interval in seconds
     # @yieldreturn [String, Hash] a signature string or a JSON-RPC hash with "result"
     # @return [String] the signature when the commitment is reached
-    # @raise [ArgumentError, Errors::ConfirmationTimeout]
+    # @raise [ArgumentError] when no block is given or the commitment is unknown
+    # @raise [Errors::TransactionFailed] when the transaction reaches the commitment with an error
+    # @raise [Errors::ConfirmationTimeout] when the commitment is not reached in time
     def wait_for_confirmed_signature(
       commitment = 'confirmed',
       timeout: 60,
       interval: 0.1
     )
       raise ArgumentError, 'Block required' unless block_given?
+      raise ArgumentError, "Unknown commitment: #{commitment}" unless COMMITMENTS.include?(commitment.to_s)
 
       signature = extract_signature_from(yield)
       deadline  = monotonic_deadline(timeout)
@@ -342,13 +351,20 @@ module Solace
 
     private
 
-    # Confirms the commitment is reached
+    # Confirms the commitment is reached: the node reports the signature at the
+    # commitment or a higher one, and the transaction succeeded.
     #
     # @param signature [String] The signature of the transaction
-    # @param commitment [String] The commitment level not reached
+    # @param commitment [String] The commitment level awaited
     # @return [Boolean] Whether the commitment is reached
+    # @raise [Errors::TransactionFailed] when the transaction reached it with an error
     def commitment_reached?(signature, commitment)
-      get_signature_status(signature).dig('value', 0, 'confirmationStatus') == commitment
+      status = get_signature_status(signature).dig('value', 0) || {}
+      level  = COMMITMENTS.index(status['confirmationStatus'])
+      return false unless level && level >= COMMITMENTS.index(commitment.to_s)
+      raise Errors::TransactionFailed.format(signature, status['confirmationStatus'], status['err']) if status['err']
+
+      true
     end
 
     # Extracts signature from given value

@@ -16,7 +16,8 @@ StandardError
    │  ├─ Solace::Errors::HTTPError
    │  └─ Solace::Errors::RPCError
    ├─ Solace::Errors::ParseError
-   └─ Solace::Errors::ConfirmationTimeout
+   ├─ Solace::Errors::ConfirmationTimeout
+   └─ Solace::Errors::TransactionFailed
 ```
 
 | Error | Raised when |
@@ -27,6 +28,7 @@ StandardError
 | `RPCError` | The node returned a JSON-RPC error (carries `rpc_code`, `rpc_message`, `rpc_data`). |
 | `ParseError` | A response body couldn't be parsed (carries the offending `body`). |
 | `ConfirmationTimeout` | `wait_for_confirmed_signature` didn't reach the target commitment in time (carries `signature`, `commitment`, `timeout`). |
+| `TransactionFailed` | The transaction `wait_for_confirmed_signature` waited on reached the target commitment with an error (carries `signature`, `commitment`, and the node's `err` as `transaction_error`). |
 
 ## Handling them
 
@@ -38,6 +40,8 @@ begin
   connection.wait_for_confirmed_signature { result['result'] }
 rescue Solace::Errors::ConfirmationTimeout => e
   warn "Not confirmed in #{e.timeout}s: #{e.signature}"
+rescue Solace::Errors::TransactionFailed => e
+  warn "Landed but failed: #{e.transaction_error}"
 rescue Solace::Errors::RPCError => e
   warn "RPC rejected it (#{e.rpc_code}): #{e.rpc_message}"
 rescue Solace::Errors::Error => e
