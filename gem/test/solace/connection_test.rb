@@ -42,24 +42,40 @@ describe Solace::Connection do
       }
     end
 
-    # Waits while the node answers each poll from answers in turn, repeating the
-    # last; an exception in answers is raised by that poll. Returns the wait's
-    # result and the timeout each poll's request was given.
-    def wait_with_answers(answers, commitment, timeout: 0.05)
+    # A get_signature_status stand-in answering each poll from answers in turn,
+    # repeating the last; an exception in answers is raised by that poll. Records
+    # the timeout each poll's request was given in polls.
+    def node_answering(answers, polls = [])
       pending = answers.dup
-      polls   = []
-      poll    = lambda do |_signature, timeout:|
+      lambda do |_signature, timeout:|
         polls << timeout
         answer = pending.size > 1 ? pending.shift : pending.first
         raise answer if answer.is_a?(Exception)
 
         answer
       end
+    end
 
-      result = connection.stub(:get_signature_status, poll) do
+    # Waits while the node answers from answers; returns the wait's result and
+    # the timeout each poll's request was given
+    def wait_with_answers(answers, commitment, timeout: 0.05)
+      polls  = []
+      result = connection.stub(:get_signature_status, node_answering(answers, polls)) do
         connection.wait_for_confirmed_signature(commitment, timeout: timeout, interval: 0.01) { signature }
       end
       [result, polls]
+    end
+
+    # Waits while the node answers from answers, recording each sleep instead of
+    # sleeping
+    def sleeps_waiting(answers, interval:)
+      sleeps = []
+      connection.stub(:get_signature_status, node_answering(answers)) do
+        connection.stub(:sleep, ->(seconds) { sleeps << seconds }) do
+          connection.wait_for_confirmed_signature(timeout: 10, interval: interval) { signature }
+        end
+      end
+      sleeps
     end
 
     def wait_with_status(status, commitment)
@@ -155,6 +171,8 @@ describe Solace::Connection do
     {
       'HTTP 401' => Solace::Errors::HTTPError.new('Unauthorized', code: 401),
       'HTTP 404' => Solace::Errors::HTTPError.new('Not Found', code: 404),
+      'HTTP 501' => Solace::Errors::HTTPError.new('Not Implemented', code: 501),
+      'HTTP 505' => Solace::Errors::HTTPError.new('HTTP Version Not Supported', code: 505),
       'RPC -32602 (invalid params)' => Solace::Errors::RPCError.new('bad', rpc_code: -32_602, rpc_message: 'bad'),
       'non-HTML parse error' => Solace::Errors::ParseError.new('Invalid JSON', body: '{"jsonrpc":'),
       'DNS failure' => Solace::Errors::HTTPError.new('HTTP transport error', code: 0)
@@ -175,6 +193,53 @@ describe Solace::Connection do
         assert_same permanent, raised
         assert_equal 1, polls.size
       end
+    end
+
+    it 'backs off on 429 and 5xx, doubling from the interval up to two seconds' do
+      unavailable = Solace::Errors::HTTPError.new('Service Unavailable', code: 503)
+
+      sleeps = sleeps_waiting(([unavailable] * 5) + [signature_status('confirmed')], interval: 0.5)
+
+      assert_equal [0.5, 1.0, 2, 2, 2], sleeps
+    end
+
+    it 'waits as long as Retry-After asks' do
+      throttled = Solace::Errors::HTTPError.new('Too Many Requests', code: 429, retry_after: 3)
+
+      assert_equal [3], sleeps_waiting([throttled, signature_status('confirmed')], interval: 0.5)
+    end
+
+    it 'starts no poll after the first with less than the floor left' do
+      polls = []
+      connection.stub(:get_signature_status, node_answering([signature_status('processed')], polls)) do
+        assert_raises(Solace::Errors::ConfirmationTimeout) do
+          connection.wait_for_confirmed_signature(timeout: 0.4, interval: 0.01) { signature }
+        end
+      end
+
+      assert_operator polls.size, :>, 1
+      assert_operator polls.min, :>=, Solace::Connection::MIN_POLL_SECONDS
+    end
+
+    it 'does not report a timeout that its own cap on the poll caused' do
+      capped = Solace::Errors::HTTPError.new('HTTP timeout', code: 408)
+
+      error = assert_raises(Solace::Errors::ConfirmationTimeout) { wait_with_status(capped, 'confirmed') }
+
+      assert_nil error.cause
+    end
+
+    it "reports a timeout under the client's own limit" do
+      quick   = Solace::Connection.new(http_open_timeout: 0.01, http_read_timeout: 0.01)
+      timeout = Solace::Errors::HTTPError.new('HTTP timeout', code: 408)
+
+      error = quick.stub(:get_signature_status, node_answering([timeout])) do
+        assert_raises(Solace::Errors::ConfirmationTimeout) do
+          quick.wait_for_confirmed_signature(timeout: 0.05, interval: 0.01) { signature }
+        end
+      end
+
+      assert_same timeout, error.cause
     end
 
     it 'times out naming the last transient error as its cause when every poll errors' do

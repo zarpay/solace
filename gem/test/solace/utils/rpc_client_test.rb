@@ -117,6 +117,26 @@ describe Solace::Utils::RPCClient do
       end
     end
 
+    it "reads a throttled response's Retry-After, in seconds or as a date" do
+      throttled = lambda do |retry_after|
+        response                = Net::HTTPTooManyRequests.new('1.1', 429, 'Too Many Requests')
+        response.instance_variable_set(:@read, true)
+        response['Retry-After'] = retry_after if retry_after
+        response
+      end
+
+      waits = ['3', (Time.now + 30).httpdate, nil, 'soon'].map do |retry_after|
+        Net::HTTP.stub(:start, ->(*) { throttled.call(retry_after) }) do
+          assert_raises(Solace::Errors::HTTPError) { client.rpc_request(method_name, params) }.retry_after
+        end
+      end
+
+      assert_in_delta 3.0, waits[0]
+      assert_in_delta 30.0, waits[1], 1.5
+      assert_nil waits[2]
+      assert_nil waits[3]
+    end
+
     it 'raises ParseError when the response is not a valid JSON' do
       # Create a Net::HTTPSuccess instance
       text_response      = Net::HTTPSuccess.new('1.1', 200, 'OK')

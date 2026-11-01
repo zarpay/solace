@@ -42,9 +42,20 @@ module Solace
     # A failure reported below this level may sit on a fork that gets dropped
     FINAL_FAILURE_LEVEL = COMMITMENTS.index('confirmed')
 
-    # HTTP statuses a node or its provider answers while busy or briefly down;
-    # 408 is the client's own timeout
-    TRANSIENT_HTTP_CODES = [408, 429, *500..599].freeze
+    # HTTP statuses a node or its provider answers while busy or briefly down:
+    # 408 is the client's own timeout, 520-524 a Cloudflare-fronted origin that
+    # is down or slow. 501 and 505 are permanent.
+    TRANSIENT_HTTP_CODES = [408, 429, 500, 502, 503, 504, *520..524].freeze
+
+    # HTTP statuses the wait backs off on: the node is throttling or failing
+    BACKOFF_HTTP_CODES = (TRANSIENT_HTTP_CODES - [408]).freeze
+
+    # Longest pause between polls while backing off, unless Retry-After asks for more
+    MAX_BACKOFF_SECONDS = 2
+
+    # Least time worth starting a poll with after the first: a shorter request
+    # would mostly time out on its own cap
+    MIN_POLL_SECONDS = 0.25
 
     # Solana RPC errors for a node that is behind: -32005 node unhealthy,
     # -32016 minimum context slot not reached
@@ -412,7 +423,7 @@ module Solace
     # @param status [Hash] One entry of a getSignatureStatuses result
     # @return [Boolean] Whether the status is for a rooted transaction
     def rooted?(status)
-      status.fetch('confirmationStatus', nil).nil? && status.fetch('confirmations', nil).nil?
+      status['confirmationStatus'].nil? && status['confirmations'].nil?
     end
 
     # Whether an error from one poll may clear by the next: a busy or briefly
@@ -438,30 +449,71 @@ module Solace
     end
 
     # Calls the block once per poll until the deadline, with the seconds left for
-    # the poll's request, sleeping the interval between polls but never past the
-    # deadline. A transient error from the block counts as one poll; any other
-    # error raises.
+    # the poll's request. The first poll always runs; a later one only with at
+    # least MIN_POLL_SECONDS left. Between polls it sleeps the interval, or backs
+    # off while the node throttles or fails, but never past the deadline. A
+    # transient error from the block counts as one poll; any other error raises.
     #
     # @param deadline [Float] The deadline for the timeout
     # @param interval [Numeric] The polling interval in seconds
     # @yieldparam time_left [Float] Seconds left before the deadline
-    # @return [StandardError, nil] The last transient error a poll raised
-    def poll_until(deadline, interval)
+    # @return [StandardError, nil] The last transient error a poll raised, unless
+    #   it was a timeout the poll's own cap caused
+    def poll_until(deadline, interval, &poll)
       last_error = nil
+      backoff    = interval
+      time_left  = seconds_until(deadline)
 
-      while (time_left = seconds_until(deadline)).positive?
-        begin
-          yield time_left
-        rescue StandardError => e
-          raise unless transient_poll_error?(e)
+      while time_left.positive?
+        error          = transient_error_from(time_left, &poll)
+        last_error     = error unless error.nil? || capped_timeout?(error, time_left)
+        pause, backoff = pause_after(error, interval, backoff)
 
-          last_error = e
-        end
-
-        sleep [interval, seconds_until(deadline)].min.clamp(0..)
+        sleep [pause, seconds_until(deadline)].min.clamp(0..)
+        time_left = seconds_until(deadline)
+        break if time_left < MIN_POLL_SECONDS
       end
 
       last_error
+    end
+
+    # Runs one poll
+    #
+    # @param time_left [Float] Seconds left before the deadline
+    # @return [StandardError, nil] The transient error the poll raised, if any
+    # @raise [StandardError] any error that is not transient
+    def transient_error_from(time_left)
+      yield time_left
+      nil
+    rescue StandardError => e
+      raise unless transient_poll_error?(e)
+
+      e
+    end
+
+    # Whether a timeout may come from the cap the wait put on the poll's request
+    # rather than from the node: the cap was below a timeout the client sets
+    #
+    # @param error [StandardError] The error the poll raised
+    # @param time_left [Float] The cap the poll's request was given
+    # @return [Boolean] Whether the timeout is the wait's own
+    def capped_timeout?(error, time_left)
+      error.is_a?(Errors::HTTPError) && error.code == 408 &&
+        time_left < [@rpc_client.open_timeout, @rpc_client.read_timeout].max
+    end
+
+    # The pause before the next poll, and the backoff after it: Retry-After or
+    # the backoff, doubling up to MAX_BACKOFF_SECONDS, while the node throttles or
+    # fails; the interval otherwise
+    #
+    # @param error [StandardError, nil] The transient error the poll raised
+    # @param interval [Numeric] The polling interval in seconds
+    # @param backoff [Numeric] The current backoff in seconds
+    # @return [Array(Numeric, Numeric)] The pause and the next backoff
+    def pause_after(error, interval, backoff)
+      return [interval, interval] unless error.is_a?(Errors::HTTPError) && BACKOFF_HTTP_CODES.include?(error.code)
+
+      [error.retry_after || backoff, [backoff * 2, MAX_BACKOFF_SECONDS].min]
     end
 
     # Seconds left before a deadline, negative once it has passed

@@ -24,7 +24,7 @@ StandardError
 | --- | --- |
 | `Error` | Base class for everything Solace raises. |
 | `ConnectionError` | Base for transport/RPC failures. |
-| `HTTPError` | A non-success HTTP response from the RPC node (carries `code` and `body`). |
+| `HTTPError` | A non-success HTTP response from the RPC node (carries `code`, `body`, and `retry_after`, the seconds a `Retry-After` header asked for). |
 | `RPCError` | The node returned a JSON-RPC error (carries `rpc_code`, `rpc_message`, `rpc_data`). |
 | `ParseError` | A response body couldn't be parsed (carries the offending `body`). |
 | `ConfirmationTimeout` | `wait_for_confirmed_signature` didn't reach the target commitment in time (carries `signature`, `commitment` — the level awaited — and `timeout`; the last transient poll error, if any, is named in the message and set as `cause`). |
