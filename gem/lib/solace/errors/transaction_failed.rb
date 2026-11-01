@@ -2,9 +2,12 @@
 
 module Solace
   module Errors
-    # Raised when a transaction being waited on reaches the awaited commitment,
-    # and at least "confirmed", with an error. The failure is then part of the
-    # ledger, so waiting longer cannot change it.
+    # Raised when the node reports a transaction being waited on as failed at
+    # "confirmed" or above. The failure is then part of the ledger, so waiting
+    # longer cannot change it.
+    #
+    # It is not a {Solace::Errors::Error}: a rescue meant for Solace's own
+    # errors (an unreachable node, a timeout) must not swallow a failure on chain.
     #
     # @example Handling a failed transaction
     #   begin
@@ -14,7 +17,7 @@ module Solace
     #   end
     #
     # @since 0.1.10
-    class TransactionFailed < Error
+    class TransactionFailed < StandardError
       attr_reader :signature, :commitment, :reported, :transaction_error
 
       # @param [String] message The error message

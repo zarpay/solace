@@ -2,7 +2,6 @@
 
 require 'net/http'
 require 'json'
-require 'openssl'
 require 'uri'
 
 require 'solace/errors'
@@ -41,28 +40,6 @@ module Solace
 
     # A failure reported below this level may sit on a fork that gets dropped
     FINAL_FAILURE_LEVEL = COMMITMENTS.index('confirmed')
-
-    # HTTP statuses a node or its provider answers while busy or briefly down:
-    # 408 is the client's own timeout, 520-524 a Cloudflare-fronted origin that
-    # is down or slow. 501 and 505 are permanent.
-    TRANSIENT_HTTP_CODES = [408, 429, 500, 502, 503, 504, *520..524].freeze
-
-    # HTTP statuses the wait backs off on: the node is throttling or failing
-    BACKOFF_HTTP_CODES = (TRANSIENT_HTTP_CODES - [408]).freeze
-
-    # Longest pause between polls while backing off, unless Retry-After asks for more
-    MAX_BACKOFF_SECONDS = 2
-
-    # Least time worth starting a poll with after the first: a shorter request
-    # would mostly time out on its own cap
-    MIN_POLL_SECONDS = 0.25
-
-    # Solana RPC errors for a node that is behind: -32005 node unhealthy,
-    # -32016 minimum context slot not reached
-    TRANSIENT_RPC_CODES = [-32_005, -32_016].freeze
-
-    # Network failures the RPC client lets through unwrapped
-    TRANSIENT_NETWORK_ERRORS = [Errno::ECONNRESET, Errno::ECONNREFUSED, OpenSSL::SSL::SSLError].freeze
 
     # @!attribute [r] rpc_url
     #   The URL of the Solana RPC node
@@ -286,12 +263,10 @@ module Solace
     # Get the signature status
     #
     # @param signatures [Array] The signatures of the transactions
-    # @param timeout [Numeric, nil] caps the request's open and read timeouts
     # @return [Object] The signature status
-    def get_signature_statuses(signatures, timeout: nil)
+    def get_signature_statuses(signatures)
       @rpc_client.rpc_request('getSignatureStatuses',
-                              [signatures, default_options.merge({ 'searchTransactionHistory' => true })],
-                              timeout: timeout)['result']
+                              [signatures, default_options.merge({ 'searchTransactionHistory' => true })])['result']
     end
 
     # Get the program accounts
@@ -307,10 +282,9 @@ module Solace
     # Get the signature status
     #
     # @param signature [String] The signature of the transaction
-    # @param timeout [Numeric, nil] caps the request's open and read timeouts
     # @return [Object] The signature status
-    def get_signature_status(signature, timeout: nil)
-      get_signature_statuses([signature], timeout: timeout)
+    def get_signature_status(signature)
+      get_signature_statuses([signature])
     end
 
     # Builds send_transaction options
@@ -348,9 +322,8 @@ module Solace
     #
     # A status at or above the desired commitment counts as reached, so waiting for
     # "confirmed" returns once the node reports "finalized". A failure at "confirmed"
-    # or above is final and raises whatever commitment is awaited. A transient error
-    # from a poll (see #transient_poll_error?) counts as not reached yet; any other
-    # error raises at once. Each poll's request is bounded by the time left.
+    # or above is final and raises whatever commitment is awaited; a failure below
+    # it may sit on a fork that gets dropped, so the wait keeps polling.
     #
     # @param commitment [String, Symbol] One of "processed", "confirmed", "finalized"
     # @param timeout [Numeric] seconds to wait before raising
@@ -359,8 +332,7 @@ module Solace
     # @return [String] the signature when the commitment is reached
     # @raise [ArgumentError] when no block is given or the commitment is unknown
     # @raise [Errors::TransactionFailed] when the transaction fails at "confirmed" or above
-    # @raise [Errors::ConfirmationTimeout] when the commitment is not reached in time,
-    #   with the last transient poll error as its cause
+    # @raise [Errors::ConfirmationTimeout] when the commitment is not reached in time
     def wait_for_confirmed_signature(
       commitment = 'confirmed',
       timeout: 60,
@@ -370,12 +342,16 @@ module Solace
 
       awaited   = awaited_level(commitment)
       signature = extract_signature_from(yield)
+      deadline  = monotonic_deadline(timeout)
 
-      last_error = poll_until(monotonic_deadline(timeout), interval) do |time_left|
-        return signature if commitment_reached?(signature, awaited, time_left)
+      # Wait for confirmation
+      until deadline_passed?(deadline)
+        return signature if commitment_reached?(signature, awaited)
+
+        sleep interval
       end
 
-      raise Errors::ConfirmationTimeout.format(signature, COMMITMENTS[awaited], timeout, last_error), cause: last_error
+      raise Errors::ConfirmationTimeout.format(signature, COMMITMENTS[awaited], timeout)
     end
 
     private
@@ -394,11 +370,10 @@ module Solace
     #
     # @param signature [String] The signature of the transaction
     # @param awaited [Integer] The awaited commitment's index in COMMITMENTS
-    # @param time_left [Numeric] Seconds the poll's request may take
     # @return [Boolean] Whether the commitment is reached
     # @raise [Errors::TransactionFailed] when the transaction failed at "confirmed" or above
-    def commitment_reached?(signature, awaited, time_left)
-      status = get_signature_status(signature, timeout: time_left).dig('value', 0)
+    def commitment_reached?(signature, awaited)
+      status = get_signature_status(signature).dig('value', 0)
       level  = status && reported_level(status)
       return false unless level
       return level >= awaited unless status['err']
@@ -426,20 +401,6 @@ module Solace
       status['confirmationStatus'].nil? && status['confirmations'].nil?
     end
 
-    # Whether an error from one poll may clear by the next: a busy or briefly
-    # unreachable node, or a maintenance page in place of JSON
-    #
-    # @param error [StandardError] The error the poll raised
-    # @return [Boolean] Whether to keep polling
-    def transient_poll_error?(error)
-      case error
-      when Errors::HTTPError then TRANSIENT_HTTP_CODES.include?(error.code)
-      when Errors::RPCError then TRANSIENT_RPC_CODES.include?(error.rpc_code)
-      when Errors::ParseError then error.body.to_s.lstrip.start_with?('<')
-      else TRANSIENT_NETWORK_ERRORS.any? { |transient| error.is_a?(transient) }
-      end
-    end
-
     # Extracts signature from given value
     #
     # @param value [String, Object] The result of the yielded block
@@ -448,80 +409,12 @@ module Solace
       value.is_a?(String) ? value : value['result']
     end
 
-    # Calls the block once per poll until the deadline, with the seconds left for
-    # the poll's request. The first poll always runs; a later one only with at
-    # least MIN_POLL_SECONDS left. Between polls it sleeps the interval, or backs
-    # off while the node throttles or fails, but never past the deadline. A
-    # transient error from the block counts as one poll; any other error raises.
+    # Checks if a timeout deadline has been reached
     #
-    # @param deadline [Float] The deadline for the timeout
-    # @param interval [Numeric] The polling interval in seconds
-    # @yieldparam time_left [Float] Seconds left before the deadline
-    # @return [StandardError, nil] The last transient error a poll raised, unless
-    #   it was a timeout the poll's own cap caused
-    def poll_until(deadline, interval, &poll)
-      last_error = nil
-      backoff    = interval
-      time_left  = seconds_until(deadline)
-
-      while time_left.positive?
-        error          = transient_error_from(time_left, &poll)
-        last_error     = error unless error.nil? || capped_timeout?(error, time_left)
-        pause, backoff = pause_after(error, interval, backoff)
-
-        sleep [pause, seconds_until(deadline)].min.clamp(0..)
-        time_left = seconds_until(deadline)
-        break if time_left < MIN_POLL_SECONDS
-      end
-
-      last_error
-    end
-
-    # Runs one poll
-    #
-    # @param time_left [Float] Seconds left before the deadline
-    # @return [StandardError, nil] The transient error the poll raised, if any
-    # @raise [StandardError] any error that is not transient
-    def transient_error_from(time_left)
-      yield time_left
-      nil
-    rescue StandardError => e
-      raise unless transient_poll_error?(e)
-
-      e
-    end
-
-    # Whether a timeout may come from the cap the wait put on the poll's request
-    # rather than from the node: the cap was below a timeout the client sets
-    #
-    # @param error [StandardError] The error the poll raised
-    # @param time_left [Float] The cap the poll's request was given
-    # @return [Boolean] Whether the timeout is the wait's own
-    def capped_timeout?(error, time_left)
-      error.is_a?(Errors::HTTPError) && error.code == 408 &&
-        time_left < [@rpc_client.open_timeout, @rpc_client.read_timeout].max
-    end
-
-    # The pause before the next poll, and the backoff after it: Retry-After or
-    # the backoff, doubling up to MAX_BACKOFF_SECONDS, while the node throttles or
-    # fails; the interval otherwise
-    #
-    # @param error [StandardError, nil] The transient error the poll raised
-    # @param interval [Numeric] The polling interval in seconds
-    # @param backoff [Numeric] The current backoff in seconds
-    # @return [Array(Numeric, Numeric)] The pause and the next backoff
-    def pause_after(error, interval, backoff)
-      return [interval, interval] unless error.is_a?(Errors::HTTPError) && BACKOFF_HTTP_CODES.include?(error.code)
-
-      [error.retry_after || backoff, [backoff * 2, MAX_BACKOFF_SECONDS].min]
-    end
-
-    # Seconds left before a deadline, negative once it has passed
-    #
-    # @param deadline [Float] The deadline for the timeout
-    # @return [Float] The seconds left
-    def seconds_until(deadline)
-      deadline - Process.clock_gettime(Process::CLOCK_MONOTONIC)
+    # @param deadline [Integer] The deadline for the timeout
+    # @return [Boolean] whether the deadline has passed
+    def deadline_passed?(deadline)
+      Process.clock_gettime(Process::CLOCK_MONOTONIC) >= deadline
     end
 
     # Sets a deadline given a timeout in seconds

@@ -44,7 +44,6 @@ module Solace
       #
       # @param method [String] the JSON-RPC method name
       # @param params [Array] the parameters for the RPC method
-      # @param timeout [Numeric, nil] caps this request's open and read timeouts
       # @return [Hash] the parsed JSON response
       # @raise [
       #   Solace::Errors::HTTPError,
@@ -52,9 +51,9 @@ module Solace
       #   Solace::Errors::RPCError,
       #   Solace::Errors::ConfirmationTimeout
       # ]
-      def rpc_request(method, params = [], timeout: nil)
+      def rpc_request(method, params = [])
         request  = build_rpc_request(method, params)
-        response = perform_http_request(*request, timeout)
+        response = perform_http_request(*request)
         handle_rpc_response(response)
       end
 
@@ -94,16 +93,15 @@ module Solace
       #
       # @param uri [URI] the URI for the HTTP request
       # @param req [Net::HTTP::Post] the request object
-      # @param timeout [Numeric, nil] caps the open and read timeouts
       # @return [Net::HTTPResponse] the HTTP response
       # @raise [Solace::Errors::HTTPError]
-      def perform_http_request(uri, req, timeout = nil)
+      def perform_http_request(uri, req)
         Net::HTTP.start(
           uri.hostname,
           uri.port,
           use_ssl:      uri.scheme == 'https',
-          open_timeout: [open_timeout, timeout].compact.min,
-          read_timeout: [read_timeout, timeout].compact.min
+          open_timeout: open_timeout,
+          read_timeout: read_timeout
         ) do |http|
           http.request(req)
         end

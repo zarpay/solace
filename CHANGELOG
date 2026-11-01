@@ -25,18 +25,15 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ### Added
 
 1. Added `Solace::Errors::TransactionFailed` (`signature`, `commitment`, `reported`, `transaction_error`), raised by `Solace::Connection#wait_for_confirmed_signature` once the node reports the transaction failed at `confirmed` or above, whatever commitment is awaited: the failure is then final, so the wait stops instead of running out its timeout. `commitment` is the level awaited, as on `ConfirmationTimeout`; `reported` is the level the node reported the failure at.
-2. `Solace::Utils::RPCClient#rpc_request` and `Solace::Connection#get_signature_statuses` / `#get_signature_status` take an optional `timeout:` that caps the request's open and read timeouts.
-3. `Solace::Programs::AssociatedTokenAccount#compose_create_associated_token_account` (and so `#create_associated_token_account`) takes `idempotent: true` to compose `CreateIdempotent`, which succeeds when the account already exists.
-4. `Solace::Errors::HTTPError#retry_after`, the seconds a response's `Retry-After` header asked to wait (given as seconds or as an HTTP date), or nil.
+2. `Solace::Programs::AssociatedTokenAccount#compose_create_associated_token_account` (and so `#create_associated_token_account`) takes `idempotent: true` to compose `CreateIdempotent`, which succeeds when the account already exists.
 
 ### Changed
 
 1. A failed transaction that reaches `confirmed` now raises `TransactionFailed` from `Solace::Connection#wait_for_confirmed_signature`, where the wait used to return its signature as for a success.
-2. `Solace::Programs::AssociatedTokenAccount#get_or_create_address` creates the account with `CreateIdempotent`, so a caller that creates the same account between its check and its create no longer makes it fail.
-3. `Solace::Connection#wait_for_confirmed_signature` keeps polling through a transient error and raises any other at once: HTTP 408, 429, 500, 502, 503, 504 and 520–524 (a Cloudflare-fronted origin down or slow; 501 and 505 stay permanent); RPC `-32005` (node unhealthy) and `-32016` (minimum context slot not reached); `Errno::ECONNRESET`, `Errno::ECONNREFUSED` and `OpenSSL::SSL::SSLError`; and a `ParseError` whose body is an HTML page. On 429 and those 5xx it backs off: it waits as long as `Retry-After` asks, or else doubles the pause from `interval` up to 2 s, never past the deadline. On timeout the `ConfirmationTimeout` names the last transient error and carries it as `cause`, unless that error was a timeout the wait's own cap on the poll caused.
-4. Each poll of `Solace::Connection#wait_for_confirmed_signature` is bounded by the time left before its deadline, and the sleep between polls never runs past it, so the wait no longer overruns its timeout by up to the client's `read_timeout`. After the first poll it starts none with less than 250 ms left, and raises `ConfirmationTimeout` then, up to 250 ms before the deadline.
-5. A wait for `processed` no longer returns on a failure the node reports only at `processed`: that failure may sit on a fork that gets dropped, so the wait keeps polling until the failure reaches `confirmed` (raising `TransactionFailed`) or the deadline passes.
-6. `Solace::Connection#wait_for_confirmed_signature` raises `ArgumentError` for a commitment other than `processed`, `confirmed` or `finalized`, before calling its block, and accepts the commitment as a symbol; `ConfirmationTimeout#commitment` is always a String.
+2. `TransactionFailed` is a `StandardError`, not a `Solace::Errors::Error`, so a rescue meant for Solace's own errors (an unreachable node, a timeout) does not swallow a failure on chain. A caller that rescues only `Solace::Errors::Error` around the wait will now see `TransactionFailed` raise.
+3. A wait for `processed` no longer returns on a failure the node reports only at `processed`: that failure may sit on a fork that gets dropped, so the wait keeps polling until the failure reaches `confirmed` (raising `TransactionFailed`) or the deadline passes.
+4. `Solace::Programs::AssociatedTokenAccount#get_or_create_address` creates the account with `CreateIdempotent`, so a caller that creates the same account between its check and its create no longer makes it fail.
+5. `Solace::Connection#wait_for_confirmed_signature` raises `ArgumentError` for a commitment other than `processed`, `confirmed` or `finalized`, before calling its block, and accepts the commitment as a symbol; `ConfirmationTimeout#commitment` is always a String.
 
 ### Fixed
 
