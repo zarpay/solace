@@ -71,7 +71,7 @@ end
 | `send_transaction(tx, overrides = {})` | Submit a serialized transaction (or a `Transaction`). |
 | `simulate_transaction(tx, overrides = {})` | Simulate without committing. |
 | `request_airdrop(pubkey, lamports, options = {})` | Fund an account on test clusters. |
-| `wait_for_confirmed_signature(commitment = 'confirmed', timeout:, interval:) { … }` | Poll until the yielded signature reaches `commitment` or a higher one (processed < confirmed < finalized); raises `Solace::Errors::TransactionFailed` if it gets there with an error, `Solace::Errors::ConfirmationTimeout` on timeout. |
+| `wait_for_confirmed_signature(commitment = 'confirmed', timeout:, interval:) { … }` | Poll until the yielded signature reaches `commitment` or a higher one (processed < confirmed < finalized); raises `Solace::Errors::TransactionFailed` if it gets there, and to at least `confirmed`, with an error, and `Solace::Errors::ConfirmationTimeout` on timeout. A rooted status counts as `finalized`; an HTTP or RPC error from a poll counts as not yet. |
 
 `wait_for_confirmed_signature` takes a block that yields the signature (a `String`, or the
 RPC response `Hash` with a `'result'` key) — handy for chaining straight off a

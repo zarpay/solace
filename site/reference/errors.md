@@ -28,7 +28,7 @@ StandardError
 | `RPCError` | The node returned a JSON-RPC error (carries `rpc_code`, `rpc_message`, `rpc_data`). |
 | `ParseError` | A response body couldn't be parsed (carries the offending `body`). |
 | `ConfirmationTimeout` | `wait_for_confirmed_signature` didn't reach the target commitment in time (carries `signature`, `commitment`, `timeout`). |
-| `TransactionFailed` | The transaction `wait_for_confirmed_signature` waited on reached the target commitment with an error (carries `signature`, `commitment`, and the node's `err` as `transaction_error`). |
+| `TransactionFailed` | The transaction `wait_for_confirmed_signature` waited on reached the target commitment, and at least `confirmed`, with an error (carries `signature`, `commitment` — the level awaited, as on `ConfirmationTimeout` — `reported`, the level the node reported the failure at, and the node's `err` as `transaction_error`). |
 
 ## Handling them
 

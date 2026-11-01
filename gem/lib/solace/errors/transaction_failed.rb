@@ -2,9 +2,9 @@
 
 module Solace
   module Errors
-    # Raised when a transaction being waited on reaches the awaited commitment
-    # with an error. The failure is part of the ledger at that commitment, so
-    # the transaction will never succeed and waiting longer cannot change it.
+    # Raised when a transaction being waited on reaches the awaited commitment,
+    # and at least "confirmed", with an error. The failure is then part of the
+    # ledger, so waiting longer cannot change it.
     #
     # @example Handling a failed transaction
     #   begin
@@ -15,30 +15,35 @@ module Solace
     #
     # @since 0.1.10
     class TransactionFailed < Error
-      attr_reader :signature, :commitment, :transaction_error
+      attr_reader :signature, :commitment, :reported, :transaction_error
 
       # @param [String] message The error message
       # @param [String] signature The signature of the transaction
-      # @param [String] commitment The commitment the failure was reported at
+      # @param [String] commitment The commitment level awaited
+      # @param [String] reported The commitment level the node reported the failure at
       # @param [Hash, String] transaction_error The `err` the node reported
-      def initialize(message, signature:, commitment:, transaction_error:)
+      def initialize(message, signature:, commitment:, reported:, transaction_error:)
         super(message)
         @signature         = signature
         @commitment        = commitment
+        @reported          = reported
         @transaction_error = transaction_error
       end
 
       # Formats a failed transaction error
       #
       # @param signature [String] The signature of the transaction
-      # @param commitment [String] The commitment the failure was reported at
+      # @param commitment [String] The commitment level awaited
+      # @param reported [String] The commitment level the node reported the failure at
       # @param transaction_error [Hash, String] The `err` the node reported
       # @return [Solace::Errors::TransactionFailed] The formatted error
-      def self.format(signature, commitment, transaction_error)
+      def self.format(signature, commitment, reported, transaction_error)
         new(
-          "Transaction #{signature} failed at commitment=#{commitment}: #{transaction_error}",
+          "Transaction #{signature} failed at commitment=#{reported} " \
+          "(awaiting #{commitment}): #{transaction_error}",
           signature:         signature,
           commitment:        commitment,
+          reported:          reported,
           transaction_error: transaction_error
         )
       end

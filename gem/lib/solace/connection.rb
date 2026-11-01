@@ -38,6 +38,9 @@ module Solace
     # Commitment levels, lowest first
     COMMITMENTS = %w[processed confirmed finalized].freeze
 
+    # A failure reported below this level may sit on a fork that gets dropped
+    FINAL_FAILURE_LEVEL = COMMITMENTS.index('confirmed')
+
     # @!attribute [r] rpc_url
     #   The URL of the Solana RPC node
     attr_reader :rpc_client
@@ -318,7 +321,9 @@ module Solace
     # Wait until the yielded signature reaches the desired commitment or timeout.
     #
     # A status at or above the desired commitment counts as reached, so waiting for
-    # "confirmed" returns once the node reports "finalized".
+    # "confirmed" returns once the node reports "finalized". A failure counts once it
+    # is at the desired commitment and at least "confirmed". An HTTP or RPC error
+    # from a poll counts as not reached yet.
     #
     # @param commitment [String, Symbol] One of "processed", "confirmed", "finalized"
     # @param timeout [Numeric] seconds to wait before raising
@@ -335,15 +340,15 @@ module Solace
     )
       raise ArgumentError, 'Block required' unless block_given?
 
-      awaited = COMMITMENTS.index(commitment.to_s)
-      raise ArgumentError, "Unknown commitment: #{commitment}" unless awaited
+      commitment = commitment.to_s
+      raise ArgumentError, "Unknown commitment: #{commitment}" unless COMMITMENTS.include?(commitment)
 
       signature = extract_signature_from(yield)
       deadline  = monotonic_deadline(timeout)
 
       # Wait for confirmation
       until deadline_passed?(deadline)
-        return signature if commitment_reached?(signature, awaited)
+        return signature if commitment_reached?(signature, commitment)
 
         sleep interval
       end
@@ -357,16 +362,39 @@ module Solace
     # commitment or a higher one, and the transaction succeeded.
     #
     # @param signature [String] The signature of the transaction
-    # @param awaited [Integer] The awaited commitment's index in COMMITMENTS
+    # @param commitment [String] The commitment level awaited
     # @return [Boolean] Whether the commitment is reached
-    # @raise [Errors::TransactionFailed] when the transaction reached it with an error
-    def commitment_reached?(signature, awaited)
-      status = get_signature_status(signature).dig('value', 0) || {}
-      level  = COMMITMENTS.index(status['confirmationStatus'])
-      return false unless level && level >= awaited
-      raise Errors::TransactionFailed.format(signature, status['confirmationStatus'], status['err']) if status['err']
+    # @raise [Errors::TransactionFailed] when the transaction failed at the commitment
+    def commitment_reached?(signature, commitment)
+      status = poll_signature_status(signature)
+      level  = status && reported_level(status)
+      return false unless level && level >= COMMITMENTS.index(commitment)
+      return true unless status['err']
+      return false if level < FINAL_FAILURE_LEVEL
 
-      true
+      raise Errors::TransactionFailed.format(signature, commitment, COMMITMENTS[level], status['err'])
+    end
+
+    # Fetches the signature's status for one poll of the wait
+    #
+    # @param signature [String] The signature of the transaction
+    # @return [Hash, nil] The status, or nil when the node has not seen the
+    #   signature or could not be read this time
+    def poll_signature_status(signature)
+      get_signature_status(signature).dig('value', 0)
+    rescue Errors::ConnectionError
+      nil
+    end
+
+    # The status's commitment as an index in COMMITMENTS. A null confirmationStatus
+    # with null confirmations means the transaction is rooted.
+    #
+    # @param status [Hash] One entry of a getSignatureStatuses result
+    # @return [Integer, nil] The level, or nil when the status names none
+    def reported_level(status)
+      return COMMITMENTS.index('finalized') if status['confirmationStatus'].nil? && status['confirmations'].nil?
+
+      COMMITMENTS.index(status['confirmationStatus'])
     end
 
     # Extracts signature from given value
