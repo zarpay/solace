@@ -35,6 +35,31 @@ describe Solace::Utils::RPCClient do
       assert_equal '2.0', response['jsonrpc']
     end
 
+    it 'caps the open and read timeouts at a per-request timeout, never raising them' do
+      opened = []
+      start  = lambda do |*_args, **options|
+        opened << options.slice(:open_timeout, :read_timeout)
+        raise Net::OpenTimeout
+      end
+
+      Net::HTTP.stub(:start, start) do
+        [0.5, 999].each do |timeout|
+          assert_raises(Solace::Errors::HTTPError) { client.rpc_request(method_name, params, timeout: timeout) }
+        end
+      end
+
+      assert_equal [
+        {
+          open_timeout: 0.5,
+          read_timeout: 0.5
+        },
+        {
+          open_timeout: client.open_timeout,
+          read_timeout: client.read_timeout
+        }
+      ], opened
+    end
+
     it 'raises HTTPError timeout when the request times out' do
       Net::HTTP.stub(:start, ->(*) { raise Net::OpenTimeout }) do
         error = assert_raises(Solace::Errors::HTTPError) do

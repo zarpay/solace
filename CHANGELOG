@@ -24,18 +24,22 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ### Added
 
-1. Added `Solace::Errors::TransactionFailed` (`signature`, `commitment`, `reported`, `transaction_error`), raised by `Solace::Connection#wait_for_confirmed_signature` when the transaction reaches the awaited commitment, and at least `confirmed`, with an `err`. `commitment` is the level awaited, as on `ConfirmationTimeout`; `reported` is the level the node reported the failure at. The failure is then final, so the wait stops instead of running out its timeout.
+1. Added `Solace::Errors::TransactionFailed` (`signature`, `commitment`, `reported`, `transaction_error`), raised by `Solace::Connection#wait_for_confirmed_signature` once the node reports the transaction failed at `confirmed` or above, whatever commitment is awaited: the failure is then final, so the wait stops instead of running out its timeout. `commitment` is the level awaited, as on `ConfirmationTimeout`; `reported` is the level the node reported the failure at.
+2. `Solace::Utils::RPCClient#rpc_request` and `Solace::Connection#get_signature_statuses` / `#get_signature_status` take an optional `timeout:` that caps the request's open and read timeouts.
+3. `Solace::Programs::AssociatedTokenAccount#compose_create_associated_token_account` (and so `#create_associated_token_account`) takes `idempotent: true` to compose `CreateIdempotent`, which succeeds when the account already exists.
 
 ### Changed
 
-1. A failed transaction that reaches `confirmed` (or the awaited commitment, if higher) now raises `TransactionFailed` from `Solace::Connection#wait_for_confirmed_signature`, where the wait used to return its signature as for a success. This reaches `Solace::Programs::AssociatedTokenAccount#get_or_create_address`, which now raises when the account creation fails instead of returning the address.
-2. `Solace::Connection#wait_for_confirmed_signature` keeps polling through an `HTTPError` or `RPCError` from `getSignatureStatuses` (a 429 or 503, say) and raises `ConfirmationTimeout` at the deadline as before, where one such error used to end the wait.
-3. `Solace::Connection#wait_for_confirmed_signature` raises `ArgumentError` for a commitment other than `processed`, `confirmed` or `finalized`, before calling its block, and accepts the commitment as a symbol; `ConfirmationTimeout#commitment` is always a String.
+1. A failed transaction that reaches `confirmed` now raises `TransactionFailed` from `Solace::Connection#wait_for_confirmed_signature`, where the wait used to return its signature as for a success.
+2. `Solace::Programs::AssociatedTokenAccount#get_or_create_address` creates the account with `CreateIdempotent`, so a caller that creates the same account between its check and its create no longer makes it fail.
+3. `Solace::Connection#wait_for_confirmed_signature` keeps polling through a transient error and raises any other at once: HTTP 408, 429 and 5xx; RPC `-32005` (node unhealthy) and `-32016` (minimum context slot not reached); `Errno::ECONNRESET`, `Errno::ECONNREFUSED` and `OpenSSL::SSL::SSLError`; and a `ParseError` whose body is an HTML page. On timeout the `ConfirmationTimeout` names the last transient error and carries it as `cause`.
+4. Each poll of `Solace::Connection#wait_for_confirmed_signature` is bounded by the time left before its deadline, and the sleep between polls never runs past it, so the wait no longer overruns its timeout by up to the client's `read_timeout`.
+5. `Solace::Connection#wait_for_confirmed_signature` raises `ArgumentError` for a commitment other than `processed`, `confirmed` or `finalized`, before calling its block, and accepts the commitment as a symbol; `ConfirmationTimeout#commitment` is always a String.
 
 ### Fixed
 
 1. `Solace::Connection#wait_for_confirmed_signature` counts a status at or above the awaited commitment as reached (processed < confirmed < finalized). A transaction the node already reported as `finalized` no longer waits out the whole timeout when `confirmed` was awaited.
-2. A rooted transaction, which the node reports with a null `confirmationStatus` and null `confirmations`, counts as `finalized`.
+2. A rooted transaction, which the node reports with `confirmationStatus` and `confirmations` each null or absent, counts as `finalized`.
 
 ## 0.1.9 - 2026-10-08
 
