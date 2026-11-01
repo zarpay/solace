@@ -38,8 +38,10 @@ module Solace
     # Commitment levels, lowest first
     COMMITMENTS = %w[processed confirmed finalized].freeze
 
-    # A failure reported below this level may sit on a fork that gets dropped
-    FINAL_FAILURE_LEVEL = COMMITMENTS.index('confirmed')
+    # Each commitment's level, its index in COMMITMENTS
+    PROCESSED = COMMITMENTS.index('processed')
+    CONFIRMED = COMMITMENTS.index('confirmed')
+    FINALIZED = COMMITMENTS.index('finalized')
 
     # @!attribute [r] rpc_url
     #   The URL of the Solana RPC node
@@ -344,11 +346,14 @@ module Solace
       signature = extract_signature_from(yield)
       deadline  = monotonic_deadline(timeout)
 
-      # Wait for confirmation
-      until deadline_passed?(deadline)
+      # Polls at least once, and once more at the deadline
+      loop do
         return signature if commitment_reached?(signature, awaited)
 
-        sleep interval
+        time_left = seconds_until(deadline)
+        break unless time_left.positive?
+
+        sleep [interval, time_left].min
       end
 
       raise Errors::ConfirmationTimeout.format(signature, COMMITMENTS[awaited], timeout)
@@ -377,7 +382,8 @@ module Solace
       level  = status && reported_level(status)
       return false unless level
       return level >= awaited unless status['err']
-      return false if level < FINAL_FAILURE_LEVEL
+      # A failure below confirmed may sit on a fork that gets dropped
+      return false if level < CONFIRMED
 
       raise Errors::TransactionFailed.format(signature, COMMITMENTS[awaited], COMMITMENTS[level], status['err'])
     end
@@ -387,11 +393,12 @@ module Solace
     # @param status [Hash] One entry of a getSignatureStatuses result
     # @return [Integer, nil] The level, or nil when the status names none
     def reported_level(status)
-      return COMMITMENTS.index('finalized') if rooted?(status)
+      return FINALIZED if rooted?(status)
       return COMMITMENTS.index(status['confirmationStatus']) if status['confirmationStatus']
 
-      # A null confirmationStatus with confirmations counted is confirmed
-      COMMITMENTS.index('confirmed') if status['confirmations'].to_i.positive?
+      # A null confirmationStatus with a confirmations count is only known not to
+      # be rooted, which a processed transaction already is
+      PROCESSED if status['confirmations'].is_a?(Integer)
     end
 
     # A status whose confirmationStatus and confirmations are both present and
@@ -411,12 +418,12 @@ module Solace
       value.is_a?(String) ? value : value['result']
     end
 
-    # Checks if a timeout deadline has been reached
+    # Seconds left before a deadline, zero or negative once it has passed
     #
-    # @param deadline [Integer] The deadline for the timeout
-    # @return [Boolean] whether the deadline has passed
-    def deadline_passed?(deadline)
-      Process.clock_gettime(Process::CLOCK_MONOTONIC) >= deadline
+    # @param deadline [Float] The deadline for the timeout
+    # @return [Float] The seconds left
+    def seconds_until(deadline)
+      deadline - Process.clock_gettime(Process::CLOCK_MONOTONIC)
     end
 
     # Sets a deadline given a timeout in seconds

@@ -78,11 +78,32 @@ describe Solace::Connection do
       assert_raises(Solace::Errors::ConfirmationTimeout) { wait_with_status(stripped, 'processed') }
     end
 
-    it 'counts a null status with confirmations counted as confirmed' do
+    it 'counts a null status with confirmations counted as processed' do
       counted = signature_status(nil, confirmations: 3)
 
-      assert_equal signature, wait_with_status(counted, 'confirmed')
-      assert_raises(Solace::Errors::ConfirmationTimeout) { wait_with_status(counted, 'finalized') }
+      assert_equal signature, wait_with_status(counted, 'processed')
+      assert_raises(Solace::Errors::ConfirmationTimeout) { wait_with_status(counted, 'confirmed') }
+    end
+
+    it 'polls once even when the timeout has already run out' do
+      result = connection.stub(:get_signature_status, signature_status('confirmed')) do
+        connection.wait_for_confirmed_signature(timeout: 0) { signature }
+      end
+
+      assert_equal signature, result
+    end
+
+    it 'polls once more at the deadline instead of sleeping past it' do
+      answers = [signature_status('processed'), signature_status('confirmed')]
+      node    = ->(_signature) { answers.size > 1 ? answers.shift : answers.first }
+
+      started = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+      result  = connection.stub(:get_signature_status, node) do
+        connection.wait_for_confirmed_signature(timeout: 0.05, interval: 5) { signature }
+      end
+
+      assert_equal signature, result
+      assert_operator Process.clock_gettime(Process::CLOCK_MONOTONIC) - started, :<, 1
     end
 
     it 'accepts the commitment as a symbol and reports it as a string on timeout' do
