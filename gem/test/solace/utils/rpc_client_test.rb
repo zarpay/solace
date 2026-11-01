@@ -35,6 +35,31 @@ describe Solace::Utils::RPCClient do
       assert_equal '2.0', response['jsonrpc']
     end
 
+    it 'caps the open and read timeouts at a per-request timeout, never raising them' do
+      opened = []
+      start  = lambda do |*_args, **options|
+        opened << options.slice(:open_timeout, :read_timeout)
+        raise Net::OpenTimeout
+      end
+
+      Net::HTTP.stub(:start, start) do
+        [0.5, 999].each do |timeout|
+          assert_raises(Solace::Errors::HTTPError) { client.rpc_request(method_name, params, timeout: timeout) }
+        end
+      end
+
+      assert_equal [
+        {
+          open_timeout: 0.5,
+          read_timeout: 0.5
+        },
+        {
+          open_timeout: client.open_timeout,
+          read_timeout: client.read_timeout
+        }
+      ], opened
+    end
+
     it 'raises HTTPError timeout when the request times out' do
       Net::HTTP.stub(:start, ->(*) { raise Net::OpenTimeout }) do
         error = assert_raises(Solace::Errors::HTTPError) do
@@ -90,6 +115,26 @@ describe Solace::Utils::RPCClient do
         assert_equal 'Mocked body here', error.body
         assert_equal 400, error.code
       end
+    end
+
+    it "reads a throttled response's Retry-After, in seconds or as a date" do
+      throttled = lambda do |retry_after|
+        response                = Net::HTTPTooManyRequests.new('1.1', 429, 'Too Many Requests')
+        response.instance_variable_set(:@read, true)
+        response['Retry-After'] = retry_after if retry_after
+        response
+      end
+
+      waits = ['3', (Time.now + 30).httpdate, nil, 'soon'].map do |retry_after|
+        Net::HTTP.stub(:start, ->(*) { throttled.call(retry_after) }) do
+          assert_raises(Solace::Errors::HTTPError) { client.rpc_request(method_name, params) }.retry_after
+        end
+      end
+
+      assert_in_delta 3.0, waits[0]
+      assert_in_delta 30.0, waits[1], 1.5
+      assert_nil waits[2]
+      assert_nil waits[3]
     end
 
     it 'raises ParseError when the response is not a valid JSON' do

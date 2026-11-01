@@ -36,10 +36,14 @@ module Solace
       # @param signature [String] The signature of the transaction
       # @param commitment [String] The commitment level not reached
       # @param timeout [Integer] The time out reached
+      # @param last_error [StandardError, nil] The last transient error a poll raised
       # @return [Solace::Errors::ConfirmationTimeout] The formatted error
-      def self.format(signature, commitment, timeout)
+      def self.format(signature, commitment, timeout, last_error = nil)
+        message  = "Timed out waiting for signature #{signature} at commitment=#{commitment} after #{timeout}s"
+        message += "; last poll error: #{last_error.class}: #{last_error.message}" if last_error
+
         new(
-          "Timed out waiting for signature #{signature} at commitment=#{commitment} after #{timeout}s",
+          message,
           signature:  signature,
           commitment: commitment,
           timeout:    timeout
