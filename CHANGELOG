@@ -32,7 +32,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ### Fixed
 
-1. `Solace::Connection#wait_for_confirmed_signature` counts a status at or above the awaited commitment as reached (processed < confirmed < finalized). A transaction the node already reported as `finalized` no longer waits out the whole timeout when `confirmed` was awaited, and a failed transaction is no longer reported as reached.
+1. `Solace::Connection#wait_for_confirmed_signature` counts a status at or above the awaited commitment as reached (processed < confirmed < finalized). A transaction the node already reported as `finalized` no longer waits out the whole timeout when `confirmed` was awaited.
 
 ## 0.1.9 - 2026-10-08
 

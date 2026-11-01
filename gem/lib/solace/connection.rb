@@ -334,14 +334,16 @@ module Solace
       interval: 0.1
     )
       raise ArgumentError, 'Block required' unless block_given?
-      raise ArgumentError, "Unknown commitment: #{commitment}" unless COMMITMENTS.include?(commitment.to_s)
+
+      awaited = COMMITMENTS.index(commitment.to_s)
+      raise ArgumentError, "Unknown commitment: #{commitment}" unless awaited
 
       signature = extract_signature_from(yield)
       deadline  = monotonic_deadline(timeout)
 
       # Wait for confirmation
       until deadline_passed?(deadline)
-        return signature if commitment_reached?(signature, commitment)
+        return signature if commitment_reached?(signature, awaited)
 
         sleep interval
       end
@@ -355,13 +357,13 @@ module Solace
     # commitment or a higher one, and the transaction succeeded.
     #
     # @param signature [String] The signature of the transaction
-    # @param commitment [String] The commitment level awaited
+    # @param awaited [Integer] The awaited commitment's index in COMMITMENTS
     # @return [Boolean] Whether the commitment is reached
     # @raise [Errors::TransactionFailed] when the transaction reached it with an error
-    def commitment_reached?(signature, commitment)
+    def commitment_reached?(signature, awaited)
       status = get_signature_status(signature).dig('value', 0) || {}
       level  = COMMITMENTS.index(status['confirmationStatus'])
-      return false unless level && level >= COMMITMENTS.index(commitment.to_s)
+      return false unless level && level >= awaited
       raise Errors::TransactionFailed.format(signature, status['confirmationStatus'], status['err']) if status['err']
 
       true
