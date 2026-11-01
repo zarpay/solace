@@ -11,6 +11,8 @@ module Solace
   # - {Solace::Errors::RPCError} - RPC method errors returned by the node
   # - {Solace::Errors::ParseError} - Data parsing and deserialization errors
   # - {Solace::Errors::ConfirmationTimeout} - Transaction confirmation timeouts
+  # - {Solace::Errors::TransactionFailed} - Transactions that failed on chain; a StandardError,
+  #   not a {Solace::Errors::Error}, so a rescue of Solace's own errors does not catch it
   #
   # @see Solace::Connection
   # @since 0.0.8
@@ -21,6 +23,7 @@ module Solace
     require 'solace/errors/http_error'
     require 'solace/errors/parse_error'
     require 'solace/errors/confirmation_timeout'
+    require 'solace/errors/transaction_failed'
     require 'solace/errors/address_lookup_table_not_found'
   end
 end

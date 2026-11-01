@@ -100,12 +100,17 @@ module Solace
 
         return ata_address unless account_balance.nil?
 
+        # Idempotent, so another caller's create landing between this one's preflight
+        # and its landing does not fail it. Callers sending identical transactions
+        # (same payer, blockhash and accounts) share a signature: the second send is
+        # rejected as a duplicate ("already processed") of the create already landing.
         tx = create_associated_token_account(
           payer:            payer,
           funder:           funder,
           owner:            owner,
           mint:             mint,
-          token_program_id: token_program_id
+          token_program_id: token_program_id,
+          idempotent:       true
         )
 
         connection.wait_for_confirmed_signature { tx.signature }
@@ -152,16 +157,18 @@ module Solace
       # @param mint [#to_s, PublicKey] The keypair of the mint.
       # @param funder [#to_s, PublicKey] The keypair that will pay for rent of the new associated token account.
       # @param token_program_id [String] The token program that owns the mint (defaults to legacy SPL Token).
+      # @param idempotent [Boolean] Whether to use CreateIdempotent, which succeeds when the account exists.
       # @return [TransactionComposer] A composer with the create-ATA instruction.
       def compose_create_associated_token_account(
         funder:,
         owner:,
         mint:,
-        token_program_id: Solace::Constants::TOKEN_PROGRAM_ID
+        token_program_id: Solace::Constants::TOKEN_PROGRAM_ID,
+        idempotent: false
       )
         ata_address, = get_address(owner: owner, mint: mint, token_program_id: token_program_id)
 
-        ix = Solace::Composers::AssociatedTokenAccountProgramCreateAccountComposer.new(
+        ix = create_account_composer(idempotent).new(
           mint:             mint,
           owner:            owner,
           funder:           funder,
@@ -172,6 +179,20 @@ module Solace
         TransactionComposer
           .new(connection: connection)
           .add_instruction(ix)
+      end
+
+      private
+
+      # The composer for the create-ATA instruction
+      #
+      # @param idempotent [Boolean] Whether to use CreateIdempotent
+      # @return [Class] The composer class
+      def create_account_composer(idempotent)
+        if idempotent
+          Solace::Composers::AssociatedTokenAccountProgramCreateIdempotentAccountComposer
+        else
+          Solace::Composers::AssociatedTokenAccountProgramCreateAccountComposer
+        end
       end
     end
   end

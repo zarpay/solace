@@ -138,6 +138,22 @@ describe Solace::Programs::AssociatedTokenAccount do
 
       assert ata_address.is_a?(String)
     end
+
+    it 'returns the address when another caller created the account after the check' do
+      existing, = program.get_address(owner: bob, mint: mint)
+      refute_nil connection.get_account_info(existing)
+
+      ata_address = connection.stub(:get_account_info, nil) do
+        program.get_or_create_address(
+          payer:  payer,
+          funder: payer,
+          owner:  bob,
+          mint:   mint
+        )
+      end
+
+      assert_equal existing, ata_address
+    end
   end
 
   describe 'creating an associated token account' do

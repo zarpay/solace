@@ -20,6 +20,27 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ---
 
+## Unreleased
+
+### Added
+
+1. Added `Solace::Errors::TransactionFailed` (`signature`, `commitment`, `reported`, `transaction_error`), raised by `Solace::Connection#wait_for_confirmed_signature` once the node reports the transaction failed at `confirmed` or above, whatever commitment is awaited: the failure is then final, so the wait stops instead of running out its timeout. `commitment` is the level awaited, as on `ConfirmationTimeout`; `reported` is the level the node reported the failure at.
+2. `Solace::Programs::AssociatedTokenAccount#compose_create_associated_token_account` (and so `#create_associated_token_account`) takes `idempotent: true` to compose `CreateIdempotent`, which succeeds when the account already exists.
+
+### Changed
+
+1. A failed transaction that reaches `confirmed` now raises `TransactionFailed` from `Solace::Connection#wait_for_confirmed_signature`, where the wait used to return its signature as for a success.
+2. `TransactionFailed` is a `StandardError`, not a `Solace::Errors::Error`, so a rescue meant for Solace's own errors (an unreachable node, a timeout) does not swallow a failure on chain. A caller that rescues only `Solace::Errors::Error` around the wait will now see `TransactionFailed` raise.
+3. A wait for `processed` no longer returns on a failure the node reports only at `processed`: that failure may sit on a fork that gets dropped, so the wait keeps polling until the failure reaches `confirmed` (raising `TransactionFailed`) or the deadline passes.
+4. `Solace::Programs::AssociatedTokenAccount#get_or_create_address` creates the account with `CreateIdempotent`, so a caller that creates the same account between its check and its create no longer makes it fail.
+5. `Solace::Connection#wait_for_confirmed_signature` raises `ArgumentError` for a commitment other than `processed`, `confirmed` or `finalized`, before calling its block, and accepts the commitment as a symbol; `ConfirmationTimeout#commitment` is always a String.
+
+### Fixed
+
+1. `Solace::Connection#wait_for_confirmed_signature` counts a status at or above the awaited commitment as reached (processed < confirmed < finalized). A transaction the node already reported as `finalized` no longer waits out the whole timeout when `confirmed` was awaited.
+2. A rooted transaction, which the node reports with `confirmationStatus` and `confirmations` both present and null, counts as `finalized`; a status missing either key is not taken as rooted. A null `confirmationStatus` with a `confirmations` count counts as `processed`: the count says only that the transaction is not rooted, so it satisfies only a `processed` wait, and a failure reported that way is never final.
+3. `Solace::Connection#wait_for_confirmed_signature` polls at least once, even with a `timeout` of 0, and polls once more at the deadline instead of sleeping past it, so a transaction that reaches the commitment during the last pause no longer times out.
+
 ## 0.1.9 - 2026-10-08
 
 ### Added

@@ -11,7 +11,7 @@ module Solace
     #
     # @example Handling confirmation timeout
     #   begin
-    #     connection.wait_for_confirmed_signature(signature, timeout: 30)
+    #     connection.wait_for_confirmed_signature(timeout: 30) { signature }
     #   rescue Solace::Errors::ConfirmationTimeout => e
     #     puts "Transaction confirmation timed out: #{e.message}"
     #   end

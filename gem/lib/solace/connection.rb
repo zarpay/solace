@@ -35,6 +35,14 @@ module Solace
   # @since 0.0.1
   # rubocop:disable Metrics/ClassLength
   class Connection
+    # Commitment levels, lowest first
+    COMMITMENTS = %w[processed confirmed finalized].freeze
+
+    # Each commitment's level, its index in COMMITMENTS
+    PROCESSED = COMMITMENTS.index('processed')
+    CONFIRMED = COMMITMENTS.index('confirmed')
+    FINALIZED = COMMITMENTS.index('finalized')
+
     # @!attribute [r] rpc_url
     #   The URL of the Solana RPC node
     attr_reader :rpc_client
@@ -314,12 +322,19 @@ module Solace
 
     # Wait until the yielded signature reaches the desired commitment or timeout.
     #
-    # @param commitment [String] One of "processed", "confirmed", "finalized"
+    # A status at or above the desired commitment counts as reached, so waiting for
+    # "confirmed" returns once the node reports "finalized". A failure at "confirmed"
+    # or above is final and raises whatever commitment is awaited; a failure below
+    # it may sit on a fork that gets dropped, so the wait keeps polling.
+    #
+    # @param commitment [String, Symbol] One of "processed", "confirmed", "finalized"
     # @param timeout [Numeric] seconds to wait before raising
     # @param interval [Numeric] polling interval in seconds
     # @yieldreturn [String, Hash] a signature string or a JSON-RPC hash with "result"
     # @return [String] the signature when the commitment is reached
-    # @raise [ArgumentError, Errors::ConfirmationTimeout]
+    # @raise [ArgumentError] when no block is given or the commitment is unknown
+    # @raise [Errors::TransactionFailed] when the transaction fails at "confirmed" or above
+    # @raise [Errors::ConfirmationTimeout] when the commitment is not reached in time
     def wait_for_confirmed_signature(
       commitment = 'confirmed',
       timeout: 60,
@@ -327,28 +342,72 @@ module Solace
     )
       raise ArgumentError, 'Block required' unless block_given?
 
+      awaited   = awaited_level(commitment)
       signature = extract_signature_from(yield)
       deadline  = monotonic_deadline(timeout)
 
-      # Wait for confirmation
-      until deadline_passed?(deadline)
-        return signature if commitment_reached?(signature, commitment)
+      # Polls at least once, and once more at the deadline
+      loop do
+        return signature if commitment_reached?(signature, awaited)
 
-        sleep interval
+        time_left = seconds_until(deadline)
+        break unless time_left.positive?
+
+        sleep [interval, time_left].min
       end
 
-      raise Errors::ConfirmationTimeout.format(signature, commitment, timeout)
+      raise Errors::ConfirmationTimeout.format(signature, COMMITMENTS[awaited], timeout)
     end
 
     private
 
-    # Confirms the commitment is reached
+    # The awaited commitment as an index in COMMITMENTS
+    #
+    # @param commitment [String, Symbol] The commitment level awaited
+    # @return [Integer] The level
+    # @raise [ArgumentError] when the commitment is unknown
+    def awaited_level(commitment)
+      COMMITMENTS.index(commitment.to_s) or raise ArgumentError, "Unknown commitment: #{commitment}"
+    end
+
+    # Confirms the commitment is reached: the node reports the signature at the
+    # commitment or a higher one, and the transaction succeeded.
     #
     # @param signature [String] The signature of the transaction
-    # @param commitment [String] The commitment level not reached
+    # @param awaited [Integer] The awaited commitment's index in COMMITMENTS
     # @return [Boolean] Whether the commitment is reached
-    def commitment_reached?(signature, commitment)
-      get_signature_status(signature).dig('value', 0, 'confirmationStatus') == commitment
+    # @raise [Errors::TransactionFailed] when the transaction failed at "confirmed" or above
+    def commitment_reached?(signature, awaited)
+      status = get_signature_status(signature).dig('value', 0)
+      level  = status && reported_level(status)
+      return false unless level
+      return level >= awaited unless status['err']
+      # A failure below confirmed may sit on a fork that gets dropped
+      return false if level < CONFIRMED
+
+      raise Errors::TransactionFailed.format(signature, COMMITMENTS[awaited], COMMITMENTS[level], status['err'])
+    end
+
+    # The status's commitment as an index in COMMITMENTS
+    #
+    # @param status [Hash] One entry of a getSignatureStatuses result
+    # @return [Integer, nil] The level, or nil when the status names none
+    def reported_level(status)
+      return FINALIZED if rooted?(status)
+      return COMMITMENTS.index(status['confirmationStatus']) if status['confirmationStatus']
+
+      # A null confirmationStatus with a confirmations count is only known not to
+      # be rooted, which a processed transaction already is
+      PROCESSED if status['confirmations'].is_a?(Integer)
+    end
+
+    # A status whose confirmationStatus and confirmations are both present and
+    # null is for a rooted transaction; an absent key says nothing
+    #
+    # @param status [Hash] One entry of a getSignatureStatuses result
+    # @return [Boolean] Whether the status is for a rooted transaction
+    def rooted?(status)
+      %w[confirmationStatus confirmations].all? { |key| status.key?(key) && status[key].nil? }
     end
 
     # Extracts signature from given value
@@ -359,12 +418,12 @@ module Solace
       value.is_a?(String) ? value : value['result']
     end
 
-    # Checks if a timeout deadline has been reached
+    # Seconds left before a deadline, zero or negative once it has passed
     #
-    # @param deadline [Integer] The deadline for the timeout
-    # @return [Boolean] whether the deadline has passed
-    def deadline_passed?(deadline)
-      Process.clock_gettime(Process::CLOCK_MONOTONIC) >= deadline
+    # @param deadline [Float] The deadline for the timeout
+    # @return [Float] The seconds left
+    def seconds_until(deadline)
+      deadline - Process.clock_gettime(Process::CLOCK_MONOTONIC)
     end
 
     # Sets a deadline given a timeout in seconds
