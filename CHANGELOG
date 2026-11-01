@@ -38,7 +38,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ### Fixed
 
 1. `Solace::Connection#wait_for_confirmed_signature` counts a status at or above the awaited commitment as reached (processed < confirmed < finalized). A transaction the node already reported as `finalized` no longer waits out the whole timeout when `confirmed` was awaited.
-2. A rooted transaction, which the node reports with `confirmationStatus` and `confirmations` each null or absent, counts as `finalized`.
+2. A rooted transaction, which the node reports with `confirmationStatus` and `confirmations` both present and null, counts as `finalized`; a status missing either key is not taken as rooted. A null `confirmationStatus` with `confirmations` above 0 counts as `confirmed`.
 
 ## 0.1.9 - 2026-10-08
 

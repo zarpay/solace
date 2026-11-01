@@ -4,11 +4,12 @@ title: Errors
 
 # Errors
 
-Solace's errors descend from `Solace::Errors::Error`, so you can rescue the whole library
-with one class — or catch a specific failure mode. The exception is
-`Solace::Errors::TransactionFailed`: a transaction that failed on chain is not a library
-error, so it is a plain `StandardError` that such a rescue does not catch. They live under
-`lib/solace/errors/`.
+**`Solace::Errors::TransactionFailed` sits outside `Solace::Errors::Error` and must be
+rescued on its own.** A transaction that failed on chain is not a library error, so it is
+a plain `StandardError`, and rescuing `Solace::Errors::Error` does not catch it.
+
+Every other Solace error descends from `Solace::Errors::Error`, so you can rescue those
+with one class, or catch a specific failure mode. They live under `lib/solace/errors/`.
 
 ## Hierarchy
 
@@ -26,7 +27,7 @@ StandardError
 
 | Error | Raised when |
 | --- | --- |
-| `Error` | Base class for everything Solace raises. |
+| `Error` | Base class for every Solace error except `TransactionFailed`. |
 | `ConnectionError` | Base for transport/RPC failures. |
 | `HTTPError` | A non-success HTTP response from the RPC node (carries `code` and `body`). |
 | `RPCError` | The node returned a JSON-RPC error (carries `rpc_code`, `rpc_message`, `rpc_data`). |
@@ -55,4 +56,4 @@ end
 
 Because `HTTPError` and `RPCError` are both `ConnectionError`, rescuing `ConnectionError`
 catches any node-communication problem; rescuing `Solace::Errors::Error` catches that plus
-parse and confirmation failures.
+parse and confirmation failures, but never `TransactionFailed`.

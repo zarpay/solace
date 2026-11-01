@@ -388,17 +388,19 @@ module Solace
     # @return [Integer, nil] The level, or nil when the status names none
     def reported_level(status)
       return COMMITMENTS.index('finalized') if rooted?(status)
+      return COMMITMENTS.index(status['confirmationStatus']) if status['confirmationStatus']
 
-      COMMITMENTS.index(status['confirmationStatus'])
+      # A null confirmationStatus with confirmations counted is confirmed
+      COMMITMENTS.index('confirmed') if status['confirmations'].to_i.positive?
     end
 
-    # A status with no confirmationStatus and no confirmations count, each null
-    # or absent, is for a rooted transaction
+    # A status whose confirmationStatus and confirmations are both present and
+    # null is for a rooted transaction; an absent key says nothing
     #
     # @param status [Hash] One entry of a getSignatureStatuses result
     # @return [Boolean] Whether the status is for a rooted transaction
     def rooted?(status)
-      status['confirmationStatus'].nil? && status['confirmations'].nil?
+      %w[confirmationStatus confirmations].all? { |key| status.key?(key) && status[key].nil? }
     end
 
     # Extracts signature from given value

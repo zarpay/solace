@@ -66,8 +66,8 @@ describe Solace::Connection do
       assert_equal signature, wait_with_status(signature_status(nil, confirmations: nil), 'finalized')
     end
 
-    it 'counts a status with neither confirmationStatus nor confirmations as finalized' do
-      rooted = {
+    it 'does not count a status missing confirmationStatus and confirmations as reached' do
+      stripped = {
         'context' => { 'slot' => 1 },
         'value' => [{
           'err' => nil,
@@ -75,13 +75,14 @@ describe Solace::Connection do
         }]
       }
 
-      assert_equal signature, wait_with_status(rooted, 'finalized')
+      assert_raises(Solace::Errors::ConfirmationTimeout) { wait_with_status(stripped, 'processed') }
     end
 
-    it 'keeps waiting on a null status that still counts confirmations' do
-      assert_raises(Solace::Errors::ConfirmationTimeout) do
-        wait_with_status(signature_status(nil, confirmations: 3), 'processed')
-      end
+    it 'counts a null status with confirmations counted as confirmed' do
+      counted = signature_status(nil, confirmations: 3)
+
+      assert_equal signature, wait_with_status(counted, 'confirmed')
+      assert_raises(Solace::Errors::ConfirmationTimeout) { wait_with_status(counted, 'finalized') }
     end
 
     it 'accepts the commitment as a symbol and reports it as a string on timeout' do
@@ -114,6 +115,7 @@ describe Solace::Connection do
       assert_equal 'confirmed', error.commitment
       assert_equal 'finalized', error.reported
       assert_equal instruction_error, error.transaction_error
+      refute_kind_of Solace::Errors::Error, error
     end
 
     it 'raises TransactionFailed for a confirmed failure while finalized is awaited' do
@@ -129,14 +131,6 @@ describe Solace::Connection do
       assert_raises(Solace::Errors::ConfirmationTimeout) do
         wait_with_status(signature_status('processed', err: instruction_error), 'processed')
       end
-    end
-
-    it 'raises TransactionFailed outside the Solace::Errors::Error family' do
-      error = assert_raises(Solace::Errors::TransactionFailed) do
-        wait_with_status(signature_status('confirmed', err: instruction_error), 'confirmed')
-      end
-
-      refute_kind_of Solace::Errors::Error, error
     end
   end
 end

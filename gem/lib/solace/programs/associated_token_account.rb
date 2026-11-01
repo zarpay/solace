@@ -100,7 +100,9 @@ module Solace
 
         return ata_address unless account_balance.nil?
 
-        # Idempotent, so a caller that creates the same account first does not fail this one
+        # Idempotent, so another caller's create landing between this one's preflight
+        # and its landing does not fail it. Two callers sharing a payer and blockhash
+        # still collide at send with an RPCError.
         tx = create_associated_token_account(
           payer:            payer,
           funder:           funder,
