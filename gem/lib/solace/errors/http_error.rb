@@ -46,6 +46,15 @@ module Solace
         new("HTTP transport error: #{error.message}", code: 0)
       end
 
+      # Formats an answer addressed to a different request
+      #
+      # @param answered [Object] The id the answer carries
+      # @param asked [String] The id of the request that was sent
+      # @return [Solace::Errors::HTTPError] The formatted error
+      def self.format_mismatched_id(answered, asked)
+        new("RPC answer id #{answered.inspect} does not match request id #{asked.inspect}", code: 0)
+      end
+
       # Formats timeout errors
       #
       # @param error [Net::OpenTimeout, Net::ReadTimeout] The timeout error
