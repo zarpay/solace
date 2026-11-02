@@ -33,8 +33,13 @@ module Solace
       # to repeat.
       STALE = [EOFError, Errno::ECONNRESET, Errno::EPIPE].freeze
 
+      # Idle connections per [scheme, host, port], oldest first, each as
+      # [connection, the clock reading when it went idle].
+      def self.empty_pool = Hash.new { |pool, key| pool[key] = [] }
+      private_class_method :empty_pool
+
       @lock = Mutex.new
-      @idle = Hash.new { |hash, key| hash[key] = [] }
+      @idle = empty_pool
       @pid  = Process.pid
 
       class << self
@@ -65,12 +70,8 @@ module Solace
         #
         # @return [void]
         def clear
-          connections = synchronize do
-            all = @idle.values.flatten(1)
-            @idle.clear
-            all
-          end
-          connections.map(&:first).each { |http| discard(http) }
+          connections = synchronize { @idle.values.flatten(1).map(&:first).tap { @idle.clear } }
+          connections.each { |http| discard(http) }
         end
 
         private
@@ -97,18 +98,25 @@ module Solace
           end
         end
 
-        # Idle connections are kept oldest first, so the expired ones are a prefix.
+        # The oldest connections sit first, so the expired ones are a prefix.
         def checkout(key)
-          expired, http = synchronize do
+          cutoff  = now - KEEP_ALIVE
+          expired = []
+          http    = synchronize do
             idle = @idle[key]
-            [idle.shift(idle.take_while { |_, at| now - at > KEEP_ALIVE }.size), idle.pop&.first]
+            expired << idle.shift.first while idle.first && idle.first.last < cutoff
+            idle.pop&.first
           end
-          expired.map(&:first).each { |stale| discard(stale) }
+          expired.each { |stale| discard(stale) }
           http
         end
 
         def checkin(key, http)
-          kept = synchronize { @idle[key].size < MAX_IDLE && @idle[key].push([http, now]) }
+          idled_at = now
+          kept     = synchronize do
+            idle = @idle[key]
+            idle.push([http, idled_at]) if idle.size < MAX_IDLE
+          end
           discard(http) unless kept
         end
 
@@ -126,7 +134,7 @@ module Solace
         def synchronize(&block)
           @lock.synchronize do
             unless @pid == Process.pid
-              @idle = Hash.new { |hash, key| hash[key] = [] }
+              @idle = empty_pool
               @pid  = Process.pid
             end
             block.call

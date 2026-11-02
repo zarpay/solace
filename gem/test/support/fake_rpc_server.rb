@@ -35,6 +35,13 @@ class FakeRPCServer
   # How many of those connections have since closed, from either side.
   def ended = @lock.synchronize { @ended }
 
+  # Blocks until `count` connections have ended, or the timeout passes.
+  def wait_until_ended(count, timeout: 2)
+    deadline = Process.clock_gettime(Process::CLOCK_MONOTONIC) + timeout
+    sleep 0.01 until ended >= count || Process.clock_gettime(Process::CLOCK_MONOTONIC) > deadline
+    ended
+  end
+
   # Requests the server could not read as HTTP, such as two writers interleaved
   # on one socket.
   def errors = @lock.synchronize { @errors.dup }
@@ -107,10 +114,12 @@ class FakeRPCServer
     when :hang_up then return false
     when :stall then sleep
     when :half then answer_in_halves(socket, echo)
+    when :slow
+      sleep 0.3
+      respond(socket, 200, echo)
     when Array then respond(socket, *behaviour)
     when Hash then respond(socket, 200, JSON.dump(behaviour))
     else
-      sleep 0.3 if behaviour == :slow
       respond(socket, 200, echo)
     end
     true

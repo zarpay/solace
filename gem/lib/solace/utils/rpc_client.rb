@@ -154,6 +154,8 @@ module Solace
       # An answer must carry the id of the request it answers; only an error the
       # node could not tie to a request may carry none. Any other id means the
       # answer belongs to another call, and is refused rather than returned.
+      # Only clients that reuse connections check: a socket shared across calls
+      # is what could hand one call another's answer.
       #
       # @param json [Hash] The parsed JSON response
       # @param id [String] The JSON-RPC request id

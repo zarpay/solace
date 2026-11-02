@@ -149,7 +149,7 @@ describe Solace::Utils::RPCClient do
       Process.stub(:clock_gettime, later) { echo(client_for, 'after the keep-alive') }
 
       assert_equal 3, server.accepted
-      assert_equal 2, server.tap { sleep 0.05 }.ended
+      assert_equal 2, server.wait_until_ended(2)
     end
 
     it 'refuses an answer addressed to a different request' do
