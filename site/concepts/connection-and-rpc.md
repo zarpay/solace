@@ -16,12 +16,26 @@ connection = Solace::Connection.new(
   commitment:        'processed',   # default 'processed'
   http_open_timeout: 30,
   http_read_timeout: 60,
-  encoding:          'base64'
+  encoding:          'base64',
+  http_reuse_connections: false # default false
 )
 ```
 
 The default URL points at a local validator (`http://localhost:8899`), which is what the
 test suite and most examples assume.
+
+By default every RPC call opens its own HTTP connection and closes it after the answer.
+With `http_reuse_connections: true`, calls share open connections to the same host across
+every connection object and thread in the process, so most calls skip the TCP and TLS
+handshakes:
+
+- A connection serves one call at a time, and goes back to the pool only once that call
+  has read its whole answer. A call interrupted mid-answer closes its connection.
+- A forked process never uses a connection its parent opened.
+- Connections idle for more than 30 seconds are closed rather than reused.
+- When the server closes a reused connection just as a call goes out, the call is sent
+  once more on a new connection. `requestAirdrop` is never sent twice.
+- An answer carrying another request's JSON-RPC id raises `Solace::Errors::HTTPError`.
 
 ## Reading state
 

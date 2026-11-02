@@ -115,6 +115,17 @@ describe Solace::Utils::RPCClient do
       assert_equal ['after'], echo(client, 'after')['params']
     end
 
+    it 'never sends a requestAirdrop twice, even when the reused connection was closed under it' do
+      client = client_for
+      echo(client, 'opens the connection')
+      server.answer_with(:hang_up)
+
+      error = assert_raises(Solace::Errors::HTTPError) { client.rpc_request('requestAirdrop', ['payer', 1]) }
+
+      assert_kind_of EOFError, error.cause
+      assert_equal 1, server.accepted
+    end
+
     it 'sends a call once more on a new connection when the server closed the reused one under it' do
       client = client_for
       echo(client, 'opens the connection')
@@ -146,7 +157,7 @@ describe Solace::Utils::RPCClient do
       held.join(5)
       later = Process.clock_gettime(Process::CLOCK_MONOTONIC) + Solace::Utils::HTTPConnections::KEEP_ALIVE + 1
 
-      Process.stub(:clock_gettime, later) { echo(client_for, 'after the keep-alive') }
+      Solace::Utils::HTTPConnections.stub(:now, later) { echo(client_for, 'after the keep-alive') }
 
       assert_equal 3, server.accepted
       assert_equal 2, server.wait_until_ended(2)

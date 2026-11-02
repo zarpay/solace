@@ -17,6 +17,10 @@ module Solace
     #
     # @since 0.0.8
     class RPCClient
+      # Methods a reused connection must not send twice. Every other method is a
+      # read, or a sendTransaction the cluster will not execute twice.
+      UNREPEATABLE_METHODS = %w[requestAirdrop].freeze
+
       # @!attribute [r] url
       #   The URL for the HTTP request
       attr_reader :url
@@ -67,7 +71,7 @@ module Solace
       def rpc_request(method, params = [])
         id       = SecureRandom.uuid
         request  = build_rpc_request(method, params, id)
-        response = perform_http_request(*request)
+        response = perform_http_request(*request, repeatable: !UNREPEATABLE_METHODS.include?(method))
         handle_rpc_response(response, id)
       end
 
@@ -109,24 +113,35 @@ module Solace
       #
       # @param uri [URI] the URI for the HTTP request
       # @param req [Net::HTTP::Post] the request object
+      # @param repeatable [Boolean] whether a reused connection may send it twice
       # @return [Net::HTTPResponse] the HTTP response
       # @raise [Solace::Errors::HTTPError]
-      def perform_http_request(uri, req)
+      def perform_http_request(uri, req, repeatable:)
         if reuse_connections
-          HTTPConnections.request(uri, req, open_timeout: open_timeout, read_timeout: read_timeout)
+          HTTPConnections.request(uri, req, open_timeout: open_timeout, read_timeout: read_timeout,
+repeatable: repeatable)
         else
-          Net::HTTP.start(
-            uri.hostname,
-            uri.port,
-            use_ssl:      uri.scheme == 'https',
-            open_timeout: open_timeout,
-            read_timeout: read_timeout
-          ) { |http| http.request(req) }
+          request_once(uri, req)
         end
       rescue Net::OpenTimeout, Net::ReadTimeout => e
         raise Errors::HTTPError.format_timeout_error(e)
       rescue SocketError, IOError => e
         raise Errors::HTTPError.format_transport_error(e)
+      end
+
+      # Sends a request over a connection opened for it and closed after it.
+      #
+      # @param uri [URI] the URI for the HTTP request
+      # @param req [Net::HTTP::Post] the request object
+      # @return [Net::HTTPResponse] the HTTP response
+      def request_once(uri, req)
+        Net::HTTP.start(
+          uri.hostname,
+          uri.port,
+          use_ssl:      uri.scheme == 'https',
+          open_timeout: open_timeout,
+          read_timeout: read_timeout
+        ) { |http| http.request(req) }
       end
 
       # Handles the response from the HTTP request

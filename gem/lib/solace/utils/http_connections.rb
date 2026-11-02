@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'net/http'
+require 'openssl'
 
 module Solace
   module Utils
@@ -27,11 +28,10 @@ module Solace
       KEEP_ALIVE = 30
 
       # How a reused connection fails when the server closed it just as the
-      # request went out. The request goes once more, on a new connection:
-      # every Solana RPC method is a read, or a sendTransaction the cluster
-      # will not execute twice, so a request the server did receive is safe
-      # to repeat.
-      STALE = [EOFError, Errno::ECONNRESET, Errno::EPIPE].freeze
+      # request went out. Unless the caller says the request cannot be
+      # repeated, it goes once more on a new connection; the server may have
+      # received it the first time.
+      STALE = [EOFError, Errno::ECONNRESET, Errno::ECONNABORTED, Errno::EPIPE, OpenSSL::SSL::SSLError].freeze
 
       # Idle connections per [scheme, host, port], oldest first, each as
       # [connection, the clock reading when it went idle].
@@ -49,21 +49,29 @@ module Solace
         # @param req [Net::HTTPRequest] the request object
         # @param open_timeout [Numeric] the timeout for opening a connection
         # @param read_timeout [Numeric] the timeout for reading the response
+        # @param repeatable [Boolean] whether the request may be sent again when
+        #   a reused connection turns out to be stale
         # @return [Net::HTTPResponse] the response, its body fully read
-        def request(uri, req, open_timeout:, read_timeout:)
-          key                                              = [uri.scheme, uri.hostname, uri.port]
-          idle                                             = nil
-          Thread.handle_interrupt(Object => :never) { idle = checkout(key) }
+        #
+        # Interrupts reach this thread only during the network exchange itself;
+        # taking a connection from the pool, handing it back, and closing it
+        # always run to completion, so no connection is ever lost or handed on
+        # half-read.
+        def request(uri, req, open_timeout:, read_timeout:, repeatable: true)
+          key = [uri.scheme, uri.hostname, uri.port]
 
-          if idle
-            begin
-              return exchange(key, idle, req, open_timeout, read_timeout)
-            rescue *STALE
-              nil
+          Thread.handle_interrupt(Object => :never) do
+            reused = checkout(key)
+            if reused
+              begin
+                return send_over(key, reused, req, open_timeout, read_timeout)
+              rescue *STALE
+                raise unless repeatable
+              end
             end
-          end
 
-          exchange(key, connect(uri), req, open_timeout, read_timeout)
+            send_over(key, connect(uri), req, open_timeout, read_timeout)
+          end
         end
 
         # Closes every idle connection.
@@ -76,16 +84,17 @@ module Solace
 
         private
 
-        def exchange(key, http, req, open_timeout, read_timeout)
-          http.open_timeout = open_timeout
-          http.read_timeout = read_timeout
-          http.start unless http.started?
-
-          response = http.request(req)
-          Thread.handle_interrupt(Object => :never) do
-            checkin(key, http)
-            http = nil
+        # Owns the connection from here on: it goes back to the pool after a
+        # full answer, and is closed otherwise.
+        def send_over(key, http, req, open_timeout, read_timeout)
+          response = Thread.handle_interrupt(Object => :immediate) do
+            http.open_timeout = open_timeout
+            http.read_timeout = read_timeout
+            http.start unless http.started?
+            http.request(req)
           end
+          checkin(key, http)
+          http     = nil
           response
         ensure
           discard(http) if http
