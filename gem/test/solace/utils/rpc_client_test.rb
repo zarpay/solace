@@ -7,7 +7,10 @@ describe Solace::Utils::RPCClient do
   # an Exception that is not a StandardError, arriving mid-call.
   killed = Class.new(Exception) # rubocop:disable Lint/InheritException
 
-  after { @server&.stop }
+  after do
+    Solace::Utils::HTTPConnections.clear
+    @server&.stop
+  end
 
   def server = @server ||= FakeRPCServer.new
 
@@ -53,7 +56,7 @@ describe Solace::Utils::RPCClient do
       callers = Array.new(8) do |thread|
         Thread.new { Array.new(25) { |call| [[thread, call], echo(client_for, thread, call)['params']] } }
       end
-      answers = callers.flat_map { |t| t.join(20).value }
+      answers = callers.flat_map { |t| (t.join(20) || flunk('a caller hung')).value }
 
       answers.each { |asked, answered| assert_equal asked, answered }
       assert_empty server.errors
@@ -105,15 +108,41 @@ describe Solace::Utils::RPCClient do
       assert_equal ['after'], echo(client, 'after')['params']
     end
 
-    it 'reports a connection closed under an unanswered call as a transport error caused by EOFError' do
+    it 'sends a call once more on a new connection when the server closed the reused one under it' do
       client = client_for
       echo(client, 'opens the connection')
       server.answer_with(:hang_up)
 
-      error = assert_raises(Solace::Errors::HTTPError) { echo(client, 'lost') }
+      assert_equal ['resent'], echo(client, 'resent')['params']
+      assert_equal 2, server.accepted
+    end
+
+    it 'reports a new connection closed under an unanswered call as a transport error caused by EOFError' do
+      client = client_for
+      echo(client, 'opens the connection')
+      server.answer_with(:hang_up)
+      server.answer_with(:hang_up)
+
+      error = assert_raises(Solace::Errors::HTTPError) { echo(client, 'lost twice') }
 
       assert_equal 0, error.code
       assert_kind_of EOFError, error.cause
+      assert_equal 2, server.accepted
+    end
+
+    it 'closes connections left idle past the keep-alive instead of reusing them' do
+      server.answer_with(:half)
+      held  = Thread.new { echo(client_for, 'held') }
+      server.wait_for_half_answer
+      echo(client_for, 'beside it')
+      server.release!
+      held.join(5)
+      later = Process.clock_gettime(Process::CLOCK_MONOTONIC) + Solace::Utils::HTTPConnections::KEEP_ALIVE + 1
+
+      Process.stub(:clock_gettime, later) { echo(client_for, 'after the keep-alive') }
+
+      assert_equal 3, server.accepted
+      assert_equal 2, server.tap { sleep 0.05 }.ended
     end
   end
 

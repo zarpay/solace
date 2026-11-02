@@ -19,6 +19,7 @@ class FakeRPCServer
     @url       = "http://127.0.0.1:#{@server.addr[1]}"
     @lock      = Mutex.new
     @accepted  = 0
+    @ended     = 0
     @sockets   = []
     @threads   = []
     @scripted  = []
@@ -30,6 +31,9 @@ class FakeRPCServer
 
   # How many TCP connections clients have opened to this server.
   def accepted = @lock.synchronize { @accepted }
+
+  # How many of those connections have since closed, from either side.
+  def ended = @lock.synchronize { @ended }
 
   # Requests the server could not read as HTTP, such as two writers interleaved
   # on one socket.
@@ -94,6 +98,7 @@ class FakeRPCServer
     nil
   ensure
     socket.close unless socket.closed?
+    @lock.synchronize { @ended += 1 }
   end
 
   # @return [Boolean] whether the socket can serve another request
