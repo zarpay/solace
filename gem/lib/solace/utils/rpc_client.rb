@@ -11,8 +11,9 @@ require 'solace/utils/http_connections'
 module Solace
   module Utils
     # RPCClient provides Net::HTTP based HTTP client for sending HTTP
-    # requests to a Solana RPC node and parsing responses. Connections are
-    # shared and reused across clients through {HTTPConnections}.
+    # requests to a Solana RPC node and parsing responses. Each call opens and
+    # closes its own connection unless the client opts into sharing them
+    # through {HTTPConnections}.
     #
     # @since 0.0.8
     class RPCClient
@@ -28,19 +29,28 @@ module Solace
       #   The timeout for reading an HTTP response
       attr_reader :read_timeout
 
+      # @!attribute [r] reuse_connections
+      #   Whether calls reuse open connections through {HTTPConnections}
+      attr_reader :reuse_connections
+
       # Initialize the connection with a default or custom RPC URL
       #
       # @param url [String] The URL of the Solana RPC node
       # @param open_timeout [Integer] The timeout for opening an HTTP connection
       # @param read_timeout [Integer] The timeout for reading an HTTP response
+      # @param reuse_connections [Boolean] Whether calls reuse open connections
+      #   through {HTTPConnections}, and refuse an answer carrying another
+      #   request's id
       def initialize(
         url,
         open_timeout:,
-        read_timeout:
+        read_timeout:,
+        reuse_connections: false
       )
-        @url          = url
-        @open_timeout = open_timeout
-        @read_timeout = read_timeout
+        @url               = url
+        @open_timeout      = open_timeout
+        @read_timeout      = read_timeout
+        @reuse_connections = reuse_connections
       end
 
       # Sends a JSON-RPC request to the configured Solana RPC server.
@@ -102,7 +112,17 @@ module Solace
       # @return [Net::HTTPResponse] the HTTP response
       # @raise [Solace::Errors::HTTPError]
       def perform_http_request(uri, req)
-        HTTPConnections.request(uri, req, open_timeout: open_timeout, read_timeout: read_timeout)
+        if reuse_connections
+          HTTPConnections.request(uri, req, open_timeout: open_timeout, read_timeout: read_timeout)
+        else
+          Net::HTTP.start(
+            uri.hostname,
+            uri.port,
+            use_ssl:      uri.scheme == 'https',
+            open_timeout: open_timeout,
+            read_timeout: read_timeout
+          ) { |http| http.request(req) }
+        end
       rescue Net::OpenTimeout, Net::ReadTimeout => e
         raise Errors::HTTPError.format_timeout_error(e)
       rescue SocketError, IOError => e
@@ -122,7 +142,7 @@ module Solace
 
         json = JSON.parse(response.body)
 
-        ensure_answers!(json, id)
+        ensure_answers!(json, id) if reuse_connections
 
         raise Errors::RPCError.format_response(json) if json['error']
 

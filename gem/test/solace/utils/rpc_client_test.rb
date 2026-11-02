@@ -14,8 +14,15 @@ describe Solace::Utils::RPCClient do
 
   def server = @server ||= FakeRPCServer.new
 
-  def client_for(url = server.url, open_timeout: 1, read_timeout: 2)
-    Solace::Utils::RPCClient.new(url, open_timeout: open_timeout, read_timeout: read_timeout)
+  let(:reuse) { true }
+
+  def client_for(url = server.url, open_timeout: 1, read_timeout: 2, reuse_connections: reuse)
+    Solace::Utils::RPCClient.new(
+      url,
+      open_timeout:      open_timeout,
+      read_timeout:      read_timeout,
+      reuse_connections: reuse_connections
+    )
   end
 
   def echo(client, *params)
@@ -144,102 +151,6 @@ describe Solace::Utils::RPCClient do
       assert_equal 3, server.accepted
       assert_equal 2, server.tap { sleep 0.05 }.ended
     end
-  end
-
-  describe 'timeouts' do
-    it 'holds a caller to its own read timeout on a connection opened with a longer one' do
-      echo(client_for(read_timeout: 5), 'opens the connection')
-      server.answer_with(:stall)
-      started = Process.clock_gettime(Process::CLOCK_MONOTONIC)
-
-      error = assert_raises(Solace::Errors::HTTPError) { echo(client_for(read_timeout: 0.15), 'impatient') }
-
-      assert_equal 408, error.code
-      assert_operator Process.clock_gettime(Process::CLOCK_MONOTONIC) - started, :<, 1
-    end
-
-    it 'gives a caller its own read timeout on a connection opened with a shorter one' do
-      echo(client_for(read_timeout: 0.15), 'opens the connection')
-      server.answer_with(:slow)
-
-      assert_equal ['patient'], echo(client_for(read_timeout: 5), 'patient')['params']
-    end
-
-    it 'reports an answer slower than the read timeout as a 408 caused by Net::ReadTimeout' do
-      server.answer_with(:stall)
-
-      error = assert_raises(Solace::Errors::HTTPError) { echo(client_for(read_timeout: 0.15), 'slow') }
-
-      assert_equal 408, error.code
-      assert_kind_of Net::ReadTimeout, error.cause
-    end
-
-    it 'reports a handshake slower than the open timeout as a 408 caused by Net::OpenTimeout' do
-      # The kernel completes the TCP handshake from the backlog; nobody ever answers the TLS one.
-      listener = TCPServer.new('127.0.0.1', 0)
-      silent   = client_for("https://127.0.0.1:#{listener.addr[1]}", open_timeout: 0.15)
-
-      error = assert_raises(Solace::Errors::HTTPError) { echo(silent, 'never connects') }
-      listener.close
-
-      assert_equal 408, error.code
-      assert_kind_of Net::OpenTimeout, error.cause
-    end
-  end
-
-  describe 'errors' do
-    it 'reports a host that does not resolve as a transport error caused by SocketError' do
-      error = assert_raises(Solace::Errors::HTTPError) { echo(client_for('http://solace-test.invalid'), 'nowhere') }
-
-      assert_equal 0, error.code
-      assert_kind_of SocketError, error.cause
-    end
-
-    # Callers that retry a refused connect look for it on the error or its cause.
-    it 'surfaces a refused connection as Errno::ECONNREFUSED, raised or as the cause' do
-      closed_port = TCPServer.open('127.0.0.1', 0).then { |s| s.addr[1].tap { s.close } }
-
-      error = assert_raises(StandardError) { echo(client_for("http://127.0.0.1:#{closed_port}"), 'refused') }
-
-      assert [error, error.cause].any?(Errno::ECONNREFUSED), "got #{error.class}, caused by #{error.cause.class}"
-    end
-
-    it 'raises HTTPError carrying the status and body when the response is not a success' do
-      server.answer_with([400, 'Mocked body here'])
-
-      error = assert_raises(Solace::Errors::HTTPError) { echo(client_for, 'bad') }
-
-      assert_equal 'HTTP error: Error', error.message
-      assert_equal 'Mocked body here', error.body
-      assert_equal 400, error.code
-    end
-
-    it 'raises ParseError when the response is not valid JSON' do
-      server.answer_with([200, 'this is not a valid JSON'])
-
-      error = assert_raises(Solace::Errors::ParseError) { echo(client_for, 'garbled') }
-
-      assert_equal 'this is not a valid JSON', error.body
-      assert_match(/Invalid JSON from RPC:/, error.message)
-    end
-
-    it 'raises RPCError for a JSON-RPC error, even one the node could not tie to a request' do
-      server.answer_with({
-                           jsonrpc: '2.0',
-                           id:      nil,
-                           error:   {
-                             code:    -32_601,
-                             message: 'Method not found',
-                             data:    'data'
-                           }
-                         })
-
-      error = assert_raises(Solace::Errors::RPCError) { echo(client_for, 'unknown') }
-
-      assert_equal 'RPC error -32601: Method not found', error.message
-      assert_equal(-32_601, error.rpc_code)
-      assert_equal 'data', error.rpc_data
-    end
 
     it 'refuses an answer addressed to a different request' do
       server.answer_with({
@@ -251,6 +162,150 @@ describe Solace::Utils::RPCClient do
       error = assert_raises(Solace::Errors::HTTPError) { echo(client_for, 'mine') }
 
       assert_match(/id/, error.message)
+    end
+  end
+
+  describe 'without reuse_connections' do
+    let(:reuse) { false }
+
+    it 'opens a new connection for every call' do
+      client = client_for
+      3.times { |i| echo(client, i) }
+
+      assert_equal 3, server.accepted
+    end
+
+    it 'returns an answer whatever request id it carries' do
+      server.answer_with({
+                           jsonrpc: '2.0',
+                           id:      'someone-else',
+                           result:  1
+                         })
+
+      assert_equal 1, client_for.rpc_request('echo', ['mine'])['result']
+    end
+
+    it 'is what an RPCClient gets unless it asks for reuse' do
+      client = Solace::Utils::RPCClient.new(server.url, open_timeout: 1, read_timeout: 2)
+      2.times { |i| echo(client, i) }
+
+      assert_equal 2, server.accepted
+    end
+
+    it 'is what a Solace::Connection gets unless it asks for reuse' do
+      2.times { Solace::Connection.new(server.url).get_slot }
+
+      assert_equal 2, server.accepted
+    end
+  end
+
+  describe 'with http_reuse_connections on a Solace::Connection' do
+    it 'reuses one connection across calls' do
+      2.times { Solace::Connection.new(server.url, http_reuse_connections: true).get_slot }
+
+      assert_equal 1, server.accepted
+    end
+  end
+
+  [true, false].each do |mode|
+    describe "reuse_connections: #{mode}" do
+      let(:reuse) { mode }
+
+      describe 'timeouts' do
+        it 'holds a caller to its own read timeout on a connection opened with a longer one' do
+          echo(client_for(read_timeout: 5), 'opens the connection')
+          server.answer_with(:stall)
+          started = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+
+          error = assert_raises(Solace::Errors::HTTPError) { echo(client_for(read_timeout: 0.15), 'impatient') }
+
+          assert_equal 408, error.code
+          assert_operator Process.clock_gettime(Process::CLOCK_MONOTONIC) - started, :<, 1
+        end
+
+        it 'gives a caller its own read timeout on a connection opened with a shorter one' do
+          echo(client_for(read_timeout: 0.15), 'opens the connection')
+          server.answer_with(:slow)
+
+          assert_equal ['patient'], echo(client_for(read_timeout: 5), 'patient')['params']
+        end
+
+        it 'reports an answer slower than the read timeout as a 408 caused by Net::ReadTimeout' do
+          server.answer_with(:stall)
+
+          error = assert_raises(Solace::Errors::HTTPError) { echo(client_for(read_timeout: 0.15), 'slow') }
+
+          assert_equal 408, error.code
+          assert_kind_of Net::ReadTimeout, error.cause
+        end
+
+        it 'reports a handshake slower than the open timeout as a 408 caused by Net::OpenTimeout' do
+          # The kernel completes the TCP handshake from the backlog; nobody ever answers the TLS one.
+          listener = TCPServer.new('127.0.0.1', 0)
+          silent   = client_for("https://127.0.0.1:#{listener.addr[1]}", open_timeout: 0.15)
+
+          error = assert_raises(Solace::Errors::HTTPError) { echo(silent, 'never connects') }
+          listener.close
+
+          assert_equal 408, error.code
+          assert_kind_of Net::OpenTimeout, error.cause
+        end
+      end
+
+      describe 'errors' do
+        it 'reports a host that does not resolve as a transport error caused by SocketError' do
+          error = assert_raises(Solace::Errors::HTTPError) { echo(client_for('http://solace-test.invalid'), 'nowhere') }
+
+          assert_equal 0, error.code
+          assert_kind_of SocketError, error.cause
+        end
+
+        # Callers that retry a refused connect look for it on the error or its cause.
+        it 'surfaces a refused connection as Errno::ECONNREFUSED, raised or as the cause' do
+          closed_port = TCPServer.open('127.0.0.1', 0).then { |s| s.addr[1].tap { s.close } }
+
+          error = assert_raises(StandardError) { echo(client_for("http://127.0.0.1:#{closed_port}"), 'refused') }
+
+          assert [error, error.cause].any?(Errno::ECONNREFUSED), "got #{error.class}, caused by #{error.cause.class}"
+        end
+
+        it 'raises HTTPError carrying the status and body when the response is not a success' do
+          server.answer_with([400, 'Mocked body here'])
+
+          error = assert_raises(Solace::Errors::HTTPError) { echo(client_for, 'bad') }
+
+          assert_equal 'HTTP error: Error', error.message
+          assert_equal 'Mocked body here', error.body
+          assert_equal 400, error.code
+        end
+
+        it 'raises ParseError when the response is not valid JSON' do
+          server.answer_with([200, 'this is not a valid JSON'])
+
+          error = assert_raises(Solace::Errors::ParseError) { echo(client_for, 'garbled') }
+
+          assert_equal 'this is not a valid JSON', error.body
+          assert_match(/Invalid JSON from RPC:/, error.message)
+        end
+
+        it 'raises RPCError for a JSON-RPC error, even one the node could not tie to a request' do
+          server.answer_with({
+                               jsonrpc: '2.0',
+                               id:      nil,
+                               error:   {
+                                 code:    -32_601,
+                                 message: 'Method not found',
+                                 data:    'data'
+                               }
+                             })
+
+          error = assert_raises(Solace::Errors::RPCError) { echo(client_for, 'unknown') }
+
+          assert_equal 'RPC error -32601: Method not found', error.message
+          assert_equal(-32_601, error.rpc_code)
+          assert_equal 'data', error.rpc_data
+        end
+      end
     end
   end
 end
