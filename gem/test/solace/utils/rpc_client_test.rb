@@ -115,15 +115,17 @@ describe Solace::Utils::RPCClient do
       assert_equal ['after'], echo(client, 'after')['params']
     end
 
-    it 'never sends a requestAirdrop twice, even when the reused connection was closed under it' do
-      client = client_for
-      echo(client, 'opens the connection')
-      server.answer_with(:hang_up)
+    [:requestAirdrop, 'sendTransaction'].each do |method|
+      it "never sends a #{method} twice, even when the reused connection was closed under it" do
+        client = client_for
+        echo(client, 'opens the connection')
+        server.answer_with(:hang_up)
 
-      error = assert_raises(Solace::Errors::HTTPError) { client.rpc_request('requestAirdrop', ['payer', 1]) }
+        error = assert_raises(Solace::Errors::HTTPError) { client.rpc_request(method, ['payload']) }
 
-      assert_kind_of EOFError, error.cause
-      assert_equal 1, server.accepted
+        assert_kind_of EOFError, error.cause
+        assert_equal 1, server.accepted
+      end
     end
 
     it 'sends a call once more on a new connection when the server closed the reused one under it' do

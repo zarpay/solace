@@ -17,9 +17,10 @@ module Solace
     #
     # @since 0.0.8
     class RPCClient
-      # Methods a reused connection must not send twice. Every other method is a
-      # read, or a sendTransaction the cluster will not execute twice.
-      UNREPEATABLE_METHODS = %w[requestAirdrop].freeze
+      # Methods a reused connection must not send twice. A repeated
+      # sendTransaction is not executed twice, but with preflight on its second
+      # answer reports a transaction the first one landed as a failure.
+      UNREPEATABLE_METHODS = %w[requestAirdrop sendTransaction].freeze
 
       # @!attribute [r] url
       #   The URL for the HTTP request
@@ -71,7 +72,7 @@ module Solace
       def rpc_request(method, params = [])
         id       = SecureRandom.uuid
         request  = build_rpc_request(method, params, id)
-        response = perform_http_request(*request, repeatable: !UNREPEATABLE_METHODS.include?(method))
+        response = perform_http_request(*request, repeatable: !UNREPEATABLE_METHODS.include?(method.to_s))
         handle_rpc_response(response, id)
       end
 
@@ -118,8 +119,12 @@ module Solace
       # @raise [Solace::Errors::HTTPError]
       def perform_http_request(uri, req, repeatable:)
         if reuse_connections
-          HTTPConnections.request(uri, req, open_timeout: open_timeout, read_timeout: read_timeout,
-repeatable: repeatable)
+          HTTPConnections.request(
+            uri, req,
+            open_timeout: open_timeout,
+            read_timeout: read_timeout,
+            repeatable:   repeatable
+          )
         else
           request_once(uri, req)
         end

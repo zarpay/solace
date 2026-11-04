@@ -34,7 +34,7 @@ handshakes:
 - A forked process never uses a connection its parent opened.
 - Connections idle for more than 30 seconds are closed rather than reused.
 - When the server closes a reused connection just as a call goes out, the call is sent
-  once more on a new connection. `requestAirdrop` is never sent twice.
+  once more on a new connection. `requestAirdrop` and `sendTransaction` are never sent twice.
 - An answer carrying another request's JSON-RPC id raises `Solace::Errors::HTTPError`.
 
 ## Reading state
