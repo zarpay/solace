@@ -20,6 +20,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ---
 
+## Unreleased
+
+### Added
+
+1. Added `http_reuse_connections:` to `Solace::Connection.new` (and `reuse_connections:` to `Solace::Utils::RPCClient.new`), `false` by default. When `true`, RPC calls share open HTTP connections through `Solace::Utils::HTTPConnections` instead of opening and closing one per call: one call per connection at a time, a connection closed whenever a call is interrupted mid-answer, none carried into a forked process, a connection idle for more than 30 seconds closed rather than reused, and a call resent once on a new connection when the server closed the reused one under it (never for `requestAirdrop` or `sendTransaction`). Such a client also refuses an answer whose JSON-RPC id is not its request's, raising `Solace::Errors::HTTPError`.
+
+---
+
 ## 0.1.9 - 2026-10-08
 
 ### Added

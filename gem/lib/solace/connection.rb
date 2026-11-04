@@ -57,18 +57,22 @@ module Solace
     # @param [Integer] http_open_timeout The timeout for opening an HTTP connection
     # @param [Integer] http_read_timeout The timeout for reading an HTTP response
     # @param [String] encoding The encoding for the RPC requests
+    # @param [Boolean] http_reuse_connections Whether RPC calls keep their HTTP
+    #   connection open for later calls; see {Utils::HTTPConnections}
     def initialize(
       rpc_url = 'http://localhost:8899',
       commitment: 'processed',
       http_open_timeout: 30,
       http_read_timeout: 60,
-      encoding: 'base64'
+      encoding: 'base64',
+      http_reuse_connections: false
     )
       # Initialize the RPC client
       @rpc_client = Utils::RPCClient.new(
         rpc_url,
-        open_timeout: http_open_timeout,
-        read_timeout: http_read_timeout
+        open_timeout:      http_open_timeout,
+        read_timeout:      http_read_timeout,
+        reuse_connections: http_reuse_connections
       )
 
       # Set default options for rpc requests
